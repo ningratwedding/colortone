@@ -34,16 +34,16 @@ export default function DashboardProductsPage() {
   return (
     <div>
         <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold font-headline">My Products</h1>
+            <h1 className="text-3xl font-bold font-headline">Produk Saya</h1>
             <Button asChild>
-                <Link href="/dashboard/upload">Add Product</Link>
+                <Link href="/dashboard/upload">Tambah Produk</Link>
             </Button>
         </div>
       <Card>
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>Produk</CardTitle>
           <CardDescription>
-            Manage your products and view their sales performance.
+            Kelola produk Anda dan lihat kinerja penjualannya.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -51,16 +51,16 @@ export default function DashboardProductsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Image</span>
+                  <span className="sr-only">Gambar</span>
                 </TableHead>
-                <TableHead>Name</TableHead>
+                <TableHead>Nama</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Harga</TableHead>
                 <TableHead className="hidden md:table-cell">
-                  Total Sales
+                  Total Penjualan
                 </TableHead>
                 <TableHead>
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">Tindakan</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -79,7 +79,7 @@ export default function DashboardProductsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">Active</Badge>
+                    <Badge variant="outline">Aktif</Badge>
                   </TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -94,13 +94,13 @@ export default function DashboardProductsPage() {
                           variant="ghost"
                         >
                           <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
+                          <span className="sr-only">Alihkan menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                        <DropdownMenuItem>Ubah</DropdownMenuItem>
+                        <DropdownMenuItem>Hapus</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

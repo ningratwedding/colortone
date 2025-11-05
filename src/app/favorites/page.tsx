@@ -9,10 +9,10 @@ export default function FavoritesPage() {
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline">
-          My Favorites
+          Favorit Saya
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Your curated collection of presets and LUTs.
+          Koleksi preset dan LUT pilihan Anda.
         </p>
       </header>
 
@@ -28,8 +28,8 @@ export default function FavoritesPage() {
         </section>
       ) : (
         <div className="text-center py-16 border-2 border-dashed rounded-lg">
-            <h2 className="text-xl font-semibold">No Favorites Yet</h2>
-            <p className="mt-2 text-muted-foreground">Click the heart icon on any product to save it here.</p>
+            <h2 className="text-xl font-semibold">Belum Ada Favorit</h2>
+            <p className="mt-2 text-muted-foreground">Klik ikon hati pada produk apa pun untuk menyimpannya di sini.</p>
         </div>
       )}
     </div>

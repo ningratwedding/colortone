@@ -40,10 +40,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <div>
           <div className="grid grid-cols-1 gap-4">
             <div className="group">
-              <h3 className="font-semibold mb-2 text-center text-muted-foreground">Before</h3>
+              <h3 className="font-semibold mb-2 text-center text-muted-foreground">Sebelum</h3>
               <Image
                 src={product.imageBefore.imageUrl}
-                alt={`${product.name} (Before)`}
+                alt={`${product.name} (Sebelum)`}
                 width={600}
                 height={400}
                 className="rounded-lg object-cover w-full shadow-md"
@@ -51,10 +51,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div className="group">
-              <h3 className="font-semibold mb-2 text-center text-muted-foreground">After</h3>
+              <h3 className="font-semibold mb-2 text-center text-muted-foreground">Sesudah</h3>
               <Image
                 src={product.imageAfter.imageUrl}
-                alt={`${product.name} (After)`}
+                alt={`${product.name} (Sesudah)`}
                 width={600}
                 height={400}
                 className="rounded-lg object-cover w-full shadow-md"
@@ -81,7 +81,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 <Separator orientation="vertical" className="h-6" />
                 <div className="flex items-center gap-2">
                     <StarRating rating={product.rating} />
-                    <span className="text-muted-foreground text-sm">({product.reviewsCount} reviews)</span>
+                    <span className="text-muted-foreground text-sm">({product.reviewsCount} ulasan)</span>
                 </div>
             </div>
           </div>
@@ -91,10 +91,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="lg" className="w-full sm:w-auto">
-              <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+              <ShoppingCart className="mr-2 h-5 w-5" /> Tambah ke Keranjang
             </Button>
             <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              <Heart className="mr-2 h-5 w-5" /> Favorite
+              <Heart className="mr-2 h-5 w-5" /> Favorit
             </Button>
           </div>
 
@@ -102,11 +102,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <CardContent className="pt-6 grid gap-4 text-sm">
                 <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-primary"/>
-                    <span>Compatible with: {product.software.map(s => s.name).join(', ')}</span>
+                    <span>Kompatibel dengan: {product.software.map(s => s.name).join(', ')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <Download className="h-5 w-5 text-primary"/>
-                    <span>Instant digital download</span>
+                    <span>Unduhan digital instan</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <Tag className="h-5 w-5 text-primary"/>
@@ -121,7 +121,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
       {/* Reviews Section */}
       <div className="mt-12 pt-8 border-t">
-        <h2 className="text-2xl font-bold mb-6 font-headline">Reviews</h2>
+        <h2 className="text-2xl font-bold mb-6 font-headline">Ulasan</h2>
         <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
                 {reviews.map((review) => (
@@ -151,16 +151,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <div>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Leave a Review</CardTitle>
-                        <CardDescription>Share your thoughts with the community.</CardDescription>
+                        <CardTitle>Tinggalkan Ulasan</CardTitle>
+                        <CardDescription>Bagikan pemikiran Anda dengan komunitas.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
-                            <span className="font-medium text-sm mb-2 block">Your Rating</span>
+                            <span className="font-medium text-sm mb-2 block">Peringkat Anda</span>
                             <StarRating rating={0} />
                         </div>
-                         <Textarea placeholder="Write your review here..."/>
-                         <Button>Submit Review</Button>
+                         <Textarea placeholder="Tulis ulasan Anda di sini..."/>
+                         <Button>Kirim Ulasan</Button>
                     </CardContent>
                 </Card>
             </div>

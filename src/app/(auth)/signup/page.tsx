@@ -22,15 +22,15 @@ export default function SignupPage() {
               <span className="text-2xl font-bold font-headline">FilterForge</span>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Create an Account</CardTitle>
+          <CardTitle className="text-2xl">Buat Akun</CardTitle>
           <CardDescription>
-            Join our community of creators and artists.
+            Bergabunglah dengan komunitas kreator dan seniman kami.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="first-name">Full Name</Label>
+              <Label htmlFor="first-name">Nama Lengkap</Label>
               <Input id="first-name" placeholder="Max" required />
             </div>
             <div className="grid gap-2">
@@ -43,20 +43,20 @@ export default function SignupPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Kata Sandi</Label>
               <Input id="password" type="password" />
             </div>
             <Button type="submit" className="w-full">
-              Create an account
+              Buat sebuah akun
             </Button>
             <Button variant="outline" className="w-full">
-              Sign up with Google
+              Daftar dengan Google
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            Sudah punya akun?{" "}
             <Link href="/login" className="underline">
-              Log in
+              Masuk
             </Link>
           </div>
         </CardContent>

@@ -24,9 +24,9 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
-  { href: "/", label: "Presets" },
-  { href: "#", label: "LUTs" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/", label: "Preset" },
+  { href: "#", label: "LUT" },
+  { href: "/dashboard", label: "Dasbor" },
 ];
 
 export function SiteHeader() {
@@ -59,7 +59,7 @@ export function SiteHeader() {
               variant="ghost"
               size="icon"
               className="md:hidden mr-4"
-              aria-label="Toggle Menu"
+              aria-label="Alihkan Menu"
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -89,52 +89,52 @@ export function SiteHeader() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search presets..."
+                placeholder="Cari preset..."
                 className="w-full bg-card md:w-64 pl-10"
               />
             </div>
           </div>
           <nav className="flex items-center space-x-2">
             <Button variant="outline" asChild>
-              <Link href="#">Become a Seller</Link>
+              <Link href="#">Menjadi Penjual</Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/cart" aria-label="Shopping Cart">
+              <Link href="/cart" aria-label="Keranjang Belanja">
                 <ShoppingCart className="h-5 w-5" />
               </Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="User Menu">
+                <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
                   <CircleUserRound className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <CircleUserRound className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <span>Profil</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/favorites">
                       <ShoppingCart className="mr-2 h-4 w-4" />
-                      <span>Favorites</span>
+                      <span>Favorit</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="#">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                      <span>Pengaturan</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href="/login">Log In</Link>
+                    <Link href="/login">Masuk</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

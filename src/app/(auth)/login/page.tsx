@@ -23,9 +23,9 @@ export default function LoginPage() {
               <span className="text-2xl font-bold font-headline">FilterForge</span>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl">Selamat Datang Kembali</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account.
+            Masukkan kredensial Anda untuk mengakses akun Anda.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -41,27 +41,27 @@ export default function LoginPage() {
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Kata Sandi</Label>
                 <Link
                   href="#"
                   className="ml-auto inline-block text-sm underline"
                 >
-                  Forgot your password?
+                  Lupa kata sandi Anda?
                 </Link>
               </div>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              Masuk
             </Button>
             <Button variant="outline" className="w-full">
-              Login with Google
+              Masuk dengan Google
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            Belum punya akun?{" "}
             <Link href="/signup" className="underline">
-              Sign up
+              Daftar
             </Link>
           </div>
         </CardContent>

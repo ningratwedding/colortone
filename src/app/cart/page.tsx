@@ -28,7 +28,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 font-headline">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold mb-8 font-headline">Keranjang Belanja</h1>
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
           <Card>
@@ -36,10 +36,10 @@ export default function CartPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px] hidden md:table-cell">Product</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead className="w-[100px] hidden md:table-cell">Produk</TableHead>
+                    <TableHead>Detail</TableHead>
+                    <TableHead className="text-right">Harga</TableHead>
+                    <TableHead className="text-right">Tindakan</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -58,14 +58,14 @@ export default function CartPage() {
                       <TableCell>
                         <div className="font-medium">{item.name}</div>
                         <div className="text-sm text-muted-foreground">
-                          By {item.creator.name}
+                          Oleh {item.creator.name}
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         ${item.price.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">Remove</Button>
+                        <Button variant="ghost" size="sm">Hapus</Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -77,7 +77,7 @@ export default function CartPage() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="flex justify-between">
@@ -85,7 +85,7 @@ export default function CartPage() {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Taxes</span>
+                <span>Pajak</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <Separator />
@@ -96,7 +96,7 @@ export default function CartPage() {
             </CardContent>
             <CardFooter>
               <Button asChild className="w-full" size="lg">
-                <Link href="/checkout">Proceed to Checkout</Link>
+                <Link href="/checkout">Lanjutkan ke Pembayaran</Link>
               </Button>
             </CardFooter>
           </Card>

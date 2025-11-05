@@ -21,34 +21,34 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 font-headline">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-8 font-headline">Pembayaran</h1>
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
+              <CardTitle>Informasi Kontak</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid gap-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" placeholder="you@example.com" />
+                    <Label htmlFor="email">Alamat Email</Label>
+                    <Input id="email" type="email" placeholder="anda@contoh.com" />
                 </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
-              <CardDescription>All transactions are secure and encrypted.</CardDescription>
+              <CardTitle>Detail Pembayaran</CardTitle>
+              <CardDescription>Semua transaksi aman dan terenkripsi.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="card-number">Card Number</Label>
+                <Label htmlFor="card-number">Nomor Kartu</Label>
                 <Input id="card-number" placeholder="**** **** **** ****" />
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div className="grid gap-2 col-span-2">
-                  <Label htmlFor="expiry-date">Expiration Date</Label>
-                  <Input id="expiry-date" placeholder="MM / YY" />
+                  <Label htmlFor="expiry-date">Tanggal Kedaluwarsa</Label>
+                  <Input id="expiry-date" placeholder="BB / TT" />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="cvc">CVC</Label>
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
                <div className="grid gap-2">
-                <Label htmlFor="name-on-card">Name on Card</Label>
+                <Label htmlFor="name-on-card">Nama pada Kartu</Label>
                 <Input id="name-on-card" placeholder="John Doe" />
               </div>
             </CardContent>
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {cartItems.map((item) => (
@@ -83,7 +83,7 @@ export default function CheckoutPage() {
                     <div>
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        By {item.creator.name}
+                        Oleh {item.creator.name}
                       </p>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Taxes</span>
+                <span>Pajak</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <Separator />
@@ -107,7 +107,7 @@ export default function CheckoutPage() {
             </CardContent>
             <CardFooter>
               <Button className="w-full" size="lg">
-                Complete Purchase
+                Selesaikan Pembelian
               </Button>
             </CardFooter>
           </Card>

@@ -23,42 +23,42 @@ export default function UploadPage() {
   return (
     <div className="grid gap-6">
         <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold font-headline">Upload New Product</h1>
+            <h1 className="text-3xl font-bold font-headline">Unggah Produk Baru</h1>
         </div>
       <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Product Details</CardTitle>
+            <CardTitle>Detail Produk</CardTitle>
             <CardDescription>
-              Fill out the information for your new preset or LUT pack.
+              Isi informasi untuk paket preset atau LUT baru Anda.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-2">
-              <Label htmlFor="name">Product Title</Label>
+              <Label htmlFor="name">Judul Produk</Label>
               <Input
                 id="name"
-                placeholder="e.g., Cinematic Film Presets"
+                placeholder="misalnya, Preset Film Sinematik"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Deskripsi</Label>
               <Textarea
                 id="description"
-                placeholder="Describe what makes your product unique..."
+                placeholder="Jelaskan apa yang membuat produk Anda unik..."
                 className="min-h-[120px]"
               />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
                  <div className="grid gap-2">
-                    <Label htmlFor="price">Price</Label>
+                    <Label htmlFor="price">Harga</Label>
                     <Input id="price" type="number" placeholder="15.00" />
                 </div>
                  <div className="grid gap-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">Kategori</Label>
                     <Select>
                         <SelectTrigger id="category">
-                            <SelectValue placeholder="Select a category" />
+                            <SelectValue placeholder="Pilih kategori" />
                         </SelectTrigger>
                         <SelectContent>
                             {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -67,8 +67,8 @@ export default function UploadPage() {
                 </div>
             </div>
              <div className="grid gap-2">
-                <Label>Compatible Software</Label>
-                <p className="text-sm text-muted-foreground">Select all that apply.</p>
+                <Label>Perangkat Lunak yang Kompatibel</Label>
+                <p className="text-sm text-muted-foreground">Pilih semua yang berlaku.</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {software.map(s => (
                         <Button key={s.id} variant="outline">{s.name}</Button>
@@ -79,29 +79,29 @@ export default function UploadPage() {
         </Card>
         <Card>
             <CardHeader>
-                <CardTitle>Product Media</CardTitle>
-                <CardDescription>Upload before & after images, and your product file.</CardDescription>
+                <CardTitle>Media Produk</CardTitle>
+                <CardDescription>Unggah gambar sebelum & sesudah, dan file produk Anda.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid gap-2">
-                    <Label>Preview Images</Label>
+                    <Label>Gambar Pratinjau</Label>
                      <div className="flex items-center justify-center w-full">
                         <Label htmlFor="dropzone-file-images" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
-                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> 'before' and 'after' images</p>
+                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span> gambar 'sebelum' dan 'sesudah'</p>
                             </div>
                             <Input id="dropzone-file-images" type="file" className="hidden" multiple/>
                         </Label>
                     </div> 
                 </div>
                 <div className="grid gap-2">
-                    <Label>Product File (.zip)</Label>
+                    <Label>File Produk (.zip)</Label>
                      <div className="flex items-center justify-center w-full">
                         <Label htmlFor="dropzone-file-product" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
-                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> your .zip file</p>
+                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span> file .zip Anda</p>
                             </div>
                             <Input id="dropzone-file-product" type="file" className="hidden" accept=".zip"/>
                         </Label>
@@ -110,8 +110,8 @@ export default function UploadPage() {
             </CardContent>
         </Card>
          <div className="flex items-center justify-end gap-2">
-          <Button variant="outline">Save as Draft</Button>
-          <Button>Publish Product</Button>
+          <Button variant="outline">Simpan sebagai Draf</Button>
+          <Button>Publikasikan Produk</Button>
         </div>
       </div>
     </div>

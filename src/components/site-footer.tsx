@@ -14,8 +14,7 @@ export function SiteFooter() {
               <span className="text-xl font-bold font-headline">FilterForge</span>
             </Link>
             <p className="text-muted-foreground mb-4">
-              The ultimate marketplace for creators to buy and sell high-quality
-              presets, LUTs, and digital assets.
+              Marketplace terbaik bagi para kreator untuk membeli dan menjual preset, LUT, dan aset digital berkualitas tinggi.
             </p>
             <div className="flex space-x-4">
               <Link href="#" aria-label="Twitter">
@@ -35,29 +34,29 @@ export function SiteFooter() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Explore
+                  Jelajahi
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  New Releases
+                  Rilisan Baru
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Top Creators
+                  Kreator Teratas
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Categories
+                  Kategori
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Resources</h3>
+            <h3 className="font-semibold mb-4">Sumber Daya</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -66,36 +65,36 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Support
+                  Dukungan
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Become a Seller
+                  Menjadi Penjual
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Affiliates
+                  Afiliasi
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="md:col-span-4 lg:col-span-1">
-            <h3 className="font-semibold mb-4">Stay Updated</h3>
+            <h3 className="font-semibold mb-4">Tetap Terkini</h3>
             <p className="text-muted-foreground mb-4">
-              Join our newsletter for new products and special offers.
+              Bergabunglah dengan buletin kami untuk produk baru dan penawaran khusus.
             </p>
             <div className="flex w-full max-w-sm items-center space-x-2">
               <Input type="email" placeholder="Email" className="bg-background"/>
-              <Button type="submit" variant="default">Subscribe</Button>
+              <Button type="submit" variant="default">Berlangganan</Button>
             </div>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} FilterForge. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} FilterForge. Semua Hak Dilindungi.</p>
         </div>
       </div>
     </footer>

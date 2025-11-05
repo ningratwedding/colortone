@@ -32,7 +32,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <div className="relative aspect-[3/2]">
             <Image
               src={product.imageBefore.imageUrl}
-              alt={`${product.name} (Before)`}
+              alt={`${product.name} (Sebelum)`}
               fill
               className="object-cover transition-opacity duration-300 group-hover:opacity-0"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -40,7 +40,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             />
             <Image
               src={product.imageAfter.imageUrl}
-              alt={`${product.name} (After)`}
+              alt={`${product.name} (Sesudah)`}
               fill
               className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -53,7 +53,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           variant="secondary"
           className="absolute top-2 right-2 h-8 w-8 rounded-full"
           onClick={() => setIsFavorited(!isFavorited)}
-          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          aria-label={isFavorited ? "Hapus dari favorit" : "Tambah ke favorit"}
         >
           <Heart
             className={cn(

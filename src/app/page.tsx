@@ -15,11 +15,10 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary font-headline">
-          Discover Your Signature Look
+          Temukan Tampilan Khas Anda
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore thousands of high-quality, professionally-crafted presets and
-          LUTs from the best creators in the world.
+          Jelajahi ribuan preset dan LUT berkualitas tinggi yang dibuat secara profesional dari para kreator terbaik di dunia.
         </p>
       </header>
 
@@ -28,10 +27,10 @@ export default function Home() {
         <div className="flex gap-4 w-full md:w-auto">
           <Select defaultValue="all-categories">
             <SelectTrigger className="w-full md:w-[180px] bg-card">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Kategori" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-categories">All Categories</SelectItem>
+              <SelectItem value="all-categories">Semua Kategori</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -41,10 +40,10 @@ export default function Home() {
           </Select>
           <Select defaultValue="all-software">
             <SelectTrigger className="w-full md:w-[180px] bg-card">
-              <SelectValue placeholder="Software" />
+              <SelectValue placeholder="Perangkat Lunak" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-software">All Software</SelectItem>
+              <SelectItem value="all-software">Semua Perangkat Lunak</SelectItem>
               {software.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
                   {s.name}

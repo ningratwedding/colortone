@@ -18,14 +18,14 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 font-headline">My Profile</h1>
+        <h1 className="text-3xl font-bold mb-8 font-headline">Profil Saya</h1>
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Public Profile</CardTitle>
+                    <CardTitle>Profil Publik</CardTitle>
                     <CardDescription>
-                        This information will be displayed publicly.
+                        Informasi ini akan ditampilkan secara publik.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -35,12 +35,12 @@ export default function ProfilePage() {
                             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex gap-2">
-                            <Button>Change Photo</Button>
-                            <Button variant="outline">Remove</Button>
+                            <Button>Ubah Foto</Button>
+                            <Button variant="outline">Hapus</Button>
                         </div>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">Nama Lengkap</Label>
                         <Input id="name" defaultValue={user.name} />
                     </div>
                     <div className="grid gap-2">
@@ -48,33 +48,33 @@ export default function ProfilePage() {
                         <Textarea
                             id="bio"
                             defaultValue={user.bio}
-                            placeholder="Tell us a little bit about yourself"
+                            placeholder="Ceritakan sedikit tentang diri Anda"
                             className="min-h-[100px]"
                         />
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button>Save Changes</Button>
+                    <Button>Simpan Perubahan</Button>
                 </CardFooter>
             </Card>
         </div>
         <div className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Change Password</CardTitle>
+                    <CardTitle>Ubah Kata Sandi</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="current-password">Current Password</Label>
+                        <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
                         <Input id="current-password" type="password" />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="new-password">New Password</Label>
+                        <Label htmlFor="new-password">Kata Sandi Baru</Label>
                         <Input id="new-password" type="password" />
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button>Update Password</Button>
+                    <Button>Perbarui Kata Sandi</Button>
                 </CardFooter>
             </Card>
         </div>

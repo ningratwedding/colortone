@@ -27,11 +27,11 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const menuItems = [
-  { href: "/dashboard", label: "Overview", icon: Home },
-  { href: "/dashboard/products", label: "Products", icon: Package },
-  { href: "/dashboard/upload", label: "Upload", icon: Upload },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", label: "Ringkasan", icon: Home },
+  { href: "/dashboard/products", label: "Produk", icon: Package },
+  { href: "/dashboard/upload", label: "Unggah", icon: Upload },
+  { href: "/dashboard/analytics", label: "Analitik", icon: BarChart },
+  { href: "/dashboard/settings", label: "Pengaturan", icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -48,7 +48,7 @@ export default function DashboardLayout({
           <SidebarHeader className="p-4">
             <Link href="/" className="flex items-center gap-2 font-semibold">
                 <UserCircle className="h-6 w-6"/>
-                <span>Creator Dashboard</span>
+                <span>Dasbor Kreator</span>
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -77,14 +77,14 @@ export default function DashboardLayout({
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="shrink-0">
                   <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
+                  <span className="sr-only">Alihkan Menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="sm:max-w-xs p-0">
                   <SidebarHeader className="p-4 border-b">
                     <Link href="/" className="flex items-center gap-2 font-semibold">
                         <UserCircle className="h-6 w-6"/>
-                        <span>Creator Dashboard</span>
+                        <span>Dasbor Kreator</span>
                     </Link>
                   </SidebarHeader>
                   <nav className="grid gap-2 text-lg font-medium p-4">
