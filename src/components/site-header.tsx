@@ -96,7 +96,7 @@ export function SiteHeader() {
           </div>
           <nav className="flex items-center space-x-2">
             <Button variant="outline" asChild>
-              <Link href="#">Menjadi Penjual</Link>
+              <Link href="/dashboard">Menjadi Penjual</Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart" aria-label="Keranjang Belanja">
