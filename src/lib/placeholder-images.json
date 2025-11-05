@@ -1,3 +1,124 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "avatar-1",
+      "description": "User avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar-2",
+      "description": "User avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar-3",
+      "description": "User avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar-4",
+      "description": "User avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "product-1-before",
+      "description": "Cinematic Teal preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1580895456895-cfdf02e4c23f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjaXR5JTIwbmlnaHR8ZW58MHx8fHwxNzYyMzEwNzA4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "city night"
+    },
+    {
+      "id": "product-1-after",
+      "description": "Cinematic Teal preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1588312744377-2adfb7b8578a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaXR5JTIwbmlnaHR8ZW58MHx8fHwxNzYyMzEwNzA4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "city night"
+    },
+    {
+      "id": "product-2-before",
+      "description": "Moody Forest preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1531756716853-09a60d38d820?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmb3Jlc3QlMjBwYXRofGVufDB8fHx8MTc2MjM0ODQyNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forest path"
+    },
+    {
+      "id": "product-2-after",
+      "description": "Moody Forest preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmb3Jlc3QlMjBwYXRofGVufDB8fHx8MTc2MjM0ODQyNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forest path"
+    },
+    {
+      "id": "product-3-before",
+      "description": "Golden Hour preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1515404929826-76fff9fef6fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxiZWFjaCUyMHN1bnNldHxlbnwwfHx8fDE3NjIzMjE3MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "beach sunset"
+    },
+    {
+      "id": "product-3-after",
+      "description": "Golden Hour preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1561571994-3c61c554181a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxiZWFjaCUyMHN1bnNldHxlbnwwfHx8fDE3NjIzMjE3MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "beach sunset"
+    },
+    {
+      "id": "product-4-before",
+      "description": "Urban Desat preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1511139606738-c41179bb2193?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx1cmJhbiUyMGFyY2hpdGVjdHVyZXxlbnwwfHx8fDE3NjIzMjIxNjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "urban architecture"
+    },
+    {
+      "id": "product-4-after",
+      "description": "Urban Desat preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1548566862-2c9b1fed780a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx1cmJhbiUyMGFyY2hpdGVjdHVyZXxlbnwwfHx8fDE3NjIzMjIxNjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "urban architecture"
+    },
+    {
+      "id": "product-5-before",
+      "description": "Pastel Dreams preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1593476366803-cff071151082?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmbG93ZXIlMjBmaWVsZHxlbnwwfHx8fDE3NjIyODY5NDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "flower field"
+    },
+    {
+      "id": "product-5-after",
+      "description": "Pastel Dreams preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1560106130-636dcb77013a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmbG93ZXIlMjBmaWVsZHxlbnwwfHx8fDE3NjIyODY5NDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "flower field"
+    },
+    {
+      "id": "product-6-before",
+      "description": "Vintage Film preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1587750113469-d2ba02441e8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx2aW50YWdlJTIwY2FyfGVufDB8fHx8MTc2MjI4MTg1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vintage car"
+    },
+    {
+      "id": "product-6-after",
+      "description": "Vintage Film preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1544896478-d5b709d413c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2aW50YWdlJTIwY2FyfGVufDB8fHx8MTc2MjI4MTg1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vintage car"
+    },
+    {
+      "id": "product-7-before",
+      "description": "Neon Nights preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1503876466-1fc5143eda57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuZW9uJTIwc2lnbnxlbnwwfHx8fDE3NjIyODIzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "neon sign"
+    },
+    {
+      "id": "product-7-after",
+      "description": "Neon Nights preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1603861609714-dda551f22d18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxuZW9uJTIwc2lnbnxlbnwwfHx8fDE3NjIyODIzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "neon sign"
+    },
+    {
+      "id": "product-8-before",
+      "description": "Minimal White preset before",
+      "imageUrl": "https://images.unsplash.com/photo-1617326302376-c576dc5aa525?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtaW5pbWFsaXN0JTIwaW50ZXJpb3J8ZW58MHx8fHwxNzYyMzUwMzIxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist interior"
+    },
+    {
+      "id": "product-8-after",
+      "description": "Minimal White preset after",
+      "imageUrl": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtaW5pbWFsaXN0JTIwaW50ZXJpb3J8ZW58MHx8fHwxNzYyMzUwMzIxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist interior"
+    }
+  ]
 }
