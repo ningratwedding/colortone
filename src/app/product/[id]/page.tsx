@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ImageCompareSlider } from "@/components/image-compare-slider";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [isClient, setIsClient] = useState(false);
@@ -42,6 +43,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const reviews = allReviews.slice(0, 2);
 
   const formatCurrency = (amount: number) => {
+    // This check ensures the code runs only on the client
+    if (typeof window === 'undefined') {
+        return '';
+    }
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
   };
 
@@ -50,30 +55,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         {/* Product Images */}
         <div>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="group">
-              <h3 className="font-semibold mb-2 text-center text-muted-foreground">Sebelum</h3>
-              <Image
-                src={product.imageBefore.imageUrl}
-                alt={`${product.name} (Sebelum)`}
-                width={600}
-                height={400}
-                className="rounded-lg object-cover w-full shadow-md"
-                data-ai-hint={product.imageBefore.imageHint}
-              />
-            </div>
-            <div className="group">
-              <h3 className="font-semibold mb-2 text-center text-muted-foreground">Sesudah</h3>
-              <Image
-                src={product.imageAfter.imageUrl}
-                alt={`${product.name} (Sesudah)`}
-                width={600}
-                height={400}
-                className="rounded-lg object-cover w-full shadow-md"
-                data-ai-hint={product.imageAfter.imageHint}
-              />
-            </div>
-          </div>
+          <ImageCompareSlider
+            beforeImage={product.imageBefore}
+            afterImage={product.imageAfter}
+            className="aspect-[3/2] rounded-lg shadow-md overflow-hidden"
+          />
         </div>
 
         {/* Product Info */}
@@ -99,7 +85,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <div className="text-4xl font-bold text-primary">{isClient && formatCurrency(product.price)}</div>
+          <div className="text-4xl font-bold text-primary">{formatCurrency(product.price)}</div>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="lg" className="w-full sm:w-auto">

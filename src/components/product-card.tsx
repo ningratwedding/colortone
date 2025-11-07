@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import type { Product } from "@/lib/data";
@@ -9,13 +8,13 @@ import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ImageCompareSlider } from "./image-compare-slider";
 
 interface ProductCardProps {
   product: Product;
@@ -27,40 +26,28 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const [formattedPrice, setFormattedPrice] = useState<string>('');
 
   useEffect(() => {
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-    setFormattedPrice(formatCurrency(product.price));
+    // This check ensures the code runs only on the client
+    if (typeof window !== 'undefined') {
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+      };
+      setFormattedPrice(formatCurrency(product.price));
+    }
   }, [product.price]);
 
 
   return (
     <Card className={cn("overflow-hidden group", className)}>
       <CardHeader className="p-0 relative">
-        <Link href={`/product/${product.id}`} aria-label={product.name}>
-          <div className="relative aspect-[3/2]">
-            <Image
-              src={product.imageBefore.imageUrl}
-              alt={`${product.name} (Sebelum)`}
-              fill
-              className="object-cover transition-opacity duration-300 group-hover:opacity-0"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              data-ai-hint={product.imageBefore.imageHint}
-            />
-            <Image
-              src={product.imageAfter.imageUrl}
-              alt={`${product.name} (Sesudah)`}
-              fill
-              className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              data-ai-hint={product.imageAfter.imageHint}
-            />
-          </div>
-        </Link>
+        <ImageCompareSlider
+            beforeImage={product.imageBefore}
+            afterImage={product.imageAfter}
+            className="aspect-[3/2]"
+        />
         <Button
           size="icon"
           variant="secondary"
-          className="absolute top-2 right-2 h-8 w-8 rounded-full"
+          className="absolute top-2 right-2 h-8 w-8 rounded-full z-10"
           onClick={() => setIsFavorited(!isFavorited)}
           aria-label={isFavorited ? "Hapus dari favorit" : "Tambah ke favorit"}
         >
@@ -74,24 +61,24 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
         </Button>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-4 pb-2">
         <Link href={`/product/${product.id}`} className="space-y-1">
           <CardTitle className="text-lg leading-tight hover:text-primary transition-colors">
             {product.name}
           </CardTitle>
         </Link>
-        <div className="mt-2 flex items-center gap-2">
+         <div className="mt-2 flex items-center gap-2">
             <Link href="#" className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
                     <AvatarImage src={product.creator.avatar.imageUrl} alt={product.creator.name} data-ai-hint={product.creator.avatar.imageHint} />
                     <AvatarFallback>{product.creator.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <CardDescription className="text-sm hover:text-primary transition-colors">{product.creator.name}</CardDescription>
+                <div className="text-sm text-muted-foreground hover:text-primary transition-colors">{product.creator.name}</div>
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="font-semibold text-lg">{formattedPrice || <>&nbsp;</>}</div>
+      <CardFooter className="p-4 pt-2 flex justify-between items-center">
+        <div className="font-semibold text-lg">{formattedPrice}</div>
         <div className="flex items-center gap-1 text-muted-foreground">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm font-medium text-foreground">{product.rating}</span>
