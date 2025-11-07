@@ -61,7 +61,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formattedRevenue}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground animate-pulse">
               +20.1% dari bulan lalu
             </p>
           </CardContent>
@@ -73,7 +73,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground animate-pulse">
               +180.1% dari bulan lalu
             </p>
           </CardContent>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">42</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground animate-pulse">
               +2 sejak bulan lalu
             </p>
           </CardContent>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground animate-pulse">
               +201 sejak bulan lalu
             </p>
           </CardContent>
