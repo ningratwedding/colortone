@@ -57,7 +57,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <ProductClientContent price={product.price} />
+          <ProductClientContent price={product.price} productId={product.id} />
 
           <Card className="rounded-lg">
             <CardContent className="pt-6 grid gap-4 text-sm">
