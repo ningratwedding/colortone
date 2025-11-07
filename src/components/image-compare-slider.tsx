@@ -89,7 +89,7 @@ export function ImageCompareSlider({
 
       {/* Slider Handle */}
       <div
-        className="absolute inset-y-0 w-1 bg-white/50 backdrop-blur-sm cursor-ew-resize flex items-center justify-center"
+        className="absolute inset-y-0 w-px bg-white/50 backdrop-blur-sm cursor-ew-resize flex items-center justify-center"
         style={{ left: `${sliderPosition}%`, transform: "translateX(-50%)" }}
       >
         <div className="w-8 h-8 rounded-full bg-white/80 shadow-md flex items-center justify-center text-gray-600">
