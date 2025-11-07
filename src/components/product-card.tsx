@@ -60,12 +60,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-2 mt-auto flex items-center justify-between gap-4">
-        <div className="font-semibold text-lg text-primary truncate">{formattedPrice}</div>
-        <Button>
-            <CreditCard className="mr-2 h-4 w-4"/>
-            Beli
-        </Button>
+      <CardFooter className="p-4 pt-2 mt-auto">
+        <div className="flex w-full items-center justify-between">
+          <div className="font-semibold text-lg text-primary truncate">{formattedPrice}</div>
+          <Button>
+              <CreditCard className="mr-2 h-4 w-4"/>
+              Beli
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
