@@ -13,6 +13,8 @@ import {
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ImageCompareSlider } from "./image-compare-slider";
+import { Button } from "./ui/button";
+import { CreditCard } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -56,8 +58,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 mt-auto">
+      <CardFooter className="p-4 pt-2 mt-auto flex-col items-start gap-4">
         <div className="font-semibold text-lg w-full text-primary">{formattedPrice}</div>
+        <Button className="w-full">
+            <CreditCard className="mr-2 h-4 w-4"/>
+            Beli Sekarang
+        </Button>
       </CardFooter>
     </Card>
   );
