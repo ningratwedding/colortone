@@ -10,6 +10,8 @@ export type User = {
   bio: string;
   socials?: {
     instagram?: string;
+    facebook?: string;
+    tiktok?: string;
   };
 };
 

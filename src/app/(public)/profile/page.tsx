@@ -1,9 +1,11 @@
+'use client';
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,69 +15,139 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
 import Link from "next/link";
-import { Instagram } from "lucide-react";
+import { Instagram, Facebook, PlusCircle, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12.528 8.001v5.25c-1.423.115-2.585.83-3.415 1.942C8.253 16.34 7.6 17.34 6.75 17.34c-1.84 0-2.5-1.72-2.5-1.72" />
+            <path d="M12.528 8.001c.883-2.48 3.02-3.514 5.31-2.07C20.137 7.37 20.08 11.2 17 11.2v5.123c-1.872 0-3.352-1.33-4.472-2.37" />
+            <path d="M12.528 8.001q.44-1.47.79-2.515" />
+            <path d="M17.5 4.5c.31.02.62.06.94.13" />
+        </svg>
+    )
+}
+
+const socialIcons = {
+    instagram: <Instagram className="h-5 w-5" />,
+    facebook: <Facebook className="h-5 w-5" />,
+    tiktok: <TikTokIcon className="h-5 w-5" />
+};
 
 export default function ProfilePage() {
     const user = users[0];
+    const [socials, setSocials] = useState(user.socials || {});
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid gap-8 md:grid-cols-3">
-        <div className="md:col-span-2">
-            <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Profil Publik</CardTitle>
-                      <CardDescription>
-                          Informasi ini akan ditampilkan secara publik.
-                      </CardDescription>
-                    </div>
-                    <Link href={`/creator/${user.id}`} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
-                      Lihat Profil Saya
-                    </Link>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-20 w-20">
-                            <AvatarImage src={user.avatar.imageUrl} data-ai-hint={user.avatar.imageHint} />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex gap-2">
-                            <Button>Ubah Foto</Button>
-                            <Button variant="outline">Hapus</Button>
-                        </div>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Nama Lengkap</Label>
-                        <Input id="name" defaultValue={user.name} />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea
-                            id="bio"
-                            defaultValue={user.bio}
-                            placeholder="Ceritakan sedikit tentang diri Anda"
-                            className="min-h-[100px]"
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="instagram">Instagram</Label>
-                         <div className="relative">
-                            <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input id="instagram" defaultValue={user.socials?.instagram} placeholder="Nama pengguna Instagram" className="pl-10" />
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button>Simpan Perubahan</Button>
-                </CardFooter>
-            </Card>
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="grid gap-8 md:grid-cols-3">
+                <div className="md:col-span-2">
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Profil Publik</CardTitle>
+                                    <CardDescription>
+                                        Informasi ini akan ditampilkan secara publik.
+                                    </CardDescription>
+                                </div>
+                                <Link href={`/creator/${user.id}`} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+                                    Lihat Profil Saya
+                                </Link>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="h-20 w-20">
+                                    <AvatarImage src={user.avatar.imageUrl} data-ai-hint={user.avatar.imageHint} />
+                                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex gap-2">
+                                    <Button>Ubah Foto</Button>
+                                    <Button variant="outline">Hapus</Button>
+                                </div>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">Nama Lengkap</Label>
+                                <Input id="name" defaultValue={user.name} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="bio">Bio</Label>
+                                <Textarea
+                                    id="bio"
+                                    defaultValue={user.bio}
+                                    placeholder="Ceritakan sedikit tentang diri Anda"
+                                    className="min-h-[100px]"
+                                />
+                            </div>
+                            
+                            <div className="grid gap-4">
+                                <Label>Tautan Sosial</Label>
+                                <div className="space-y-3">
+                                    {Object.entries(socials).map(([platform, username]) => (
+                                        <div key={platform} className="flex items-center gap-3">
+                                            <div className="relative flex-grow">
+                                                {socialIcons[platform as keyof typeof socialIcons]}
+                                                <Input defaultValue={username as string} className="pl-10" readOnly />
+                                            </div>
+                                            <Button variant="ghost" size="icon">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" className="mt-2">
+                                            <PlusCircle className="mr-2 h-4 w-4"/>
+                                            Tambah Tautan Sosial
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Tambah Tautan Sosial</DialogTitle>
+                                            <DialogDescription>
+                                                Pilih platform dan masukkan nama pengguna Anda.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="platform">Platform</Label>
+                                                <Select>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Pilih platform sosial" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="instagram">Instagram</SelectItem>
+                                                        <SelectItem value="facebook">Facebook</SelectItem>
+                                                        <SelectItem value="tiktok">TikTok</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="username">Nama Pengguna</Label>
+                                                <Input id="username" placeholder="@username" />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit">Simpan</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button>Simpan Perubahan</Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+                <div className="space-y-8">
+                </div>
+            </div>
         </div>
-        <div className="space-y-8">
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
