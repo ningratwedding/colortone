@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -15,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ImageCompareSlider } from "./image-compare-slider";
 import { Button } from "./ui/button";
 import { CreditCard } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 interface ProductCardProps {
   product: Product;
@@ -58,8 +60,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-2 mt-auto flex flex-row items-center justify-between">
-        <div className="font-semibold text-lg text-primary">{formattedPrice}</div>
+      <CardFooter className="p-4 pt-2 mt-auto flex items-center justify-between gap-4">
+        <div className="font-semibold text-lg text-primary truncate">{formattedPrice}</div>
         <Button>
             <CreditCard className="mr-2 h-4 w-4"/>
             Beli
