@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
   { href: "/", label: "Preset" },
@@ -65,20 +65,16 @@ export function SiteHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <SheetHeader className="sr-only">
-              <SheetTitle>Menu</SheetTitle>
-              <SheetDescription>Main site navigation</SheetDescription>
-            </SheetHeader>
             <nav className="flex flex-col gap-4 pt-6">
-              <Link href="/" className="flex items-center space-x-2">
-                <SlidersHorizontal className="h-6 w-6 text-primary" />
-                <span className="font-bold font-headline">FilterForge</span>
+              <Link href="/" className="mb-4 flex items-center space-x-2">
+                <SlidersHorizontal className="h-8 w-8 text-primary" />
+                <span className="font-bold text-xl font-headline">FilterForge</span>
               </Link>
               {navLinks.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                  className="text-lg font-medium transition-colors hover:text-primary text-foreground"
                 >
                   {label}
                 </Link>
