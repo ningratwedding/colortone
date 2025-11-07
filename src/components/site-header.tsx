@@ -26,7 +26,6 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 const navLinks = [
   { href: "/", label: "Preset" },
   { href: "#", label: "LUT" },
-  { href: "/admin/dashboard", label: "Dasbor" },
 ];
 
 export function SiteHeader() {
@@ -95,7 +94,7 @@ export function SiteHeader() {
               <Input
                 type="search"
                 placeholder="Cari preset..."
-                className="w-full bg-card md:w-64 pl-10 rounded-md"
+                className="w-full bg-card md:w-64 pl-10 rounded-full"
               />
             </div>
           </div>
@@ -119,13 +118,13 @@ export function SiteHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                      <CircleUserRound className="mr-2 h-4 w-4" />
-                      <span>Profil</span>
+                    <Link href="/admin/dashboard">
+                      <SlidersHorizontal className="mr-2 h-4 w-4" />
+                      <span>Dasbor</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="#">
+                    <Link href="/admin/dashboard/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
                     </Link>

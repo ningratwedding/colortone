@@ -134,9 +134,8 @@ export default function DashboardProductsPage() {
       <div className="grid gap-4 md:hidden">
         {sellerProducts.map((product) => (
           <Card key={product.id}>
-            <CardHeader className="flex flex-row items-center justify-between gap-4 p-4">
-              <div className="flex items-center gap-4">
-                <Image
+             <CardHeader className="flex flex-row items-start gap-4 p-4">
+               <Image
                   alt={product.name}
                   className="aspect-square rounded-md object-cover"
                   height="64"
@@ -144,16 +143,15 @@ export default function DashboardProductsPage() {
                   width="64"
                   data-ai-hint={product.imageAfter.imageHint}
                 />
-                <div className="grid gap-1">
-                  <CardTitle className="text-base">{product.name}</CardTitle>
-                  <CardDescription className="text-sm">
+              <div className="flex-grow">
+                 <CardTitle className="text-base leading-tight mb-1">{product.name}</CardTitle>
+                 <div className="text-sm text-muted-foreground">
                     {formattedPrices[product.id]}
-                  </CardDescription>
-                </div>
+                  </div>
               </div>
-              <DropdownMenu>
+               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button aria-haspopup="true" size="icon" variant="ghost">
+                  <Button aria-haspopup="true" size="icon" variant="ghost" className="-mt-1 -mr-1">
                     <MoreHorizontal className="h-4 w-4" />
                     <span className="sr-only">Alihkan menu</span>
                   </Button>
@@ -166,13 +164,13 @@ export default function DashboardProductsPage() {
               </DropdownMenu>
             </CardHeader>
             <CardContent className="p-4 pt-0 grid gap-2">
+               <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Penjualan</span>
+                <span>215</span>
+              </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Status</span>
                 <Badge variant="outline">Aktif</Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Penjualan</span>
-                <span>215</span>
               </div>
             </CardContent>
           </Card>

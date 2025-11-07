@@ -56,7 +56,7 @@ export function AdminHeader() {
             <Input
               type="search"
               placeholder="Cari produk..."
-              className="w-full bg-card md:w-64 pl-10 rounded-md"
+              className="w-full bg-card md:w-64 pl-10 rounded-full"
             />
           </div>
         </div>

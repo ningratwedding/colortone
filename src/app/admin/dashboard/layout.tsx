@@ -54,7 +54,7 @@ export default function DashboardLayout({
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === href}
+                    isActive={pathname.startsWith(href) && (href !== '/admin/dashboard' || pathname === href)}
                     className="justify-start"
                   >
                     <Link href={href}>

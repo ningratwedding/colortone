@@ -1,4 +1,6 @@
+'use client';
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,18 +15,33 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
-import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { Instagram, Facebook, PlusCircle, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12.528 8.001v5.25c-1.423.115-2.585.83-3.415 1.942C8.253 16.34 7.6 17.34 6.75 17.34c-1.84 0-2.5-1.72-2.5-1.72" />
+            <path d="M12.528 8.001c.883-2.48 3.02-3.514 5.31-2.07C20.137 7.37 20.08 11.2 17 11.2v5.123c-1.872 0-3.352-1.33-4.472-2.37" />
+            <path d="M12.528 8.001q.44-1.47.79-2.515" />
+            <path d="M17.5 4.5c.31.02.62.06.94.13" />
+        </svg>
+    )
+}
+
+const socialIcons = {
+    instagram: <Instagram className="h-5 w-5" />,
+    facebook: <Facebook className="h-5 w-5" />,
+    tiktok: <TikTokIcon className="h-5 w-5" />
+};
 
 export default function SettingsPage() {
   const user = users[0];
+  const [socials, setSocials] = useState(user.socials || {});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
     <div className="space-y-8">
@@ -35,10 +52,17 @@ export default function SettingsPage() {
           {/* Store Profile */}
           <Card>
             <CardHeader>
-              <CardTitle>Profil Toko</CardTitle>
-              <CardDescription>
-                Informasi ini akan ditampilkan di halaman kreator publik Anda.
-              </CardDescription>
+               <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Profil Publik</CardTitle>
+                        <CardDescription>
+                            Informasi ini akan ditampilkan secara publik.
+                        </CardDescription>
+                    </div>
+                    <Link href={`/creator/${user.id}`} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+                        Lihat Profil Saya
+                    </Link>
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4">
@@ -55,52 +79,80 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="store-name">Nama Toko</Label>
+                <Label htmlFor="store-name">Nama Kreator</Label>
                 <Input id="store-name" defaultValue={user.name} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="bio">Bio Toko</Label>
+                <Label htmlFor="bio">Bio</Label>
                 <Textarea
                   id="bio"
                   defaultValue={user.bio}
-                  placeholder="Ceritakan sedikit tentang toko Anda dan jenis produk yang Anda buat."
+                  placeholder="Ceritakan sedikit tentang diri Anda"
                   className="min-h-[120px]"
                 />
               </div>
+
+               <div className="grid gap-4">
+                  <Label>Tautan Sosial</Label>
+                  <div className="space-y-3">
+                      {Object.entries(socials).map(([platform, username]) => (
+                          <div key={platform} className="flex items-center gap-3">
+                              <div className="relative flex-grow">
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    {socialIcons[platform as keyof typeof socialIcons]}
+                                  </span>
+                                  <Input defaultValue={username as string} className="pl-10" readOnly />
+                              </div>
+                              <Button variant="ghost" size="icon">
+                                  <Trash2 className="h-4 w-4" />
+                              </Button>
+                          </div>
+                      ))}
+                  </div>
+
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                          <Button variant="outline" className="mt-2 w-full sm:w-auto">
+                              <PlusCircle className="mr-2 h-4 w-4"/>
+                              Tambah Tautan Sosial
+                          </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                          <DialogHeader>
+                              <DialogTitle>Tambah Tautan Sosial</DialogTitle>
+                              <DialogDescription>
+                                  Pilih platform dan masukkan nama pengguna Anda.
+                              </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                              <div className="grid gap-2">
+                                  <Label htmlFor="platform">Platform</Label>
+                                  <Select>
+                                      <SelectTrigger>
+                                          <SelectValue placeholder="Pilih platform sosial" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          <SelectItem value="instagram">Instagram</SelectItem>
+                                          <SelectItem value="facebook">Facebook</SelectItem>
+                                          <SelectItem value="tiktok">TikTok</SelectItem>
+                                      </SelectContent>
+                                  </Select>
+                              </div>
+                              <div className="grid gap-2">
+                                  <Label htmlFor="username">Nama Pengguna</Label>
+                                  <Input id="username" placeholder="@username" />
+                              </div>
+                          </div>
+                          <DialogFooter>
+                              <Button type="submit">Simpan</Button>
+                          </DialogFooter>
+                      </DialogContent>
+                  </Dialog>
+              </div>
+
             </CardContent>
             <CardFooter>
               <Button>Simpan Profil</Button>
-            </CardFooter>
-          </Card>
-
-          {/* Payout Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Pengaturan Pembayaran</CardTitle>
-              <CardDescription>
-                Kelola metode penarikan dana Anda.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="payout-method">Metode Penarikan</Label>
-                     <Select defaultValue="bank">
-                        <SelectTrigger id="payout-method">
-                            <SelectValue placeholder="Pilih metode" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="bank">Transfer Bank</SelectItem>
-                            <SelectItem value="paypal">PayPal</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="bank-account">Nomor Rekening</Label>
-                    <Input id="bank-account" placeholder="•••• •••• 1234" />
-                </div>
-            </CardContent>
-             <CardFooter>
-              <Button>Simpan Pengaturan Pembayaran</Button>
             </CardFooter>
           </Card>
         </div>
@@ -114,20 +166,9 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="elena@example.com" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
-                <Input id="current-password" type="password" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="new-password">Kata Sandi Baru</Label>
-                <Input id="new-password" type="password" />
+                <Input id="email" type="email" defaultValue="elena@example.com" readOnly/>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button>Perbarui Kata Sandi</Button>
-            </CardFooter>
           </Card>
 
           {/* Notifications */}
