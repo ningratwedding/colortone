@@ -20,13 +20,17 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "Jan", revenue: 4000 },
-  { name: "Feb", revenue: 3000 },
-  { name: "Mar", revenue: 5000 },
-  { name: "Apr", revenue: 4500 },
-  { name: "May", revenue: 6000 },
-  { name: "Jun", revenue: 5500 },
+  { name: "Jan", revenue: 40000000 },
+  { name: "Feb", revenue: 30000000 },
+  { name: "Mar", revenue: 50000000 },
+  { name: "Apr", revenue: 45000000 },
+  { name: "May", revenue: 60000000 },
+  { name: "Jun", revenue: 55000000 },
 ];
+
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+};
 
 export default function DashboardPage() {
   return (
@@ -42,7 +46,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">{formatCurrency(452318900)}</div>
             <p className="text-xs text-muted-foreground">
               +20.1% dari bulan lalu
             </p>
@@ -100,12 +104,13 @@ export default function DashboardPage() {
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis />
+              <YAxis tickFormatter={(value) => new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(value as number)} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   borderColor: "hsl(var(--border))",
                 }}
+                formatter={(value) => formatCurrency(value as number)}
               />
               <Legend />
               <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" />

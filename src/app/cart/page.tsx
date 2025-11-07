@@ -26,6 +26,10 @@ export default function CartPage() {
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 font-headline">Keranjang Belanja</h1>
@@ -62,7 +66,7 @@ export default function CartPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        ${item.price.toFixed(2)}
+                        {formatCurrency(item.price)}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm">Hapus</Button>
@@ -82,16 +86,16 @@ export default function CartPage() {
             <CardContent className="grid gap-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Pajak</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{formatCurrency(tax)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatCurrency(total)}</span>
               </div>
             </CardContent>
             <CardFooter>

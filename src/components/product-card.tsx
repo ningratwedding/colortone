@@ -24,6 +24,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
 
   return (
     <Card className={cn("overflow-hidden group", className)}>
@@ -82,7 +85,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="font-semibold text-lg">${product.price.toFixed(2)}</div>
+        <div className="font-semibold text-lg">{formatCurrency(product.price)}</div>
         <div className="flex items-center gap-1 text-muted-foreground">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm font-medium text-foreground">{product.rating}</span>

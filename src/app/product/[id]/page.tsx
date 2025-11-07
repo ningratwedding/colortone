@@ -33,6 +33,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
   const reviews = allReviews.slice(0, 2);
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
@@ -87,7 +91,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <div className="text-4xl font-bold text-primary">${product.price.toFixed(2)}</div>
+          <div className="text-4xl font-bold text-primary">{formatCurrency(product.price)}</div>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="lg" className="w-full sm:w-auto">

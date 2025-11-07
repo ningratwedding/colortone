@@ -31,6 +31,10 @@ import Link from "next/link";
 export default function DashboardProductsPage() {
   const sellerProducts = products.slice(0, 5);
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+
   return (
     <div>
         <div className="flex items-center justify-between mb-8">
@@ -81,7 +85,7 @@ export default function DashboardProductsPage() {
                   <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell>{formatCurrency(product.price)}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {product.reviewsCount * 5}
                   </TableCell>

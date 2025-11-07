@@ -19,6 +19,10 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 font-headline">Pembayaran</h1>
@@ -87,22 +91,22 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="font-medium">${item.price.toFixed(2)}</span>
+                  <span className="font-medium">{formatCurrency(item.price)}</span>
                 </div>
               ))}
               <Separator />
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Pajak</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{formatCurrency(tax)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatCurrency(total)}</span>
               </div>
             </CardContent>
             <CardFooter>
