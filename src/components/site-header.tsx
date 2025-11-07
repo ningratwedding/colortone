@@ -26,7 +26,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 const navLinks = [
   { href: "/", label: "Preset" },
   { href: "#", label: "LUT" },
-  { href: "/dashboard", label: "Dasbor" },
+  { href: "/admin/dashboard", label: "Dasbor" },
 ];
 
 export function SiteHeader() {
@@ -65,7 +65,7 @@ export function SiteHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-             <SheetTitle className="sr-only">Menu</SheetTitle>
+            <SheetTitle className="sr-only">Menu</SheetTitle>
             <SheetDescription className="sr-only">Main site navigation</SheetDescription>
             <nav className="flex flex-col gap-4">
               <Link href="/" className="flex items-center space-x-2">
@@ -98,7 +98,7 @@ export function SiteHeader() {
           </div>
           <nav className="flex items-center space-x-2">
             <Button variant="outline" asChild>
-              <Link href="/dashboard">Menjadi Penjual</Link>
+              <Link href="/admin/dashboard">Menjadi Penjual</Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart" aria-label="Keranjang Belanja">
