@@ -49,10 +49,14 @@ export default function UploadPage() {
                 className="min-h-[120px]"
               />
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
                  <div className="grid gap-2">
                     <Label htmlFor="price">Harga</Label>
                     <Input id="price" type="number" placeholder="150000" />
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="discount-price">Harga Diskon (Opsional)</Label>
+                    <Input id="discount-price" type="number" placeholder="100000" />
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="category">Kategori</Label>
