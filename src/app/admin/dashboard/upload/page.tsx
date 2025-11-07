@@ -49,7 +49,7 @@ export default function UploadPage() {
                 className="min-h-[120px]"
               />
             </div>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  <div className="grid gap-2">
                     <Label htmlFor="price">Harga</Label>
                     <Input id="price" type="number" placeholder="150000" />
@@ -73,7 +73,7 @@ export default function UploadPage() {
              <div className="grid gap-2">
                 <Label>Perangkat Lunak yang Kompatibel</Label>
                 <p className="text-sm text-muted-foreground">Pilih semua yang berlaku.</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {software.map(s => (
                         <Button key={s.id} variant="outline">{s.name}</Button>
                     ))}
@@ -87,12 +87,12 @@ export default function UploadPage() {
                 <CardDescription>Unggah gambar sebelum & sesudah, dan file produk Anda.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
                         <Label>Gambar "Sebelum"</Label>
                         <div className="flex items-center justify-center w-full">
                             <Label htmlFor="dropzone-file-before" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-2">
                                     <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
                                     <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span></p>
                                     <p className="text-xs text-muted-foreground">Gambar asli</p>
@@ -105,7 +105,7 @@ export default function UploadPage() {
                         <Label>Gambar "Sesudah"</Label>
                         <div className="flex items-center justify-center w-full">
                             <Label htmlFor="dropzone-file-after" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-2">
                                     <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
                                     <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span></p>
                                     <p className="text-xs text-muted-foreground">Gambar yang telah diedit</p>
@@ -119,7 +119,7 @@ export default function UploadPage() {
                     <Label>File Produk (.zip)</Label>
                      <div className="flex items-center justify-center w-full">
                         <Label htmlFor="dropzone-file-product" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6 px-2">
                                 <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span> file .zip Anda</p>
                             </div>
