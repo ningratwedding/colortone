@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { ConditionalLayout } from "@/components/conditional-layout";
 
 export const metadata: Metadata = {
   title: "FilterForge",
@@ -24,7 +23,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        <ConditionalLayout>{children}</ConditionalLayout>
+        {children}
         <Toaster />
       </body>
     </html>
