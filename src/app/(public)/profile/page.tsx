@@ -32,9 +32,9 @@ export default function ProfilePage() {
                           Informasi ini akan ditampilkan secara publik.
                       </CardDescription>
                     </div>
-                    <Button asChild variant="outline">
-                      <Link href={`/creator/${user.id}`}>Lihat Profil Saya</Link>
-                    </Button>
+                    <Link href={`/creator/${user.id}`} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+                      Lihat Profil Saya
+                    </Link>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
