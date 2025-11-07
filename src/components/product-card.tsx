@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
@@ -22,7 +21,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const [isFavorited, setIsFavorited] = useState(false);
   const [formattedPrice, setFormattedPrice] = useState<string>('');
 
   useEffect(() => {
@@ -42,22 +40,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
             afterImage={product.imageAfter}
             className="aspect-[3/2]"
         />
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute top-2 right-2 h-8 w-8 rounded-full z-10"
-          onClick={() => setIsFavorited(!isFavorited)}
-          aria-label={isFavorited ? "Hapus dari favorit" : "Tambah ke favorit"}
-        >
-          <Heart
-            className={cn(
-              "h-4 w-4 transition-all",
-              isFavorited
-                ? "text-red-500 fill-red-500"
-                : "text-muted-foreground"
-            )}
-          />
-        </Button>
       </CardHeader>
       <CardContent className="p-4 pb-2">
         <Link href={`/product/${product.id}`} className="space-y-1">

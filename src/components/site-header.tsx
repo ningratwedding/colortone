@@ -125,12 +125,6 @@ export function SiteHeader() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/favorites">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      <span>Favorit</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link href="#">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>

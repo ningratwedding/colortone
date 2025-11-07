@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/lib/data";
-import { Heart, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 
 export function ProductClientContent({
   reviews,
@@ -31,9 +31,6 @@ export function ProductClientContent({
       <div className="flex flex-col sm:flex-row gap-3">
         <Button size="lg" className="w-full sm:w-auto">
           <ShoppingCart className="mr-2 h-5 w-5" /> Tambah ke Keranjang
-        </Button>
-        <Button size="lg" variant="outline" className="w-full sm:w-auto">
-          <Heart className="mr-2 h-5 w-5" /> Favorit
         </Button>
       </div>
     </>
