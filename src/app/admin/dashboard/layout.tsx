@@ -8,6 +8,7 @@ import {
   Home,
   Package,
   Settings,
+  ShoppingCart,
   Upload,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin-header";
@@ -26,6 +27,7 @@ import {
 const menuItems = [
   { href: "/admin/dashboard", label: "Ringkasan", icon: Home },
   { href: "/admin/dashboard/products", label: "Produk", icon: Package },
+  { href: "/admin/dashboard/orders", label: "Pesanan", icon: ShoppingCart },
   { href: "/admin/dashboard/upload", label: "Unggah", icon: Upload },
   { href: "/admin/dashboard/analytics", label: "Analitik", icon: BarChart },
   { href: "/admin/dashboard/settings", label: "Pengaturan", icon: Settings },
