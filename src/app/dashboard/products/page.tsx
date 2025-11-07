@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 
@@ -27,8 +29,14 @@ import {
 } from "@/components/ui/table";
 import { products } from "@/lib/data";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function DashboardProductsPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const sellerProducts = products.slice(0, 5);
 
   const formatCurrency = (amount: number) => {
@@ -85,7 +93,7 @@ export default function DashboardProductsPage() {
                   <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
-                  <TableCell>{formatCurrency(product.price)}</TableCell>
+                  <TableCell>{isClient && formatCurrency(product.price)}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {product.reviewsCount * 5}
                   </TableCell>

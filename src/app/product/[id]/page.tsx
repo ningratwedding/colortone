@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { products, reviews as allReviews } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -23,8 +25,14 @@ import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const product = products.find((p) => p.id === params.id);
 
   if (!product) {
@@ -91,7 +99,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <div className="text-4xl font-bold text-primary">{formatCurrency(product.price)}</div>
+          <div className="text-4xl font-bold text-primary">{isClient && formatCurrency(product.price)}</div>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="lg" className="w-full sm:w-auto">

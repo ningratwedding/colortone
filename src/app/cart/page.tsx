@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -19,8 +21,14 @@ import {
 import { products } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
 
 export default function CartPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const cartItems = products.slice(0, 2);
   const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
   const tax = subtotal * 0.08;
@@ -66,7 +74,7 @@ export default function CartPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {formatCurrency(item.price)}
+                        {isClient && formatCurrency(item.price)}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm">Hapus</Button>
@@ -86,16 +94,16 @@ export default function CartPage() {
             <CardContent className="grid gap-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
+                <span>{isClient && formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Pajak</span>
-                <span>{formatCurrency(tax)}</span>
+                <span>{isClient && formatCurrency(tax)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{formatCurrency(total)}</span>
+                <span>{isClient && formatCurrency(total)}</span>
               </div>
             </CardContent>
             <CardFooter>

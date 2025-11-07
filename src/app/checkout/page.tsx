@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,8 +14,14 @@ import { Label } from "@/components/ui/label";
 import { products } from "@/lib/data";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const cartItems = products.slice(0, 2);
   const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
   const tax = subtotal * 0.08;
@@ -91,22 +99,22 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="font-medium">{formatCurrency(item.price)}</span>
+                  <span className="font-medium">{isClient && formatCurrency(item.price)}</span>
                 </div>
               ))}
               <Separator />
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
+                <span>{isClient && formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Pajak</span>
-                <span>{formatCurrency(tax)}</span>
+                <span>{isClient && formatCurrency(tax)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{formatCurrency(total)}</span>
+                <span>{isClient && formatCurrency(total)}</span>
               </div>
             </CardContent>
             <CardFooter>

@@ -18,6 +18,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useEffect, useState } from "react";
 
 const data = [
   { name: "Jan", revenue: 40000000 },
@@ -33,6 +34,11 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function DashboardPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold font-headline">Ringkasan</h1>
@@ -46,7 +52,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(452318900)}</div>
+            <div className="text-2xl font-bold">{isClient && formatCurrency(452318900)}</div>
             <p className="text-xs text-muted-foreground">
               +20.1% dari bulan lalu
             </p>
