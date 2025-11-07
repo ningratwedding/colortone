@@ -63,9 +63,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <CardFooter className="p-4 pt-2 mt-auto">
         <div className="flex w-full items-center justify-between">
           <div className="font-semibold text-lg text-primary truncate">{formattedPrice}</div>
-          <Button>
+          <Button asChild>
+            <Link href={`/checkout?productId=${product.id}`}>
               <CreditCard className="mr-2 h-4 w-4"/>
               Beli
+            </Link>
           </Button>
         </div>
       </CardFooter>
