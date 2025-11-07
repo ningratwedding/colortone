@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,34 +31,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { products } from "@/lib/data";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function DashboardProductsPage() {
   const [sellerProducts] = useState(products.slice(0, 5));
-  const [formattedPrices, setFormattedPrices] = useState<{[key: string]: string}>({});
+  const [formattedPrices, setFormattedPrices] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
 
-    const prices: {[key: string]: string} = {};
+    const prices: { [key: string]: string } = {};
     sellerProducts.forEach(product => {
-        prices[product.id] = formatCurrency(product.price);
+      prices[product.id] = formatCurrency(product.price);
     });
     setFormattedPrices(prices);
   }, [sellerProducts]);
 
   return (
     <div>
-        <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold font-headline">Produk Saya</h1>
-            <Button asChild>
-                <Link href="/admin/dashboard/upload">Tambah Produk</Link>
-            </Button>
-        </div>
-      <Card>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold font-headline">Produk Saya</h1>
+        <Button asChild>
+          <Link href="/admin/dashboard/upload">Tambah Produk</Link>
+        </Button>
+      </div>
+
+      {/* Desktop Table View */}
+      <Card className="hidden md:block">
         <CardHeader>
           <CardTitle>Produk</CardTitle>
           <CardDescription>
@@ -126,6 +129,55 @@ export default function DashboardProductsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Mobile Card View */}
+      <div className="grid gap-4 md:hidden">
+        {sellerProducts.map((product) => (
+          <Card key={product.id}>
+            <CardHeader className="flex flex-row items-center justify-between gap-4 p-4">
+              <div className="flex items-center gap-4">
+                <Image
+                  alt={product.name}
+                  className="aspect-square rounded-md object-cover"
+                  height="64"
+                  src={product.imageAfter.imageUrl}
+                  width="64"
+                  data-ai-hint={product.imageAfter.imageHint}
+                />
+                <div className="grid gap-1">
+                  <CardTitle className="text-base">{product.name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {formattedPrices[product.id]}
+                  </CardDescription>
+                </div>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button aria-haspopup="true" size="icon" variant="ghost">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Alihkan menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                  <DropdownMenuItem>Ubah</DropdownMenuItem>
+                  <DropdownMenuItem>Hapus</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 grid gap-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Status</span>
+                <Badge variant="outline">Aktif</Badge>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Penjualan</span>
+                <span>{product.reviewsCount * 5}</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
