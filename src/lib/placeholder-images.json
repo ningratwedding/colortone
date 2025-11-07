@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "og-image",
+      "description": "Open Graph Image for the site",
+      "imageUrl": "https://images.unsplash.com/photo-1756154787365-c1a0b4dc4ed5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYXJrZXRwbGFjZSUyMGFic3RyYWN0fGVufDB8fHx8MTc2MjUxMzIwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "marketplace abstract"
+    },
+    {
       "id": "avatar-1",
       "description": "User avatar 1",
       "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
