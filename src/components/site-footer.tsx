@@ -7,13 +7,13 @@ export function SiteFooter() {
   return (
     <footer className="bg-card text-card-foreground border-t">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-2 pr-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <SlidersHorizontal className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold font-headline">FilterForge</span>
             </Link>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 max-w-sm">
               Sebuah panggung bagi para pencerita visual untuk berbagi karya terbaik mereka. Temukan preset dan LUT yang mengubah momen menjadi kenangan.
             </p>
             <div className="flex space-x-4">
@@ -29,59 +29,7 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-4">Marketplace</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Jelajahi
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Rilisan Baru
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Kreator Teratas
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Kategori
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Sumber Daya</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Dukungan
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Menjadi Penjual
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Afiliasi
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-4 lg:col-span-1">
+          <div className="md:col-span-1 lg:col-span-1">
             <h3 className="font-semibold mb-4">Tetap Terkini</h3>
             <p className="text-muted-foreground mb-4">
               Bergabunglah dengan buletin kami untuk produk baru dan penawaran khusus.
