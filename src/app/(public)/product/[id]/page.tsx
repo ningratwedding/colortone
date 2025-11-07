@@ -37,7 +37,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           <ImageCompareSlider
             beforeImage={product.imageBefore}
             afterImage={product.imageAfter}
-            className="aspect-[3/2] rounded-lg shadow-md overflow-hidden"
+            className="aspect-[3/2] rounded-lg overflow-hidden"
           />
         </div>
 

@@ -92,7 +92,7 @@ export function ImageCompareSlider({
         className="absolute inset-y-0 w-px bg-white/50 backdrop-blur-sm cursor-ew-resize flex items-center justify-center"
         style={{ left: `${sliderPosition}%`, transform: "translateX(-50%)" }}
       >
-        <div className="w-8 h-8 rounded-full bg-white/80 shadow-md flex items-center justify-center text-gray-600">
+        <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-gray-600">
           <ChevronLeft className="w-4 h-4" />
           <ChevronRight className="w-4 h-4" />
         </div>
