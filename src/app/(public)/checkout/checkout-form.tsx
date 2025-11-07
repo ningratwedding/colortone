@@ -73,9 +73,15 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               <CardTitle>Informasi Kontak</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Alamat Email</Label>
-                <Input id="email" type="email" placeholder="anda@contoh.com" />
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Alamat Email</Label>
+                  <Input id="email" type="email" placeholder="anda@contoh.com" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
+                  <Input id="whatsapp" type="tel" placeholder="+62 812-3456-7890" />
+                </div>
               </div>
             </CardContent>
           </Card>
