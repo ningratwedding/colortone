@@ -95,7 +95,7 @@ export function SiteHeader() {
               <Input
                 type="search"
                 placeholder="Cari preset..."
-                className="w-full bg-card md:w-64 pl-10"
+                className="w-full bg-card md:w-64 pl-10 rounded-md"
               />
             </div>
           </div>

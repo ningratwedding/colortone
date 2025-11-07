@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useSidebar } from './ui/sidebar';
 
 const navLinks = [
   { href: '/admin/dashboard', label: 'Ringkasan' },
@@ -35,55 +36,18 @@ const navLinks = [
 ];
 
 export function AdminHeader() {
+  const { toggleSidebar } = useSidebar();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <div className="md:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Alihkan Menu">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <SheetHeader className='mb-4'>
-              <SheetTitle>
-                <Link
-                  href="/admin/dashboard"
-                  className="flex items-center space-x-2"
-                >
-                  <SlidersHorizontal className="h-8 w-8 text-primary" />
-                  <span className="font-bold text-xl font-headline">
-                    Dasbor Kreator
-                  </span>
-                </Link>
-              </SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-4">
-              {navLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="text-lg font-medium transition-colors hover:text-primary text-foreground"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      <div className="hidden md:flex items-center">
-        <Link
-          href="/admin/dashboard"
-          className="mr-6 flex items-center space-x-2"
+       <Button
+          variant="outline"
+          size="icon"
+          className="shrink-0 md:hidden"
+          onClick={toggleSidebar}
         >
-          <SlidersHorizontal className="h-6 w-6 text-primary" />
-          <span className="hidden font-bold sm:inline-block font-headline">
-            Dasbor Kreator
-          </span>
-        </Link>
-      </div>
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Alihkan Menu</span>
+        </Button>
 
       <div className="flex flex-1 items-center justify-end space-x-2">
         <div className="w-full flex-1 md:w-auto md:flex-none">
@@ -92,7 +56,7 @@ export function AdminHeader() {
             <Input
               type="search"
               placeholder="Cari produk..."
-              className="w-full bg-card md:w-64 pl-10"
+              className="w-full bg-card md:w-64 pl-10 rounded-md"
             />
           </div>
         </div>
