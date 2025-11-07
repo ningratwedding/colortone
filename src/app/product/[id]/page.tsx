@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { products, reviews as allReviews } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -26,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
+import { ProductClientContent } from "./product-client-content";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const product = products.find((p) => p.id === params.id);
@@ -43,7 +42,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Product Images */}
         <div>
           <ImageCompareSlider
             beforeImage={product.imageBefore}
@@ -52,7 +50,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           />
         </div>
 
-        {/* Product Info */}
         <div className="flex flex-col gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline">
@@ -107,53 +104,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Reviews Section */}
       <div className="mt-12 pt-8 border-t">
         <h2 className="text-2xl font-bold mb-6 font-headline">Ulasan</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-                {reviews.map((review) => (
-                <Card key={review.id}>
-                    <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage src={review.user.avatar.imageUrl} data-ai-hint={review.user.avatar.imageHint} />
-                            <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <CardTitle className="text-base">{review.user.name}</CardTitle>
-                            <CardDescription>{review.date}</CardDescription>
-                        </div>
-                        </div>
-                        <StarRating rating={review.rating} />
-                    </div>
-                    </CardHeader>
-                    <CardContent>
-                    <p className="text-muted-foreground">{review.comment}</p>
-                    </CardContent>
-                </Card>
-                ))}
-            </div>
-
-            <div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Tinggalkan Ulasan</CardTitle>
-                        <CardDescription>Bagikan pemikiran Anda dengan komunitas.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <span className="font-medium text-sm mb-2 block">Peringkat Anda</span>
-                            <StarRating rating={0} />
-                        </div>
-                         <Textarea placeholder="Tulis ulasan Anda di sini..."/>
-                         <Button>Kirim Ulasan</Button>
-                    </CardContent>
-                </Card>
-            </div>
-
-        </div>
+        <ProductClientContent reviews={reviews} />
       </div>
     </div>
   );
