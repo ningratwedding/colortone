@@ -29,26 +29,24 @@ import { useEffect, useState } from "react";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const [formattedPrice, setFormattedPrice] = useState<string>('');
 
   const product = products.find((p) => p.id === params.id);
+
+  useEffect(() => {
+    if (product) {
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+      };
+      setFormattedPrice(formatCurrency(product.price));
+    }
+  }, [product]);
 
   if (!product) {
     notFound();
   }
 
   const reviews = allReviews.slice(0, 2);
-
-  const formatCurrency = (amount: number) => {
-    // This check ensures the code runs only on the client
-    if (typeof window === 'undefined') {
-        return '';
-    }
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -85,7 +83,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <div className="text-4xl font-bold text-primary">{formatCurrency(product.price)}</div>
+          <div className="text-4xl font-bold text-primary">{formattedPrice}</div>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="lg" className="w-full sm:w-auto">

@@ -29,15 +29,23 @@ const data = [
   { name: "Jun", revenue: 55000000 },
 ];
 
-const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-};
-
 export default function DashboardPage() {
-  const [isClient, setIsClient] = useState(false);
+  const [formattedRevenue, setFormattedRevenue] = useState<string>('');
+  
   useEffect(() => {
-    setIsClient(true);
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
+    setFormattedRevenue(formatCurrency(452318900));
   }, []);
+
+  const formatCompact = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(amount);
+  }
+
+  const formatTooltip = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  }
 
   return (
     <div className="space-y-8">
@@ -52,7 +60,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isClient && formatCurrency(452318900)}</div>
+            <div className="text-2xl font-bold">{formattedRevenue}</div>
             <p className="text-xs text-muted-foreground">
               +20.1% dari bulan lalu
             </p>
@@ -110,13 +118,13 @@ export default function DashboardPage() {
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(value as number)} />
+              <YAxis tickFormatter={(value) => formatCompact(value as number)} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   borderColor: "hsl(var(--border))",
                 }}
-                formatter={(value) => formatCurrency(value as number)}
+                formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
               <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" />

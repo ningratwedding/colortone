@@ -24,19 +24,34 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const [isClient, setIsClient] = useState(false);
+  const [cartItems, setCartItems] = useState(products.slice(0, 2));
+  
+  const [formattedSubtotal, setFormattedSubtotal] = useState('');
+  const [formattedTax, setFormattedTax] = useState('');
+  const [formattedTotal, setFormattedTotal] = useState('');
+  const [formattedPrices, setFormattedPrices] = useState<{[key: string]: string}>({});
+
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
 
-  const cartItems = products.slice(0, 2);
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+    const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  };
+    setFormattedSubtotal(formatCurrency(subtotal));
+    setFormattedTax(formatCurrency(tax));
+    setFormattedTotal(formatCurrency(total));
+
+    const prices: {[key: string]: string} = {};
+    cartItems.forEach(item => {
+      prices[item.id] = formatCurrency(item.price);
+    });
+    setFormattedPrices(prices);
+
+  }, [cartItems]);
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -74,7 +89,7 @@ export default function CartPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {isClient && formatCurrency(item.price)}
+                        {formattedPrices[item.id]}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm">Hapus</Button>
@@ -94,16 +109,16 @@ export default function CartPage() {
             <CardContent className="grid gap-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{isClient && formatCurrency(subtotal)}</span>
+                <span>{formattedSubtotal}</span>
               </div>
               <div className="flex justify-between">
                 <span>Pajak</span>
-                <span>{isClient && formatCurrency(tax)}</span>
+                <span>{formattedTax}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{isClient && formatCurrency(total)}</span>
+                <span>{formattedTotal}</span>
               </div>
             </CardContent>
             <CardFooter>

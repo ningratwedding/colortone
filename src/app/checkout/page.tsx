@@ -17,19 +17,34 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
-  const [isClient, setIsClient] = useState(false);
+  const [cartItems] = useState(products.slice(0, 2));
+
+  const [formattedSubtotal, setFormattedSubtotal] = useState('');
+  const [formattedTax, setFormattedTax] = useState('');
+  const [formattedTotal, setFormattedTotal] = useState('');
+  const [formattedPrices, setFormattedPrices] = useState<{[key: string]: string}>({});
+
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
 
-  const cartItems = products.slice(0, 2);
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+    const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  };
+    setFormattedSubtotal(formatCurrency(subtotal));
+    setFormattedTax(formatCurrency(tax));
+    setFormattedTotal(formatCurrency(total));
+
+    const prices: {[key: string]: string} = {};
+    cartItems.forEach(item => {
+      prices[item.id] = formatCurrency(item.price);
+    });
+    setFormattedPrices(prices);
+
+  }, [cartItems]);
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -99,22 +114,22 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="font-medium">{isClient && formatCurrency(item.price)}</span>
+                  <span className="font-medium">{formattedPrices[item.id]}</span>
                 </div>
               ))}
               <Separator />
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>{isClient && formatCurrency(subtotal)}</span>
+                <span>{formattedSubtotal}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Pajak</span>
-                <span>{isClient && formatCurrency(tax)}</span>
+                <span>{formattedTax}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{isClient && formatCurrency(total)}</span>
+                <span>{formattedTotal}</span>
               </div>
             </CardContent>
             <CardFooter>

@@ -32,16 +32,20 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function DashboardProductsPage() {
-  const [isClient, setIsClient] = useState(false);
+  const [sellerProducts] = useState(products.slice(0, 5));
+  const [formattedPrices, setFormattedPrices] = useState<{[key: string]: string}>({});
+
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
 
-  const sellerProducts = products.slice(0, 5);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  };
+    const prices: {[key: string]: string} = {};
+    sellerProducts.forEach(product => {
+        prices[product.id] = formatCurrency(product.price);
+    });
+    setFormattedPrices(prices);
+  }, [sellerProducts]);
 
   return (
     <div>
@@ -93,7 +97,7 @@ export default function DashboardProductsPage() {
                   <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
-                  <TableCell>{isClient && formatCurrency(product.price)}</TableCell>
+                  <TableCell>{formattedPrices[product.id]}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {product.reviewsCount * 5}
                   </TableCell>
