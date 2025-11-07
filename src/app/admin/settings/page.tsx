@@ -45,7 +45,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold font-headline">Pengaturan</h1>
+      
 
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-8">

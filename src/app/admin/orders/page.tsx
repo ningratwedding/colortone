@@ -97,7 +97,7 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold font-headline">Pesanan</h1>
+      
       <Card>
         <CardHeader>
           <CardTitle>Pesanan Terbaru</CardTitle>

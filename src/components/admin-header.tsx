@@ -35,7 +35,7 @@ const navLinks = [
   { href: '/admin/settings', label: 'Pengaturan' },
 ];
 
-export function AdminHeader() {
+export function AdminHeader({ title }: { title: string }) {
   const { toggleSidebar } = useSidebar();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -48,8 +48,12 @@ export function AdminHeader() {
           <Menu className="h-5 w-5" />
           <span className="sr-only">Alihkan Menu</span>
         </Button>
+      
+      <div className="flex-1">
+        <h1 className="text-xl font-semibold">{title}</h1>
+      </div>
 
-      <div className="flex flex-1 items-center justify-end space-x-2">
+      <div className="flex items-center justify-end space-x-2">
         <div className="w-full flex-1 md:w-auto md:flex-none">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

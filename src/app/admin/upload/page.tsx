@@ -22,8 +22,8 @@ import { Upload } from "lucide-react";
 export default function UploadPage() {
   return (
     <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold font-headline">Unggah Produk Baru</h1>
+        <div className="flex items-center justify-end">
+            
         </div>
       <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
         <Card>
