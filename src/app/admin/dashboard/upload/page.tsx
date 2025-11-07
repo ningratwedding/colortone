@@ -83,17 +83,33 @@ export default function UploadPage() {
                 <CardDescription>Unggah gambar sebelum & sesudah, dan file produk Anda.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="grid gap-2">
-                    <Label>Gambar Pratinjau</Label>
-                     <div className="flex items-center justify-center w-full">
-                        <Label htmlFor="dropzone-file-images" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
-                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span> gambar 'sebelum' dan 'sesudah'</p>
-                            </div>
-                            <Input id="dropzone-file-images" type="file" className="hidden" multiple/>
-                        </Label>
-                    </div> 
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label>Gambar "Sebelum"</Label>
+                        <div className="flex items-center justify-center w-full">
+                            <Label htmlFor="dropzone-file-before" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                    <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
+                                    <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span></p>
+                                    <p className="text-xs text-muted-foreground">Gambar asli</p>
+                                </div>
+                                <Input id="dropzone-file-before" type="file" className="hidden"/>
+                            </Label>
+                        </div> 
+                    </div>
+                    <div className="grid gap-2">
+                        <Label>Gambar "Sesudah"</Label>
+                        <div className="flex items-center justify-center w-full">
+                            <Label htmlFor="dropzone-file-after" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                    <Upload className="w-8 h-8 mb-2 text-muted-foreground"/>
+                                    <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Klik untuk mengunggah</span></p>
+                                    <p className="text-xs text-muted-foreground">Gambar yang telah diedit</p>
+                                </div>
+                                <Input id="dropzone-file-after" type="file" className="hidden"/>
+                            </Label>
+                        </div> 
+                    </div>
                 </div>
                 <div className="grid gap-2">
                     <Label>File Produk (.zip)</Label>
