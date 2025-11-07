@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 export function ProductClientContent({
@@ -31,7 +31,7 @@ export function ProductClientContent({
       <div className="flex flex-col sm:flex-row gap-3">
         <Button size="lg" className="w-full sm:w-auto" asChild>
             <Link href={`/checkout?productId=${productId}`}>
-                <CreditCard className="mr-2 h-5 w-5" /> Beli Sekarang
+                <ShoppingCart className="mr-2 h-5 w-5" /> Beli Sekarang
             </Link>
         </Button>
       </div>

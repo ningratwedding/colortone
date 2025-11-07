@@ -16,7 +16,7 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Banknote, Terminal, Wallet } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CheckoutForm({ product }: { product?: Product }) {
@@ -87,30 +87,25 @@ export default function CheckoutForm({ product }: { product?: Product }) {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Detail Pembayaran</CardTitle>
+              <CardTitle>Metode Pembayaran</CardTitle>
               <CardDescription>
-                Semua transaksi aman dan terenkripsi.
+                Pilih metode pembayaran pilihan Anda.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="card-number">Nomor Kartu</Label>
-                <Input id="card-number" placeholder="**** **** **** ****" />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="grid gap-2 col-span-2">
-                  <Label htmlFor="expiry-date">Tanggal Kedaluwarsa</Label>
-                  <Input id="expiry-date" placeholder="BB / TT" />
+                <div className="grid gap-4">
+                    <Button variant="outline" size="lg" className="justify-start">
+                        <Banknote className="mr-4" />
+                        Transfer Bank
+                    </Button>
+                    <Button variant="outline" size="lg" className="justify-start">
+                        <Wallet className="mr-4" />
+                        E-Wallet (QRIS)
+                    </Button>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="cvc">CVC</Label>
-                  <Input id="cvc" placeholder="123" />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="name-on-card">Nama pada Kartu</Label>
-                <Input id="name-on-card" placeholder="John Doe" />
-              </div>
+                <p className="text-xs text-muted-foreground pt-4">
+                    Setelah mengklik "Buat Pesanan", Anda akan menerima instruksi pembayaran melalui email dan WhatsApp.
+                </p>
             </CardContent>
           </Card>
         </div>
@@ -160,7 +155,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
             </CardContent>
             <CardFooter>
               <Button className="w-full" size="lg">
-                Selesaikan Pembelian
+                Buat Pesanan
               </Button>
             </CardFooter>
           </Card>
