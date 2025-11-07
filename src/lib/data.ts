@@ -8,6 +8,9 @@ export type User = {
   name: string;
   avatar: ImagePlaceholder;
   bio: string;
+  socials?: {
+    instagram?: string;
+  };
 };
 
 export type Product = {
@@ -24,9 +27,9 @@ export type Product = {
 };
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Elena Petrova', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital.' },
-  { id: 'user-2', name: 'Marcus Chen', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film.' },
-  { id: 'user-3', name: 'Aisha Khan', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna.' },
+  { id: 'user-1', name: 'Elena Petrova', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital.', socials: { instagram: 'elenapetrova' } },
+  { id: 'user-2', name: 'Marcus Chen', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film.', socials: { instagram: 'marcuschen' } },
+  { id: 'user-3', name: 'Aisha Khan', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna.', socials: { instagram: 'aishakhan' } },
   { id: 'user-4', name: 'John Doe', avatar: images['avatar-4'], bio: 'Fotografer yang bercita-cita tinggi.' },
 ];
 

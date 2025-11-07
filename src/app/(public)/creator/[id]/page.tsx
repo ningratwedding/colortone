@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { users, products } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProductCard } from '@/components/product-card';
+import { Instagram } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CreatorProfilePage({ params }: { params: { id: string } }) {
   const creator = users.find((user) => user.id === params.id);
@@ -23,6 +25,19 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
         <p className="mt-2 text-lg text-muted-foreground max-w-xl">
           {creator.bio}
         </p>
+        {creator.socials?.instagram && (
+          <div className="mt-4">
+            <Link 
+              href={`https://instagram.com/${creator.socials.instagram}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Instagram className="h-5 w-5" />
+              <span>{creator.socials.instagram}</span>
+            </Link>
+          </div>
+        )}
       </header>
 
       <main>

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
 import Link from "next/link";
+import { Instagram } from "lucide-react";
 
 export default function ProfilePage() {
     const user = users[0];
@@ -59,6 +59,13 @@ export default function ProfilePage() {
                             placeholder="Ceritakan sedikit tentang diri Anda"
                             className="min-h-[100px]"
                         />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="instagram">Instagram</Label>
+                         <div className="relative">
+                            <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input id="instagram" defaultValue={user.socials?.instagram} placeholder="Nama pengguna Instagram" className="pl-10" />
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter>
