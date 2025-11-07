@@ -13,6 +13,8 @@ import {
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ImageCompareSlider } from "./image-compare-slider";
+import { Button } from "./ui/button";
+import { ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -32,7 +34,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
 
   return (
-    <Card className={cn("overflow-hidden group", className)}>
+    <Card className={cn("overflow-hidden group flex flex-col", className)}>
       <CardHeader className="p-0 relative">
         <ImageCompareSlider
             beforeImage={product.imageBefore}
@@ -40,7 +42,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             className="aspect-[3/2]"
         />
       </CardHeader>
-      <CardContent className="p-4 pb-2">
+      <CardContent className="p-4 pb-2 flex-grow">
         <Link href={`/product/${product.id}`} className="space-y-1">
           <CardTitle className="text-lg leading-tight hover:text-primary transition-colors">
             {product.name}
@@ -56,8 +58,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-2 flex justify-between items-center">
+      <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
         <div className="font-semibold text-lg">{formattedPrice}</div>
+        <Button size="sm" variant="outline">
+          <ShoppingCart className="h-4 w-4" />
+          <span className="sr-only">Tambah ke Keranjang</span>
+        </Button>
       </CardFooter>
     </Card>
   );
