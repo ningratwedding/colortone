@@ -23,9 +23,9 @@ export default function LoginPage() {
               <span className="text-2xl font-bold font-headline">FilterForge</span>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Selamat Datang Kembali</CardTitle>
+          <CardTitle className="text-2xl">Lanjutkan Kisah Anda</CardTitle>
           <CardDescription>
-            Masukkan kredensial Anda untuk mengakses akun Anda.
+            Selamat datang kembali. Dunia menanti karya visual Anda berikutnya.
           </CardDescription>
         </CardHeader>
         <CardContent>

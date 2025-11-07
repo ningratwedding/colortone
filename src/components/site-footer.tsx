@@ -14,7 +14,7 @@ export function SiteFooter() {
               <span className="text-xl font-bold font-headline">FilterForge</span>
             </Link>
             <p className="text-muted-foreground mb-4">
-              Marketplace terbaik bagi para kreator untuk membeli dan menjual preset, LUT, dan aset digital berkualitas tinggi.
+              Sebuah panggung bagi para pencerita visual untuk berbagi karya terbaik mereka. Temukan preset dan LUT yang mengubah momen menjadi kenangan.
             </p>
             <div className="flex space-x-4">
               <Link href="#" aria-label="Twitter">

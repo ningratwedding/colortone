@@ -22,9 +22,9 @@ export default function SignupPage() {
               <span className="text-2xl font-bold font-headline">FilterForge</span>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Buat Akun</CardTitle>
+          <CardTitle className="text-2xl">Mulai Kisah Anda</CardTitle>
           <CardDescription>
-            Bergabunglah dengan komunitas kreator dan seniman kami.
+            Bergabunglah dengan komunitas para pencerita visual. Buat, bagikan, dan inspirasi.
           </CardDescription>
         </CardHeader>
         <CardContent>
