@@ -24,7 +24,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader as SheetHeaderPrimitive, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const menuItems = [
   { href: "/admin/dashboard", label: "Ringkasan", icon: Home },
@@ -81,16 +81,15 @@ export default function DashboardLayout({
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="sm:max-w-xs p-0">
-                <SheetHeaderPrimitive>
-                    <SheetTitle className="sr-only">Menu</SheetTitle>
-                    <SheetDescription className="sr-only">Dashboard navigation</SheetDescription>
-                </SheetHeaderPrimitive>
-                  <SidebarHeader className="p-4 border-b">
+                <SheetHeader className="p-4 border-b">
+                  <SheetTitle>
                     <Link href="/" className="flex items-center gap-2 font-semibold">
                         <UserCircle className="h-6 w-6"/>
                         <span>Dasbor Kreator</span>
                     </Link>
-                  </SidebarHeader>
+                  </SheetTitle>
+                  <SheetDescription className="sr-only">Dashboard navigation</SheetDescription>
+                </SheetHeader>
                   <nav className="grid gap-2 text-lg font-medium p-4">
                   {menuItems.map(({ href, label, icon: Icon }) => (
                     <Link
