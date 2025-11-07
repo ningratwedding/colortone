@@ -21,16 +21,6 @@ export type Product = {
   category: { id: string; name: string };
   software: { id: string; name: string }[];
   tags: string[];
-  rating: number;
-  reviewsCount: number;
-};
-
-export type Review = {
-  id: string;
-  user: User;
-  rating: number;
-  comment: string;
-  date: string;
 };
 
 export const users: User[] = [
@@ -69,8 +59,6 @@ export const products: Product[] = [
     category: categories[0],
     software: [software[0], software[1]],
     tags: ['sinematik', 'teal', 'oranye', 'perkotaan'],
-    rating: 4.8,
-    reviewsCount: 124,
   },
   {
     id: '2',
@@ -83,8 +71,6 @@ export const products: Product[] = [
     category: categories[2],
     software: [software[0], software[2]],
     tags: ['muram', 'hutan', 'alam', 'lanskap'],
-    rating: 4.9,
-    reviewsCount: 98,
   },
   {
     id: '3',
@@ -97,8 +83,6 @@ export const products: Product[] = [
     category: categories[1],
     software: [software[0]],
     tags: ['jam emas', 'hangat', 'potret', 'pantai'],
-    rating: 4.7,
-    reviewsCount: 210,
   },
   {
     id: '4',
@@ -111,8 +95,6 @@ export const products: Product[] = [
     category: categories[4],
     software: [software[0], software[1], software[2]],
     tags: ['perkotaan', 'desaturasi', 'jalanan', 'arsitektur'],
-    rating: 4.6,
-    reviewsCount: 75,
   },
   {
     id: '5',
@@ -125,8 +107,6 @@ export const products: Product[] = [
     category: categories[1],
     software: [software[0]],
     tags: ['pastel', 'dreamy', 'lembut', 'gaya hidup'],
-    rating: 4.8,
-    reviewsCount: 150,
   },
   {
     id: '6',
@@ -139,8 +119,6 @@ export const products: Product[] = [
     category: categories[3],
     software: [software[3], software[4]],
     tags: ['antik', 'film', 'lut', 'retro'],
-    rating: 4.9,
-    reviewsCount: 302,
   },
   {
     id: '7',
@@ -153,8 +131,6 @@ export const products: Product[] = [
     category: categories[4],
     software: [software[0], software[1]],
     tags: ['neon', 'malam', 'cerah', 'kota'],
-    rating: 4.7,
-    reviewsCount: 88,
   },
   {
     id: '8',
@@ -167,13 +143,5 @@ export const products: Product[] = [
     category: categories[5],
     software: [software[0], software[2]],
     tags: ['minimalis', 'putih', 'cerah', 'bersih'],
-    rating: 4.8,
-    reviewsCount: 112,
   },
-];
-
-export const reviews: Review[] = [
-    { id: 'review-1', user: users[3], rating: 5, comment: 'Benar-benar mengubah foto perjalanan saya! Tampilan sinematiknya menakjubkan.', date: '2023-08-15' },
-    { id: 'review-2', user: users[2], rating: 4, comment: 'Preset bagus untuk foto muram. Agak kuat, jadi saya biasanya menguranginya sedikit.', date: '2023-08-12' },
-    { id: 'review-3', user: users[1], rating: 5, comment: 'Sekarang menjadi andalan saya untuk semua pekerjaan potret saya. Warna kulitnya sempurna.', date: '2023-08-10' },
 ];

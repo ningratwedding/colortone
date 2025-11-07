@@ -102,7 +102,7 @@ export default function DashboardProductsPage() {
                   </TableCell>
                   <TableCell>{formattedPrices[product.id]}</TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {product.reviewsCount * 5}
+                    215
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -172,7 +172,7 @@ export default function DashboardProductsPage() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Penjualan</span>
-                <span>{product.reviewsCount * 5}</span>
+                <span>215</span>
               </div>
             </CardContent>
           </Card>

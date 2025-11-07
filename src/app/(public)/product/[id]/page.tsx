@@ -1,27 +1,20 @@
 import Image from "next/image";
-import { products, reviews as allReviews } from "@/lib/data";
+import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
 import {
-  Heart,
   ShoppingCart,
   CheckCircle,
   Tag,
   Download,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
 import { ProductClientContent } from "./product-client-content";
@@ -32,8 +25,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (!product) {
     notFound();
   }
-
-  const reviews = allReviews.slice(0, 2);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
@@ -63,16 +54,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     </Avatar>
                     <span className="font-medium group-hover:text-primary transition-colors">{product.creator.name}</span>
                 </Link>
-                <Separator orientation="vertical" className="h-6" />
-                <div className="flex items-center gap-2">
-                    <StarRating rating={product.rating} />
-                    <span className="text-muted-foreground text-sm">({product.reviewsCount} ulasan)</span>
-                </div>
             </div>
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <ProductClientContent reviews={reviews} price={product.price} />
+          <ProductClientContent price={product.price} />
 
           <Card>
             <CardContent className="pt-6 grid gap-4 text-sm">
@@ -92,64 +78,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      <div className="mt-12 pt-8 border-t">
-        <h2 className="text-2xl font-bold mb-6 font-headline">Ulasan</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-                {reviews.map((review) => (
-                <Card key={review.id}>
-                    <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage
-                            src={review.user.avatar.imageUrl}
-                            data-ai-hint={review.user.avatar.imageHint}
-                            />
-                            <AvatarFallback>
-                            {review.user.name.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <CardTitle className="text-base">
-                            {review.user.name}
-                            </CardTitle>
-                            <CardDescription>{review.date}</CardDescription>
-                        </div>
-                        </div>
-                        <StarRating rating={review.rating} />
-                    </div>
-                    </CardHeader>
-                    <CardContent>
-                    <p className="text-muted-foreground">{review.comment}</p>
-                    </CardContent>
-                </Card>
-                ))}
-            </div>
-
-            <div>
-                <Card>
-                <CardHeader>
-                    <CardTitle>Tinggalkan Ulasan</CardTitle>
-                    <CardDescription>
-                    Bagikan pemikiran Anda dengan komunitas.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                    <span className="font-medium text-sm mb-2 block">
-                        Peringkat Anda
-                    </span>
-                    <StarRating rating={0} />
-                    </div>
-                    <Textarea placeholder="Tulis ulasan Anda di sini..." />
-                    <Button>Kirim Ulasan</Button>
-                </CardContent>
-                </Card>
-            </div>
         </div>
       </div>
     </div>

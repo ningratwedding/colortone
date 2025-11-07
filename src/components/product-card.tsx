@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Star } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import {
@@ -59,11 +58,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-2 flex justify-between items-center">
         <div className="font-semibold text-lg">{formattedPrice}</div>
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-          <span className="text-sm font-medium text-foreground">{product.rating}</span>
-          <span className="text-xs">({product.reviewsCount})</span>
-        </div>
       </CardFooter>
     </Card>
   );

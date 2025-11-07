@@ -2,14 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { Review } from "@/lib/data";
 import { ShoppingCart } from "lucide-react";
 
 export function ProductClientContent({
-  reviews,
   price,
 }: {
-  reviews: Review[];
   price: number;
 }) {
   const [formattedPrice, setFormattedPrice] = useState<string>("");
