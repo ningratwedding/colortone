@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const navLinks = [
   { href: "/", label: "Preset" },
@@ -33,7 +33,42 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
+        <div className="md:hidden mr-4">
+            <Sheet>
+            <SheetTrigger asChild>
+                <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Alihkan Menu"
+                >
+                <Menu className="h-6 w-6" />
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                <SheetHeader>
+                    <SheetTitle>
+                        <Link href="/" className="flex items-center space-x-2">
+                            <SlidersHorizontal className="h-8 w-8 text-primary" />
+                            <span className="font-bold text-xl font-headline">FilterForge</span>
+                        </Link>
+                    </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-4 pt-6">
+                {navLinks.map(({ href, label }) => (
+                    <Link
+                    key={href}
+                    href={href}
+                    className="text-lg font-medium transition-colors hover:text-primary text-foreground"
+                    >
+                    {label}
+                    </Link>
+                ))}
+                </nav>
+            </SheetContent>
+            </Sheet>
+        </div>
+
+        <div className="hidden md:flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <SlidersHorizontal className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">
@@ -53,37 +88,7 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden mr-4"
-              aria-label="Alihkan Menu"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <nav className="flex flex-col gap-4 pt-6">
-              <Link href="/" className="mb-4 flex items-center space-x-2">
-                <SlidersHorizontal className="h-8 w-8 text-primary" />
-                <span className="font-bold text-xl font-headline">FilterForge</span>
-              </Link>
-              {navLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="text-lg font-medium transition-colors hover:text-primary text-foreground"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
-
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+        <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -95,7 +100,7 @@ export function SiteHeader() {
             </div>
           </div>
           <nav className="flex items-center space-x-2">
-            <Button variant="outline" asChild>
+            <Button variant="outline" className="hidden sm:inline-flex" asChild>
               <Link href="/admin/dashboard">Menjadi Penjual</Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
