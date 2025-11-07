@@ -58,11 +58,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-2 mt-auto flex-col items-start gap-4">
-        <div className="font-semibold text-lg w-full text-primary">{formattedPrice}</div>
-        <Button className="w-full">
+      <CardFooter className="p-4 pt-2 mt-auto flex flex-row items-center justify-between">
+        <div className="font-semibold text-lg text-primary">{formattedPrice}</div>
+        <Button>
             <CreditCard className="mr-2 h-4 w-4"/>
-            Beli Sekarang
+            Beli
         </Button>
       </CardFooter>
     </Card>
