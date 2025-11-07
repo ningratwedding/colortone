@@ -24,7 +24,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader as SheetHeaderPrimitive, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const menuItems = [
   { href: "/dashboard", label: "Ringkasan", icon: Home },
@@ -81,6 +81,10 @@ export default function DashboardLayout({
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="sm:max-w-xs p-0">
+                <SheetHeaderPrimitive>
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
+                    <SheetDescription className="sr-only">Dashboard navigation</SheetDescription>
+                </SheetHeaderPrimitive>
                   <SidebarHeader className="p-4 border-b">
                     <Link href="/" className="flex items-center gap-2 font-semibold">
                         <UserCircle className="h-6 w-6"/>

@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
   { href: "/", label: "Preset" },
@@ -65,6 +65,8 @@ export function SiteHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+             <SheetTitle className="sr-only">Menu</SheetTitle>
+            <SheetDescription className="sr-only">Main site navigation</SheetDescription>
             <nav className="flex flex-col gap-4">
               <Link href="/" className="flex items-center space-x-2">
                 <SlidersHorizontal className="h-6 w-6 text-primary" />
