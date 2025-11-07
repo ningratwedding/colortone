@@ -13,8 +13,6 @@ import {
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ImageCompareSlider } from "./image-compare-slider";
-import { Button } from "./ui/button";
-import { ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -34,7 +32,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
 
   return (
-    <Card className={cn("overflow-hidden group flex flex-col", className)}>
+    <Card className={cn("overflow-hidden group flex flex-col rounded-lg", className)}>
       <CardHeader className="p-0 relative">
         <ImageCompareSlider
             beforeImage={product.imageBefore}
@@ -58,12 +56,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
-        <div className="font-semibold text-lg">{formattedPrice}</div>
-        <Button size="sm" variant="outline">
-          <ShoppingCart className="h-4 w-4" />
-          <span className="sr-only">Tambah ke Keranjang</span>
-        </Button>
+      <CardFooter className="p-4 pt-0 mt-auto">
+        <div className="font-semibold text-lg w-full">{formattedPrice}</div>
       </CardFooter>
     </Card>
   );

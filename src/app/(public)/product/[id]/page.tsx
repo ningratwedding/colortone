@@ -2,7 +2,6 @@ import Image from "next/image";
 import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
 import {
-  ShoppingCart,
   CheckCircle,
   Tag,
   Download,
@@ -60,7 +59,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           
           <ProductClientContent price={product.price} />
 
-          <Card>
+          <Card className="rounded-lg">
             <CardContent className="pt-6 grid gap-4 text-sm">
                 <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-primary"/>

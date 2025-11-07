@@ -6,7 +6,6 @@ import {
   Menu,
   Search,
   Settings,
-  ShoppingCart,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -101,11 +100,6 @@ export function SiteHeader() {
           <nav className="flex items-center space-x-2">
             <Button variant="outline" className="hidden sm:inline-flex" asChild>
               <Link href="/admin/dashboard">Menjadi Penjual</Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/cart" aria-label="Keranjang Belanja">
-                <ShoppingCart className="h-5 w-5" />
-              </Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

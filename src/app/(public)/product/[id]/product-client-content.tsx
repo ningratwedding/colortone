@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { CreditCard } from "lucide-react";
 
 export function ProductClientContent({
   price,
@@ -27,9 +27,8 @@ export function ProductClientContent({
       <div className="text-4xl font-bold text-primary">{formattedPrice}</div>
       <div className="flex flex-col sm:flex-row gap-3">
         <Button size="lg" className="w-full sm:w-auto">
-          <ShoppingCart className="mr-2 h-5 w-5" /> Tambah ke Keranjang
+          <CreditCard className="mr-2 h-5 w-5" /> Beli Sekarang
         </Button>
       </div>
     </>
   );
-}
