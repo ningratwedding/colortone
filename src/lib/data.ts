@@ -41,10 +41,14 @@ export const categories = [
 
 export const software = [
     { id: 'lightroom', name: 'Lightroom' },
+    { id: 'lightroom-mobile', name: 'Lightroom Mobile'},
     { id: 'photoshop', name: 'Photoshop' },
     { id: 'capture-one', name: 'Capture One' },
+    { id: 'premiere-pro', name: 'Premiere Pro' },
     { id: 'final-cut', name: 'Final Cut Pro' },
     { id: 'davinci-resolve', name: 'DaVinci Resolve' },
+    { id: 'capcut', name: 'CapCut' },
+    { id: 'vn-editor', name: 'VN Video Editor' },
 ];
 
 export const products: Product[] = [
@@ -57,7 +61,7 @@ export const products: Product[] = [
     imageBefore: images['product-1-before'],
     imageAfter: images['product-1-after'],
     category: categories[0],
-    software: [software[0], software[1]],
+    software: [software[0], software[1], software[2]],
     tags: ['sinematik', 'teal', 'oranye', 'perkotaan'],
   },
   {
@@ -69,7 +73,7 @@ export const products: Product[] = [
     imageBefore: images['product-2-before'],
     imageAfter: images['product-2-after'],
     category: categories[2],
-    software: [software[0], software[2]],
+    software: [software[0], software[3]],
     tags: ['muram', 'hutan', 'alam', 'lanskap'],
   },
   {
@@ -93,7 +97,7 @@ export const products: Product[] = [
     imageBefore: images['product-4-before'],
     imageAfter: images['product-4-after'],
     category: categories[4],
-    software: [software[0], software[1], software[2]],
+    software: [software[0], software[1], software[3]],
     tags: ['perkotaan', 'desaturasi', 'jalanan', 'arsitektur'],
   },
   {
@@ -117,7 +121,7 @@ export const products: Product[] = [
     imageBefore: images['product-6-before'],
     imageAfter: images['product-6-after'],
     category: categories[3],
-    software: [software[3], software[4]],
+    software: [software[5], software[6]],
     tags: ['antik', 'film', 'lut', 'retro'],
   },
   {
@@ -129,7 +133,7 @@ export const products: Product[] = [
     imageBefore: images['product-7-before'],
     imageAfter: images['product-7-after'],
     category: categories[4],
-    software: [software[0], software[1]],
+    software: [software[0], software[2]],
     tags: ['neon', 'malam', 'cerah', 'kota'],
   },
   {
@@ -141,7 +145,7 @@ export const products: Product[] = [
     imageBefore: images['product-8-before'],
     imageAfter: images['product-8-after'],
     category: categories[5],
-    software: [software[0], software[2]],
+    software: [software[0], software[3]],
     tags: ['minimalis', 'putih', 'cerah', 'bersih'],
   },
 ];
