@@ -57,7 +57,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 mt-auto">
-        <div className="font-semibold text-lg w-full">{formattedPrice}</div>
+        <div className="font-semibold text-lg w-full text-primary">{formattedPrice}</div>
       </CardFooter>
     </Card>
   );

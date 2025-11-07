@@ -100,7 +100,7 @@ export default function DashboardProductsPage() {
                   <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
-                  <TableCell>{formattedPrices[product.id]}</TableCell>
+                  <TableCell className="font-medium text-primary">{formattedPrices[product.id]}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     215
                   </TableCell>
@@ -145,7 +145,7 @@ export default function DashboardProductsPage() {
                 />
               <div className="flex-grow">
                  <CardTitle className="text-base leading-tight mb-1">{product.name}</CardTitle>
-                 <div className="text-sm text-muted-foreground">
+                 <div className="text-sm font-medium text-primary">
                     {formattedPrices[product.id]}
                   </div>
               </div>
