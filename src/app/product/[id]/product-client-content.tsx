@@ -1,73 +1,41 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { StarRating } from "@/components/star-rating";
-import { Textarea } from "@/components/ui/textarea";
 import type { Review } from "@/lib/data";
+import { Heart, ShoppingCart } from "lucide-react";
 
-export function ProductClientContent({ reviews }: { reviews: Review[] }) {
+export function ProductClientContent({
+  reviews,
+  price,
+}: {
+  reviews: Review[];
+  price: number;
+}) {
+  const [formattedPrice, setFormattedPrice] = useState<string>("");
+
+  useEffect(() => {
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      }).format(amount);
+    };
+    setFormattedPrice(formatCurrency(price));
+  }, [price]);
+
   return (
-    <div className="grid md:grid-cols-2 gap-8">
-      <div className="space-y-6">
-        {reviews.map((review) => (
-          <Card key={review.id}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage
-                      src={review.user.avatar.imageUrl}
-                      data-ai-hint={review.user.avatar.imageHint}
-                    />
-                    <AvatarFallback>
-                      {review.user.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-base">
-                      {review.user.name}
-                    </CardTitle>
-                    <CardDescription>{review.date}</CardDescription>
-                  </div>
-                </div>
-                <StarRating rating={review.rating} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{review.comment}</p>
-            </CardContent>
-          </Card>
-        ))}
+    <>
+      <div className="text-4xl font-bold text-primary">{formattedPrice}</div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button size="lg" className="w-full sm:w-auto">
+          <ShoppingCart className="mr-2 h-5 w-5" /> Tambah ke Keranjang
+        </Button>
+        <Button size="lg" variant="outline" className="w-full sm:w-auto">
+          <Heart className="mr-2 h-5 w-5" /> Favorit
+        </Button>
       </div>
-
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Tinggalkan Ulasan</CardTitle>
-            <CardDescription>
-              Bagikan pemikiran Anda dengan komunitas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <span className="font-medium text-sm mb-2 block">
-                Peringkat Anda
-              </span>
-              <StarRating rating={0} />
-            </div>
-            <Textarea placeholder="Tulis ulasan Anda di sini..." />
-            <Button>Kirim Ulasan</Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    </>
   );
 }

@@ -72,16 +72,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
           <p className="text-lg text-muted-foreground">{product.description}</p>
           
-          <div className="text-4xl font-bold text-primary">{formatCurrency(product.price)}</div>
-          
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button size="lg" className="w-full sm:w-auto">
-              <ShoppingCart className="mr-2 h-5 w-5" /> Tambah ke Keranjang
-            </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              <Heart className="mr-2 h-5 w-5" /> Favorit
-            </Button>
-          </div>
+          <ProductClientContent reviews={reviews} price={product.price} />
 
           <Card>
             <CardContent className="pt-6 grid gap-4 text-sm">
@@ -106,7 +97,60 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
       <div className="mt-12 pt-8 border-t">
         <h2 className="text-2xl font-bold mb-6 font-headline">Ulasan</h2>
-        <ProductClientContent reviews={reviews} />
+        <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+                {reviews.map((review) => (
+                <Card key={review.id}>
+                    <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                        <Avatar>
+                            <AvatarImage
+                            src={review.user.avatar.imageUrl}
+                            data-ai-hint={review.user.avatar.imageHint}
+                            />
+                            <AvatarFallback>
+                            {review.user.name.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <CardTitle className="text-base">
+                            {review.user.name}
+                            </CardTitle>
+                            <CardDescription>{review.date}</CardDescription>
+                        </div>
+                        </div>
+                        <StarRating rating={review.rating} />
+                    </div>
+                    </CardHeader>
+                    <CardContent>
+                    <p className="text-muted-foreground">{review.comment}</p>
+                    </CardContent>
+                </Card>
+                ))}
+            </div>
+
+            <div>
+                <Card>
+                <CardHeader>
+                    <CardTitle>Tinggalkan Ulasan</CardTitle>
+                    <CardDescription>
+                    Bagikan pemikiran Anda dengan komunitas.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                    <span className="font-medium text-sm mb-2 block">
+                        Peringkat Anda
+                    </span>
+                    <StarRating rating={0} />
+                    </div>
+                    <Textarea placeholder="Tulis ulasan Anda di sini..." />
+                    <Button>Kirim Ulasan</Button>
+                </CardContent>
+                </Card>
+            </div>
+        </div>
       </div>
     </div>
   );

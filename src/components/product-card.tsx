@@ -27,12 +27,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   useEffect(() => {
     // This check ensures the code runs only on the client
-    if (typeof window !== 'undefined') {
-      const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-      };
-      setFormattedPrice(formatCurrency(product.price));
-    }
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
+    setFormattedPrice(formatCurrency(product.price));
   }, [product.price]);
 
 

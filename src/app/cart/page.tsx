@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(products.slice(0, 2));
+  const [cartItems] = useState(products.slice(0, 2));
   
   const [formattedSubtotal, setFormattedSubtotal] = useState('');
   const [formattedTax, setFormattedTax] = useState('');
