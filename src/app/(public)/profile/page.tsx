@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
+import Link from "next/link";
 
 export default function ProfilePage() {
     const user = users[0];
@@ -23,10 +25,17 @@ export default function ProfilePage() {
         <div className="md:col-span-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Profil Publik</CardTitle>
-                    <CardDescription>
-                        Informasi ini akan ditampilkan secara publik.
-                    </CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Profil Publik</CardTitle>
+                      <CardDescription>
+                          Informasi ini akan ditampilkan secara publik.
+                      </CardDescription>
+                    </div>
+                    <Button asChild variant="outline">
+                      <Link href={`/creator/${user.id}`}>Lihat Profil Saya</Link>
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="flex items-center gap-4">
@@ -59,24 +68,6 @@ export default function ProfilePage() {
             </Card>
         </div>
         <div className="space-y-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Ubah Kata Sandi</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
-                        <Input id="current-password" type="password" />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="new-password">Kata Sandi Baru</Label>
-                        <Input id="new-password" type="password" />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button>Perbarui Kata Sandi</Button>
-                </CardFooter>
-            </Card>
         </div>
       </div>
     </div>
