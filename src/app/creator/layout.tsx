@@ -58,6 +58,7 @@ export default function CreatorDashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const pageTitle = menuItems.find((item) => pathname === item.href)?.label || "Dasbor Kreator";
 
   return (
     <SidebarProvider>
@@ -126,7 +127,12 @@ export default function CreatorDashboardLayout({
                   </nav>
                 </SheetContent>
               </Sheet>
-            <div className="relative ml-auto flex-1 md:grow-0">
+
+            <div className="flex-1">
+              <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
+            </div>
+
+            <div className="relative ml-auto flex-initial md:grow-0">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
