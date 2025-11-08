@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import CheckoutForm from './checkout-form';
 import { useDoc } from '@/firebase/firestore/use-doc';
@@ -15,7 +15,11 @@ function CheckoutPageContent() {
   const productId = searchParams.get('productId');
   const firestore = useFirestore();
 
-  const productRef = productId ? doc(firestore, 'products', productId) : null;
+  const productRef = useMemo(() => {
+    if (!firestore || !productId) return null;
+    return doc(firestore, 'products', productId);
+  }, [firestore, productId]);
+
   const { data: product, loading } = useDoc<Product>(productRef);
 
   if (loading) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { onSnapshot, type DocumentReference } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -12,44 +12,43 @@ export function useDoc<T>(docRef: DocumentReference | null | undefined) {
   const [error, setError] = useState<Error | null>(null);
   const firestore = useFirestore();
 
-  const memoizedRef = useMemo(() => docRef, [docRef]);
-
   useEffect(() => {
-    if (!memoizedRef || !firestore) {
+    if (!docRef || !firestore) {
       setLoading(false);
+      setData(null);
       return;
     }
 
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-      memoizedRef,
+      docRef,
       (snapshot) => {
-        setLoading(false);
         if (snapshot.exists()) {
           setData({ ...snapshot.data(), id: snapshot.id } as T);
         } else {
           setData(null);
         }
         setError(null);
+        setLoading(false);
       },
       async (err) => {
-        setLoading(false);
         setError(err);
         setData(null);
+        setLoading(false);
         
         const permissionError = new FirestorePermissionError({
-          path: memoizedRef.path,
+          path: docRef.path,
           operation: 'get',
         } satisfies SecurityRuleContext);
 
         errorEmitter.emit('permission-error', permissionError);
-        console.error(`Error fetching document from ${memoizedRef.path}:`, err);
+        console.error(`Error fetching document from ${docRef.path}:`, err);
       }
     );
 
     return () => unsubscribe();
-  }, [memoizedRef, firestore]);
+  }, [docRef, firestore]);
 
   return { data, loading, error };
 }

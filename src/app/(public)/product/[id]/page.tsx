@@ -8,6 +8,7 @@ import {
   Tag,
   Download,
 } from "lucide-react";
+import { useMemo } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -26,10 +27,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function ProductPageContent({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
-  const productRef = doc(firestore, 'products', params.id);
+  
+  const productRef = useMemo(() => {
+    if (!firestore || !params.id) return null;
+    return doc(firestore, 'products', params.id);
+  }, [firestore, params.id]);
+
   const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
-  const creatorRef = product?.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+  const creatorRef = useMemo(() => {
+      if (!firestore || !product?.creatorId) return null;
+      return doc(firestore, 'users', product.creatorId);
+  }, [firestore, product?.creatorId]);
+
   const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
 
   if (productLoading || creatorLoading) {

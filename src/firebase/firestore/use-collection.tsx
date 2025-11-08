@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { onSnapshot, type Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -12,34 +12,33 @@ export function useCollection<T>(query: Query | null | undefined) {
   const [error, setError] = useState<Error | null>(null);
   const firestore = useFirestore();
 
-  const memoizedQuery = useMemo(() => query, [query]);
-
   useEffect(() => {
-    if (!memoizedQuery || !firestore) {
+    if (!query || !firestore) {
       setLoading(false);
+      setData(null);
       return;
     }
 
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      memoizedQuery,
+      query,
       (snapshot) => {
-        setLoading(false);
         const result: T[] = [];
         snapshot.forEach((doc) => {
           result.push({ ...doc.data(), id: doc.id } as T);
         });
         setData(result);
         setError(null);
+        setLoading(false);
       },
       async (err) => {
-        setLoading(false);
         setError(err);
         setData(null);
+        setLoading(false);
 
         const permissionError = new FirestorePermissionError({
-          path: (memoizedQuery as any)._query.path.segments.join('/'),
+          path: (query as any)._query.path.segments.join('/'),
           operation: 'list',
         } satisfies SecurityRuleContext);
         
@@ -49,7 +48,7 @@ export function useCollection<T>(query: Query | null | undefined) {
     );
 
     return () => unsubscribe();
-  }, [memoizedQuery, firestore]);
+  }, [query, firestore]);
 
   return { data, loading, error };
 }

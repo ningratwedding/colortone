@@ -20,7 +20,7 @@ import { useFirestore, useStorage } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
 
@@ -31,7 +31,11 @@ export default function AccountSettingsPage() {
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const userProfileRef = user ? doc(firestore, 'users', user.uid) : null;
+    const userProfileRef = useMemo(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
     
     const [name, setName] = useState('');

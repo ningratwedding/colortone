@@ -13,7 +13,7 @@ import {
 import type { Product, UserProfile } from '@/lib/data';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Banknote, Terminal, Wallet } from 'lucide-react';
 import Link from 'next/link';
@@ -28,7 +28,12 @@ export default function CheckoutForm({ product }: { product?: Product }) {
   const [formattedPrice, setFormattedPrice] = useState('');
   
   const firestore = useFirestore();
-  const creatorRef = product?.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+
+  const creatorRef = useMemo(() => {
+    if (!firestore || !product?.creatorId) return null;
+    return doc(firestore, 'users', product.creatorId);
+  }, [firestore, product?.creatorId]);
+  
   const { data: creator } = useDoc<UserProfile>(creatorRef);
 
   useEffect(() => {

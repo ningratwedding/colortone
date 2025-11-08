@@ -8,33 +8,55 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download } from 'lucide-react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo } from 'react';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 function PurchaseItem({ order }: { order: Order }) {
     const firestore = useFirestore();
+
     const productRef = useMemo(() => {
-      if (!firestore) return null;
-      return doc(firestore, 'products', order.productId);
+        if (!firestore) return null;
+        return doc(firestore, 'products', order.productId);
     }, [firestore, order.productId]);
-    
-    // We need to use `getDoc` here instead of `useDoc` because this component is in a loop.
-    // Using `useDoc` in a loop can cause issues.
-    // For simplicity in this refactor, we will just show the product name from the order.
-    // A more robust solution would fetch product details separately or denormalize data.
+
+    // Use useDoc to get product details, especially the image
+    const { data: product, loading: productLoading } = useDoc<Product>(productRef);
+
+    const handleDownload = () => {
+        if (!product) return;
+        const link = document.createElement('a');
+        link.href = '/placeholder.zip'; // Placeholder, replace with actual download URL from product
+        link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     return (
         <div
             className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-3 gap-4"
         >
-            <div className="flex items-center gap-4">
-                {/* We don't have the image URL in the order object, so we show a placeholder */}
-                <div className="w-[84px] h-[56px] bg-muted rounded-md flex items-center justify-center">
-                    <Download className="h-6 w-6 text-muted-foreground" />
-                </div>
+            <div className="flex items-center gap-4 flex-1">
+                {productLoading ? (
+                     <Skeleton className="w-[84px] h-[56px] rounded-md" />
+                ) : product?.imageAfterUrl ? (
+                    <Image
+                        src={product.imageAfterUrl}
+                        alt={product.productName}
+                        width={84}
+                        height={56}
+                        className="rounded-md object-cover"
+                        data-ai-hint={product.imageAfterHint}
+                    />
+                ) : (
+                    <div className="w-[84px] h-[56px] bg-muted rounded-md flex items-center justify-center">
+                        <Download className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                )}
                 <div className="flex-1">
                     <Link href={`/product/${order.productId}`} className="hover:underline">
                         <p className="font-semibold">{order.productName}</p>
@@ -44,11 +66,9 @@ function PurchaseItem({ order }: { order: Order }) {
                     </p>
                 </div>
             </div>
-            <Button asChild className="w-full sm:w-auto">
-                <Link href={`/checkout/confirmation?productId=${order.productId}`}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Unduh
-                </Link>
+            <Button onClick={handleDownload} className="w-full sm:w-auto">
+                <Download className="mr-2 h-4 w-4" />
+                Unduh
             </Button>
         </div>
     );

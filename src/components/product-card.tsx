@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ImageCompareSlider } from "./image-compare-slider";
 import { Button } from "./ui/button";
@@ -30,7 +30,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const app = useFirebaseApp();
   const firestore = getFirestore(app);
 
-  const creatorRef = product.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+  const creatorRef = useMemo(() => {
+      if (!firestore || !product.creatorId) return null;
+      return doc(firestore, 'users', product.creatorId);
+  }, [firestore, product.creatorId]);
+
   const { data: creator } = useDoc<UserProfile>(creatorRef);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Product, UserProfile } from '@/lib/data';
 import Link from 'next/link';
@@ -21,10 +21,16 @@ function ConfirmationContent() {
   const productId = searchParams.get('productId');
   const firestore = useFirestore();
 
-  const productRef = productId ? doc(firestore, 'products', productId) : null;
+  const productRef = useMemo(() => {
+    if (!firestore || !productId) return null;
+    return doc(firestore, 'products', productId);
+  }, [firestore, productId]);
   const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
-  const creatorRef = product?.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+  const creatorRef = useMemo(() => {
+    if (!firestore || !product?.creatorId) return null;
+    return doc(firestore, 'users', product.creatorId);
+  }, [firestore, product?.creatorId]);
   const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
 
 
