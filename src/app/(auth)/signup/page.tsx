@@ -30,7 +30,7 @@ import {
 
 
 const formSchema = z.object({
-  fullName: z.string().min(3, "Nama lengkap harus diisi."),
+  fullName: z.string().min(3, "Nama lengkap harus terdiri dari minimal 3 karakter."),
   email: z.string().email("Format email tidak valid."),
   password: z.string().min(6, "Kata sandi minimal 6 karakter."),
 });
@@ -52,6 +52,7 @@ export default function SignupPage() {
   });
 
   const handleGoogleSignIn = async () => {
+    form.clearErrors();
     const result = await signInWithGoogle();
     if (result.success) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
@@ -68,7 +69,7 @@ export default function SignupPage() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signUpWithEmail(data.email, data.password, data.fullName);
     if (result.success) {
-      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone! Silakan periksa email Anda untuk verifikasi." });
       router.push("/account");
     } else {
       toast({
@@ -105,7 +106,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Nama Lengkap</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nama Anda" {...field} />
+                      <Input placeholder="Nama Anda" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,6 +123,7 @@ export default function SignupPage() {
                         type="email"
                         placeholder="m@example.com"
                         {...field}
+                        disabled={form.formState.isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -135,7 +137,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Kata Sandi</FormLabel>
                     <FormControl>
-                       <Input type="password" {...field} />
+                       <Input type="password" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,7 +160,7 @@ export default function SignupPage() {
             </div>
           </div>
           
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={form.formState.isSubmitting}>
             Daftar dengan Google
           </Button>
 

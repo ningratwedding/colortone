@@ -10,7 +10,8 @@ import {
   SlidersHorizontal,
   Shield,
   LogOut,
-  LogIn
+  LogIn,
+  LayoutDashboard
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -36,8 +37,10 @@ import { useUser } from '@/firebase/auth/use-user';
 import { signOut } from '@/firebase/auth/actions';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from './ui/skeleton';
 
 const navLinks: { href: string; label: string }[] = [
+    { href: '/tutorial/order', label: 'Cara Pesan' },
 ];
 
 export function SiteHeader() {
@@ -49,11 +52,75 @@ export function SiteHeader() {
     await signOut();
     toast({ title: "Berhasil Keluar", description: "Anda telah keluar dari akun Anda."});
     router.push('/');
+    router.refresh(); // To update server-side rendered components
   }
 
   const getInitials = (name?: string | null) => {
     if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2);
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  const UserMenu = () => {
+    if (loading) {
+      return <Skeleton className="h-8 w-8 rounded-full" />;
+    }
+
+    return (
+       <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
+            {user ? (
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'}/>
+                  <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                </Avatar>
+            ) : (
+                <CircleUserRound className="h-5 w-5" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>{user ? user.displayName || user.email : "Akun Saya"}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {user ? (
+              <>
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link href="/creator/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>Dasbor Kreator</span>
+                  </Link>
+                </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                  <Link href="/account/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Pengaturan Akun</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Dasbor Admin</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                <span>Keluar</span>
+              </DropdownMenuItem>
+              </>
+          ) : (
+            <DropdownMenuItem asChild>
+              <Link href="/login">
+                  <LogIn className="mr-2 h-4 w-4" />
+                Masuk
+              </Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
   }
 
   return (
@@ -88,6 +155,12 @@ export function SiteHeader() {
                     {label}
                   </Link>
                 ))}
+                 <Link
+                    href="/login"
+                    className="text-lg font-medium transition-colors hover:text-primary text-foreground"
+                  >
+                    Menjadi Kreator
+                  </Link>
               </nav>
             </SheetContent>
           </Sheet>
@@ -132,66 +205,12 @@ export function SiteHeader() {
         <div className="flex items-center justify-end space-x-2">
            {!user && !loading && (
              <Button variant="outline" className="hidden sm:inline-flex" asChild>
-                <Link href="/login">Menjadi Kreator</Link>
+                <Link href="/creator/dashboard">Menjadi Kreator</Link>
               </Button>
            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
-                  {user ? (
-                     <Avatar className="h-8 w-8">
-                       <AvatarImage src={user.photoURL || ''} />
-                       <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                     </Avatar>
-                  ) : (
-                     <CircleUserRound className="h-5 w-5" />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>{user ? user.displayName || "Akun Saya" : "Akun Saya"}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {user ? (
-                   <>
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem asChild>
-                        <Link href="/creator/dashboard">
-                          <SlidersHorizontal className="mr-2 h-4 w-4" />
-                          <span>Dasbor Kreator</span>
-                        </Link>
-                      </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                        <Link href="/account/settings">
-                          <Settings className="mr-2 h-4 w-4" />
-                          <span>Pengaturan Akun</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/admin">
-                          <Shield className="mr-2 h-4 w-4" />
-                          <span>Dasbor Admin</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                     <DropdownMenuItem onClick={handleSignOut}>
-                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Keluar</span>
-                    </DropdownMenuItem>
-                   </>
-                ) : (
-                  <DropdownMenuItem asChild>
-                    <Link href="/login">
-                       <LogIn className="mr-2 h-4 w-4" />
-                      Masuk
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+           <UserMenu />
         </div>
       </div>
     </header>
   );
 }
-

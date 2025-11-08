@@ -17,7 +17,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { signInWithGoogle, signInWithEmail } from "@/firebase/auth/actions";
 import {
@@ -50,6 +49,7 @@ export default function LoginPage() {
   });
 
   const handleGoogleSignIn = async () => {
+    form.clearErrors();
     const result = await signInWithGoogle();
     if (result.success) {
       toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
@@ -69,10 +69,10 @@ export default function LoginPage() {
       toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
       router.push("/account");
     } else {
-      toast({
+       toast({
         variant: "destructive",
         title: "Gagal Masuk",
-        description: "Email atau kata sandi salah. Silakan coba lagi.",
+        description: result.error,
       });
     }
   };
@@ -105,6 +105,7 @@ export default function LoginPage() {
                       <Input
                         placeholder="m@example.com"
                         {...field}
+                        disabled={form.formState.isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -126,7 +127,7 @@ export default function LoginPage() {
                         </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -149,7 +150,7 @@ export default function LoginPage() {
             </div>
           </div>
           
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={form.formState.isSubmitting}>
             Masuk dengan Google
           </Button>
 
