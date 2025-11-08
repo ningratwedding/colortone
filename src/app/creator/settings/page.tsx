@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -300,7 +299,7 @@ export default function SettingsPage() {
               <CardDescription>
                 Pilih cara kami menghubungi Anda.
               </CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start space-x-3">
                 <Checkbox id="email-sales" defaultChecked />
