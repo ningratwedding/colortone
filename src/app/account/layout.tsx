@@ -38,7 +38,7 @@ export default function AccountLayout({
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b bg-background">
+      {/* <header className="sticky top-0 z-40 w-full border-b bg-background">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <SlidersHorizontal className="h-6 w-6 text-primary" />
@@ -68,7 +68,7 @@ export default function AccountLayout({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </header>
+      </header> */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid md:grid-cols-4 gap-8">
           <aside className="hidden md:block md:col-span-1">
