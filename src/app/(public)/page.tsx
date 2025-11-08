@@ -15,10 +15,10 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary font-headline">
-          Setiap Warna Bercerita
+          Mewadahi Kreativitas Visual
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Di balik setiap foto dan video, ada sebuah cerita yang menunggu untuk diungkap. Temukan preset dan LUT yang menghidupkan narasi visual Anda, dibuat oleh para pencerita visual terbaik di dunia.
+          Misi kami adalah menjadi platform terdepan yang memberdayakan para pencerita visual. Kami menyediakan ruang di mana para kreator dapat berbagi karya, menginspirasi, dan mengubah gairah mereka menjadi peluang.
         </p>
       </header>
 
