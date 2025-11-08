@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -236,7 +237,7 @@ export default function AdminOrdersPage() {
                     <div>{order.product.name}</div>
                     <div className="text-sm text-muted-foreground">
                         oleh{' '}
-                        <Link href={`/creator/${order.product.creator.id}`} className="hover:underline">
+                        <Link href={`/creator/${order.product.creator.slug}`} className="hover:underline">
                             {order.product.creator.name}
                         </Link>
                     </div>

@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { users, products } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -7,7 +8,7 @@ import Link from 'next/link';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
             <path d="M12.528 8.001v5.25c-1.423.115-2.585.83-3.415 1.942C8.253 16.34 7.6 17.34 6.75 17.34c-1.84 0-2.5-1.72-2.5-1.72" />
             <path d="M12.528 8.001c.883-2.48 3.02-3.514 5.31-2.07C20.137 7.37 20.08 11.2 17 11.2v5.123c-1.872 0-3.352-1.33-4.472-2.37" />
             <path d="M12.528 8.001q.44-1.47.79-2.515" />
@@ -32,8 +33,8 @@ const socialLinks = {
 };
 
 
-export default function CreatorProfilePage({ params }: { params: { id: string } }) {
-  const creator = users.find((user) => user.id === params.id);
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+  const creator = users.find((user) => user.slug === params.slug);
 
   if (!creator) {
     notFound();

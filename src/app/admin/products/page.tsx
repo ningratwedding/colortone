@@ -92,7 +92,7 @@ export default function AdminProductsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>
-                    <Link href={`/creator/${product.creator.id}`} className="hover:underline">
+                    <Link href={`/creator/${product.creator.slug}`} className="hover:underline">
                       {product.creator.name}
                     </Link>
                   </TableCell>

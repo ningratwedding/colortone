@@ -51,7 +51,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </CardTitle>
         </Link>
          <div className="mt-2 flex items-center gap-2">
-            <Link href={`/creator/${product.creator.id}`} className="flex items-center gap-2">
+            <Link href={`/creator/${product.creator.slug}`} className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
                     <AvatarImage src={product.creator.avatar.imageUrl} alt={product.creator.name} data-ai-hint={product.creator.avatar.imageHint} />
                     <AvatarFallback>{product.creator.name.charAt(0)}</AvatarFallback>

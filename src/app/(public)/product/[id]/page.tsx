@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -46,7 +47,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               {product.name}
             </h1>
             <div className="mt-2 flex items-center gap-4">
-                <Link href={`/creator/${product.creator.id}`} className="flex items-center gap-2 group">
+                <Link href={`/creator/${product.creator.slug}`} className="flex items-center gap-2 group">
                     <Avatar>
                         <AvatarImage src={product.creator.avatar.imageUrl} data-ai-hint={product.creator.avatar.imageHint} />
                         <AvatarFallback>{product.creator.name.charAt(0)}</AvatarFallback>

@@ -111,7 +111,7 @@ export default function SettingsPage() {
         delete newSocials[platform];
         return newSocials;
     });
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -128,7 +128,7 @@ export default function SettingsPage() {
                   </CardDescription>
                 </div>
                 <Link
-                  href={`/creator/${user.id}`}
+                  href={`/creator/${user.slug}`}
                   className="text-sm font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Lihat Profil Saya
@@ -300,7 +300,7 @@ export default function SettingsPage() {
               <CardDescription>
                 Pilih cara kami menghubungi Anda.
               </CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent className="space-y-4">
               <div className="flex items-start space-x-3">
                 <Checkbox id="email-sales" defaultChecked />
