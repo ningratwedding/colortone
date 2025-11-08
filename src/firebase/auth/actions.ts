@@ -12,7 +12,7 @@ import {
   type User,
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import type { UserProfile } from '@/lib/data';
@@ -45,7 +45,7 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
 
     const name = fullName || user.displayName || 'Pengguna Baru';
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    const newUserProfile: Omit<UserProfile, 'id'> = {
+    const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
         email: user.email!,
         slug: `${slug}-${user.uid.substring(0, 5)}`, 
@@ -60,7 +60,7 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
         await updateProfile(auth.currentUser, { displayName: fullName });
     }
 
-    return { id: user.uid, ...newUserProfile } as UserProfile;
+    return { id: user.uid, ...newUserProfile, createdAt: new Date() } as unknown as UserProfile;
 }
 
 const auth = getAuth(initializeFirebase().app);
@@ -68,12 +68,6 @@ const auth = getAuth(initializeFirebase().app);
 // Sign in with Google and create user document if it's a new user
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  if (typeof window !== 'undefined') {
-    provider.setCustomParameters({
-      'auth_domain': window.location.hostname
-    });
-  }
-
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
