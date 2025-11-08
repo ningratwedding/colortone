@@ -30,10 +30,11 @@ async function createUserDocument(user: any, fullName?: string) {
     if (!docSnap.exists()) {
         // Document doesn't exist, create it
         const name = fullName || user.displayName || 'Pengguna Baru';
+        const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
         const userData = {
             name: name,
             email: user.email,
-            slug: user.uid, // Using UID as slug for simplicity
+            slug: `${slug}-${user.uid.substring(0, 5)}`, 
             role: 'pembeli',
             createdAt: serverTimestamp(),
             avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
@@ -57,6 +58,13 @@ const auth = getAuth(initializeFirebase().app);
 // Sign in with Google and create user document if it's a new user
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
+  // Dynamically add the current domain to the OAuth provider's custom parameters
+  // This is a common fix for "domain not authorized" errors in development
+  if (typeof window !== 'undefined') {
+    provider.setCustomParameters({
+      'auth_domain': window.location.hostname
+    });
+  }
 
   try {
     const result = await signInWithPopup(auth, provider);
