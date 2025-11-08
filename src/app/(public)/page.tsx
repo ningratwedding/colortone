@@ -1,4 +1,6 @@
-import Image from "next/image";
+
+'use client';
+
 import {
   Select,
   SelectContent,
@@ -8,7 +10,52 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
-import { products, categories, software } from "@/lib/data";
+import { categories, software, type Product } from "@/lib/data";
+import { useCollection } from "@/firebase/firestore/use-collection";
+import { useFirestore } from "@/firebase/provider";
+import { collection, query, orderBy } from "firebase/firestore";
+import { useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function ProductGrid() {
+  const firestore = useFirestore();
+  const productsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "products"), orderBy("sales", "desc"));
+  }, [firestore]);
+  const { data: products, loading } = useCollection<Product>(productsQuery);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!products || products.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-10">
+        Belum ada produk yang tersedia.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+
 
 export default function Home() {
   return (
@@ -56,11 +103,7 @@ export default function Home() {
       <Separator className="mb-4" />
 
       <section>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <ProductGrid />
       </section>
     </div>
   );
