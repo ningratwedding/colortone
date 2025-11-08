@@ -82,22 +82,19 @@ export default function CheckoutForm({ product }: { product?: Product }) {
             <CardHeader>
               <CardTitle>Metode Pembayaran</CardTitle>
               <CardDescription>
-                Pilih metode pembayaran pilihan Anda.
+                Pembayaran akan dilakukan melalui transfer bank.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-                <div className="grid gap-2">
-                    <Button variant="outline" size="lg" className="justify-start">
-                        <Banknote className="mr-3" />
-                        Transfer Bank
-                    </Button>
-                    <Button variant="outline" size="lg" className="justify-start">
-                        <Wallet className="mr-3" />
-                        E-Wallet (QRIS)
-                    </Button>
+                <div className="border rounded-md p-4 flex items-center gap-3">
+                    <Banknote className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Transfer Bank</p>
+                        <p className="text-sm text-muted-foreground">Pembayaran melalui akun virtual.</p>
+                    </div>
                 </div>
                 <p className="text-xs text-muted-foreground pt-1">
-                  Dengan mengklik "Buat Pesanan", Anda akan diarahkan ke halaman konfirmasi.
+                  Dengan mengklik "Buat Pesanan", Anda akan diarahkan ke halaman konfirmasi pembayaran.
                 </p>
             </CardContent>
           </Card>
