@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,8 +34,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collectionGroup, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -62,37 +61,52 @@ export default function OrdersPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   
-  // Firestore does not support collection group queries with `onSnapshot` in the same way.
-  // For real-time updates on orders for a creator, a more complex data structure (like a top-level `orders` collection with `creatorId`)
-  // or cloud functions would be needed.
-  // For now, we will fetch orders once on component mount.
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
   const [ordersLoading, setOrdersLoading] = useState(true);
 
-  useMemo(async () => {
-    if (!user || !firestore) return;
-    setOrdersLoading(true);
-    const ordersQuery = query(
-      collectionGroup(firestore, 'orders'),
-      where('creatorId', '==', user.uid),
-      orderBy('purchaseDate', 'desc')
-    );
-    const querySnapshot = await getDocs(ordersQuery);
-    const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
-    setOrders(fetchedOrders);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user || !firestore) return;
+      setOrdersLoading(true);
+      const ordersQuery = query(
+        collectionGroup(firestore, 'orders'),
+        where('creatorId', '==', user.uid)
+      );
+      const querySnapshot = await getDocs(ordersQuery);
+      
+      const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+      
+      // Sort on the client-side
+      fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
+      
+      setOrders(fetchedOrders);
 
-    // Fetch customer data for each order
-    const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
-    const customerProfiles: Record<string, UserProfile> = {};
-    for (const customerId of customerIds) {
-      const userDoc = await getDocs(query(collection(firestore, 'users'), where('__name__', '==', customerId)));
-      if (!userDoc.empty) {
-        customerProfiles[customerId] = userDoc.docs[0].data() as UserProfile;
+      if (fetchedOrders.length > 0) {
+          const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
+          const customerProfiles: Record<string, UserProfile> = {};
+          
+          // Firestore 'in' query can take up to 30 elements
+          const chunks = [];
+          for (let i = 0; i < customerIds.length; i += 30) {
+              chunks.push(customerIds.slice(i, i + 30));
+          }
+          
+          for (const chunk of chunks) {
+              if (chunk.length > 0) {
+                 const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk));
+                 const userDocs = await getDocs(usersQuery);
+                 userDocs.forEach(doc => {
+                    customerProfiles[doc.id] = doc.data() as UserProfile;
+                 })
+              }
+          }
+          setCustomers(customerProfiles);
       }
+      
+      setOrdersLoading(false);
     }
-    setCustomers(customerProfiles);
-    setOrdersLoading(false);
+    fetchOrders();
   }, [user, firestore]);
 
   const loading = userLoading || ordersLoading;
