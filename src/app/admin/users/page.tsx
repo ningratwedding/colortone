@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,7 +43,7 @@ export default function AdminUsersPage() {
 
     const usersQuery = useMemo(() => {
         if (!firestore) return null;
-        return query(collection(firestore, "users"), orderBy("name"));
+        return query(collection(firestore, "users"), orderBy("createdAt", "desc"));
     }, [firestore]);
 
     const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
@@ -72,6 +72,24 @@ export default function AdminUsersPage() {
         }
     };
 
+    const formatDate = (timestamp: UserProfile['createdAt']) => {
+        if (!timestamp) return 'N/A';
+        let date;
+        if (timestamp instanceof Timestamp) {
+            date = timestamp.toDate();
+        } else if (timestamp && typeof timestamp.seconds === 'number') {
+            date = new Date(timestamp.seconds * 1000);
+        } else {
+            return 'Tanggal tidak valid';
+        }
+        return new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(date);
+    };
+
+
   return (
     <div className="space-y-4">
       <Card>
@@ -91,7 +109,7 @@ export default function AdminUsersPage() {
                 <TableHead>Nama Pengguna</TableHead>
                 <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead>Peran</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="hidden lg:table-cell">Tanggal Bergabung</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
@@ -104,7 +122,7 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-5 w-40" /></TableCell>
                     <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-48" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                 </TableRow>
               ))}
@@ -121,9 +139,9 @@ export default function AdminUsersPage() {
                    <TableCell>
                     {getRoleBadge(user.role)}
                   </TableCell>
-                   <TableCell>
-                    <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Aktif</Badge>
-                  </TableCell>
+                   <TableCell className="hidden lg:table-cell text-muted-foreground">
+                    {formatDate(user.createdAt)}
+                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
