@@ -12,6 +12,7 @@ import {
   LogIn,
   LayoutDashboard,
   ShoppingBag,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
