@@ -22,8 +22,7 @@ export default function Home() {
         </p>
       </header>
 
-      <div className="mb-6 flex flex-col md:flex-row gap-4 items-center">
-        <div className="flex-grow w-full" />
+      <div className="mb-6 flex flex-col md:flex-row gap-4 justify-end">
         <div className="flex gap-4 w-full md:w-auto">
           <Select defaultValue="all-categories">
             <SelectTrigger className="w-full md:w-[180px] bg-card">
