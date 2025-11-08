@@ -56,6 +56,7 @@ export default function AccountSettingsPage() {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setAvatarFile(file);
+            // Create a temporary URL for client-side preview
             setAvatarPreview(URL.createObjectURL(file));
         }
     };
@@ -66,20 +67,24 @@ export default function AccountSettingsPage() {
         try {
             let newAvatarUrl = userProfile.avatarUrl;
 
+            // 1. If a new avatar file is selected, upload it
             if (avatarFile) {
                 toast({ title: 'Mengunggah foto profil...' });
                 newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
             }
 
+            // 2. Prepare the data to be updated in Firestore
             const updatedData: Partial<UserProfile> = {
                 name: name,
                 phoneNumber: phoneNumber,
                 avatarUrl: newAvatarUrl,
             };
 
+            // 3. Update the Firestore document
             await updateDoc(userProfileRef, updatedData);
 
-            // Also update the auth user profile if name or photo changed
+            // 4. Update the Firebase Auth user profile
+            // This ensures user.displayName and user.photoURL are up-to-date across the app
             if (name !== user.displayName || newAvatarUrl !== user.photoURL) {
                  await updateAuthProfile(user, {
                     displayName: name,
@@ -100,7 +105,7 @@ export default function AccountSettingsPage() {
             });
         } finally {
             setIsSaving(false);
-            setAvatarFile(null);
+            setAvatarFile(null); // Clear the file state after saving
         }
     };
 
@@ -153,6 +158,9 @@ export default function AccountSettingsPage() {
     if (!userProfile) {
         return <div>Profil tidak ditemukan.</div>
     }
+    
+    // Determine what to display for fallback
+    const fallbackName = name || userProfile.name || user.displayName || 'U';
 
     return (
         <div>
@@ -176,8 +184,8 @@ export default function AccountSettingsPage() {
                                 <Label>Foto Profil</Label>
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-16 w-16">
-                                        <AvatarImage src={avatarPreview || undefined} data-ai-hint={userProfile.avatarHint} />
-                                        <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                                        <AvatarImage src={avatarPreview || undefined} alt={name} />
+                                        <AvatarFallback>{fallbackName.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <Input
                                         type="file"

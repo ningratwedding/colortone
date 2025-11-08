@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -25,6 +26,7 @@ const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
 >(({ className, ...props }, ref) => {
+  // Use next/image for external URLs, fallback to standard img for blobs or other data URLs
   if (typeof props.src === 'string' && (props.src.startsWith('http') || props.src.startsWith('/'))) {
     return (
         <AvatarPrimitive.Image asChild ref={ref} className={cn("aspect-square h-full w-full", className)}>
