@@ -26,9 +26,9 @@ export function ImageCompareSlider({
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   const handleMove = (
-    event: React.MouseEvent<HTMLDivElement> | MouseEvent | React.TouchEvent<HTMLDivElement> | TouchEvent
+    event: MouseEvent | React.MouseEvent<HTMLDivElement> | TouchEvent | React.TouchEvent<HTMLDivElement>
   ) => {
-    if (!isDragging || !containerRef.current) return
+    if (!containerRef.current) return
 
     const rect = containerRef.current.getBoundingClientRect()
     const x =
@@ -47,34 +47,39 @@ export function ImageCompareSlider({
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     setIsDragging(true)
   }
-
-  const handleMouseUp = () => {
+  
+  const handleMouseUp = React.useCallback(() => {
     setIsDragging(false)
-  }
+  }, [])
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = React.useCallback(() => {
     setIsDragging(false)
-  }
+  }, [])
+
+  const handleDragMove = React.useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      if (!isDragging) return
+      handleMove(e)
+    },
+    [isDragging, handleMove]
+  );
+
 
   React.useEffect(() => {
-    const handleGlobalMove = (e: MouseEvent | TouchEvent) => {
-      handleMove(e)
-    }
-
     if (isDragging) {
-      document.addEventListener("mousemove", handleGlobalMove)
-      document.addEventListener("touchmove", handleGlobalMove)
+      document.addEventListener("mousemove", handleDragMove)
+      document.addEventListener("touchmove", handleDragMove)
       document.addEventListener("mouseup", handleMouseUp)
       document.addEventListener("touchend", handleTouchEnd)
     }
 
     return () => {
-      document.removeEventListener("mousemove", handleGlobalMove)
-      document.removeEventListener("touchmove", handleGlobalMove)
+      document.removeEventListener("mousemove", handleDragMove)
+      document.removeEventListener("touchmove", handleDragMove)
       document.removeEventListener("mouseup", handleMouseUp)
       document.removeEventListener("touchend", handleTouchEnd)
     }
-  }, [isDragging])
+  }, [isDragging, handleDragMove, handleMouseUp, handleTouchEnd])
 
   return (
     <div
@@ -82,8 +87,11 @@ export function ImageCompareSlider({
       className={cn("relative w-full overflow-hidden select-none", className)}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      onMouseMove={handleMove}
-      onTouchMove={handleMove}
+      onClick={(e) => {
+          if (!isDragging) {
+              handleMove(e);
+          }
+      }}
       {...props}
     >
       <Image
@@ -92,11 +100,11 @@ export function ImageCompareSlider({
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         data-ai-hint={beforeImage.imageHint}
-        className="object-cover"
+        className="object-cover pointer-events-none"
         priority
       />
       <div
-        className="absolute inset-0 w-full overflow-hidden"
+        className="absolute inset-0 w-full overflow-hidden pointer-events-none"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
       >
         <Image
@@ -105,7 +113,7 @@ export function ImageCompareSlider({
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           data-ai-hint={afterImage.imageHint}
-          className="object-cover"
+          className="object-cover pointer-events-none"
           priority
         />
       </div>
