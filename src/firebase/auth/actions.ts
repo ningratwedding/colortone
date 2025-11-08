@@ -35,7 +35,6 @@ async function getUserProfile(uid: string): Promise<UserProfile | null> {
 // Helper function to create a user document in Firestore
 async function createUserDocument(user: User, fullName?: string): Promise<UserProfile> {
     const db = getDb();
-    const userRef = doc(db, 'users', user.uid);
     const auth = getAuth(initializeFirebase().app);
 
     const existingProfile = await getUserProfile(user.uid);
@@ -54,7 +53,7 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
         avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
         avatarHint: 'user avatar'
     };
-    await setDoc(userRef, newUserProfile);
+    await setDoc(doc(db, 'users', user.uid), newUserProfile);
     
     if (fullName && auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: fullName });
@@ -69,11 +68,7 @@ export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    
-    const profile = await createUserDocument(user);
-
-    return { success: true, user, profile };
+    return { success: true, user: result.user };
   } catch (error) {
     if (error instanceof FirebaseError) {
       if (error.code === 'auth/popup-closed-by-user') {

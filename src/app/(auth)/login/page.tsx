@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { User } from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +31,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import type { UserProfile } from "@/lib/data";
+import { useFirestore } from "@/firebase/provider";
 
 
 const formSchema = z.object({
@@ -42,6 +45,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const firestore = useFirestore();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -50,7 +54,7 @@ export default function LoginPage() {
       password: "",
     },
   });
-
+  
   const handleRedirect = (profile: UserProfile) => {
     switch (profile.role) {
       case 'admin':
@@ -66,12 +70,46 @@ export default function LoginPage() {
     }
   };
 
+  const getOrCreateUserProfile = async (user: User): Promise<UserProfile> => {
+    const userRef = doc(firestore, 'users', user.uid);
+    const docSnap = await getDoc(userRef);
+
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as UserProfile;
+    } else {
+      const name = user.displayName || 'Pengguna Baru';
+      const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+      const newUserProfileData = {
+        name: name,
+        email: user.email!,
+        slug: `${slug}-${user.uid.substring(0, 5)}`,
+        role: 'pembeli' as const,
+        createdAt: serverTimestamp(),
+        avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+        avatarHint: 'user avatar'
+      };
+      await setDoc(userRef, newUserProfileData);
+      const newDocSnap = await getDoc(userRef);
+      return { id: newDocSnap.id, ...newDocSnap.data() } as UserProfile;
+    }
+  };
+
+
   const handleGoogleSignIn = async () => {
     form.clearErrors();
     const result = await signInWithGoogle();
-    if (result.success && result.profile) {
-      toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
-      handleRedirect(result.profile);
+    if (result.success && result.user) {
+      try {
+        const profile = await getOrCreateUserProfile(result.user);
+        toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
+        handleRedirect(profile);
+      } catch(e) {
+         toast({
+          variant: "destructive",
+          title: "Gagal Mengambil Profil",
+          description: "Tidak dapat mengambil atau membuat profil pengguna.",
+        });
+      }
     } else {
       toast({
         variant: "destructive",
