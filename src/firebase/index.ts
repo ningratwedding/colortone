@@ -9,6 +9,11 @@ import { firebaseConfig } from './config';
 // Re-export the provider hooks
 export * from './provider';
 
+// Re-export the new hooks
+export * from './auth/use-user';
+export * from './firestore/use-doc';
+export * from './firestore/use-collection';
+
 // Type definition for the initialized Firebase services
 export interface FirebaseServices {
   app: FirebaseApp;
