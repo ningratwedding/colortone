@@ -99,7 +99,7 @@ export function SiteHeader() {
           </div>
           <nav className="flex items-center space-x-2">
             <Button variant="outline" className="hidden sm:inline-flex" asChild>
-              <Link href="/admin">Menjadi Penjual</Link>
+              <Link href="/admin">Menjadi Kreator</Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
