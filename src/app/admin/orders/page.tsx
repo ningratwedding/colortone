@@ -40,6 +40,8 @@ import {
   MoreHorizontal,
   Mail,
   MessageSquare,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -124,6 +126,8 @@ export default function AdminOrdersPage() {
     const [formattedData, setFormattedData] = useState<FormattedData>({});
     const [date, setDate] = useState<DateRange | undefined>();
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [generatedCode, setGeneratedCode] = useState<string>('');
+    const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
         const formatCurrency = (amount: number) => {
@@ -146,6 +150,31 @@ export default function AdminOrdersPage() {
         });
         setFormattedData(data);
     }, []);
+
+    const handleOpenDialog = (order: Order) => {
+        setSelectedOrder(order);
+        setGeneratedCode(''); // Reset code when opening a new dialog
+        setIsCopied(false);
+    }
+
+    const generateCode = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const randomPart = (source: string, length: number) => Array.from({ length }, () => source.charAt(Math.floor(Math.random() * source.length))).join('');
+        
+        const part1 = randomPart(chars, 3);
+        const part2 = randomPart(nums, 3);
+        const part3 = randomPart(chars, 3);
+        
+        setGeneratedCode(`${part1}-${part2}-${part3}`);
+    };
+
+    const copyCode = () => {
+        if (!generatedCode) return;
+        navigator.clipboard.writeText(generatedCode);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    }
 
     const getStatusBadge = (status: Order['status']) => {
         switch (status) {
@@ -262,7 +291,7 @@ export default function AdminOrdersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => setSelectedOrder(order)}>Lihat Detail Pesanan</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenDialog(order)}>Lihat Detail Pesanan</DropdownMenuItem>
                         <DropdownMenuItem>Hubungi Pelanggan</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -307,6 +336,26 @@ export default function AdminOrdersPage() {
                 <p className="text-sm text-muted-foreground col-span-1">Total</p>
                 <p className="font-semibold text-base col-span-3">{formattedData[selectedOrder.id]?.total}</p>
               </div>
+
+               <div className="border-t pt-4 mt-2 grid gap-3">
+                <p className="text-sm text-muted-foreground">Kode Unduhan</p>
+                {!generatedCode ? (
+                    <Button onClick={generateCode}>Buat Kode Unduhan</Button>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1 rounded-md border bg-muted px-3 py-2 text-sm font-semibold font-mono tracking-wider">
+                            {generatedCode}
+                        </div>
+                        <Button variant="outline" size="icon" onClick={copyCode} aria-label="Salin kode">
+                            {isCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                    </div>
+                )}
+                 <p className="text-xs text-muted-foreground">
+                    Buat kode unik dan kirimkan ke pelanggan melalui WhatsApp.
+                </p>
+               </div>
+
                <div className="mt-2 flex gap-2">
                 <Button variant="outline" className="w-full">
                     <Mail className="mr-2 h-4 w-4" />
