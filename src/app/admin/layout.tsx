@@ -58,9 +58,9 @@ export default function AdminDashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
+      <div className="flex min-h-screen w-full bg-muted/40">
         <Sidebar className="hidden border-r bg-background md:block" collapsible="offcanvas">
-          <SidebarHeader className="p-2">
+          <SidebarHeader className="p-4">
             <Link href="/" className="flex items-center space-x-2">
               <SlidersHorizontal className="h-6 w-6 text-primary" />
               <span className="text-lg font-bold font-headline">
@@ -88,8 +88,8 @@ export default function AdminDashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+        <div className="flex flex-col flex-1">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
             <Sheet>
               <SheetTrigger asChild>
                 <Button size="icon" variant="outline" className="sm:hidden">
@@ -97,22 +97,24 @@ export default function AdminDashboardLayout({
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="sm:max-w-xs">
-                <nav className="grid gap-6 text-lg font-medium">
+              <SheetContent side="left" className="sm:max-w-xs p-0">
+                <SidebarHeader className="p-4 border-b">
                   <Link
                     href="/"
-                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+                    className="flex items-center space-x-2"
                   >
-                    <SlidersHorizontal className="h-5 w-5 transition-all group-hover:scale-110" />
-                    <span className="sr-only">FilterForge</span>
+                    <SlidersHorizontal className="h-6 w-6 text-primary" />
+                    <span className="text-lg font-bold font-headline">FilterForge</span>
                   </Link>
+                </SidebarHeader>
+                <nav className="grid gap-2 text-lg font-medium p-4">
                   {menuItems.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}
                       href={href}
-                      className={`flex items-center gap-4 px-2.5 ${
+                      className={`flex items-center gap-4 px-2.5 rounded-lg py-2 ${
                         pathname === href
-                          ? 'text-foreground'
+                          ? 'bg-accent text-accent-foreground'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
