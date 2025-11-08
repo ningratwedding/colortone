@@ -191,6 +191,44 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
+          {/* Payment Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Pengaturan Pembayaran</CardTitle>
+              <CardDescription>
+                Kelola informasi rekening bank Anda untuk pencairan dana.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="bank-name">Nama Bank</Label>
+                <Select>
+                  <SelectTrigger id="bank-name">
+                    <SelectValue placeholder="Pilih Bank" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bca">BCA</SelectItem>
+                    <SelectItem value="mandiri">Mandiri</SelectItem>
+                    <SelectItem value="bni">BNI</SelectItem>
+                    <SelectItem value="bri">BRI</SelectItem>
+                    <SelectItem value="cimb">CIMB Niaga</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="account-holder-name">Nama Pemilik Rekening</Label>
+                <Input id="account-holder-name" placeholder="Sesuai nama di buku tabungan" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="account-number">Nomor Rekening</Label>
+                <Input id="account-number" placeholder="Masukkan nomor rekening" />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full">Simpan Informasi Bank</Button>
+            </CardFooter>
+          </Card>
+
           {/* Account Settings */}
           <Card>
             <CardHeader>
