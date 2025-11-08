@@ -21,22 +21,22 @@ import {
 import { useEffect, useState } from "react";
 
 const data = [
-  { name: "Jan", revenue: 40000000 },
-  { name: "Feb", revenue: 30000000 },
-  { name: "Mar", revenue: 50000000 },
-  { name: "Apr", revenue: 45000000 },
-  { name: "May", revenue: 60000000 },
-  { name: "Jun", revenue: 55000000 },
+  { name: "Jan", revenue: 80000000 },
+  { name: "Feb", revenue: 65000000 },
+  { name: "Mar", revenue: 95000000 },
+  { name: "Apr", revenue: 75000000 },
+  { name: "May", revenue: 110000000 },
+  { name: "Jun", revenue: 100000000 },
 ];
 
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
   const [formattedRevenue, setFormattedRevenue] = useState<string>('');
   
   useEffect(() => {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
-    setFormattedRevenue(formatCurrency(452318900));
+    setFormattedRevenue(formatCurrency(985231890));
   }, []);
 
   const formatCompact = (amount: number) => {
@@ -48,59 +48,59 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      
+    <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Ringkasan Platform</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Pendapatan
+              Total Pendapatan (All-Time)
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formattedRevenue}</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +20.1% dari bulan lalu
+            <p className="text-xs text-muted-foreground">
+              +15.2% dari bulan lalu
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Penjualan</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +180.1% dari bulan lalu
+            <div className="text-2xl font-bold">+10293</div>
+            <p className="text-xs text-muted-foreground">
+              +12.1% dari bulan lalu
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Produk Aktif
+              Total Produk
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +2 sejak bulan lalu
+            <div className="text-2xl font-bold">1,204</div>
+            <p className="text-xs text-muted-foreground">
+              +50 sejak bulan lalu
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pengikut</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Kreator</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +201 sejak bulan lalu
+            <div className="text-2xl font-bold">+218</div>
+            <p className="text-xs text-muted-foreground">
+              +15 sejak bulan lalu
             </p>
           </CardContent>
         </Card>
@@ -108,9 +108,9 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pendapatan Bulanan</CardTitle>
+          <CardTitle>Pendapatan Platform Bulanan</CardTitle>
           <CardDescription>
-            Ringkasan penjualan Anda selama 6 bulan terakhir.
+            Ringkasan penjualan seluruh platform selama 6 bulan terakhir.
           </CardDescription>
         </CardHeader>
         <CardContent>

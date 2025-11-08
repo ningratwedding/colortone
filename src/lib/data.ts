@@ -43,6 +43,8 @@ export const categories = [
     { id: 'studio', name: 'Foto Studio' },
     { id: 'keluarga', name: 'Keluarga' },
     { id: 'perjalanan', name: 'Perjalanan' },
+    { id: 'fashion', name: 'Fashion' },
+    { id: 'makanan', name: 'Makanan' },
 ];
 
 export const software = [

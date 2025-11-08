@@ -6,7 +6,6 @@ import {
   CircleUserRound,
   Menu,
   Search,
-  SlidersHorizontal,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -19,22 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 import { useSidebar } from './ui/sidebar';
-
-const navLinks = [
-  { href: '/creator/dashboard', label: 'Ringkasan' },
-  { href: '/creator/products', label: 'Produk' },
-  { href: '/creator/upload', label: 'Unggah' },
-  { href: '/creator/analytics', label: 'Analitik' },
-  { href: '/creator/settings', label: 'Pengaturan' },
-];
 
 export function AdminHeader({ title }: { title: string }) {
   const { toggleSidebar } = useSidebar();
@@ -60,7 +44,7 @@ export function AdminHeader({ title }: { title: string }) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Cari produk..."
+              placeholder="Cari..."
               className="w-full bg-card md:w-64 pl-10 rounded-full"
             />
           </div>
@@ -73,16 +57,16 @@ export function AdminHeader({ title }: { title: string }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+              <DropdownMenuLabel>Admin</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/creator/settings">
-                  <span>Pengaturan</span>
+                <Link href="/admin/settings">
+                  <span>Pengaturan Platform</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/">
-                  <span>Lihat Toko</span>
+                  <span>Lihat Situs</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

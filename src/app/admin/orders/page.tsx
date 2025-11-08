@@ -27,6 +27,7 @@ import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const mockOrders = [
   {
@@ -65,6 +66,18 @@ const mockOrders = [
     status: 'Diproses',
     date: new Date('2024-07-21T09:15:00'),
   },
+  {
+    id: 'ORD004',
+    customer: {
+      name: 'Eka Putri',
+      email: 'eka.p@example.com',
+      whatsapp: '+6287712345678',
+    },
+    product: products[1],
+    total: products[1].price * 1.08,
+    status: 'Selesai',
+    date: new Date('2024-07-21T11:00:00'),
+  },
 ];
 
 type FormattedData = {
@@ -74,7 +87,7 @@ type FormattedData = {
     }
 }
 
-export default function OrdersPage() {
+export default function AdminOrdersPage() {
 
     const [formattedData, setFormattedData] = useState<FormattedData>({});
     const [date, setDate] = useState<DateRange | undefined>();
@@ -104,14 +117,14 @@ export default function OrdersPage() {
     }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <div>
-            <CardTitle>Pesanan Terbaru</CardTitle>
+            <CardTitle>Semua Pesanan</CardTitle>
             <CardDescription>
-              Lihat dan kelola pesanan yang masuk untuk produk Anda.
+              Lihat dan kelola semua pesanan yang masuk di platform.
             </CardDescription>
           </div>
            <Popover>
@@ -158,7 +171,7 @@ export default function OrdersPage() {
               <TableRow>
                 <TableHead>ID Pesanan</TableHead>
                 <TableHead>Pelanggan</TableHead>
-                <TableHead className="hidden md:table-cell">Produk</TableHead>
+                <TableHead>Produk</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="hidden lg:table-cell">Tanggal</TableHead>
@@ -174,9 +187,16 @@ export default function OrdersPage() {
                   <TableCell>
                     <div className="font-medium">{order.customer.name}</div>
                     <div className="text-sm text-muted-foreground">{order.customer.email}</div>
-                    <div className="text-sm text-muted-foreground">{order.customer.whatsapp}</div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">{order.product.name}</TableCell>
+                  <TableCell>
+                    <div>{order.product.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                        oleh{' '}
+                        <Link href={`/creator/${order.product.creator.id}`} className="hover:underline">
+                            {order.product.creator.name}
+                        </Link>
+                    </div>
+                  </TableCell>
                   <TableCell>{formattedData[order.id]?.total}</TableCell>
                   <TableCell>
                     <Badge variant={order.status === 'Selesai' ? 'default' : 'secondary'} className={order.status === 'Selesai' ? 'bg-green-600' : ''}>{order.status}</Badge>
@@ -196,8 +216,8 @@ export default function OrdersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem>Lihat Detail</DropdownMenuItem>
-                        <DropdownMenuItem>Tandai Selesai</DropdownMenuItem>
+                        <DropdownMenuItem>Lihat Detail Pesanan</DropdownMenuItem>
+                        <DropdownMenuItem>Hubungi Pelanggan</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

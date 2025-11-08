@@ -8,6 +8,7 @@ import {
   Search,
   Settings,
   SlidersHorizontal,
+  Shield,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -119,13 +120,19 @@ export function SiteHeader() {
                   <DropdownMenuItem asChild>
                     <Link href="/creator/dashboard">
                       <SlidersHorizontal className="mr-2 h-4 w-4" />
-                      <span>Dasbor</span>
+                      <span>Dasbor Kreator</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/creator/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Dasbor Admin</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

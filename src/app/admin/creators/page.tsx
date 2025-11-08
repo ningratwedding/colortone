@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,72 +29,52 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { products } from "@/lib/data";
+import { users } from "@/lib/data";
 
-export default function AdminProductsPage() {
-  const [allProducts] = useState(products);
-  const [formattedPrices, setFormattedPrices] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-
-    const prices: { [key: string]: string } = {};
-    allProducts.forEach(product => {
-      prices[product.id] = formatCurrency(product.price);
-    });
-    setFormattedPrices(prices);
-  }, [allProducts]);
+export default function AdminCreatorsPage() {
+  const [allCreators] = useState(users);
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Semua Produk</CardTitle>
+          <CardTitle>Manajemen Kreator</CardTitle>
           <CardDescription>
-            Kelola semua produk di platform dan lihat kinerjanya.
+            Lihat dan kelola semua kreator di platform.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Gambar</span>
+                <TableHead className="hidden w-[80px] sm:table-cell">
+                  <span className="sr-only">Avatar</span>
                 </TableHead>
-                <TableHead>Nama Produk</TableHead>
-                <TableHead>Kreator</TableHead>
+                <TableHead>Nama Kreator</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Harga</TableHead>
+                <TableHead>Jumlah Produk</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allProducts.map((product) => (
-                <TableRow key={product.id}>
+              {allCreators.map((creator) => (
+                <TableRow key={creator.id}>
                   <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt={product.name}
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={product.imageAfter.imageUrl}
-                      width="64"
-                      data-ai-hint={product.imageAfter.imageHint}
-                    />
+                     <Avatar>
+                        <AvatarImage src={creator.avatar.imageUrl} data-ai-hint={creator.avatar.imageHint} />
+                        <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
                   </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>
-                    <Link href={`/creator/${product.creator.id}`} className="hover:underline">
-                      {product.creator.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium">{creator.name}</TableCell>
+                   <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
-                  <TableCell className="font-medium text-primary">{formattedPrices[product.id]}</TableCell>
+                  <TableCell>
+                    {/* Placeholder value */}
+                    {Math.floor(Math.random() * 10) + 1}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -109,9 +89,10 @@ export default function AdminProductsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem>Lihat Produk</DropdownMenuItem>
-                        <DropdownMenuItem>Nonaktifkan</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Hapus</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/creator/${creator.id}`}>Lihat Profil</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Nonaktifkan Kreator</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
