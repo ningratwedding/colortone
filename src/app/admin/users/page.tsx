@@ -139,7 +139,7 @@ export default function AdminUsersPage() {
                   <TableCell className="hidden md:table-cell text-muted-foreground">{user.email}</TableCell>
                    <TableCell>
                     {getRoleBadge(user.role)}
-                  </TableCell>
+                   </TableCell>
                    <TableCell className="hidden lg:table-cell text-muted-foreground">
                     {formatDate(user.createdAt)}
                    </TableCell>

@@ -17,8 +17,8 @@ import { ImageCompareSlider } from "./image-compare-slider";
 import { Button } from "./ui/button";
 import { CreditCard } from "lucide-react";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { doc, getFirestore } from "firebase/firestore";
-import { useFirebaseApp } from "@/firebase/provider";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
 
 interface ProductCardProps {
   product: Product;
@@ -27,8 +27,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const [formattedPrice, setFormattedPrice] = useState<string>('');
-  const app = useFirebaseApp();
-  const firestore = getFirestore(app);
+  const firestore = useFirestore();
 
   const creatorRef = useMemo(() => {
       if (!firestore || !product.creatorId) return null;
