@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -9,15 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { products, type Product } from '@/lib/data';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Banknote, Terminal, Wallet } from 'lucide-react';
+import { Banknote, Edit, Mail, Terminal, Wallet, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+
+// Mock data for logged-in user
+const loggedInUser = {
+    email: 'dewi.lestari@example.com',
+    whatsapp: '+6287654321098'
+}
 
 export default function CheckoutForm({ product }: { product?: Product }) {
   const [formattedSubtotal, setFormattedSubtotal] = useState('');
@@ -68,20 +73,23 @@ export default function CheckoutForm({ product }: { product?: Product }) {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-3">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Informasi Kontak</CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/account/settings">
+                  <Edit className="h-3 w-3 mr-1" /> Ubah
+                </Link>
+              </Button>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="email">Alamat Email</Label>
-                  <Input id="email" type="email" placeholder="anda@contoh.com" required />
+            <CardContent className="space-y-2 text-sm">
+                <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-muted-foreground"/>
+                    <span>{loggedInUser.email}</span>
                 </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
-                  <Input id="whatsapp" type="tel" placeholder="+62 812-3456-7890" required />
+                 <div className="flex items-center gap-3">
+                    <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                    <span>{loggedInUser.whatsapp}</span>
                 </div>
-              </div>
             </CardContent>
           </Card>
           <Card>

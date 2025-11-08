@@ -43,6 +43,10 @@ export default function AccountSettingsPage() {
                     <Input id="email" type="email" defaultValue="dewi.lestari@example.com" />
                 </div>
                  <div className="grid gap-2">
+                    <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
+                    <Input id="whatsapp" type="tel" defaultValue="+6287654321098" />
+                </div>
+                 <div className="grid gap-2">
                     <Label htmlFor="password">Kata Sandi Baru</Label>
                     <Input id="password" type="password" placeholder="Kosongkan jika tidak ingin mengubah" />
                 </div>
