@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,11 +51,18 @@ export default function DashboardProductsPage() {
     const firestore = useFirestore();
 
     const productsQuery = useMemo(() => {
-        if (!user || !firestore) return null;
-        return query(collection(firestore, 'products'), where('creatorId', '==', user.uid), orderBy('sales', 'desc'));
-    }, [user, firestore]);
+        if (!firestore) return null;
+        // Query all products, we will filter on the client
+        return query(collection(firestore, 'products'), orderBy('sales', 'desc'));
+    }, [firestore]);
 
-    const { data: sellerProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+    const { data: allProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+
+    const sellerProducts = useMemo(() => {
+        if (!user || !allProducts) return [];
+        // Filter products by creatorId on the client
+        return allProducts.filter(p => p.creatorId === user.uid);
+    }, [user, allProducts]);
 
     const loading = userLoading || productsLoading;
 
