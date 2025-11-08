@@ -31,15 +31,6 @@ const data = [
   { name: "Jun", revenue: 55000000 },
 ];
 
-const chartColors = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-    "hsl(var(--chart-1))", // Repeat for more months
-]
-
 export default function DashboardPage() {
   const [formattedRevenue, setFormattedRevenue] = useState<string>('');
   
@@ -57,6 +48,8 @@ export default function DashboardPage() {
   const formatTooltip = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
   }
+
+  const maxRevenue = Math.max(...data.map(item => item.revenue));
 
   return (
     <div className="space-y-4">
@@ -126,10 +119,16 @@ export default function DashboardPage() {
                 formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--chart-2))" name="Pendapatan" radius={[4, 4, 0, 0]}>
-                {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                ))}
+              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]}>
+                {data.map((entry, index) => {
+                  const opacity = (entry.revenue / maxRevenue) * 0.7 + 0.3; // Gradasi dari 30% hingga 100%
+                  return (
+                    <Cell 
+                        key={`cell-${index}`} 
+                        fill={`hsl(var(--primary) / ${opacity})`} 
+                    />
+                  );
+                })}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
