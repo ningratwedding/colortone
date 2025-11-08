@@ -8,7 +8,7 @@ export function SiteFooter() {
         <footer className="border-t">
             <div className="container flex h-16 items-center">
                 <p className="text-center text-sm leading-loose text-muted-foreground w-full">
-                    &copy; {new Date().getFullYear()} FilterForge. Semua hak dilindungi undang-undang.
+                    &copy; {new Date().getFullYear()} Colortone. Semua hak dilindungi undang-undang.
                 </p>
             </div>
         </footer>

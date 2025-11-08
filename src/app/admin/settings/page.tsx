@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -26,11 +27,11 @@ export default function AdminSettingsPage() {
             <CardContent className="space-y-3">
                 <div className="grid gap-1.5">
                     <Label htmlFor="app-name">Nama Aplikasi</Label>
-                    <Input id="app-name" defaultValue="FilterForge" />
+                    <Input id="app-name" defaultValue="Colortone" />
                 </div>
                 <div className="grid gap-1.5">
                     <Label htmlFor="support-email">Email Dukungan</Label>
-                    <Input id="support-email" type="email" defaultValue="support@filterforge.com" />
+                    <Input id="support-email" type="email" defaultValue="support@colortone.com" />
                 </div>
             </CardContent>
             <CardFooter>

@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ export default function SignupPage() {
            <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
               <SlidersHorizontal className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold font-headline">FilterForge</span>
+              <span className="text-2xl font-bold font-headline">Colortone</span>
             </Link>
           </div>
           <CardTitle className="text-2xl">Mulai Kisah Anda</CardTitle>
