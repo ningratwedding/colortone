@@ -56,7 +56,7 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
         <div className="mt-4 flex items-center gap-4">
           {creator.socials && Object.entries(creator.socials).map(([platform, username]) => {
               const social = socialLinks[platform as keyof typeof socialLinks];
-              if (!social) return null;
+              if (!social || !username) return null;
               return (
                   <Link 
                       key={platform}

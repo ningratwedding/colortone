@@ -65,6 +65,8 @@ const socialIcons = {
   tiktok: <TikTokIcon className="h-5 w-5" />,
 };
 
+type SocialPlatform = keyof typeof socialIcons;
+
 const bankList = [
     { code: 'bca', name: 'BCA' },
     { code: 'mandiri', name: 'Bank Mandiri' },
@@ -91,6 +93,25 @@ export default function SettingsPage() {
   const user = users[0];
   const [socials, setSocials] = useState(user.socials || {});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
+  const [newSocialUsername, setNewSocialUsername] = useState('');
+
+  const handleAddSocial = () => {
+    if (newSocialPlatform && newSocialUsername) {
+      setSocials(prev => ({...prev, [newSocialPlatform]: newSocialUsername}));
+      setIsDialogOpen(false);
+      setNewSocialPlatform('');
+      setNewSocialUsername('');
+    }
+  }
+
+  const handleRemoveSocial = (platform: SocialPlatform) => {
+    setSocials(prev => {
+        const newSocials = {...prev};
+        delete newSocials[platform];
+        return newSocials;
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -157,7 +178,7 @@ export default function SettingsPage() {
                           readOnly
                         />
                       </div>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(platform as SocialPlatform)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -184,7 +205,7 @@ export default function SettingsPage() {
                     <div className="grid gap-4 py-4">
                       <div className="grid gap-2">
                         <Label htmlFor="platform">Platform</Label>
-                        <Select>
+                        <Select onValueChange={(value) => setNewSocialPlatform(value as SocialPlatform)}>
                           <SelectTrigger>
                             <SelectValue placeholder="Pilih platform sosial" />
                           </SelectTrigger>
@@ -197,11 +218,11 @@ export default function SettingsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="username">Nama Pengguna</Label>
-                        <Input id="username" placeholder="@username" />
+                        <Input id="username" placeholder="misal: elenapetrova" value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit">Simpan</Button>
+                      <Button onClick={handleAddSocial}>Simpan</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -334,5 +355,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    
