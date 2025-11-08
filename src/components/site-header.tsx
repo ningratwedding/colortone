@@ -9,7 +9,10 @@ import {
   Settings,
   SlidersHorizontal,
   Shield,
+  LogOut,
+  LogIn
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -29,11 +32,30 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { useUser } from '@/firebase/auth/use-user';
+import { signOut } from '@/firebase/auth/actions';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const navLinks: { href: string; label: string }[] = [
 ];
 
 export function SiteHeader() {
+  const { user, loading } = useUser();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({ title: "Berhasil Keluar", description: "Anda telah keluar dari akun Anda."});
+    router.push('/');
+  }
+
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2);
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4 md:px-6">
@@ -108,42 +130,63 @@ export function SiteHeader() {
 
         {/* Right Section (Actions) */}
         <div className="flex items-center justify-end space-x-2">
-           <Button variant="outline" className="hidden sm:inline-flex" asChild>
-              <Link href="/creator/dashboard">Menjadi Kreator</Link>
-            </Button>
+           {!user && !loading && (
+             <Button variant="outline" className="hidden sm:inline-flex" asChild>
+                <Link href="/login">Menjadi Kreator</Link>
+              </Button>
+           )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
-                  <CircleUserRound className="h-5 w-5" />
+                  {user ? (
+                     <Avatar className="h-8 w-8">
+                       <AvatarImage src={user.photoURL || ''} />
+                       <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                     </Avatar>
+                  ) : (
+                     <CircleUserRound className="h-5 w-5" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuLabel>{user ? user.displayName || "Akun Saya" : "Akun Saya"}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+                {user ? (
+                   <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link href="/creator/dashboard">
+                          <SlidersHorizontal className="mr-2 h-4 w-4" />
+                          <span>Dasbor Kreator</span>
+                        </Link>
+                      </DropdownMenuItem>
+                       <DropdownMenuItem asChild>
+                        <Link href="/account/settings">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Pengaturan Akun</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">
+                          <Shield className="mr-2 h-4 w-4" />
+                          <span>Dasbor Admin</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                     <DropdownMenuItem onClick={handleSignOut}>
+                       <LogOut className="mr-2 h-4 w-4" />
+                      <span>Keluar</span>
+                    </DropdownMenuItem>
+                   </>
+                ) : (
                   <DropdownMenuItem asChild>
-                    <Link href="/creator/dashboard">
-                      <SlidersHorizontal className="mr-2 h-4 w-4" />
-                      <span>Dasbor Kreator</span>
+                    <Link href="/login">
+                       <LogIn className="mr-2 h-4 w-4" />
+                      Masuk
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/creator/settings">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Pengaturan</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <Shield className="mr-2 h-4 w-4" />
-                      <span>Dasbor Admin</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/login">Masuk</Link>
-                </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
         </div>
@@ -151,3 +194,4 @@ export function SiteHeader() {
     </header>
   );
 }
+

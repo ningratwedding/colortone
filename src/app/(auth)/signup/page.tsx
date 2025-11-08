@@ -1,6 +1,13 @@
 
+'use client';
+
 import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +17,69 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { signInWithGoogle, signUpWithEmail } from "@/firebase/auth/actions";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+
+const formSchema = z.object({
+  fullName: z.string().min(3, "Nama lengkap harus diisi."),
+  email: z.string().email("Format email tidak valid."),
+  password: z.string().min(6, "Kata sandi minimal 6 karakter."),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 
 export default function SignupPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleGoogleSignIn = async () => {
+    const result = await signInWithGoogle();
+    if (result.success) {
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
+      router.push("/account");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Gagal Mendaftar",
+        description: result.error,
+      });
+    }
+  };
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const result = await signUpWithEmail(data.email, data.password, data.fullName);
+    if (result.success) {
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
+      router.push("/account");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Gagal Mendaftar",
+        description: result.error,
+      });
+    }
+  };
+
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
       <Card className="w-full max-w-sm">
@@ -29,31 +96,72 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="first-name">Nama Lengkap</Label>
-              <Input id="first-name" placeholder="Max" required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nama Lengkap</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nama Anda" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="m@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kata Sandi</FormLabel>
+                    <FormControl>
+                       <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                 {form.formState.isSubmitting ? "Membuat akun..." : "Buat sebuah akun"}
+              </Button>
+            </form>
+          </Form>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Kata Sandi</Label>
-              <Input id="password" type="password" />
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Atau lanjutkan dengan
+              </span>
             </div>
-            <Button type="submit" className="w-full">
-              Buat sebuah akun
-            </Button>
-            <Button variant="outline" className="w-full">
-              Daftar dengan Google
-            </Button>
           </div>
+          
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+            Daftar dengan Google
+          </Button>
+
           <div className="mt-4 text-center text-sm">
             Sudah punya akun?{" "}
             <Link href="/login" className="underline">
