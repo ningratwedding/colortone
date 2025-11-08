@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -54,7 +55,11 @@ export function SiteHeader() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const userProfileRef = user ? doc(firestore, 'users', user.uid) : null;
+  const userProfileRef = useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   const loading = userLoading || (user && profileLoading);
@@ -83,7 +88,7 @@ export function SiteHeader() {
             {user ? (
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'} />
-                <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                <AvatarFallback>{getInitials(userProfile?.name || user.displayName)}</AvatarFallback>
               </Avatar>
             ) : (
               <CircleUserRound className="h-5 w-5" />
