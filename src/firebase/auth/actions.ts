@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
   type User,
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
@@ -90,6 +91,9 @@ export async function signUpWithEmail(email: string, password: string, fullName:
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const user = result.user;
         
+        // Send verification email
+        await sendEmailVerification(user);
+
         const profile = await createUserDocument(user, fullName);
 
         return { success: true, user, profile };
