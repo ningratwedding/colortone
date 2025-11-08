@@ -24,6 +24,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
+  SidebarInset,
   SidebarTrigger
 } from "@/components/ui/sidebar";
 import { Button } from '@/components/ui/button';
@@ -58,16 +59,15 @@ export default function CreatorDashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const pageTitle = menuItems.find((item) => pathname === item.href)?.label || "Dasbor Kreator";
+  const pageTitle = menuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/creator/dashboard' || pathname === '/creator/dashboard'))?.label || "Dasbor Kreator";
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <Sidebar className="hidden border-r bg-background md:block">
-          <SidebarHeader className="p-4">
-             <Link href="/" className="flex items-center space-x-2">
+        <Sidebar collapsible="icon" variant="inset" side="left">
+          <SidebarHeader>
+            <Link href="/" className="flex items-center space-x-2 px-2">
               <SlidersHorizontal className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold font-headline">
+              <span className="text-lg font-bold font-headline group-data-[collapsible=icon]:hidden">
                 FilterForge
               </span>
             </Link>
@@ -80,10 +80,11 @@ export default function CreatorDashboardLayout({
                     asChild
                     isActive={pathname === href}
                     className="justify-start"
+                    tooltip={label}
                   >
                     <Link href={href}>
-                      <Icon className="mr-2 h-4 w-4" />
-                      {label}
+                      <Icon />
+                      <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -92,52 +93,18 @@ export default function CreatorDashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col md:pl-[16rem]">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-             <Sheet>
-                <SheetTrigger asChild>
-                  <Button size="icon" variant="outline" className="md:hidden">
-                    <PanelLeft className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="sm:max-w-xs">
-                  <nav className="grid gap-6 text-lg font-medium">
-                     <Link
-                      href="/"
-                      className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
-                    >
-                      <SlidersHorizontal className="h-5 w-5 transition-all group-hover:scale-110" />
-                      <span className="sr-only">FilterForge</span>
-                    </Link>
-                    {menuItems.map(({ href, label, icon: Icon }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            className={`flex items-center gap-4 px-2.5 ${
-                                pathname === href
-                                ? 'text-foreground'
-                                : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                        >
-                            <Icon className="h-5 w-5" />
-                            {label}
-                        </Link>
-                    ))}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-
+        <SidebarInset>
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+             <SidebarTrigger className="flex md:hidden" />
             <div className="flex-1">
               <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
             </div>
-
             <div className="relative ml-auto flex-initial md:grow-0">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Cari..."
-                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
               />
             </div>
             <DropdownMenu>
@@ -153,16 +120,19 @@ export default function CreatorDashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Pengaturan</DropdownMenuItem>
-                <DropdownMenuItem>Dukungan</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/creator/settings">Pengaturan</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/">Lihat Situs</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Keluar</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
           <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
-        </div>
-      </div>
+        </SidebarInset>
     </SidebarProvider>
   );
 }
