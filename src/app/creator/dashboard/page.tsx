@@ -18,7 +18,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
 import { useEffect, useState } from "react";
 
@@ -48,8 +47,6 @@ export default function DashboardPage() {
   const formatTooltip = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
   }
-
-  const maxRevenue = Math.max(...data.map(item => item.revenue));
 
   return (
     <div className="space-y-4">
@@ -119,17 +116,7 @@ export default function DashboardPage() {
                 formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]}>
-                {data.map((entry, index) => {
-                  const opacity = (entry.revenue / maxRevenue) * 0.7 + 0.3; // Gradasi dari 30% hingga 100%
-                  return (
-                    <Cell 
-                        key={`cell-${index}`} 
-                        fill={`hsl(var(--primary) / ${opacity})`} 
-                    />
-                  );
-                })}
-              </Bar>
+              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
