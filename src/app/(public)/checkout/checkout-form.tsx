@@ -65,15 +65,14 @@ export default function CheckoutForm({ product }: { product?: Product }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 font-headline">Pembayaran</h1>
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Informasi Kontak</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Alamat Email</Label>
                   <Input id="email" type="email" placeholder="anda@contoh.com" />
@@ -92,8 +91,8 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                 Pilih metode pembayaran pilihan Anda.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid gap-4">
+            <CardContent className="space-y-3">
+                <div className="grid gap-3">
                     <Button variant="outline" size="lg" className="justify-start">
                         <Banknote className="mr-4" />
                         Transfer Bank
@@ -103,7 +102,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                         E-Wallet (QRIS)
                     </Button>
                 </div>
-                <p className="text-xs text-muted-foreground pt-4">
+                <p className="text-xs text-muted-foreground pt-2">
                     Setelah mengklik "Buat Pesanan", Anda akan menerima instruksi pembayaran melalui email dan WhatsApp.
                 </p>
             </CardContent>
@@ -115,7 +114,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
             <CardHeader>
               <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <div
                 key={product.id}
                 className="flex justify-between items-center"
