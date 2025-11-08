@@ -7,12 +7,10 @@ import { products, type Product } from '@/lib/data';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Download, KeyRound } from 'lucide-react';
+import { CheckCircle, Download } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
@@ -34,12 +32,11 @@ function ConfirmationContent() {
     );
   }
 
-  const handleVerify = () => {
-    // Di aplikasi nyata, di sini Anda akan memverifikasi kode dengan backend
-    // dan kemudian memicu pengunduhan.
-    // Untuk demonstrasi, kita akan men-trigger unduhan file placeholder.
+  const handleDownload = () => {
+    // Di aplikasi nyata, ini akan memverifikasi otorisasi pengguna
+    // dan kemudian memicu pengunduhan aman.
     const link = document.createElement('a');
-    link.href = '/placeholder.zip';
+    link.href = '/placeholder.zip'; // Placeholder file
     link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
     document.body.appendChild(link);
     link.click();
@@ -53,9 +50,9 @@ function ConfirmationContent() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-          <CardTitle className="mt-4 text-2xl font-bold">Pesanan Berhasil!</CardTitle>
+          <CardTitle className="mt-4 text-2xl font-bold">Pembayaran Berhasil!</CardTitle>
           <CardDescription>
-            Kode unduhan unik telah dikirim ke nomor WhatsApp Anda. Masukkan kode di bawah ini untuk mengunduh produk.
+            Terima kasih atas pembelian Anda. Produk Anda sekarang siap untuk diunduh.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -75,27 +72,19 @@ function ConfirmationContent() {
                 </div>
             </div>
           </div>
-        
-          <div className="grid w-full items-center gap-1.5 text-left">
-            <Label htmlFor="download-code">Kode Unduhan</Label>
-            <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="download-code" placeholder="XYZ-123-ABC" className="pl-10" />
-            </div>
-          </div>
           
-          <Button className="w-full" onClick={handleVerify}>
+          <Button className="w-full" onClick={handleDownload}>
             <Download className="mr-2 h-4 w-4" />
-            Verifikasi & Unduh
+            Unduh Sekarang
           </Button>
-          
-          <div className="text-xs text-muted-foreground pt-2">
-            <p>Jika Anda tidak menerima kode dalam 5 menit, silakan periksa kembali nomor WhatsApp yang Anda masukkan atau hubungi dukungan.</p>
-          </div>
           
           <Button asChild className="w-full" variant="outline">
-            <Link href="/">Kembali ke Beranda</Link>
+            <Link href="/account/purchases">Kembali ke Pembelian Saya</Link>
           </Button>
+
+           <div className="text-xs text-muted-foreground pt-2">
+            <p>Produk ini dan semua pembelian Anda yang lain akan selalu tersedia di halaman "Pembelian Saya".</p>
+          </div>
         </CardContent>
       </Card>
     </div>
