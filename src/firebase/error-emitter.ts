@@ -1,23 +1,32 @@
 // A simple event emitter
 // See https://dev.to/raresportan/how-to-build-a-type-safe-event-emitter-in-typescript-192b
 
-type Listener<T> = (data: T) => void;
+type Listener = (...args: any[]) => void;
 
-class EventEmitter<T> {
-  private listeners: Listener<T>[] = [];
+class EventEmitter {
+  private listeners: { [event: string]: Listener[] } = {};
 
-  on(listener: Listener<T>) {
-    this.listeners.push(listener);
+  on(event: string, listener: Listener) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(listener);
   }
 
-  off(listener: Listener<T>) {
-    this.listeners = this.listeners.filter(l => l !== listener);
+  off(event: string, listener: Listener) {
+    if (!this.listeners[event]) {
+      return;
+    }
+    this.listeners[event] = this.listeners[event].filter(l => l !== listener);
   }
 
-  emit(data: T) {
-    this.listeners.forEach(listener => listener(data));
+  emit(event: string, ...args: any[]) {
+    if (!this.listeners[event]) {
+      return;
+    }
+    this.listeners[event].forEach(listener => listener(...args));
   }
 }
 
 // Global error emitter
-export const errorEmitter = new EventEmitter<any>();
+export const errorEmitter = new EventEmitter();
