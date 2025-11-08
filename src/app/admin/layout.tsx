@@ -78,7 +78,6 @@ export default function AdminDashboardLayout({
                   <SidebarMenuButton
                     asChild
                     isActive={pathname.startsWith(href)}
-                    className="justify-start"
                     tooltip={label}
                   >
                     <Link href={href}>
@@ -97,7 +96,6 @@ export default function AdminDashboardLayout({
                          <SidebarMenuButton
                             asChild
                             isActive={pathname.startsWith(settingsItem.href)}
-                            className="justify-start"
                             tooltip={settingsItem.label}
                         >
                             <Link href={settingsItem.href}>
