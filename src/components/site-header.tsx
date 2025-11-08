@@ -47,6 +47,7 @@ import type { UserProfile } from '@/lib/data';
 
 const navLinks: { href: string; label: string }[] = [
   { href: '/tutorial/order', label: 'Cara Pesan' },
+  { href: '/tutorial/installation', label: 'Cara Instalasi' },
 ];
 
 export function SiteHeader() {
