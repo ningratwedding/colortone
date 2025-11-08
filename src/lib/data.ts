@@ -48,6 +48,7 @@ export const categories = [
     { id: 'perjalanan', name: 'Perjalanan' },
     { id: 'fashion', name: 'Fashion' },
     { id: 'makanan', name: 'Makanan' },
+    { id: 'color-profile-camera', name: 'Color profile camera' },
 ];
 
 export const software = [
