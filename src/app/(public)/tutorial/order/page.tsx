@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Card,
   CardContent,
@@ -30,36 +32,38 @@ const tutorialSteps = [
 
 export default function OrderTutorialPage() {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-3xl">
-      <Card className="shadow-lg">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-2">
-            <h2 className="text-3xl">🛍️</h2>
+    <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <Card>
+        <CardHeader className="items-center text-center p-6">
+          <div className="p-3 bg-primary/10 rounded-full mb-2">
+            <ShoppingCart className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-3xl font-bold font-headline">
             Cara Melakukan Pesanan
           </CardTitle>
-          <CardDescription className="text-base text-muted-foreground">
+          <CardDescription className="text-base text-muted-foreground max-w-prose">
             Ikuti langkah-langkah mudah ini untuk membeli dan mengunduh produk dari kreator favorit Anda.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <ul className="space-y-5">
-            {tutorialSteps.map((step, index) => (
-              <li key={index} className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary flex-shrink-0">
-                  <step.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-           <div className="border-t pt-5 text-center">
+        <CardContent className="px-6 pb-6">
+          <div className="border-t pt-6">
+            <ul className="space-y-6">
+              {tutorialSteps.map((step, index) => (
+                <li key={index} className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground flex-shrink-0">
+                    <step.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">{step.title}</h3>
+                    <p className="text-muted-foreground">{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+           <div className="border-t pt-6 mt-6 text-center">
              <p className="text-muted-foreground mb-3">Siap untuk memulai?</p>
-             <Button asChild>
+             <Button asChild size="lg">
                 <Link href="/">Jelajahi Produk Sekarang</Link>
              </Button>
            </div>
