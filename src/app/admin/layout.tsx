@@ -11,7 +11,6 @@ import {
   ShoppingCart,
   Users,
   SlidersHorizontal,
-  PanelLeft,
   Search,
   CircleUserRound,
 } from "lucide-react";
@@ -90,7 +89,7 @@ export default function AdminDashboardLayout({
 
         <SidebarInset>
           <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
-             <SidebarTrigger className="flex md:hidden" />
+             <SidebarTrigger className="flex" />
             <div className="flex-1">
               <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
             </div>

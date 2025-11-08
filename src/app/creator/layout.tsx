@@ -11,7 +11,6 @@ import {
   Settings,
   ShoppingCart,
   Upload,
-  PanelLeft,
   Search,
   CircleUserRound,
   SlidersHorizontal
@@ -37,11 +36,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 
 
 const menuItems = [
@@ -95,7 +89,7 @@ export default function CreatorDashboardLayout({
 
         <SidebarInset>
           <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
-             <SidebarTrigger className="flex md:hidden" />
+             <SidebarTrigger className="flex" />
             <div className="flex-1">
               <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
             </div>
