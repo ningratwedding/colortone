@@ -15,38 +15,74 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useFirestore, useStorage } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { updateDoc } from 'firebase/firestore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { uploadFile } from '@/firebase/storage/actions';
+import { updateProfile as updateAuthProfile } from 'firebase/auth';
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
+    const storage = useStorage();
     const { toast } = useToast();
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const userProfileRef = user ? doc(firestore, 'users', user.uid) : null;
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
     
     const [name, setName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     
     useEffect(() => {
         if (userProfile) {
             setName(userProfile.name);
+            setPhoneNumber(userProfile.phoneNumber || '');
+            setAvatarPreview(userProfile.avatarUrl);
         }
     }, [userProfile]);
 
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    };
+
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !userProfile) return;
+        if (!userProfileRef || !userProfile || !user) return;
         setIsSaving(true);
         try {
-            await updateDoc(userProfileRef, {
+            let newAvatarUrl = userProfile.avatarUrl;
+
+            if (avatarFile) {
+                toast({ title: 'Mengunggah foto profil...' });
+                newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
+            }
+
+            const updatedData: Partial<UserProfile> = {
                 name: name,
-            });
+                phoneNumber: phoneNumber,
+                avatarUrl: newAvatarUrl,
+            };
+
+            await updateDoc(userProfileRef, updatedData);
+
+            // Also update the auth user profile if name or photo changed
+            if (name !== user.displayName || newAvatarUrl !== user.photoURL) {
+                 await updateAuthProfile(user, {
+                    displayName: name,
+                    photoURL: newAvatarUrl,
+                });
+            }
+
             toast({
                 title: "Profil Diperbarui",
                 description: "Perubahan Anda telah berhasil disimpan.",
@@ -56,10 +92,11 @@ export default function AccountSettingsPage() {
             toast({
                 variant: "destructive",
                 title: "Gagal Menyimpan",
-                description: "Terjadi kesalahan saat menyimpan perubahan.",
+                description: error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan perubahan.",
             });
         } finally {
             setIsSaving(false);
+            setAvatarFile(null);
         }
     };
 
@@ -83,7 +120,7 @@ export default function AccountSettingsPage() {
                                 <Skeleton className="h-6 w-32" />
                                 <Skeleton className="h-4 w-56 mt-2" />
                             </CardHeader>
-                            <CardContent className="space-y-6">
+                            <CardContent className="space-y-6 pt-6">
                                 <div className="flex items-center gap-4">
                                     <Skeleton className="h-16 w-16 rounded-full" />
                                     <Skeleton className="h-10 w-24" />
@@ -94,6 +131,10 @@ export default function AccountSettingsPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-9 w-full" />
+                                </div>
+                                 <div className="space-y-2">
+                                    <Skeleton className="h-4 w-20" />
                                     <Skeleton className="h-9 w-full" />
                                 </div>
                                 <Skeleton className="h-10 w-32" />
@@ -126,15 +167,22 @@ export default function AccountSettingsPage() {
                             <CardTitle>Informasi Profil</CardTitle>
                             <CardDescription>Perbarui foto, nama, dan detail kontak Anda.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-6 pt-6">
                             <div className="space-y-2">
                                 <Label>Foto Profil</Label>
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-16 w-16">
-                                        <AvatarImage src={userProfile.avatarUrl} data-ai-hint={userProfile.avatarHint} />
+                                        <AvatarImage src={avatarPreview || undefined} data-ai-hint={userProfile.avatarHint} />
                                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <Button variant="outline">Ubah Foto</Button>
+                                    <Input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleAvatarChange}
+                                    />
+                                    <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Ubah Foto</Button>
                                 </div>
                             </div>
                             <div className="grid gap-2">
@@ -143,7 +191,11 @@ export default function AccountSettingsPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Alamat Email</Label>
-                                <Input id="email" type="email" defaultValue={user.email || ''} readOnly disabled />
+                                <Input id="email" type="email" value={user.email || ''} readOnly disabled />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="phone">Nomor Telepon</Label>
+                                <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="misal: 081234567890" />
                             </div>
                              <Button onClick={handleSaveChanges} disabled={isSaving}>
                                 {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
@@ -157,7 +209,7 @@ export default function AccountSettingsPage() {
                             <CardTitle>Keamanan</CardTitle>
                             <CardDescription>Ubah kata sandi Anda.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 pt-6">
                              <div className="grid gap-2">
                                 <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
                                 <Input id="current-password" type="password" />
@@ -170,7 +222,7 @@ export default function AccountSettingsPage() {
                                 <Label htmlFor="confirm-password">Konfirmasi Kata Sandi Baru</Label>
                                 <Input id="confirm-password" type="password" />
                             </div>
-                             <Button>Ubah Kata Sandi</Button>
+                             <Button disabled>Ubah Kata Sandi</Button>
                         </CardContent>
                     </Card>
                 </TabsContent>

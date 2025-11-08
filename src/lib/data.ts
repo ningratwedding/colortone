@@ -7,6 +7,7 @@ export type UserProfile = {
   slug: string;
   name: string;
   email: string;
+  phoneNumber?: string;
   avatarUrl: string;
   avatarHint: string;
   bio?: string;

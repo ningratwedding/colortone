@@ -14,6 +14,10 @@
           "format": "email",
           "description": "The user's primary email address, used for login and notifications."
         },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
         "slug": {
           "type": "string",
           "description": "A URL-friendly version of the user's name for their public profile page."
