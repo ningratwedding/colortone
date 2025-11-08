@@ -43,7 +43,7 @@ import {
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
   { href: "/admin/products", label: "Produk", icon: Package },
-  { href: "/admin/creators", label: "Kreator", icon: Users },
+  { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/orders", label: "Pesanan", icon: ShoppingCart },
   { href: "/admin/analytics", label: "Analitik", icon: BarChart },
 ];
