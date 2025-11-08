@@ -176,7 +176,7 @@ export default function LoginPage() {
                     <div className="flex items-center">
                       <FormLabel>Kata Sandi</FormLabel>
                        <Link
-                          href="#"
+                          href="/forgot-password"
                           className="ml-auto inline-block text-sm underline"
                         >
                           Lupa kata sandi Anda?

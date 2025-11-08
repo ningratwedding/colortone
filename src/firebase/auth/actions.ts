@@ -10,6 +10,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
+  sendPasswordResetEmail,
   type User,
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
@@ -141,5 +142,22 @@ export async function signOut() {
       return { success: false, error: error.message };
     }
     return { success: false, error: 'Gagal keluar. Silakan coba lagi.' };
+  }
+}
+
+// Send password reset email
+export async function sendPasswordReset(email: string) {
+  const auth = getAuth(initializeFirebase().app);
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email') {
+        return { success: false, error: 'Email tidak ditemukan atau tidak valid.' };
+      }
+      return { success: false, error: 'Gagal mengirim email pemulihan. Coba lagi nanti.' };
+    }
+    return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
   }
 }
