@@ -7,11 +7,11 @@ import {
   Menu,
   Search,
   Settings,
-  SlidersHorizontal,
   Shield,
   LogOut,
   LogIn,
-  LayoutDashboard
+  LayoutDashboard,
+  ShoppingBag,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -38,27 +38,37 @@ import { signOut } from '@/firebase/auth/actions';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { UserProfile } from '@/lib/data';
 
 const navLinks: { href: string; label: string }[] = [
-    { href: '/tutorial/order', label: 'Cara Pesan' },
+  { href: '/tutorial/order', label: 'Cara Pesan' },
 ];
 
 export function SiteHeader() {
-  const { user, loading } = useUser();
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
+  const userProfileRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+
+  const loading = userLoading || (user && profileLoading);
+
   const handleSignOut = async () => {
     await signOut();
-    toast({ title: "Berhasil Keluar", description: "Anda telah keluar dari akun Anda."});
+    toast({ title: 'Berhasil Keluar', description: 'Anda telah keluar dari akun Anda.' });
     router.push('/');
     router.refresh(); // To update server-side rendered components
-  }
+  };
 
   const getInitials = (name?: string | null) => {
     if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  }
+    return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
 
   const UserMenu = () => {
     if (loading) {
@@ -66,62 +76,72 @@ export function SiteHeader() {
     }
 
     return (
-       <DropdownMenu>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
             {user ? (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'}/>
-                  <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                </Avatar>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'} />
+                <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+              </Avatar>
             ) : (
-                <CircleUserRound className="h-5 w-5" />
+              <CircleUserRound className="h-5 w-5" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>{user ? user.displayName || user.email : "Akun Saya"}</DropdownMenuLabel>
+          <DropdownMenuLabel>{user ? userProfile?.name || user.email : 'Akun Saya'}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {user ? (
-              <>
+          {user && userProfile ? (
+            <>
               <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link href="/creator/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Dasbor Kreator</span>
-                  </Link>
-                </DropdownMenuItem>
+                {userProfile.role === 'admin' && (
                   <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Dasbor Admin</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {userProfile.role === 'kreator' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/creator/dashboard">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dasbor Kreator</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                 <DropdownMenuItem asChild>
+                    <Link href="/account/purchases">
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        <span>Pembelian Saya</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/account/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Pengaturan Akun</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/admin">
-                    <Shield className="mr-2 h-4 w-4" />
-                    <span>Dasbor Admin</span>
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
                 <span>Keluar</span>
               </DropdownMenuItem>
-              </>
+            </>
           ) : (
             <DropdownMenuItem asChild>
               <Link href="/login">
-                  <LogIn className="mr-2 h-4 w-4" />
+                <LogIn className="mr-2 h-4 w-4" />
                 Masuk
               </Link>
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-  }
+    );
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -155,12 +175,12 @@ export function SiteHeader() {
                     {label}
                   </Link>
                 ))}
-                 <Link
-                    href="/login"
-                    className="text-lg font-medium transition-colors hover:text-primary text-foreground"
-                  >
-                    Menjadi Kreator
-                  </Link>
+                <Link
+                  href="/login"
+                  className="text-lg font-medium transition-colors hover:text-primary text-foreground"
+                >
+                  Menjadi Kreator
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
@@ -172,43 +192,43 @@ export function SiteHeader() {
             </span>
           </Link>
         </div>
-        
+
         {navLinks.length > 0 && (
-            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-              {navLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="transition-colors hover:text-foreground/80 text-foreground/60"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          )}
-        
+          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+            {navLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        )}
+
         {/* Center Section (Search) */}
         <div className="flex-1 flex justify-center px-4">
-           <div className="w-full max-w-sm">
-             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Cari preset..."
-                  className="w-full bg-card pl-10 rounded-full"
-                />
-              </div>
-           </div>
+          <div className="w-full max-w-sm">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Cari preset..."
+                className="w-full bg-card pl-10 rounded-full"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Right Section (Actions) */}
         <div className="flex items-center justify-end space-x-2">
-           {!user && !loading && (
-             <Button variant="outline" className="hidden sm:inline-flex" asChild>
-                <Link href="/creator/dashboard">Menjadi Kreator</Link>
-              </Button>
-           )}
-           <UserMenu />
+          {!user && !loading && (
+            <Button variant="outline" className="hidden sm:inline-flex" asChild>
+              <Link href="/creator/dashboard">Menjadi Kreator</Link>
+            </Button>
+          )}
+          <UserMenu />
         </div>
       </div>
     </header>
