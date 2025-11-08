@@ -103,7 +103,7 @@ export default function SettingsPage() {
       setNewSocialPlatform('');
       setNewSocialUsername('');
     }
-  }
+  };
 
   const handleRemoveSocial = (platform: SocialPlatform) => {
     setSocials(prev => {
