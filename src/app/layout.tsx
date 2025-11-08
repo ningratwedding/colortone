@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/lib/config";
-import { FirebaseProvider } from "@/firebase/provider";
+import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { FirebaseErrorListener } from "@/firebase/FirebaseErrorListener";
 
 export const metadata: Metadata = {
@@ -54,11 +54,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        {/* @ts-ignore */}
-        <FirebaseProvider>
+        <FirebaseClientProvider>
             {children}
             <FirebaseErrorListener />
-        </FirebaseProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>
