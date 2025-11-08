@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react";
@@ -34,6 +35,8 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
+  SidebarFooter,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
@@ -42,8 +45,9 @@ const menuItems = [
   { href: "/admin/creators", label: "Kreator", icon: Users },
   { href: "/admin/orders", label: "Pesanan", icon: ShoppingCart },
   { href: "/admin/analytics", label: "Analitik", icon: BarChart },
-  { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
+
+const settingsItem = { href: "/admin/settings", label: "Pengaturan", icon: Settings };
 
 export default function AdminDashboardLayout({
   children,
@@ -52,8 +56,9 @@ export default function AdminDashboardLayout({
 }) {
   const pathname = usePathname();
 
+  const allMenuItems = [...menuItems, settingsItem];
   const pageTitle =
-    menuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/admin' || pathname === '/admin'))?.label || "Dasbor Admin";
+    allMenuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/admin' || pathname === '/admin'))?.label || "Dasbor Admin";
 
   return (
     <SidebarProvider>
@@ -72,7 +77,7 @@ export default function AdminDashboardLayout({
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === href}
+                    isActive={pathname.startsWith(href)}
                     className="justify-start"
                     tooltip={label}
                   >
@@ -85,6 +90,24 @@ export default function AdminDashboardLayout({
               ))}
             </SidebarMenu>
           </SidebarContent>
+           <SidebarFooter>
+              <SidebarSeparator />
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                         <SidebarMenuButton
+                            asChild
+                            isActive={pathname.startsWith(settingsItem.href)}
+                            className="justify-start"
+                            tooltip={settingsItem.label}
+                        >
+                            <Link href={settingsItem.href}>
+                                <Settings />
+                                <span className="group-data-[collapsible=icon]:hidden">{settingsItem.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+          </SidebarFooter>
         </Sidebar>
 
         <SidebarInset>
