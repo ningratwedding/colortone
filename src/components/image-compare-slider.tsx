@@ -23,37 +23,51 @@ export function ImageCompareSlider({
   const [sliderPosition, setSliderPosition] = React.useState(initialPosition)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  const handleMove = (
-    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
-  ) => {
-    if (!containerRef.current) return
+  const handleMove = React.useCallback(
+    (
+      event:
+        | React.MouseEvent<HTMLDivElement>
+        | React.TouchEvent<HTMLDivElement>
+        | MouseEvent
+        | TouchEvent
+    ) => {
+      if (!containerRef.current) return;
 
-    const rect = containerRef.current.getBoundingClientRect()
-    const x =
-      ("touches" in event ? event.touches[0].clientX : event.clientX) - rect.left
-    const position = Math.max(0, Math.min(100, (x / rect.width) * 100))
+      const rect = containerRef.current.getBoundingClientRect();
+      const x =
+        ("touches" in event ? event.touches[0].clientX : event.clientX) -
+        rect.left;
+      const position = Math.max(0, Math.min(100, (x / rect.width) * 100));
 
-    setSliderPosition(position)
-  }
+      setSliderPosition(position);
+    },
+    []
+  );
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
-    document.addEventListener("mousemove", handleMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
+  const handleMouseDown = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+      document.addEventListener("mousemove", handleMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    },
+    [handleMove]
+  );
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const handleTouchEnd = () => {
-      document.removeEventListener("touchmove", handleMove)
-      document.removeEventListener("touchend", handleTouchEnd)
-    }
-    document.addEventListener("touchmove", handleMove)
-    document.addEventListener("touchend", handleTouchEnd)
-  }
+  const handleTouchStart = React.useCallback(
+    (event: React.TouchEvent<HTMLDivElement>) => {
+      const handleTouchEnd = () => {
+        document.removeEventListener("touchmove", handleMove);
+        document.removeEventListener("touchend", handleTouchEnd);
+      };
+      document.addEventListener("touchmove", handleMove);
+      document.addEventListener("touchend", handleTouchEnd);
+    },
+    [handleMove]
+  );
 
   return (
     <div
