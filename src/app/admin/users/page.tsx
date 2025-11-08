@@ -1,7 +1,7 @@
 
 "use client";
 
-import { MoreHorizontal, UserPlus } from "lucide-react";
+import { MoreHorizontal, UserPlus, UserMinus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,7 +47,7 @@ export default function AdminUsersPage() {
         const userDocRef = doc(firestore, 'users', userId);
         try {
             await updateDoc(userDocRef, { role: newRole });
-            toast({ title: "Peran Diperbarui", description: `Pengguna sekarang adalah ${newRole}.` });
+            toast({ title: "Peran Diperbarui", description: `Pengguna sekarang adalah seorang ${newRole}.` });
         } catch (error) {
             console.error("Error updating role:", error);
             toast({ variant: "destructive", title: "Gagal Memperbarui", description: "Tidak dapat mengubah peran pengguna." });
@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
         case 'admin':
             return <Badge>Admin</Badge>;
         default:
-            return <Badge variant="outline">{role}</Badge>;
+            return <Badge variant="outline">{String(role)}</Badge>;
         }
     };
 
@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
         <CardHeader>
           <CardTitle>Manajemen Pengguna</CardTitle>
           <CardDescription>
-            Lihat dan kelola semua pengguna di platform.
+            Lihat dan kelola semua pengguna di platform. Anda dapat mengubah peran antara 'Pembeli' dan 'Kreator'.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -123,25 +123,33 @@ export default function AdminUsersPage() {
                           aria-haspopup="true"
                           size="icon"
                           variant="ghost"
+                          disabled={user.role === 'admin'}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Alihkan menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                        <DropdownMenuLabel>Tindakan Pengguna</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {user.role === 'kreator' && (
+                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'pembeli')}>
+                                <UserMinus className="mr-2 h-4 w-4" />
+                                Jadikan Pembeli
+                            </DropdownMenuItem>
+                        )}
+                        {user.role === 'pembeli' && (
+                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'kreator')}>
+                                <UserPlus className="mr-2 h-4 w-4" />
+                                Jadikan Kreator
+                            </DropdownMenuItem>
+                        )}
                         {user.role === 'kreator' && (
                             <DropdownMenuItem asChild>
                                 <Link href={`/creator/${user.slug}`}>Lihat Profil Kreator</Link>
                             </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
-                         {user.role === 'pembeli' && (
-                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'kreator')}>
-                                <UserPlus className="mr-2 h-4 w-4" />
-                                Jadikan Kreator
-                            </DropdownMenuItem>
-                        )}
                         <DropdownMenuItem className="text-destructive">Nonaktifkan Pengguna</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
