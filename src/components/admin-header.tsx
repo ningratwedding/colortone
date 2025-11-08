@@ -28,11 +28,11 @@ import {
 import { useSidebar } from './ui/sidebar';
 
 const navLinks = [
-  { href: '/admin', label: 'Ringkasan' },
-  { href: '/admin/products', label: 'Produk' },
-  { href: '/admin/upload', label: 'Unggah' },
-  { href: '/admin/analytics', label: 'Analitik' },
-  { href: '/admin/settings', label: 'Pengaturan' },
+  { href: '/creator/dashboard', label: 'Ringkasan' },
+  { href: '/creator/dashboard/products', label: 'Produk' },
+  { href: '/creator/dashboard/upload', label: 'Unggah' },
+  { href: '/creator/dashboard/analytics', label: 'Analitik' },
+  { href: '/creator/dashboard/settings', label: 'Pengaturan' },
 ];
 
 export function AdminHeader({ title }: { title: string }) {
@@ -75,7 +75,7 @@ export function AdminHeader({ title }: { title: string }) {
               <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/admin/settings">
+                <Link href="/creator/dashboard/settings">
                   <span>Pengaturan</span>
                 </Link>
               </DropdownMenuItem>

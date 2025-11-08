@@ -99,7 +99,7 @@ export function SiteHeader() {
           </div>
           <nav className="flex items-center space-x-2">
             <Button variant="outline" className="hidden sm:inline-flex" asChild>
-              <Link href="/admin">Menjadi Kreator</Link>
+              <Link href="/creator/dashboard">Menjadi Kreator</Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -112,13 +112,13 @@ export function SiteHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">
+                    <Link href="/creator/dashboard">
                       <SlidersHorizontal className="mr-2 h-4 w-4" />
                       <span>Dasbor</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/settings">
+                    <Link href="/creator/dashboard/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
                     </Link>
