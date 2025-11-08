@@ -48,10 +48,10 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
   const [creator, setCreator] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const slug = params.slug;
 
   useEffect(() => {
     const fetchCreatorData = async () => {
+      const slug = params.slug;
       if (!firestore || !slug) return;
       setLoading(true);
 
@@ -85,7 +85,7 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
     };
 
     fetchCreatorData();
-  }, [firestore, slug]);
+  }, [firestore, params.slug]);
 
   if (loading) {
     return (
