@@ -115,7 +115,7 @@ export default function DashboardPage() {
                 formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" />
+              <Bar dataKey="revenue" fill="hsl(var(--chart-2))" name="Pendapatan" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
