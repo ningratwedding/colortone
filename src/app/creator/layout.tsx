@@ -12,18 +12,16 @@ import {
   Upload,
 } from 'lucide-react';
 import { AdminHeader } from '@/components/admin-header';
-
-import { cn } from '@/lib/utils';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-} from '@/components/ui/sidebar';
-import { SlidersHorizontal } from 'lucide-react';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const menuItems = [
   { href: '/creator/dashboard', label: 'Ringkasan', icon: Home },
@@ -33,6 +31,49 @@ const menuItems = [
   { href: '/creator/analytics', label: 'Analitik', icon: BarChart },
   { href: '/creator/settings', label: 'Pengaturan', icon: Settings },
 ];
+
+function MobileNav() {
+  const pathname = usePathname();
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Alihkan Menu Navigasi</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle>
+            <Link
+              href="/creator/dashboard"
+              className="flex items-center gap-2 font-semibold"
+            >
+              <Package className="h-6 w-6" />
+              <span>Dasbor Kreator</span>
+            </Link>
+          </SheetTitle>
+        </SheetHeader>
+        <nav className="grid gap-2 text-lg font-medium pt-4">
+          {menuItems.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                pathname === href
+                  ? 'bg-muted text-primary'
+                  : 'text-muted-foreground hover:text-primary'
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 export default function CreatorDashboardLayout({
   children,
@@ -45,42 +86,14 @@ export default function CreatorDashboardLayout({
     menuItems.find((item) => pathname.startsWith(item.href))?.label || 'Dasbor';
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <Sidebar className="hidden border-r bg-background md:block">
-          <SidebarHeader className="p-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <SlidersHorizontal className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold font-headline">
-                FilterForge
-              </span>
-            </Link>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {menuItems.map(({ href, label, icon: Icon }) => (
-                <SidebarMenuItem key={href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === href}
-                    className="justify-start"
-                  >
-                    <Link href={href}>
-                      <Icon className="mr-2 h-4 w-4" />
-                      {label}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
-
-        <div className="flex flex-col md:pl-[16rem]">
-          <AdminHeader title={pageTitle} />
-          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <div className="flex min-h-screen w-full flex-col">
+      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40">
+        <MobileNav />
+        <AdminHeader title={pageTitle} />
+      </header>
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        {children}
+      </main>
+    </div>
   );
 }
