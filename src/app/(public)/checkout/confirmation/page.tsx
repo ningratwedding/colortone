@@ -7,10 +7,12 @@ import { products, type Product } from '@/lib/data';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Download, FileArchive } from 'lucide-react';
+import { CheckCircle, Download, KeyRound } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
@@ -32,6 +34,18 @@ function ConfirmationContent() {
     );
   }
 
+  const handleVerify = () => {
+    // Di aplikasi nyata, di sini Anda akan memverifikasi kode dengan backend
+    // dan kemudian memicu pengunduhan.
+    // Untuk demonstrasi, kita akan men-trigger unduhan file placeholder.
+    const link = document.createElement('a');
+    link.href = '/placeholder.zip';
+    link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="flex flex-col items-center text-center">
       <Card className="w-full max-w-md">
@@ -41,35 +55,45 @@ function ConfirmationContent() {
           </div>
           <CardTitle className="mt-4 text-2xl font-bold">Pesanan Berhasil!</CardTitle>
           <CardDescription>
-            Terima kasih telah melakukan pembelian. Anda sekarang dapat mengunduh produk Anda.
+            Kode unduhan unik telah dikirim ke nomor WhatsApp Anda. Masukkan kode di bawah ini untuk mengunduh produk.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-4 rounded-md border p-3 text-left">
-            <Image
-              src={product.imageAfter.imageUrl}
-              alt={product.name}
-              width={72}
-              height={48}
-              className="rounded-md"
-              data-ai-hint={product.imageAfter.imageHint}
-            />
-            <div className="flex-1">
-              <p className="font-semibold">{product.name}</p>
-              <p className="text-sm text-muted-foreground">Oleh {product.creator.name}</p>
+          <div className="rounded-md border p-3 text-left">
+            <div className="flex items-center gap-4">
+                <Image
+                src={product.imageAfter.imageUrl}
+                alt={product.name}
+                width={72}
+                height={48}
+                className="rounded-md"
+                data-ai-hint={product.imageAfter.imageHint}
+                />
+                <div className="flex-1">
+                <p className="font-semibold">{product.name}</p>
+                <p className="text-sm text-muted-foreground">Oleh {product.creator.name}</p>
+                </div>
             </div>
-            <Button size="icon" variant="outline" asChild>
-                {/* Tautan unduhan palsu untuk demonstrasi */}
-                <a href="/placeholder.zip" download={`${product.name.replace(/\s+/g, '-')}.zip`}>
-                    <Download className="h-5 w-5" />
-                    <span className="sr-only">Unduh</span>
-                </a>
-            </Button>
           </div>
-          <div className="text-sm text-muted-foreground">
-            <p>Sebuah salinan konfirmasi pesanan dan tautan unduhan telah dikirim ke email Anda.</p>
+        
+          <div className="grid w-full items-center gap-1.5 text-left">
+            <Label htmlFor="download-code">Kode Unduhan</Label>
+            <div className="relative">
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="download-code" placeholder="XYZ-123-ABC" className="pl-10" />
+            </div>
           </div>
-          <Button asChild className="w-full">
+          
+          <Button className="w-full" onClick={handleVerify}>
+            <Download className="mr-2 h-4 w-4" />
+            Verifikasi & Unduh
+          </Button>
+          
+          <div className="text-xs text-muted-foreground pt-2">
+            <p>Jika Anda tidak menerima kode dalam 5 menit, silakan periksa kembali nomor WhatsApp yang Anda masukkan atau hubungi dukungan.</p>
+          </div>
+          
+          <Button asChild className="w-full" variant="outline">
             <Link href="/">Kembali ke Beranda</Link>
           </Button>
         </CardContent>
