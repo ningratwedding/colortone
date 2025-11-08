@@ -30,7 +30,7 @@ export function ProductClientContent({
       <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
       <div className="flex flex-col sm:flex-row gap-2">
         <Button size="lg" className="w-full sm:w-auto" asChild>
-            <Link href={`/checkout?productId=${productId}`}>
+            <Link href={`/login`}>
                 <ShoppingCart className="mr-2 h-4 w-4" /> Beli Sekarang
             </Link>
         </Button>
