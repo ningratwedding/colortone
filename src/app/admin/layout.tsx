@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import * as React from "react";
@@ -77,7 +78,7 @@ export default function AdminDashboardLayout({
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(href)}
+                    isActive={pathname === href || (href !== "/admin" && pathname.startsWith(href))}
                     tooltip={label}
                   >
                     <Link href={href}>

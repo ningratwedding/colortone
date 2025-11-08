@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -16,11 +17,29 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { products } from '@/lib/data';
+import { products, type Product, type User } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Calendar as CalendarIcon, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
+import {
+  Calendar as CalendarIcon,
+  MoreHorizontal,
+  Mail,
+  MessageSquare,
+} from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { DateRange } from 'react-day-picker';
@@ -29,7 +48,20 @@ import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-const mockOrders = [
+type Order = {
+    id: string;
+    customer: {
+        name: string;
+        email: string;
+        whatsapp: string;
+    },
+    product: Product;
+    total: number;
+    status: 'Selesai' | 'Diproses' | 'Dibatalkan';
+    date: Date;
+}
+
+const mockOrders: Order[] = [
   {
     id: 'ORD001',
     customer: {
@@ -88,10 +120,9 @@ type FormattedData = {
 }
 
 export default function AdminOrdersPage() {
-
     const [formattedData, setFormattedData] = useState<FormattedData>({});
     const [date, setDate] = useState<DateRange | undefined>();
-
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     useEffect(() => {
         const formatCurrency = (amount: number) => {
@@ -113,8 +144,21 @@ export default function AdminOrdersPage() {
             }
         });
         setFormattedData(data);
-
     }, []);
+
+    const getStatusBadge = (status: Order['status']) => {
+        switch (status) {
+            case 'Selesai':
+                return <Badge className="bg-green-600 hover:bg-green-700">Selesai</Badge>;
+            case 'Diproses':
+                return <Badge variant="secondary">Diproses</Badge>;
+            case 'Dibatalkan':
+                return <Badge variant="destructive">Dibatalkan</Badge>;
+            default:
+                return <Badge variant="outline">Unknown</Badge>;
+        }
+    };
+
 
   return (
     <div className="space-y-4">
@@ -199,7 +243,7 @@ export default function AdminOrdersPage() {
                   </TableCell>
                   <TableCell>{formattedData[order.id]?.total}</TableCell>
                   <TableCell>
-                    <Badge variant={order.status === 'Selesai' ? 'default' : 'secondary'} className={order.status === 'Selesai' ? 'bg-green-600' : ''}>{order.status}</Badge>
+                    {getStatusBadge(order.status)}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">{formattedData[order.id]?.date}</TableCell>
                    <TableCell>
@@ -216,7 +260,7 @@ export default function AdminOrdersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem>Lihat Detail Pesanan</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedOrder(order)}>Lihat Detail Pesanan</DropdownMenuItem>
                         <DropdownMenuItem>Hubungi Pelanggan</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -227,6 +271,55 @@ export default function AdminOrdersPage() {
           </Table>
         </CardContent>
       </Card>
+      
+      <Dialog open={!!selectedOrder} onOpenChange={(isOpen) => !isOpen && setSelectedOrder(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Detail Pesanan: {selectedOrder?.id}</DialogTitle>
+            <DialogDescription>
+                Tanggal: {selectedOrder && formattedData[selectedOrder.id]?.date}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-sm text-muted-foreground col-span-1">Status</p>
+                <div className="col-span-3">{getStatusBadge(selectedOrder.status)}</div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-sm text-muted-foreground col-span-1">Pelanggan</p>
+                <div className="col-span-3">
+                    <p className="font-medium">{selectedOrder.customer.name}</p>
+                    <p className="text-sm text-muted-foreground">{selectedOrder.customer.email}</p>
+                    <p className="text-sm text-muted-foreground">{selectedOrder.customer.whatsapp}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-sm text-muted-foreground col-span-1">Produk</p>
+                <div className="col-span-3">
+                    <p className="font-medium">{selectedOrder.product.name}</p>
+                    <p className="text-sm text-muted-foreground">oleh {selectedOrder.product.creator.name}</p>
+                </div>
+              </div>
+               <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-sm text-muted-foreground col-span-1">Total</p>
+                <p className="font-semibold text-base col-span-3">{formattedData[selectedOrder.id]?.total}</p>
+              </div>
+               <div className="mt-4 flex gap-2">
+                <Button variant="outline" className="w-full">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Kirim Email
+                </Button>
+                 <Button variant="outline" className="w-full">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Hubungi WhatsApp
+                </Button>
+               </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

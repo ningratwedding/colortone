@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -109,7 +110,9 @@ export default function AdminProductsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem>Lihat Produk</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/product/${product.id}`}>Lihat Produk</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>Nonaktifkan</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">Hapus</DropdownMenuItem>
                       </DropdownMenuContent>
