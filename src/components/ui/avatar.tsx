@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 
@@ -23,13 +24,23 @@ Avatar.displayName = AvatarPrimitive.Root.displayName
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  if (typeof props.src === 'string' && (props.src.startsWith('http') || props.src.startsWith('/'))) {
+    return (
+        <AvatarPrimitive.Image asChild ref={ref} className={cn("aspect-square h-full w-full", className)}>
+            <Image src={props.src} alt={props.alt || ''} width={40} height={40} />
+        </AvatarPrimitive.Image>
+    )
+  }
+  // Fallback to a standard img for blob URLs or other cases
+  return (
+      <AvatarPrimitive.Image
+        ref={ref}
+        className={cn("aspect-square h-full w-full", className)}
+        {...props}
+      />
+  )
+})
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.forwardRef<
