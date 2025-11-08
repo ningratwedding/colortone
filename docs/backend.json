@@ -143,7 +143,7 @@
         },
         "status": {
             "type": "string",
-            "enum": ["Selesai", "Diproses", "Dibatalkan"]
+            "enum": ["Menunggu Pembayaran", "Selesai", "Diproses", "Dibatalkan"]
         }
       },
       "required": ["userId", "productId", "purchaseDate", "amount", "status"]

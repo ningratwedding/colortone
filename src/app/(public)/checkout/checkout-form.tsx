@@ -20,8 +20,10 @@ import Link from 'next/link';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
+import { useUser } from '@/firebase/auth/use-user';
 
 export default function CheckoutForm({ product }: { product?: Product }) {
+  const { user, loading: userLoading } = useUser();
   const [formattedSubtotal, setFormattedSubtotal] = useState('');
   const [formattedTax, setFormattedTax] = useState('');
   const [formattedTotal, setFormattedTotal] = useState('');
@@ -56,6 +58,14 @@ export default function CheckoutForm({ product }: { product?: Product }) {
     setFormattedTotal(formatCurrency(total));
     setFormattedPrice(formatCurrency(product.price));
   }, [product]);
+  
+  const getCheckoutUrl = () => {
+    if (userLoading) return "#";
+    if (user) {
+      return `/checkout/confirmation?productId=${product?.id}`;
+    }
+    return `/login?redirect=/checkout?productId=${product?.id}`;
+  };
 
   if (!product) {
     return (
@@ -144,8 +154,10 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" asChild>
-                <Link href={`/checkout/confirmation?productId=${product.id}`}>Buat Pesanan</Link>
+              <Button className="w-full" asChild disabled={userLoading}>
+                <Link href={getCheckoutUrl()}>
+                  {userLoading ? 'Memuat...' : 'Buat Pesanan'}
+                </Link>
               </Button>
             </CardFooter>
           </Card>
