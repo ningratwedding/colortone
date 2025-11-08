@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Product, UserProfile } from "@/lib/data";
+import type { Product } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -11,14 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { useState, useEffect, useMemo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useState, useEffect } from "react";
 import { ImageCompareSlider } from "./image-compare-slider";
 import { Button } from "./ui/button";
 import { CreditCard } from "lucide-react";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "@/firebase/provider";
 
 interface ProductCardProps {
   product: Product;
@@ -27,15 +23,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const [formattedPrice, setFormattedPrice] = useState<string>('');
-  const firestore = useFirestore();
-
-  const creatorRef = useMemo(() => {
-      if (!firestore || !product.creatorId) return null;
-      return doc(firestore, 'users', product.creatorId);
-  }, [firestore, product.creatorId]);
-
-  const { data: creator } = useDoc<UserProfile>(creatorRef);
-
+  
   useEffect(() => {
     // This check ensures the code runs only on the client
     const formatCurrency = (amount: number) => {
@@ -60,17 +48,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
             {product.name}
           </CardTitle>
         </Link>
-         <div className="mt-1.5 flex items-center gap-2">
-            {creator && (
-              <Link href={`/creator/${creator.slug}`} className="flex items-center gap-2">
-                  <Avatar className="h-5 w-5">
-                      <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
-                      <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="text-xs text-muted-foreground hover:text-primary transition-colors">{creator.name}</div>
-              </Link>
-            )}
-        </div>
       </CardContent>
       <CardFooter className="p-3 pt-0 mt-auto">
         <div className="flex w-full items-center justify-between">
