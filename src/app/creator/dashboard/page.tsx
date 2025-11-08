@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -17,6 +18,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import { useEffect, useState } from "react";
 
@@ -28,6 +30,15 @@ const data = [
   { name: "May", revenue: 60000000 },
   { name: "Jun", revenue: 55000000 },
 ];
+
+const chartColors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+    "hsl(var(--chart-1))", // Repeat for more months
+]
 
 export default function DashboardPage() {
   const [formattedRevenue, setFormattedRevenue] = useState<string>('');
@@ -115,7 +126,11 @@ export default function DashboardPage() {
                 formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--chart-2))" name="Pendapatan" />
+              <Bar dataKey="revenue" fill="hsl(var(--chart-2))" name="Pendapatan" radius={[4, 4, 0, 0]}>
+                {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
