@@ -31,8 +31,6 @@ import {
 } from '@/components/ui/sheet';
 
 const navLinks = [
-  { href: '/', label: 'Preset' },
-  { href: '#', label: 'LUT' },
 ];
 
 export function SiteHeader() {
@@ -79,17 +77,19 @@ export function SiteHeader() {
               FilterForge
             </span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
+          {navLinks.length > 0 && (
+            <nav className="flex items-center space-x-6 text-sm font-medium">
+              {navLinks.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
