@@ -1,10 +1,9 @@
 
 "use client";
 
-import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,47 +38,25 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { users, products, type User } from "@/lib/data";
-
-type CreatorRevenue = {
-    id: string;
-    revenue: number;
-    formattedRevenue: string;
-};
+} from "@/components/ui/alert-dialog";
+import { useCollection } from "@/firebase/firestore/use-collection";
+import { collection, query, where } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
+import type { UserProfile } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminCreatorsPage() {
-  const [allCreators] = useState(users);
-  const [productCounts, setProductCounts] = useState<Record<string, number>>({});
-  const [creatorRevenues, setCreatorRevenues] = useState<Record<string, CreatorRevenue>>({});
-  const [selectedCreator, setSelectedCreator] = useState<User | null>(null);
+  const firestore = useFirestore();
+  const creatorsQuery = query(collection(firestore, "users"), where("role", "==", "kreator"));
+  const { data: allCreators, loading } = useCollection<UserProfile>(creatorsQuery);
+  
+  const [selectedCreator, setSelectedCreator] = useState<UserProfile | null>(null);
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
 
-  useEffect(() => {
-    const counts: Record<string, number> = {};
-    const revenues: Record<string, CreatorRevenue> = {};
+  // Note: Product counts and revenues would require more complex queries or data duplication.
+  // For this refactoring, we will show placeholders or 'N/A' for these fields.
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-
-    users.forEach(creator => {
-      const creatorProducts = products.filter(p => p.creator.id === creator.id);
-      counts[creator.id] = creatorProducts.length;
-      
-      const totalRevenue = creatorProducts.reduce((acc, product) => acc + (product.price * product.sales), 0);
-      revenues[creator.id] = {
-        id: creator.id,
-        revenue: totalRevenue,
-        formattedRevenue: formatCurrency(totalRevenue)
-      };
-    });
-
-    setProductCounts(counts);
-    setCreatorRevenues(revenues);
-  }, []);
-
-  const handleDeactivateClick = (creator: User) => {
+  const handleDeactivateClick = (creator: UserProfile) => {
     setSelectedCreator(creator);
     setIsDeactivateDialogOpen(true);
   }
@@ -110,11 +87,21 @@ export default function AdminCreatorsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allCreators.map((creator) => (
+              {loading && Array.from({ length: 3 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-8" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+              ))}
+              {!loading && allCreators && allCreators.map((creator) => (
                 <TableRow key={creator.id}>
                   <TableCell className="hidden sm:table-cell">
                      <Avatar>
-                        <AvatarImage src={creator.avatar.imageUrl} data-ai-hint={creator.avatar.imageHint} />
+                        <AvatarImage src={creator.avatarUrl} data-ai-hint={creator.avatarHint} />
                         <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </TableCell>
@@ -123,10 +110,10 @@ export default function AdminCreatorsPage() {
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
                   <TableCell>
-                    {productCounts[creator.id] || 0}
+                    N/A
                   </TableCell>
                   <TableCell className="font-medium">
-                    {creatorRevenues[creator.id]?.formattedRevenue}
+                    N/A
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -153,6 +140,11 @@ export default function AdminCreatorsPage() {
               ))}
             </TableBody>
           </Table>
+           {!loading && (!allCreators || allCreators.length === 0) && (
+              <div className="text-center p-8 text-muted-foreground">
+                  Tidak ada kreator yang ditemukan.
+              </div>
+           )}
         </CardContent>
       </Card>
 

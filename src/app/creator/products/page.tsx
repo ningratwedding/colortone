@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,29 +30,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { products } from '@/lib/data';
+import { useUser } from '@/firebase/auth/use-user';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { Product } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function DashboardProductsPage() {
-  const [sellerProducts] = useState(products.slice(0, 5));
-  const [formattedPrices, setFormattedPrices] = useState<{
-    [key: string]: string;
-  }>({});
-
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('id-ID', {
+function formatCurrency(amount: number) {
+    if (typeof amount !== 'number') return '';
+    return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
-      }).format(amount);
-    };
+    }).format(amount);
+};
 
-    const prices: { [key: string]: string } = {};
-    sellerProducts.forEach((product) => {
-      prices[product.id] = formatCurrency(product.price);
-    });
-    setFormattedPrices(prices);
-  }, [sellerProducts]);
+export default function DashboardProductsPage() {
+    const { user, loading: userLoading } = useUser();
+    const firestore = useFirestore();
+
+    const productsQuery = useMemo(() => {
+        if (!user || !firestore) return null;
+        return query(collection(firestore, 'products'), where('creatorId', '==', user.uid), orderBy('sales', 'desc'));
+    }, [user, firestore]);
+
+    const { data: sellerProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+
+    const loading = userLoading || productsLoading;
 
   return (
     <div className="space-y-4">
@@ -89,16 +94,26 @@ export default function DashboardProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sellerProducts.map((product) => (
+              {loading && Array.from({length: 3}).map((_, i) => (
+                <TableRow key={i}>
+                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-16 w-16" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-12" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+              ))}
+              {!loading && sellerProducts && sellerProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="hidden sm:table-cell">
                     <Image
                       alt={product.name}
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={product.imageAfter.imageUrl}
+                      src={product.imageAfterUrl}
                       width="64"
-                      data-ai-hint={product.imageAfter.imageHint}
+                      data-ai-hint={product.imageAfterHint}
                     />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
@@ -106,9 +121,9 @@ export default function DashboardProductsPage() {
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
                   <TableCell className="font-medium text-primary">
-                    {formattedPrices[product.id]}
+                    {formatCurrency(product.price)}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">215</TableCell>
+                  <TableCell className="hidden md:table-cell">{product.sales.toLocaleString('id-ID')}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -130,6 +145,13 @@ export default function DashboardProductsPage() {
                   </TableCell>
                 </TableRow>
               ))}
+              {!loading && (!sellerProducts || sellerProducts.length === 0) && (
+                <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                        Anda belum memiliki produk.
+                    </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -137,23 +159,26 @@ export default function DashboardProductsPage() {
 
       {/* Mobile Card View */}
       <div className="grid gap-4 md:hidden">
-        {sellerProducts.map((product) => (
+        {loading && Array.from({length: 3}).map((_, i) => (
+             <Card key={i}><CardContent className="p-4"><Skeleton className="h-24 w-full" /></CardContent></Card>
+        ))}
+        {!loading && sellerProducts && sellerProducts.map((product) => (
           <Card key={product.id}>
             <CardHeader className="flex flex-row items-start gap-4 p-4">
               <Image
                 alt={product.name}
                 className="aspect-square rounded-md object-cover"
                 height="64"
-                src={product.imageAfter.imageUrl}
+                src={product.imageAfterUrl}
                 width="64"
-                data-ai-hint={product.imageAfter.imageHint}
+                data-ai-hint={product.imageAfterHint}
               />
               <div className="flex-grow">
                 <CardTitle className="text-base leading-tight mb-1">
                   {product.name}
                 </CardTitle>
                 <div className="text-sm font-medium text-primary">
-                  {formattedPrices[product.id]}
+                  {formatCurrency(product.price)}
                 </div>
               </div>
               <DropdownMenu>
@@ -178,7 +203,7 @@ export default function DashboardProductsPage() {
             <CardContent className="p-4 pt-0 grid gap-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Penjualan</span>
-                <span>215</span>
+                <span>{product.sales.toLocaleString('id-ID')}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Status</span>
@@ -187,6 +212,13 @@ export default function DashboardProductsPage() {
             </CardContent>
           </Card>
         ))}
+         {!loading && (!sellerProducts || sellerProducts.length === 0) && (
+            <Card>
+                <CardContent className="p-8 text-center text-muted-foreground">
+                    Anda belum memiliki produk.
+                </CardContent>
+            </Card>
+        )}
       </div>
     </div>
   );

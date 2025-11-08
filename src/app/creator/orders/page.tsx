@@ -17,8 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { products } from '@/lib/data';
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,82 +33,69 @@ import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/firebase/auth/use-user';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { collectionGroup, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { Order, UserProfile } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const mockOrders = [
-  {
-    id: 'ORD001',
-    customer: {
-      name: 'Budi Santoso',
-      email: 'budi.s@example.com',
-      whatsapp: '+6281234567890',
-    },
-    product: products[0],
-    total: products[0].price * 1.08,
-    status: 'Selesai',
-    date: new Date('2024-07-20T10:30:00'),
-  },
-  {
-    id: 'ORD002',
-    customer: {
-      name: 'Citra Lestari',
-      email: 'citra.l@example.com',
-      whatsapp: '+6281122334455',
-    },
-    product: products[2],
-    total: products[2].price * 1.08,
-    status: 'Selesai',
-    date: new Date('2024-07-20T14:00:00'),
-  },
-  {
-    id: 'ORD003',
-    customer: {
-      name: 'Doni Firmansyah',
-      email: 'doni.f@example.com',
-      whatsapp: '+6285678901234',
-    },
-    product: products[4],
-    total: products[4].price * 1.08,
-    status: 'Diproses',
-    date: new Date('2024-07-21T09:15:00'),
-  },
-];
-
-type FormattedData = {
-  [key: string]: {
-    total: string;
-    date: string;
-  };
-};
-
-export default function OrdersPage() {
-  const [formattedData, setFormattedData] = useState<FormattedData>({});
-  const [date, setDate] = useState<DateRange | undefined>();
-
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('id-ID', {
+function formatCurrency(amount: number) {
+    if (typeof amount !== 'number') return '';
+    return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
-      }).format(amount);
-    };
+    }).format(amount);
+};
 
-    const formatDate = (date: Date) => {
-      return new Intl.DateTimeFormat('id-ID', {
+function formatDate(date: Date) {
+    if (!date) return '';
+    return new Intl.DateTimeFormat('id-ID', {
         dateStyle: 'medium',
         timeStyle: 'short',
-      }).format(date);
-    };
+    }).format(date);
+}
 
-    const data: FormattedData = {};
-    mockOrders.forEach((order) => {
-      data[order.id] = {
-        total: formatCurrency(order.total),
-        date: formatDate(order.date),
-      };
-    });
-    setFormattedData(data);
-  }, []);
+export default function OrdersPage() {
+  const [date, setDate] = useState<DateRange | undefined>();
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  
+  // Firestore does not support collection group queries with `onSnapshot` in the same way.
+  // For real-time updates on orders for a creator, a more complex data structure (like a top-level `orders` collection with `creatorId`)
+  // or cloud functions would be needed.
+  // For now, we will fetch orders once on component mount.
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  useMemo(async () => {
+    if (!user || !firestore) return;
+    setOrdersLoading(true);
+    const ordersQuery = query(
+      collectionGroup(firestore, 'orders'),
+      where('creatorId', '==', user.uid),
+      orderBy('purchaseDate', 'desc')
+    );
+    const querySnapshot = await getDocs(ordersQuery);
+    const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+    setOrders(fetchedOrders);
+
+    // Fetch customer data for each order
+    const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
+    const customerProfiles: Record<string, UserProfile> = {};
+    for (const customerId of customerIds) {
+      const userDoc = await getDocs(query(collection(firestore, 'users'), where('__name__', '==', customerId)));
+      if (!userDoc.empty) {
+        customerProfiles[customerId] = userDoc.docs[0].data() as UserProfile;
+      }
+    }
+    setCustomers(customerProfiles);
+    setOrdersLoading(false);
+  }, [user, firestore]);
+
+  const loading = userLoading || ordersLoading;
 
   return (
     <Card>
@@ -174,22 +160,30 @@ export default function OrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockOrders.map((order) => (
+            {loading && Array.from({length: 3}).map((_, i) => (
+                <TableRow key={i}>
+                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-28" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+            ))}
+            {!loading && orders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.id}</TableCell>
                 <TableCell>
-                  <div className="font-medium">{order.customer.name}</div>
+                  <div className="font-medium">{customers[order.userId]?.name || '...'}</div>
                   <div className="text-sm text-muted-foreground">
-                    {order.customer.email}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {order.customer.whatsapp}
+                    {customers[order.userId]?.email || '...'}
                   </div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {order.product.name}
+                  {order.productName}
                 </TableCell>
-                <TableCell>{formattedData[order.id]?.total}</TableCell>
+                <TableCell>{formatCurrency(order.amount)}</TableCell>
                 <TableCell>
                   <Badge
                     variant={
@@ -201,7 +195,7 @@ export default function OrdersPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  {formattedData[order.id]?.date}
+                  {formatDate(new Date(order.purchaseDate.seconds * 1000))}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -224,6 +218,13 @@ export default function OrdersPage() {
                 </TableCell>
               </TableRow>
             ))}
+             {!loading && orders.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                        Tidak ada pesanan yang ditemukan.
+                    </TableCell>
+                </TableRow>
+              )}
           </TableBody>
         </Table>
       </CardContent>

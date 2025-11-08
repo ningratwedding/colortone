@@ -5,11 +5,12 @@ import { PlaceHolderImages } from './placeholder-images';
 
 const images = Object.fromEntries(PlaceHolderImages.map(image => [image.id, image]));
 
-export type User = {
+export type UserProfile = {
   id: string;
   slug: string;
   name: string;
-  avatar: ImagePlaceholder;
+  avatarUrl: string;
+  avatarHint: string;
   bio: string;
   socials?: {
     instagram?: string;
@@ -17,34 +18,36 @@ export type User = {
     tiktok?: string;
     website?: string;
   };
+  role: 'pembeli' | 'kreator' | 'admin';
 };
 
 export type Product = {
   id: string;
   name: string;
-  creatorId: string; // Changed from creator object to creatorId
-  creator?: User; // Keep optional for now for other components using it
+  creatorId: string; 
+  creator?: UserProfile; 
   price: number;
   description: string;
   imageBeforeUrl: string;
   imageBeforeHint: string;
   imageAfterUrl: string;
   imageAfterHint: string;
-  imageBefore?: ImagePlaceholder; // Keep optional
-  imageAfter?: ImagePlaceholder; // Keep optional
-  category: { id: string; name: string };
-  software: { id: string; name: string }[];
+  category: string;
+  compatibleSoftware: string[];
   tags: string[];
   sales: number;
-  reviewsCount: number;
 };
 
-export const users: User[] = [
-  { id: 'user-1', slug: 'kartika-sari', name: 'Kartika Sari', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital yang bersemangat, mengkhususkan diri dalam menangkap keindahan alam Indonesia yang belum terjamah.', socials: { instagram: 'kartikasari', facebook: 'kartikasari', tiktok: 'kartikasari', website: 'https://kartikasari.com' } },
-  { id: 'user-2', slug: 'bagus-wijaya', name: 'Bagus Wijaya', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film yang mendokumentasikan denyut nadi kota-kota di Asia Tenggara melalui lensa sinematik.', socials: { instagram: 'baguswijaya' } },
-  { id: 'user-3', slug: 'dewi-lestari', name: 'Dewi Lestari', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna dengan hasrat untuk menghidupkan kisah-kisah manusia melalui warna-warna yang cerah dan otentik.', socials: { instagram: 'dewilestari' } },
-  { id: 'user-4', slug: 'agus-santoso', name: 'Agus Santoso', avatar: images['avatar-4'], bio: 'Fotografer yang bercita-cita tinggi dengan fokus pada fotografi pernikahan adat dan modern.' },
-];
+export type Order = {
+    id: string;
+    userId: string;
+    productId: string;
+    productName: string;
+    creatorId: string;
+    purchaseDate: { seconds: number, nanoseconds: number }; // Firestore Timestamp
+    amount: number;
+    status: 'Selesai' | 'Diproses' | 'Dibatalkan';
+}
 
 export const categories = [
     { id: 'pernikahan', name: 'Pernikahan' },
@@ -68,159 +71,4 @@ export const software = [
     { id: 'davinci-resolve', name: 'DaVinci Resolve' },
     { id: 'capcut', name: 'CapCut' },
     { id: 'vn-editor', name: 'VN Video Editor' },
-];
-
-export const products: Product[] = [
-  {
-    id: '1',
-    name: 'Teal & Orange Sinematik',
-    creator: users[0],
-    creatorId: 'user-1',
-    price: 150000,
-    description: 'Satu pak preset profesional untuk memberikan foto Anda tampilan sinematik teal dan oranye. Sempurna untuk fotografi perjalanan dan perkotaan.',
-    imageBefore: images['product-1-before'],
-    imageAfter: images['product-1-after'],
-    imageBeforeUrl: images['product-1-before'].imageUrl,
-    imageAfterUrl: images['product-1-after'].imageUrl,
-    imageBeforeHint: images['product-1-before'].imageHint,
-    imageAfterHint: images['product-1-after'].imageHint,
-    category: categories[5],
-    software: [software[0], software[1], software[2]],
-    tags: ['sinematik', 'teal', 'oranye', 'perkotaan'],
-    sales: 1250,
-    reviewsCount: 250,
-  },
-  {
-    id: '2',
-    name: 'Pernikahan Klasik',
-    creator: users[1],
-    creatorId: 'user-2',
-    price: 120000,
-    description: 'Tingkatkan foto pernikahan Anda dengan preset klasik ini. Menambahkan kedalaman dan emosi pada hari istimewa Anda.',
-    imageBefore: images['product-2-before'],
-    imageAfter: images['product-2-after'],
-    imageBeforeUrl: images['product-2-before'].imageUrl,
-    imageAfterUrl: images['product-2-after'].imageUrl,
-    imageBeforeHint: images['product-2-before'].imageHint,
-    imageAfterHint: images['product-2-after'].imageHint,
-    category: categories[0],
-    software: [software[0], software[3]],
-    tags: ['pernikahan', 'klasik', 'elegan', 'cinta'],
-    sales: 890,
-    reviewsCount: 178,
-  },
-  {
-    id: '3',
-    name: 'Cahaya Jam Emas',
-    creator: users[2],
-    creatorId: 'user-3',
-    price: 180000,
-    description: 'Tangkap keajaiban jam emas dengan preset hangat dan bercahaya ini. Ideal untuk potret dan fotografi pre-wedding.',
-    imageBefore: images['product-3-before'],
-    imageAfter: images['product-3-after'],
-    imageBeforeUrl: images['product-3-before'].imageUrl,
-    imageAfterUrl: images['product-3-after'].imageUrl,
-    imageBeforeHint: images['product-3-before'].imageHint,
-    imageAfterHint: images['product-3-after'].imageHint,
-    category: categories[1],
-    software: [software[0]],
-    tags: ['jam emas', 'hangat', 'potret', 'pre-wedding'],
-    sales: 2100,
-    reviewsCount: 420,
-  },
-  {
-    id: '4',
-    name: 'Toga Wisuda',
-    creator: users[1],
-    creatorId: 'user-2',
-    price: 100000,
-    description: 'Satu set preset untuk menonjolkan detail dan warna pada foto wisuda Anda. Sempurna untuk momen kelulusan.',
-    imageBefore: images['product-4-before'],
-    imageAfter: images['product-4-after'],
-    imageBeforeUrl: images['product-4-before'].imageUrl,
-    imageAfterUrl: images['product-4-after'].imageUrl,
-    imageBeforeHint: images['product-4-before'].imageHint,
-    imageAfterHint: images['product-4-after'].imageHint,
-    category: categories[2],
-    software: [software[0], software[1], software[3]],
-    tags: ['wisuda', 'kelulusan', 'potret', 'cerah'],
-    sales: 540,
-    reviewsCount: 108,
-  },
-  {
-    id: '5',
-    name: 'Mimpi Pastel',
-    creator: users[0],
-    creatorId: 'user-1',
-    price: 140000,
-    description: 'Warna pastel yang lembut dan dreamy untuk nuansa aneh dan lapang. Bagus untuk foto keluarga dan anak-anak.',
-    imageBefore: images['product-5-before'],
-    imageAfter: images['product-5-after'],
-    imageBeforeUrl: images['product-5-before'].imageUrl,
-    imageAfterUrl: images['product-5-after'].imageUrl,
-    imageBeforeHint: images['product-5-before'].imageHint,
-    imageAfterHint: images['product-5-after'].imageHint,
-    category: categories[4],
-    software: [software[0]],
-    tags: ['pastel', 'dreamy', 'lembut', 'keluarga'],
-    sales: 780,
-    reviewsCount: 156,
-  },
-  {
-    id: '6',
-    name: 'LUT Film Antik',
-    creator: users[2],
-    creatorId: 'user-3',
-    price: 250000,
-    description: 'Kumpulan LUT yang meniru tampilan stok film klasik. Tambahkan nuansa abadi dan nostalgia ke video Anda.',
-    imageBefore: images['product-6-before'],
-    imageAfter: images['product-6-after'],
-    imageBeforeUrl: images['product-6-before'].imageUrl,
-    imageAfterUrl: images['product-6-after'].imageUrl,
-    imageBeforeHint: images['product-6-before'].imageHint,
-    imageAfterHint: images['product-6-after'].imageHint,
-    category: categories[5],
-    software: [software[4], software[5], software[6]],
-    tags: ['antik', 'film', 'lut', 'retro'],
-    sales: 450,
-    reviewsCount: 90,
-  },
-  {
-    id: '7',
-    name: 'Studio Profesional',
-    creator: users[1],
-    creatorId: 'user-2',
-    price: 120000,
-    description: 'Preset yang dirancang khusus untuk fotografi studio. Menghasilkan warna kulit yang akurat dan kontras yang tajam.',
-    imageBefore: images['product-7-before'],
-    imageAfter: images['product-7-after'],
-    imageBeforeUrl: images['product-7-before'].imageUrl,
-    imageAfterUrl: images['product-7-after'].imageUrl,
-    imageBeforeHint: images['product-7-before'].imageHint,
-    imageAfterHint: images['product-7-after'].imageHint,
-    category: categories[3],
-    software: [software[0], software[2]],
-    tags: ['studio', 'potret', 'profesional', 'bersih'],
-    sales: 1500,
-    reviewsCount: 300,
-  },
-  {
-    id: '8',
-    name: 'Perjalanan Tropis',
-    creator: users[0],
-    creatorId: 'user-1',
-    price: 100000,
-    description: 'Preset cerah dan jenuh untuk foto perjalanan Anda di daerah tropis. Membuat warna hijau dan biru menonjol.',
-    imageBefore: images['product-8-before'],
-    imageAfter: images['product-8-after'],
-    imageBeforeUrl: images['product-8-before'].imageUrl,
-    imageAfterUrl: images['product-8-after'].imageUrl,
-    imageBeforeHint: images['product-8-before'].imageHint,
-    imageAfterHint: images['product-8-after'].imageHint,
-    category: categories[5],
-    software: [software[0], software[3]],
-    tags: ['perjalanan', 'tropis', 'cerah', 'pantai'],
-    sales: 1800,
-    reviewsCount: 360,
-  },
 ];

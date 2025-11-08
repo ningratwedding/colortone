@@ -10,19 +10,26 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { products, type Product } from '@/lib/data';
+import type { Product, UserProfile } from '@/lib/data';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Banknote, Edit, Mail, Terminal, Wallet, MessageSquare } from 'lucide-react';
+import { Banknote, Terminal, Wallet } from 'lucide-react';
 import Link from 'next/link';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
 
 export default function CheckoutForm({ product }: { product?: Product }) {
   const [formattedSubtotal, setFormattedSubtotal] = useState('');
   const [formattedTax, setFormattedTax] = useState('');
   const [formattedTotal, setFormattedTotal] = useState('');
   const [formattedPrice, setFormattedPrice] = useState('');
+  
+  const firestore = useFirestore();
+  const creatorRef = product?.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+  const { data: creator } = useDoc<UserProfile>(creatorRef);
 
   useEffect(() => {
     if (!product) return;
@@ -103,17 +110,17 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={product.imageAfter.imageUrl}
+                    src={product.imageAfterUrl}
                     alt={product.name}
                     width={56}
                     height={37}
                     className="rounded-md"
-                    data-ai-hint={product.imageAfter.imageHint}
+                    data-ai-hint={product.imageAfterHint}
                   />
                   <div>
                     <p className="font-medium text-sm">{product.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      Oleh {product.creator.name}
+                      Oleh {creator?.name || '...'}
                     </p>
                   </div>
                 </div>

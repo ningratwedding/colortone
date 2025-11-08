@@ -1,10 +1,9 @@
 
 "use client";
 
-import Image from "next/image";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,37 +30,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { users, type User } from "@/lib/data";
-
-type UserWithRole = User & { role: 'Kreator' | 'Pembeli' };
-
-const allUsers: UserWithRole[] = users.map(user => ({
-    ...user,
-    role: ['user-1', 'user-2', 'user-3'].includes(user.id) ? 'Kreator' : 'Pembeli'
-}));
-
+import { useCollection } from "@/firebase/firestore/use-collection";
+import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
+import type { UserProfile } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminUsersPage() {
-  const [userList, setUserList] = useState<UserWithRole[]>(allUsers);
+    const firestore = useFirestore();
+    const usersQuery = query(collection(firestore, "users"), orderBy("name"));
+    const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
+    const { toast } = useToast();
 
-  const handleRoleChange = (userId: string, newRole: 'Kreator') => {
-    setUserList(currentUsers => 
-        currentUsers.map(user => 
-            user.id === userId ? {...user, role: newRole } : user
-        )
-    );
-  };
+    const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli') => {
+        const userDocRef = doc(firestore, 'users', userId);
+        try {
+            await updateDoc(userDocRef, { role: newRole });
+            toast({ title: "Peran Diperbarui", description: `Pengguna sekarang adalah ${newRole}.` });
+        } catch (error) {
+            console.error("Error updating role:", error);
+            toast({ variant: "destructive", title: "Gagal Memperbarui", description: "Tidak dapat mengubah peran pengguna." });
+        }
+    };
 
-  const getRoleBadge = (role: 'Kreator' | 'Pembeli') => {
-    switch (role) {
-      case 'Kreator':
-        return <Badge variant="secondary">Kreator</Badge>;
-      case 'Pembeli':
-        return <Badge variant="outline">Pembeli</Badge>;
-      default:
-        return <Badge variant="outline">{role}</Badge>;
-    }
-  };
+    const getRoleBadge = (role: UserProfile['role']) => {
+        switch (role) {
+        case 'kreator':
+            return <Badge variant="secondary">Kreator</Badge>;
+        case 'pembeli':
+            return <Badge variant="outline">Pembeli</Badge>;
+        case 'admin':
+            return <Badge>Admin</Badge>;
+        default:
+            return <Badge variant="outline">{role}</Badge>;
+        }
+    };
 
   return (
     <div className="space-y-4">
@@ -88,11 +92,20 @@ export default function AdminUsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {userList.map((user) => (
+              {loading && Array.from({length: 5}).map((_, i) => (
+                <TableRow key={i}>
+                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+              ))}
+              {!loading && userList && userList.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="hidden sm:table-cell">
                      <Avatar>
-                        <AvatarImage src={user.avatar.imageUrl} data-ai-hint={user.avatar.imageHint} />
+                        <AvatarImage src={user.avatarUrl} data-ai-hint={user.avatarHint} />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </TableCell>
@@ -117,14 +130,14 @@ export default function AdminUsersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        {user.role === 'Kreator' && (
+                        {user.role === 'kreator' && (
                             <DropdownMenuItem asChild>
                                 <Link href={`/creator/${user.slug}`}>Lihat Profil Kreator</Link>
                             </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
-                         {user.role === 'Pembeli' && (
-                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'Kreator')}>
+                         {user.role === 'pembeli' && (
+                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'kreator')}>
                                 <UserPlus className="mr-2 h-4 w-4" />
                                 Jadikan Kreator
                             </DropdownMenuItem>
@@ -137,6 +150,11 @@ export default function AdminUsersPage() {
               ))}
             </TableBody>
           </Table>
+            {!loading && (!userList || userList.length === 0) && (
+              <div className="text-center p-8 text-muted-foreground">
+                  Tidak ada pengguna yang ditemukan.
+              </div>
+           )}
         </CardContent>
       </Card>
     </div>

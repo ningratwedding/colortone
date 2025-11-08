@@ -1,10 +1,16 @@
 
+'use client';
+
 import { notFound } from 'next/navigation';
-import { users, products } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProductCard } from '@/components/product-card';
 import { Instagram, Facebook, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { useFirestore } from '@/firebase/provider';
+import { collection, query, where, limit, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import type { UserProfile, Product } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -37,20 +43,82 @@ const socialLinks = {
 };
 
 
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-  const creator = users.find((user) => user.slug === params.slug);
+function CreatorProfilePageContent({ params }: { params: { slug: string } }) {
+  const firestore = useFirestore();
+  const [creator, setCreator] = useState<UserProfile | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!creator) {
-    notFound();
+  useEffect(() => {
+    const fetchCreatorData = async () => {
+      if (!firestore || !params.slug) return;
+      setLoading(true);
+
+      // Fetch creator by slug
+      const usersRef = collection(firestore, 'users');
+      const qCreator = query(usersRef, where('slug', '==', params.slug), limit(1));
+      const creatorSnapshot = await getDocs(qCreator);
+
+      if (creatorSnapshot.empty) {
+        setLoading(false);
+        notFound();
+        return;
+      }
+
+      const creatorData = { ...creatorSnapshot.docs[0].data(), id: creatorSnapshot.docs[0].id } as UserProfile;
+      setCreator(creatorData);
+
+      // Fetch creator's products
+      const productsRef = collection(firestore, 'products');
+      const qProducts = query(productsRef, where('creatorId', '==', creatorData.id));
+      const productsSnapshot = await getDocs(qProducts);
+      const creatorProducts = productsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+      setProducts(creatorProducts);
+      
+      setLoading(false);
+    };
+
+    fetchCreatorData();
+  }, [firestore, params.slug]);
+
+  if (loading) {
+    return (
+        <div className="container mx-auto px-4 py-6">
+            <header className="mb-6 flex flex-col items-center text-center">
+                <Skeleton className="h-24 w-24 rounded-full" />
+                <Skeleton className="h-8 w-48 mt-3" />
+                <Skeleton className="h-5 w-full max-w-lg mt-2" />
+                <Skeleton className="h-5 w-full max-w-lg mt-1" />
+                <div className="mt-3 flex items-center gap-3">
+                    <Skeleton className="h-6 w-16" />
+                </div>
+            </header>
+            <main>
+                <Skeleton className="h-6 w-56 mb-4 mx-auto" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    ))}
+                </div>
+            </main>
+        </div>
+    );
   }
 
-  const creatorProducts = products.filter((product) => product.creator.id === creator.id);
+  if (!creator) {
+    // This will be handled by notFound() inside useEffect, but as a fallback
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">
       <header className="mb-6 flex flex-col items-center text-center">
         <Avatar className="h-24 w-24">
-          <AvatarImage src={creator.avatar.imageUrl} alt={creator.name} data-ai-hint={creator.avatar.imageHint} />
+          <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
           <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <h1 className="text-3xl font-bold font-headline mt-3">{creator.name}</h1>
@@ -84,9 +152,9 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
         <h2 className="text-xl font-bold mb-4 font-headline text-center">
           Produk oleh {creator.name}
         </h2>
-        {creatorProducts.length > 0 ? (
+        {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {creatorProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -98,4 +166,9 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
       </main>
     </div>
   );
+}
+
+
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+    return <CreatorProfilePageContent params={params} />;
 }

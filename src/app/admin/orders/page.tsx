@@ -18,8 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { products, type Product, type User } from '@/lib/data';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -48,104 +47,50 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-
-type Order = {
-    id: string;
-    customer: {
-        name: string;
-        email: string;
-        whatsapp: string;
-    },
-    product: Product;
-    total: number;
-    status: 'Selesai' | 'Diproses' | 'Dibatalkan';
-    date: Date;
-}
-
-const mockOrders: Order[] = [
-  {
-    id: 'ORD001',
-    customer: {
-      name: 'Budi Santoso',
-      email: 'budi.s@example.com',
-      whatsapp: '+6281234567890',
-    },
-    product: products[0],
-    total: products[0].price * 1.08,
-    status: 'Selesai',
-    date: new Date('2024-07-20T10:30:00'),
-  },
-  {
-    id: 'ORD002',
-    customer: {
-      name: 'Citra Lestari',
-      email: 'citra.l@example.com',
-      whatsapp: '+6281122334455',
-    },
-    product: products[2],
-    total: products[2].price * 1.08,
-    status: 'Selesai',
-    date: new Date('2024-07-20T14:00:00'),
-  },
-  {
-    id: 'ORD003',
-    customer: {
-      name: 'Doni Firmansyah',
-      email: 'doni.f@example.com',
-      whatsapp: '+6285678901234',
-    },
-    product: products[4],
-    total: products[4].price * 1.08,
-    status: 'Diproses',
-    date: new Date('2024-07-21T09:15:00'),
-  },
-  {
-    id: 'ORD004',
-    customer: {
-      name: 'Eka Putri',
-      email: 'eka.p@example.com',
-      whatsapp: '+6287712345678',
-    },
-    product: products[1],
-    total: products[1].price * 1.08,
-    status: 'Selesai',
-    date: new Date('2024-07-21T11:00:00'),
-  },
-];
-
-type FormattedData = {
-    [key: string]: {
-        total: string;
-        date: string;
-    }
-}
+import { useFirestore } from '@/firebase/provider';
+import { collectionGroup, query, getDocs, orderBy } from 'firebase/firestore';
+import type { Order, UserProfile, Product } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminOrdersPage() {
-    const [formattedData, setFormattedData] = useState<FormattedData>({});
+    const firestore = useFirestore();
     const [date, setDate] = useState<DateRange | undefined>();
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
+    const [products, setProducts] = useState<Record<string, Product>>({});
+    const [creators, setCreators] = useState<Record<string, UserProfile>>({});
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const formatCurrency = (amount: number) => {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-        };
+    useMemo(async () => {
+        if (!firestore) return;
+        setLoading(true);
+
+        // Fetch all orders from the collection group
+        const ordersQuery = query(collectionGroup(firestore, 'orders'), orderBy('purchaseDate', 'desc'));
+        const querySnapshot = await getDocs(ordersQuery);
+        const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+        setOrders(fetchedOrders);
+
+        // Batch fetch related data
+        const userIds = [...new Set(fetchedOrders.flatMap(o => [o.userId, o.creatorId]))];
+        const productIds = [...new Set(fetchedOrders.map(o => o.productId))];
+
+        const [userDocs, productDocs] = await Promise.all([
+            userIds.length ? getDocs(query(collectionGroup(firestore, 'users'), where('__name__', 'in', userIds.map(id => `users/${id}`)))) : Promise.resolve({ docs: [] }),
+            productIds.length ? getDocs(query(collectionGroup(firestore, 'products'), where('__name__', 'in', productIds.map(id => `products/${id}`)))) : Promise.resolve({ docs: [] }),
+        ]);
+
+        const usersMap = Object.fromEntries(userDocs.docs.map(doc => [doc.id, { ...doc.data(), id: doc.id } as UserProfile]));
+        const productsMap = Object.fromEntries(productDocs.docs.map(doc => [doc.id, { ...doc.data(), id: doc.id } as Product]));
         
-        const formatDate = (date: Date) => {
-            return new Intl.DateTimeFormat('id-ID', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-            }).format(date);
-        }
+        setCustomers(usersMap);
+        setCreators(usersMap);
+        setProducts(productsMap);
 
-        const data: FormattedData = {};
-        mockOrders.forEach(order => {
-            data[order.id] = {
-                total: formatCurrency(order.total),
-                date: formatDate(order.date),
-            }
-        });
-        setFormattedData(data);
-    }, []);
+        setLoading(false);
+    }, [firestore]);
+
 
     const handleOpenDialog = (order: Order) => {
         setSelectedOrder(order);
@@ -163,6 +108,9 @@ export default function AdminOrdersPage() {
                 return <Badge variant="outline">Unknown</Badge>;
         }
     };
+    
+    const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    const formatDate = (d: { seconds: number, nanoseconds: number }) => new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d.seconds * 1000));
 
 
   return (
@@ -230,28 +178,38 @@ export default function AdminOrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockOrders.map((order) => (
+              {loading && Array.from({length: 5}).map((_, i) => (
+                <TableRow key={i}>
+                    <TableCell><Skeleton className="h-5 w-20"/></TableCell>
+                    <TableCell><Skeleton className="h-5 w-32"/></TableCell>
+                    <TableCell><Skeleton className="h-5 w-40"/></TableCell>
+                    <TableCell><Skeleton className="h-5 w-24"/></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20"/></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32"/></TableCell>
+                    <TableCell><Skeleton className="h-8 w-8"/></TableCell>
+                </TableRow>
+              ))}
+              {!loading && orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>
-                    <div className="font-medium">{order.customer.name}</div>
-                    <div className="text-sm text-muted-foreground">{order.customer.email}</div>
-                    <div className="text-sm text-muted-foreground">{order.customer.whatsapp}</div>
+                    <div className="font-medium">{customers[order.userId]?.name || '...'}</div>
+                    <div className="text-sm text-muted-foreground">{customers[order.userId]?.email || '...'}</div>
                   </TableCell>
                   <TableCell>
-                    <div>{order.product.name}</div>
+                    <div>{order.productName}</div>
                     <div className="text-sm text-muted-foreground">
                         oleh{' '}
-                        <Link href={`/creator/${order.product.creator.slug}`} className="hover:underline">
-                            {order.product.creator.name}
+                        <Link href={`/creator/${creators[order.creatorId]?.slug}`} className="hover:underline">
+                            {creators[order.creatorId]?.name || '...'}
                         </Link>
                     </div>
                   </TableCell>
-                  <TableCell>{formattedData[order.id]?.total}</TableCell>
+                  <TableCell>{formatCurrency(order.amount)}</TableCell>
                   <TableCell>
                     {getStatusBadge(order.status)}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">{formattedData[order.id]?.date}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{formatDate(order.purchaseDate)}</TableCell>
                    <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -273,6 +231,13 @@ export default function AdminOrdersPage() {
                   </TableCell>
                 </TableRow>
               ))}
+               {!loading && orders.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                        Tidak ada pesanan yang ditemukan.
+                    </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -283,7 +248,7 @@ export default function AdminOrdersPage() {
           <DialogHeader>
             <DialogTitle>Detail Pesanan: {selectedOrder?.id}</DialogTitle>
             <DialogDescription>
-                Tanggal: {selectedOrder && formattedData[selectedOrder.id]?.date}
+                Tanggal: {selectedOrder && formatDate(selectedOrder.purchaseDate)}
             </DialogDescription>
           </DialogHeader>
           {selectedOrder && (
@@ -295,21 +260,20 @@ export default function AdminOrdersPage() {
               <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Pelanggan</p>
                 <div className="col-span-3">
-                    <p className="font-medium">{selectedOrder.customer.name}</p>
-                    <p className="text-sm text-muted-foreground">{selectedOrder.customer.email}</p>
-                    <p className="text-sm text-muted-foreground">{selectedOrder.customer.whatsapp}</p>
+                    <p className="font-medium">{customers[selectedOrder.userId]?.name}</p>
+                    <p className="text-sm text-muted-foreground">{customers[selectedOrder.userId]?.email}</p>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Produk</p>
                 <div className="col-span-3">
-                    <p className="font-medium">{selectedOrder.product.name}</p>
-                    <p className="text-sm text-muted-foreground">oleh {selectedOrder.product.creator.name}</p>
+                    <p className="font-medium">{selectedOrder.productName}</p>
+                    <p className="text-sm text-muted-foreground">oleh {creators[selectedOrder.creatorId]?.name}</p>
                 </div>
               </div>
                <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Total</p>
-                <p className="font-semibold text-base col-span-3">{formattedData[selectedOrder.id]?.total}</p>
+                <p className="font-semibold text-base col-span-3">{formatCurrency(selectedOrder.amount)}</p>
               </div>
 
                <div className="border-t pt-4 mt-2 flex gap-2">

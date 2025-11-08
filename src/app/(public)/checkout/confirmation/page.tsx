@@ -3,7 +3,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { products, type Product } from '@/lib/data';
+import type { Product, UserProfile } from '@/lib/data';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,11 +11,54 @@ import { CheckCircle, Download } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import Image from 'next/image';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get('productId');
-  const product = products.find((p) => p.id === productId);
+  const firestore = useFirestore();
+
+  const productRef = productId ? doc(firestore, 'products', productId) : null;
+  const { data: product, loading: productLoading } = useDoc<Product>(productRef);
+
+  const creatorRef = product?.creatorId ? doc(firestore, 'users', product.creatorId) : null;
+  const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
+
+
+  const handleDownload = () => {
+    if (!product) return;
+    // Di aplikasi nyata, ini akan memverifikasi otorisasi pengguna
+    // dan kemudian memicu pengunduhan aman dari URL download produk.
+    // Untuk saat ini, kita gunakan placeholder.
+    const link = document.createElement('a');
+    link.href = '/placeholder.zip'; // Placeholder file
+    link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  if (productLoading || creatorLoading) {
+      return (
+        <div className="flex flex-col items-center">
+            <Card className="w-full max-w-md">
+                <CardHeader>
+                    <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+                    <Skeleton className="h-7 w-48 mt-4 mx-auto" />
+                    <Skeleton className="h-5 w-64 mt-2 mx-auto" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </CardContent>
+            </Card>
+        </div>
+      )
+  }
 
   if (!product) {
     return (
@@ -30,17 +73,6 @@ function ConfirmationContent() {
         </AlertDescription>
       </Alert>
     );
-  }
-
-  const handleDownload = () => {
-    // Di aplikasi nyata, ini akan memverifikasi otorisasi pengguna
-    // dan kemudian memicu pengunduhan aman.
-    const link = document.createElement('a');
-    link.href = '/placeholder.zip'; // Placeholder file
-    link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   }
 
   return (
@@ -59,16 +91,16 @@ function ConfirmationContent() {
           <div className="rounded-md border p-3 text-left">
             <div className="flex items-center gap-4">
                 <Image
-                src={product.imageAfter.imageUrl}
+                src={product.imageAfterUrl}
                 alt={product.name}
                 width={72}
                 height={48}
                 className="rounded-md"
-                data-ai-hint={product.imageAfter.imageHint}
+                data-ai-hint={product.imageAfterHint}
                 />
                 <div className="flex-1">
                 <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-muted-foreground">Oleh {product.creator.name}</p>
+                <p className="text-sm text-muted-foreground">Oleh {creator?.name || '...'}</p>
                 </div>
             </div>
           </div>

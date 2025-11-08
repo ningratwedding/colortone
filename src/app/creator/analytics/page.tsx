@@ -32,8 +32,13 @@ import {
   Cell,
 } from 'recharts';
 import { DollarSign, ShoppingCart, Users } from 'lucide-react';
-import { products } from '@/lib/data';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useUser } from '@/firebase/auth/use-user';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { Product } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const monthlyRevenueData = [
   { month: 'Jan', revenue: 40000000 },
@@ -44,29 +49,62 @@ const monthlyRevenueData = [
   { month: 'Jun', revenue: 55000000 },
 ];
 
-const topProducts = products.slice(0, 3).map((p, i) => ({
-    ...p,
-    sales: [215, 180, 150][i],
-    revenue: p.price * [215, 180, 150][i],
-}));
-
-const salesCompositionData = topProducts.map(p => ({ name: p.name, value: p.sales }));
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))'];
-
 
 export default function AnalyticsPage() {
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+
+  const productsQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, 'products'), where('creatorId', '==', user.uid), orderBy('sales', 'desc'));
+  }, [user, firestore]);
+  
+  const { data: creatorProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+
   const [formattedStats, setFormattedStats] = useState({
     totalRevenue: '',
-    totalSales: '2,350',
-    followers: '573',
+    totalSales: '0',
+    followers: '0',
   });
+  
+  const topProducts = useMemo(() => {
+    if (!creatorProducts) return [];
+    return creatorProducts.slice(0, 3).map(p => ({
+      ...p,
+      revenue: p.price * p.sales,
+    }));
+  }, [creatorProducts]);
+  
+  const salesCompositionData = useMemo(() => {
+    if (!topProducts) return [];
+    return topProducts.map(p => ({ name: p.name, value: p.sales }));
+  }, [topProducts]);
+
+  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))'];
+
 
   useEffect(() => {
      const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
-    setFormattedStats(prev => ({ ...prev, totalRevenue: formatCurrency(452318900) }));
-  }, []);
+
+    if (creatorProducts) {
+        const totalRevenue = creatorProducts.reduce((acc, p) => acc + (p.price * p.sales), 0);
+        const totalSales = creatorProducts.reduce((acc, p) => acc + p.sales, 0);
+
+        setFormattedStats(prev => ({ 
+            ...prev, 
+            totalRevenue: formatCurrency(totalRevenue),
+            totalSales: totalSales.toLocaleString('id-ID'),
+            followers: '573' // Placeholder
+        }));
+    } else {
+        setFormattedStats(prev => ({
+            ...prev,
+            totalRevenue: formatCurrency(0)
+        }))
+    }
+  }, [creatorProducts]);
 
   const formatCompact = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(amount);
@@ -75,6 +113,8 @@ export default function AnalyticsPage() {
   const formatTooltip = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
   }
+  
+  const loading = userLoading || productsLoading;
 
   return (
     <div className="space-y-4">
@@ -87,7 +127,7 @@ export default function AnalyticsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formattedStats.totalRevenue}</div>
+            {loading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-2xl font-bold">{formattedStats.totalRevenue}</div>}
             <p className="text-xs text-muted-foreground">
               +20.1% dari bulan lalu
             </p>
@@ -99,7 +139,7 @@ export default function AnalyticsPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{formattedStats.totalSales}</div>
+            {loading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">+{formattedStats.totalSales}</div>}
             <p className="text-xs text-muted-foreground">
               +180.1% dari bulan lalu
             </p>
@@ -172,13 +212,25 @@ export default function AnalyticsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topProducts.map((product) => (
+                {loading && Array.from({length:3}).map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-12 ml-auto" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
+                    </TableRow>
+                ))}
+                {!loading && topProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell className="text-right">{product.sales}</TableCell>
                     <TableCell className="text-right">{formatTooltip(product.revenue)}</TableCell>
                   </TableRow>
                 ))}
+                 {!loading && topProducts.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={3} className="text-center h-24">Anda belum memiliki penjualan.</TableCell>
+                    </TableRow>
+                 )}
               </TableBody>
             </Table>
           </CardContent>
@@ -190,7 +242,9 @@ export default function AnalyticsPage() {
               Distribusi penjualan di antara produk terlaris Anda.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex items-center justify-center">
+            {loading ? <Skeleton className="h-[250px] w-full" /> : 
+             salesCompositionData.length > 0 ? (
              <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -212,6 +266,12 @@ export default function AnalyticsPage() {
                   <Legend iconSize={10} />
                 </PieChart>
               </ResponsiveContainer>
+              ) : (
+                <div className="h-[250px] flex items-center justify-center text-muted-foreground text-sm">
+                    Data tidak tersedia.
+                </div>
+              )
+            }
           </CardContent>
         </Card>
       </div>
