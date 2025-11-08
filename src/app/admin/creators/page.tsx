@@ -4,7 +4,7 @@
 import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,10 +30,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { users } from "@/lib/data";
+import { users, products } from "@/lib/data";
 
 export default function AdminCreatorsPage() {
   const [allCreators] = useState(users);
+  const [productCounts, setProductCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const counts: Record<string, number> = {};
+    users.forEach(creator => {
+      counts[creator.id] = products.filter(p => p.creator.id === creator.id).length;
+    });
+    setProductCounts(counts);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -73,8 +82,7 @@ export default function AdminCreatorsPage() {
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
                   <TableCell>
-                    {/* Placeholder value */}
-                    {Math.floor(Math.random() * 10) + 1}
+                    {productCounts[creator.id] || 0}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
