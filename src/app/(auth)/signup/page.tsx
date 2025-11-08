@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import type { UserProfile } from "@/lib/data";
 
 
 const formSchema = z.object({
@@ -53,12 +54,17 @@ export default function SignupPage() {
     },
   });
 
+  const handleRedirect = (profile: UserProfile) => {
+    // New users are always 'pembeli', so we redirect them to the account page.
+    router.push('/account');
+  };
+
   const handleGoogleSignIn = async () => {
     form.clearErrors();
     const result = await signInWithGoogle();
-    if (result.success) {
+    if (result.success && result.profile) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
-      router.push("/account");
+      handleRedirect(result.profile);
     } else {
       toast({
         variant: "destructive",
@@ -70,9 +76,9 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signUpWithEmail(data.email, data.password, data.fullName);
-    if (result.success) {
+    if (result.success && result.profile) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone! Silakan periksa email Anda untuk verifikasi." });
-      router.push("/account");
+      handleRedirect(result.profile);
     } else {
       toast({
         variant: "destructive",

@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import type { UserProfile } from "@/lib/data";
 
 
 const formSchema = z.object({
@@ -50,12 +51,27 @@ export default function LoginPage() {
     },
   });
 
+  const handleRedirect = (profile: UserProfile) => {
+    switch (profile.role) {
+      case 'admin':
+        router.push('/admin');
+        break;
+      case 'kreator':
+        router.push('/creator/dashboard');
+        break;
+      case 'pembeli':
+      default:
+        router.push('/account');
+        break;
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     form.clearErrors();
     const result = await signInWithGoogle();
-    if (result.success) {
+    if (result.success && result.profile) {
       toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
-      router.push("/account");
+      handleRedirect(result.profile);
     } else {
       toast({
         variant: "destructive",
@@ -67,9 +83,9 @@ export default function LoginPage() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signInWithEmail(data.email, data.password);
-    if (result.success) {
+    if (result.success && result.profile) {
       toast({ title: "Masuk Berhasil", description: "Selamat datang kembali!" });
-      router.push("/account");
+      handleRedirect(result.profile);
     } else {
        toast({
         variant: "destructive",

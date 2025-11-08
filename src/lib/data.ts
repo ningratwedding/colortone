@@ -1,17 +1,15 @@
 
 
-import type { ImagePlaceholder } from './placeholder-images';
-import { PlaceHolderImages } from './placeholder-images';
-
-const images = Object.fromEntries(PlaceHolderImages.map(image => [image.id, image]));
+import type { Timestamp } from 'firebase/firestore';
 
 export type UserProfile = {
   id: string;
   slug: string;
   name: string;
+  email: string;
   avatarUrl: string;
   avatarHint: string;
-  bio: string;
+  bio?: string;
   socials?: {
     instagram?: string;
     facebook?: string;
@@ -19,13 +17,13 @@ export type UserProfile = {
     website?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin';
+  createdAt: Timestamp | { seconds: number, nanoseconds: number };
 };
 
 export type Product = {
   id: string;
   name: string;
   creatorId: string; 
-  creator?: UserProfile; 
   price: number;
   description: string;
   imageBeforeUrl: string;

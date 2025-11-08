@@ -9,48 +9,58 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  type User,
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
+import type { UserProfile } from '@/lib/data';
 
 // Helper to get firestore instance
 const getDb = () => getFirestore(initializeFirebase().app);
 
+// Helper function to get a user profile from Firestore
+async function getUserProfile(uid: string): Promise<UserProfile | null> {
+    const db = getDb();
+    const userRef = doc(db, 'users', uid);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as UserProfile;
+    }
+    return null;
+}
+
+
 // Helper function to create a user document in Firestore
-async function createUserDocument(user: any, fullName?: string) {
+async function createUserDocument(user: User, fullName?: string): Promise<UserProfile> {
     const db = getDb();
     const userRef = doc(db, 'users', user.uid);
     const auth = getAuth(initializeFirebase().app);
 
-    // Check if the document already exists
-    const docSnap = await getDoc(userRef);
-
-    if (!docSnap.exists()) {
-        // Document doesn't exist, create it
-        const name = fullName || user.displayName || 'Pengguna Baru';
-        const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-        const userData = {
-            name: name,
-            email: user.email,
-            slug: `${slug}-${user.uid.substring(0, 5)}`, 
-            role: 'pembeli',
-            createdAt: serverTimestamp(),
-            avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
-            avatarHint: 'user avatar'
-        };
-        await setDoc(userRef, userData);
-        
-        // If the user was created with email/password, update their auth profile display name
-        if (fullName && auth.currentUser) {
-            await updateProfile(auth.currentUser, { displayName: fullName });
-        }
-
-    } else {
-        // Document exists, you might want to update it with the latest login time, etc.
-        // For now, we do nothing if it already exists.
+    const existingProfile = await getUserProfile(user.uid);
+    if (existingProfile) {
+        return existingProfile;
     }
+
+    const name = fullName || user.displayName || 'Pengguna Baru';
+    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const newUserProfile: Omit<UserProfile, 'id'> = {
+        name: name,
+        email: user.email!,
+        slug: `${slug}-${user.uid.substring(0, 5)}`, 
+        role: 'pembeli',
+        createdAt: serverTimestamp(),
+        avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+        avatarHint: 'user avatar'
+    };
+    await setDoc(userRef, newUserProfile);
+    
+    if (fullName && auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: fullName });
+    }
+
+    return { id: user.uid, ...newUserProfile } as UserProfile;
 }
 
 const auth = getAuth(initializeFirebase().app);
@@ -58,8 +68,6 @@ const auth = getAuth(initializeFirebase().app);
 // Sign in with Google and create user document if it's a new user
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
-  // Dynamically add the current domain to the OAuth provider's custom parameters
-  // This is a common fix for "domain not authorized" errors in development
   if (typeof window !== 'undefined') {
     provider.setCustomParameters({
       'auth_domain': window.location.hostname
@@ -70,12 +78,11 @@ export async function signInWithGoogle() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     
-    await createUserDocument(user);
+    const profile = await createUserDocument(user);
 
-    return { success: true, user };
+    return { success: true, user, profile };
   } catch (error) {
     if (error instanceof FirebaseError) {
-      // Provide more specific error messages
       if (error.code === 'auth/popup-closed-by-user') {
           return { success: false, error: 'Proses masuk dibatalkan.' };
       }
@@ -94,9 +101,9 @@ export async function signUpWithEmail(email: string, password: string, fullName:
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const user = result.user;
         
-        await createUserDocument(user, fullName);
+        const profile = await createUserDocument(user, fullName);
 
-        return { success: true, user };
+        return { success: true, user, profile };
     } catch (error) {
         if (error instanceof FirebaseError) {
             if (error.code === 'auth/email-already-in-use') {
@@ -112,7 +119,11 @@ export async function signUpWithEmail(email: string, password: string, fullName:
 export async function signInWithEmail(email: string, password: string) {
     try {
         const result = await signInWithEmailAndPassword(auth, email, password);
-        return { success: true, user: result.user };
+        const profile = await getUserProfile(result.user.uid);
+        if (!profile) {
+            return { success: false, error: 'Profil pengguna tidak ditemukan.'}
+        }
+        return { success: true, user: result.user, profile };
     } catch (error) {
         if (error instanceof FirebaseError) {
              if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
