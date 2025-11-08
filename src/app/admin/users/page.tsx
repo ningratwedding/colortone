@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection, query, orderBy, doc, updateDoc, Timestamp } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, type Timestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,6 +49,7 @@ export default function AdminUsersPage() {
     const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
 
     const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli') => {
+        if (!firestore) return;
         const userDocRef = doc(firestore, 'users', userId);
         try {
             await updateDoc(userDocRef, { role: newRole });
@@ -72,7 +73,7 @@ export default function AdminUsersPage() {
         }
     };
 
-    const formatDate = (timestamp: UserProfile['createdAt']) => {
+    const formatDate = (timestamp?: Timestamp | { seconds: number; nanoseconds: number; }) => {
         if (!timestamp) return 'N/A';
         let date;
         if (timestamp instanceof Timestamp) {
@@ -129,8 +130,8 @@ export default function AdminUsersPage() {
               {!loading && userList && userList.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="hidden sm:table-cell">
-                     <Avatar>
-                        <AvatarImage src={user.avatarUrl} data-ai-hint={user.avatarHint} />
+                     <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.avatarUrl} alt={user.name} />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </TableCell>
