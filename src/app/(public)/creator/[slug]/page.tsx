@@ -43,7 +43,7 @@ const socialLinks = {
 };
 
 
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+function CreatorProfileContent({ slug }: { slug: string }) {
   const firestore = useFirestore();
   const [creator, setCreator] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -51,7 +51,6 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
 
   useEffect(() => {
     const fetchCreatorData = async () => {
-      const slug = params.slug;
       if (!firestore || !slug) return;
       setLoading(true);
 
@@ -85,7 +84,7 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
     };
 
     fetchCreatorData();
-  }, [firestore, params.slug]);
+  }, [firestore, slug]);
 
   if (loading) {
     return (
@@ -180,4 +179,8 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
       </main>
     </div>
   );
+}
+
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+    return <CreatorProfileContent slug={params.slug} />
 }
