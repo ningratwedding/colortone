@@ -1,6 +1,4 @@
 
-'use client';
-
 import {
   Card,
   CardContent,
@@ -11,6 +9,12 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileCheck, FileDown, Wand2, Smartphone, ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Cara Instal Preset Mobile (DNG) di Lightroom Mobile',
+    description: 'Panduan mudah untuk mengimpor dan menyimpan preset format .DNG di aplikasi Adobe Lightroom Mobile gratis di perangkat iOS atau Android Anda.',
+};
 
 const Step = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
     <div className="flex items-start gap-4">

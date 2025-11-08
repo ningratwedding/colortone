@@ -1,6 +1,4 @@
 
-'use client';
-
 import {
   Card,
   CardDescription,
@@ -10,6 +8,12 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Monitor, Smartphone, Video, Wand2, ArrowRight } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Panduan Instalasi Preset dan LUT',
+    description: 'Temukan panduan instalasi preset dan LUT yang mudah diikuti untuk berbagai perangkat lunak editing foto dan video seperti Lightroom, Photoshop, Premiere Pro, dan lainnya.',
+};
 
 const tutorialCategories = [
     {

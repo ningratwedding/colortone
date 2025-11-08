@@ -1,6 +1,4 @@
 
-'use client';
-
 import {
   Card,
   CardContent,
@@ -11,6 +9,12 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileCheck, FileDown, Wand2, Monitor, ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Cara Instal Preset Desktop (XMP) di Lightroom & Photoshop',
+    description: 'Panduan langkah demi langkah untuk menginstal preset .XMP di Adobe Lightroom Classic dan Adobe Photoshop Camera Raw untuk alur kerja editing foto profesional Anda.',
+};
 
 const Step = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
     <div className="flex items-start gap-4">

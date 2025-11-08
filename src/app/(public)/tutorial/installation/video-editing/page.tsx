@@ -1,6 +1,4 @@
 
-'use client';
-
 import {
   Card,
   CardContent,
@@ -11,6 +9,12 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileDown, Monitor, Smartphone, Video, ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Cara Instal LUT (.CUBE) di Premiere, DaVinci, CapCut, & VN',
+    description: 'Pelajari cara mengimpor dan menggunakan file LUT .CUBE untuk color grading video Anda di Adobe Premiere Pro, DaVinci Resolve, CapCut, dan VN Video Editor.',
+};
 
 const Step = ({ icon: Icon, title, children }: { icon: React.ElementType, title: string, children: React.ReactNode }) => (
     <div className="flex items-start gap-4">

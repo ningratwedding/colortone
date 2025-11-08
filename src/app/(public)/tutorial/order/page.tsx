@@ -1,6 +1,4 @@
 
-'use client';
-
 import {
   Card,
   CardContent,
@@ -11,6 +9,12 @@ import {
 import { ShoppingCart, LogIn, Download } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Cara Melakukan Pesanan di Colortone',
+    description: 'Ikuti langkah-langkah mudah untuk membeli dan mengunduh preset foto atau LUT video dari marketplace kreator kami.',
+};
 
 const tutorialSteps = [
   {
