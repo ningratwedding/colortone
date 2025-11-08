@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -21,6 +22,7 @@ const getDb = () => getFirestore(initializeFirebase().app);
 async function createUserDocument(user: any, fullName?: string) {
     const db = getDb();
     const userRef = doc(db, 'users', user.uid);
+    const auth = getAuth(initializeFirebase().app);
 
     // Check if the document already exists
     const docSnap = await getDoc(userRef);

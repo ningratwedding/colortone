@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -32,6 +33,7 @@ export function ProductClientContent({
     if (user) {
       return `/checkout?productId=${productId}`;
     }
+    // Redirect to login, and then redirect back to this product page after login.
     return `/login?redirect=/product/${productId}`;
   };
 
