@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '@/lib/data';
 import Link from 'next/link';
-import { Instagram, Facebook, PlusCircle, Trash2 } from 'lucide-react';
+import { Instagram, Facebook, PlusCircle, Trash2, DollarSign } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -94,6 +95,14 @@ export default function SettingsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
   const [newSocialUsername, setNewSocialUsername] = useState('');
+  const [formattedBalance, setFormattedBalance] = useState('');
+
+  useEffect(() => {
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
+    setFormattedBalance(formatCurrency(2500000));
+  }, []);
 
   const handleAddSocial = () => {
     if (newSocialPlatform && newSocialUsername) {
@@ -234,6 +243,27 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
+          {/* Total Balance */}
+          <Card>
+            <CardHeader>
+              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Saldo
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formattedBalance}</div>
+              <p className="text-xs text-muted-foreground">
+                Saldo yang tersedia untuk ditarik.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full">Tarik Dana</Button>
+            </CardFooter>
+          </Card>
+
           {/* Payment Settings */}
           <Card>
             <CardHeader>
