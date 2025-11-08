@@ -89,6 +89,7 @@ export default function AdminUsersPage() {
                   <span className="sr-only">Avatar</span>
                 </TableHead>
                 <TableHead>Nama Pengguna</TableHead>
+                <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead>Peran</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>
@@ -101,6 +102,7 @@ export default function AdminUsersPage() {
                 <TableRow key={i}>
                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-48" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-8 w-8" /></TableCell>
@@ -115,6 +117,7 @@ export default function AdminUsersPage() {
                     </Avatar>
                   </TableCell>
                   <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">{user.email}</TableCell>
                    <TableCell>
                     {getRoleBadge(user.role)}
                   </TableCell>
