@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -63,6 +64,28 @@ const socialIcons = {
   facebook: <Facebook className="h-5 w-5" />,
   tiktok: <TikTokIcon className="h-5 w-5" />,
 };
+
+const bankList = [
+    { code: 'bca', name: 'BCA' },
+    { code: 'mandiri', name: 'Bank Mandiri' },
+    { code: 'bni', name: 'BNI' },
+    { code: 'bri', name: 'BRI' },
+    { code: 'bsi', name: 'BSI' },
+    { code: 'cimb', name: 'CIMB Niaga' },
+    { code: 'permata', name: 'Bank Permata' },
+    { code: 'danamon', name: 'Bank Danamon' },
+    { code: 'panin', name: 'Panin Bank' },
+    { code: 'ocbc', name: 'OCBC NISP' },
+    { code: 'btn', name: 'BTN' },
+    { code: 'maybank', name: 'Maybank Indonesia' },
+    { code: 'uob', name: 'UOB Indonesia' },
+    { code: 'mega', name: 'Bank Mega' },
+    { code: 'jago', name: 'Bank Jago' },
+    { code: 'artos', name: 'Bank Artos' },
+    { code: 'dbs', name: 'DBS Indonesia' },
+    { code: 'bcasyariah', name: 'BCA Syariah' },
+    { code: 'muamalat', name: 'Bank Muamalat' },
+];
 
 export default function SettingsPage() {
   const user = users[0];
@@ -207,11 +230,13 @@ export default function SettingsPage() {
                     <SelectValue placeholder="Pilih Bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bca">BCA</SelectItem>
-                    <SelectItem value="mandiri">Mandiri</SelectItem>
-                    <SelectItem value="bni">BNI</SelectItem>
-                    <SelectItem value="bri">BRI</SelectItem>
-                    <SelectItem value="cimb">CIMB Niaga</SelectItem>
+                    <ScrollArea className="h-72">
+                         {bankList.map((bank) => (
+                            <SelectItem key={bank.code} value={bank.code}>
+                                {bank.name}
+                            </SelectItem>
+                        ))}
+                    </ScrollArea>
                   </SelectContent>
                 </Select>
               </div>
@@ -309,3 +334,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
