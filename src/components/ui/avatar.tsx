@@ -25,22 +25,15 @@ Avatar.displayName = AvatarPrimitive.Root.displayName
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => {
-  // Use next/image for external URLs, fallback to standard img for blobs or other data URLs
-  if (typeof props.src === 'string' && (props.src.startsWith('http') || props.src.startsWith('/'))) {
-    return (
-        <AvatarPrimitive.Image asChild ref={ref} className={cn("aspect-square h-full w-full", className)}>
-            <Image src={props.src} alt={props.alt || ''} width={40} height={40} />
-        </AvatarPrimitive.Image>
-    )
-  }
-  // Fallback to a standard img for blob URLs or other cases
+>(({ className, src, alt, ...props }, ref) => {
   return (
-      <AvatarPrimitive.Image
-        ref={ref}
-        className={cn("aspect-square h-full w-full", className)}
-        {...props}
-      />
+    <AvatarPrimitive.Image
+      ref={ref}
+      className={cn("aspect-square h-full w-full", className)}
+      src={src}
+      alt={alt}
+      {...props}
+    />
   )
 })
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
