@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection, query, orderBy, doc, updateDoc, type Timestamp } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
