@@ -31,8 +31,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+    <div className="container mx-auto px-4 py-6">
+      <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
           <ImageCompareSlider
             beforeImage={product.imageBefore}
@@ -41,38 +41,38 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
               {product.name}
             </h1>
-            <div className="mt-2 flex items-center gap-4">
+            <div className="mt-2 flex items-center gap-3">
                 <Link href={`/creator/${product.creator.slug}`} className="flex items-center gap-2 group">
-                    <Avatar>
+                    <Avatar className="h-8 w-8">
                         <AvatarImage src={product.creator.avatar.imageUrl} data-ai-hint={product.creator.avatar.imageHint} />
                         <AvatarFallback>{product.creator.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium group-hover:text-primary transition-colors">{product.creator.name}</span>
+                    <span className="font-medium text-sm group-hover:text-primary transition-colors">{product.creator.name}</span>
                 </Link>
             </div>
           </div>
-          <p className="text-lg text-muted-foreground">{product.description}</p>
+          <p className="text-base text-muted-foreground">{product.description}</p>
           
           <ProductClientContent price={product.price} productId={product.id} />
 
           <Card className="rounded-lg">
-            <CardContent className="pt-6 grid gap-4 text-sm">
-                <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-primary"/>
+            <CardContent className="pt-4 grid gap-3 text-sm">
+                <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary"/>
                     <span>Kompatibel dengan: {product.software.map(s => s.name).join(', ')}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Download className="h-5 w-5 text-primary"/>
+                <div className="flex items-center gap-2">
+                    <Download className="h-4 w-4 text-primary"/>
                     <span>Unduhan digital instan</span>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Tag className="h-5 w-5 text-primary"/>
-                    <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-primary"/>
+                    <div className="flex flex-wrap gap-1">
                        {product.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                     </div>
                 </div>

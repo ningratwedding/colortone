@@ -44,28 +44,28 @@ export function ProductCard({ product, className }: ProductCardProps) {
             className="aspect-[3/2]"
         />
       </CardHeader>
-      <CardContent className="p-4 pb-2 flex-grow">
+      <CardContent className="p-3 pb-2 flex-grow">
         <Link href={`/product/${product.id}`} className="space-y-1">
-          <CardTitle className="text-lg leading-tight hover:text-primary transition-colors">
+          <CardTitle className="text-base leading-tight hover:text-primary transition-colors">
             {product.name}
           </CardTitle>
         </Link>
-         <div className="mt-2 flex items-center gap-2">
+         <div className="mt-1.5 flex items-center gap-2">
             <Link href={`/creator/${product.creator.slug}`} className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
+                <Avatar className="h-5 w-5">
                     <AvatarImage src={product.creator.avatar.imageUrl} alt={product.creator.name} data-ai-hint={product.creator.avatar.imageHint} />
                     <AvatarFallback>{product.creator.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className="text-sm text-muted-foreground hover:text-primary transition-colors">{product.creator.name}</div>
+                <div className="text-xs text-muted-foreground hover:text-primary transition-colors">{product.creator.name}</div>
             </Link>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-2 mt-auto">
+      <CardFooter className="p-3 pt-0 mt-auto">
         <div className="flex w-full items-center justify-between">
-          <div className="font-semibold text-lg text-primary truncate">{formattedPrice}</div>
-          <Button asChild>
+          <div className="font-semibold text-base text-primary truncate">{formattedPrice}</div>
+          <Button size="sm" asChild>
             <Link href={`/checkout?productId=${product.id}`}>
-              <CreditCard className="mr-2 h-4 w-4"/>
+              <CreditCard className="mr-1.5 h-4 w-4"/>
               Beli
             </Link>
           </Button>

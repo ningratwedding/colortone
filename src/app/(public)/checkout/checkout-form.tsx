@@ -48,7 +48,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
 
   if (!product) {
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6">
             <Alert>
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Produk tidak ditemukan!</AlertTitle>
@@ -64,20 +64,20 @@ export default function CheckoutForm({ product }: { product?: Product }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
+    <div className="container mx-auto px-4 py-6">
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-3">
           <Card>
             <CardHeader>
               <CardTitle>Informasi Kontak</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-3">
-                <div className="grid gap-2">
+              <div className="grid gap-2">
+                <div className="grid gap-1.5">
                   <Label htmlFor="email">Alamat Email</Label>
                   <Input id="email" type="email" placeholder="anda@contoh.com" />
                 </div>
-                <div className="grid gap-2">
+                <div className="grid gap-1.5">
                   <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
                   <Input id="whatsapp" type="tel" placeholder="+62 812-3456-7890" />
                 </div>
@@ -91,18 +91,18 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                 Pilih metode pembayaran pilihan Anda.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-                <div className="grid gap-3">
+            <CardContent className="space-y-2">
+                <div className="grid gap-2">
                     <Button variant="outline" size="lg" className="justify-start">
-                        <Banknote className="mr-4" />
+                        <Banknote className="mr-3" />
                         Transfer Bank
                     </Button>
                     <Button variant="outline" size="lg" className="justify-start">
-                        <Wallet className="mr-4" />
+                        <Wallet className="mr-3" />
                         E-Wallet (QRIS)
                     </Button>
                 </div>
-                <p className="text-xs text-muted-foreground pt-2">
+                <p className="text-xs text-muted-foreground pt-1">
                     Setelah mengklik "Buat Pesanan", Anda akan menerima instruksi pembayaran melalui email dan WhatsApp.
                 </p>
             </CardContent>
@@ -114,46 +114,46 @@ export default function CheckoutForm({ product }: { product?: Product }) {
             <CardHeader>
               <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2">
               <div
                 key={product.id}
                 className="flex justify-between items-center"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <Image
                     src={product.imageAfter.imageUrl}
                     alt={product.name}
-                    width={64}
-                    height={42}
+                    width={56}
+                    height={37}
                     className="rounded-md"
                     data-ai-hint={product.imageAfter.imageHint}
                   />
                   <div>
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-sm">{product.name}</p>
+                    <p className="text-xs text-muted-foreground">
                       Oleh {product.creator.name}
                     </p>
                   </div>
                 </div>
-                <span className="font-medium">{formattedPrice}</span>
+                <span className="font-medium text-sm">{formattedPrice}</span>
               </div>
               <Separator />
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
                 <span>{formattedSubtotal}</span>
               </div>
-              <div className="flex justify-between text-muted-foreground">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Pajak</span>
                 <span>{formattedTax}</span>
               </div>
               <Separator />
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between font-bold text-base">
                 <span>Total</span>
                 <span>{formattedTotal}</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" size="lg">
+              <Button className="w-full">
                 Buat Pesanan
               </Button>
             </CardFooter>

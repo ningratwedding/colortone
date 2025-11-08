@@ -12,20 +12,20 @@ import { products, categories, software } from "@/lib/data";
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary font-headline">
+    <div className="container mx-auto px-4 py-6">
+      <header className="text-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary font-headline">
           Mewadahi Kreativitas Visual
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="mt-3 text-base text-muted-foreground max-w-2xl mx-auto">
           Misi kami adalah menjadi platform terdepan yang memberdayakan para pencerita visual. Kami menyediakan ruang di mana para kreator dapat berbagi karya, menginspirasi, dan mengubah gairah mereka menjadi peluang.
         </p>
       </header>
 
-      <div className="mb-6 flex flex-col md:flex-row gap-4 justify-end">
-        <div className="flex gap-4 w-full md:w-auto">
+      <div className="mb-4 flex flex-col md:flex-row gap-2 justify-end">
+        <div className="flex gap-2 w-full md:w-auto">
           <Select defaultValue="all-categories">
-            <SelectTrigger className="w-full md:w-[180px] bg-card">
+            <SelectTrigger className="w-full md:w-[160px] bg-card">
               <SelectValue placeholder="Kategori" />
             </SelectTrigger>
             <SelectContent>
@@ -38,7 +38,7 @@ export default function Home() {
             </SelectContent>
           </Select>
           <Select defaultValue="all-software">
-            <SelectTrigger className="w-full md:w-[180px] bg-card">
+            <SelectTrigger className="w-full md:w-[160px] bg-card">
               <SelectValue placeholder="Perangkat Lunak" />
             </SelectTrigger>
             <SelectContent>
@@ -53,10 +53,10 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator className="mb-6" />
+      <Separator className="mb-4" />
 
       <section>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

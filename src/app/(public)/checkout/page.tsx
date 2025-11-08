@@ -15,7 +15,7 @@ function CheckoutPageContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto px-4 py-8">Memuat...</div>}>
+    <Suspense fallback={<div className="container mx-auto px-4 py-6">Memuat...</div>}>
       <CheckoutPageContent />
     </Suspense>
   );

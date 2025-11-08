@@ -18,6 +18,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import { useEffect, useState } from "react";
 
@@ -32,12 +33,14 @@ const data = [
 
 export default function DashboardPage() {
   const [formattedRevenue, setFormattedRevenue] = useState<string>('');
+  const [maxRevenue, setMaxRevenue] = useState(0);
   
   useEffect(() => {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
     setFormattedRevenue(formatCurrency(452318900));
+    setMaxRevenue(Math.max(...data.map(item => item.revenue)));
   }, []);
 
   const formatCompact = (amount: number) => {
@@ -52,7 +55,7 @@ export default function DashboardPage() {
     <div className="space-y-4">
       
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -61,7 +64,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formattedRevenue}</div>
+            <div className="text-xl font-bold">{formattedRevenue}</div>
             <p className="text-xs text-muted-foreground animate-pulse">
               +20.1% dari bulan lalu
             </p>
@@ -73,7 +76,7 @@ export default function DashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
+            <div className="text-xl font-bold">+2350</div>
             <p className="text-xs text-muted-foreground animate-pulse">
               +180.1% dari bulan lalu
             </p>
@@ -87,7 +90,7 @@ export default function DashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42</div>
+            <div className="text-xl font-bold">42</div>
             <p className="text-xs text-muted-foreground animate-pulse">
               +2 sejak bulan lalu
             </p>
@@ -103,7 +106,7 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -116,7 +119,11 @@ export default function DashboardPage() {
                 formatter={(value) => formatTooltip(value as number)}
               />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]}>
+                 {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={`hsl(var(--primary) / ${entry.revenue / maxRevenue})`} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

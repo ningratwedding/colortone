@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formattedRevenue}</div>
+            <div className="text-xl font-bold">{formattedRevenue}</div>
             <p className="text-xs text-muted-foreground">
               +15.2% dari bulan lalu
             </p>
@@ -71,7 +71,7 @@ export default function AdminDashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+10293</div>
+            <div className="text-xl font-bold">+10293</div>
             <p className="text-xs text-muted-foreground">
               +12.1% dari bulan lalu
             </p>
@@ -85,7 +85,7 @@ export default function AdminDashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,204</div>
+            <div className="text-xl font-bold">1,204</div>
             <p className="text-xs text-muted-foreground">
               +50 sejak bulan lalu
             </p>
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+218</div>
+            <div className="text-xl font-bold">+218</div>
             <p className="text-xs text-muted-foreground">
               +15 sejak bulan lalu
             </p>
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />

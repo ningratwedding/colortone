@@ -20,15 +20,15 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
 const socialLinks = {
   instagram: {
     url: 'https://instagram.com/',
-    icon: <Instagram className="h-5 w-5" />,
+    icon: <Instagram className="h-4 w-4" />,
   },
   facebook: {
     url: 'https://facebook.com/',
-    icon: <Facebook className="h-5 w-5" />,
+    icon: <Facebook className="h-4 w-4" />,
   },
   tiktok: {
     url: 'https://tiktok.com/@',
-    icon: <TikTokIcon className="h-5 w-5" />,
+    icon: <TikTokIcon className="h-4 w-4" />,
   }
 };
 
@@ -43,18 +43,18 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
   const creatorProducts = products.filter((product) => product.creator.id === creator.id);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 flex flex-col items-center text-center">
-        <Avatar className="h-32 w-32">
+    <div className="container mx-auto px-4 py-6">
+      <header className="mb-6 flex flex-col items-center text-center">
+        <Avatar className="h-24 w-24">
           <AvatarImage src={creator.avatar.imageUrl} alt={creator.name} data-ai-hint={creator.avatar.imageHint} />
           <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <h1 className="text-4xl font-bold font-headline mt-4">{creator.name}</h1>
-        <p className="mt-2 text-lg text-muted-foreground max-w-xl">
+        <h1 className="text-3xl font-bold font-headline mt-3">{creator.name}</h1>
+        <p className="mt-2 text-base text-muted-foreground max-w-lg">
           {creator.bio}
         </p>
         
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-3 flex items-center gap-3">
           {creator.socials && Object.entries(creator.socials).map(([platform, username]) => {
               const social = socialLinks[platform as keyof typeof socialLinks];
               if (!social || !username) return null;
@@ -74,11 +74,11 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
       </header>
 
       <main>
-        <h2 className="text-2xl font-bold mb-6 font-headline text-center">
+        <h2 className="text-xl font-bold mb-4 font-headline text-center">
           Produk oleh {creator.name}
         </h2>
         {creatorProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {creatorProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

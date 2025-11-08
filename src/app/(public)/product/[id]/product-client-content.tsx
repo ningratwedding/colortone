@@ -27,11 +27,11 @@ export function ProductClientContent({
 
   return (
     <>
-      <div className="text-4xl font-bold text-primary">{formattedPrice}</div>
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
+      <div className="flex flex-col sm:flex-row gap-2">
         <Button size="lg" className="w-full sm:w-auto" asChild>
             <Link href={`/checkout?productId=${productId}`}>
-                <ShoppingCart className="mr-2 h-5 w-5" /> Beli Sekarang
+                <ShoppingCart className="mr-2 h-4 w-4" /> Beli Sekarang
             </Link>
         </Button>
       </div>

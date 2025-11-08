@@ -66,8 +66,8 @@ export default function AdminDashboardLayout({
         <Sidebar collapsible="icon" variant="inset" side="left">
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2">
-              <SlidersHorizontal className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold font-headline group-data-[collapsible=icon]:hidden">
+              <SlidersHorizontal className="h-5 w-5 text-primary" />
+              <span className="text-base font-bold font-headline group-data-[collapsible=icon]:hidden">
                 FilterForge
               </span>
             </Link>
@@ -110,10 +110,10 @@ export default function AdminDashboardLayout({
         </Sidebar>
 
         <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
              <SidebarTrigger className="flex" />
             <div className="flex-1">
-              <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
+              <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
             </div>
             <div className="relative ml-auto flex-initial md:grow-0">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -147,7 +147,7 @@ export default function AdminDashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+          <main className="flex-1 overflow-auto p-4">{children}</main>
         </SidebarInset>
     </SidebarProvider>
   );
