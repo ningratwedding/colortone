@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { CheckCircle, ShoppingCart, Contact, KeyRound, Download } from 'lucide-react';
+import { ShoppingCart, LogIn, Download } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -14,22 +14,17 @@ const tutorialSteps = [
   {
     icon: ShoppingCart,
     title: '1. Pilih Produk Anda',
-    description: 'Jelajahi marketplace kami dan temukan preset atau LUT yang Anda sukai. Klik tombol "Beli" atau lihat detail produk untuk melanjutkan.',
+    description: 'Jelajahi marketplace kami dan temukan preset atau LUT yang Anda sukai. Klik tombol "Beli" untuk melanjutkan ke halaman login atau checkout.',
   },
   {
-    icon: Contact,
-    title: '2. Lengkapi Informasi Kontak',
-    description: 'Di halaman checkout, masukkan alamat email dan nomor WhatsApp aktif Anda. Informasi ini penting agar kami dapat menghubungi Anda.',
-  },
-  {
-    icon: KeyRound,
-    title: '3. Terima Kode Unduhan Unik',
-    description: 'Setelah pesanan dibuat, tim admin kami akan memverifikasi pembayaran Anda. Anda akan menerima sebuah kode unduhan unik yang dikirimkan secara manual ke nomor WhatsApp Anda.',
+    icon: LogIn,
+    title: '2. Masuk atau Buat Akun',
+    description: 'Anda akan diminta untuk masuk ke akun Anda. Jika belum punya, buatlah akun baru. Prosesnya cepat dan mudah!',
   },
   {
     icon: Download,
-    title: '4. Verifikasi & Unduh',
-    description: 'Kembali ke halaman konfirmasi pesanan, masukkan kode unik yang telah Anda terima, lalu klik "Verifikasi & Unduh" untuk mendapatkan file produk Anda.',
+    title: '3. Bayar & Unduh',
+    description: 'Selesaikan pembayaran, dan produk digital Anda akan langsung tersedia untuk diunduh di halaman "Pembelian Saya" di dasbor akun Anda.',
   },
 ];
 
