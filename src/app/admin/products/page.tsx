@@ -30,23 +30,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { products } from "@/lib/data";
+import { products, type Product } from "@/lib/data";
 
 export default function AdminProductsPage() {
-  const [allProducts] = useState(products);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [formattedPrices, setFormattedPrices] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
+    const sortedProducts = [...products].sort((a, b) => b.sales - a.sales);
+    setAllProducts(sortedProducts);
+
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
 
     const prices: { [key: string]: string } = {};
-    allProducts.forEach(product => {
+    products.forEach(product => {
       prices[product.id] = formatCurrency(product.price);
     });
     setFormattedPrices(prices);
-  }, [allProducts]);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -68,6 +71,7 @@ export default function AdminProductsPage() {
                 <TableHead>Kreator</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Harga</TableHead>
+                <TableHead>Total Penjualan</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
@@ -96,6 +100,7 @@ export default function AdminProductsPage() {
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
                   <TableCell className="font-medium text-primary">{formattedPrices[product.id]}</TableCell>
+                  <TableCell>{product.sales.toLocaleString('id-ID')}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

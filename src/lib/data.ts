@@ -1,4 +1,5 @@
 
+
 import type { ImagePlaceholder } from './placeholder-images';
 import { PlaceHolderImages } from './placeholder-images';
 
@@ -27,6 +28,8 @@ export type Product = {
   category: { id: string; name: string };
   software: { id: string; name: string }[];
   tags: string[];
+  sales: number;
+  reviewsCount: number;
 };
 
 export const users: User[] = [
@@ -71,6 +74,8 @@ export const products: Product[] = [
     category: categories[5],
     software: [software[0], software[1], software[2]],
     tags: ['sinematik', 'teal', 'oranye', 'perkotaan'],
+    sales: 1250,
+    reviewsCount: 250,
   },
   {
     id: '2',
@@ -83,6 +88,8 @@ export const products: Product[] = [
     category: categories[0],
     software: [software[0], software[3]],
     tags: ['pernikahan', 'klasik', 'elegan', 'cinta'],
+    sales: 890,
+    reviewsCount: 178,
   },
   {
     id: '3',
@@ -95,6 +102,8 @@ export const products: Product[] = [
     category: categories[1],
     software: [software[0]],
     tags: ['jam emas', 'hangat', 'potret', 'pre-wedding'],
+    sales: 2100,
+    reviewsCount: 420,
   },
   {
     id: '4',
@@ -107,6 +116,8 @@ export const products: Product[] = [
     category: categories[2],
     software: [software[0], software[1], software[3]],
     tags: ['wisuda', 'kelulusan', 'potret', 'cerah'],
+    sales: 540,
+    reviewsCount: 108,
   },
   {
     id: '5',
@@ -119,6 +130,8 @@ export const products: Product[] = [
     category: categories[4],
     software: [software[0]],
     tags: ['pastel', 'dreamy', 'lembut', 'keluarga'],
+    sales: 780,
+    reviewsCount: 156,
   },
   {
     id: '6',
@@ -131,6 +144,8 @@ export const products: Product[] = [
     category: categories[5],
     software: [software[4], software[5], software[6]],
     tags: ['antik', 'film', 'lut', 'retro'],
+    sales: 450,
+    reviewsCount: 90,
   },
   {
     id: '7',
@@ -143,6 +158,8 @@ export const products: Product[] = [
     category: categories[3],
     software: [software[0], software[2]],
     tags: ['studio', 'potret', 'profesional', 'bersih'],
+    sales: 1500,
+    reviewsCount: 300,
   },
   {
     id: '8',
@@ -155,5 +172,7 @@ export const products: Product[] = [
     category: categories[5],
     software: [software[0], software[3]],
     tags: ['perjalanan', 'tropis', 'cerah', 'pantai'],
+    sales: 1800,
+    reviewsCount: 360,
   },
 ];
