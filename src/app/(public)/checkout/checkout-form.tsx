@@ -75,11 +75,11 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               <div className="grid gap-2">
                 <div className="grid gap-1.5">
                   <Label htmlFor="email">Alamat Email</Label>
-                  <Input id="email" type="email" placeholder="anda@contoh.com" />
+                  <Input id="email" type="email" placeholder="anda@contoh.com" required />
                 </div>
                 <div className="grid gap-1.5">
                   <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
-                  <Input id="whatsapp" type="tel" placeholder="+62 812-3456-7890" />
+                  <Input id="whatsapp" type="tel" placeholder="+62 812-3456-7890" required />
                 </div>
               </div>
             </CardContent>
