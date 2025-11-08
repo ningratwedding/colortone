@@ -1,0 +1,35 @@
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Aturan untuk file avatar:
+    // Baca: Izinkan jika pengguna login (opsional, bisa juga 'if true' jika avatar publik).
+    // Tulis: Izinkan hanya jika ID pengguna cocok.
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Aturan untuk gambar produk:
+    // Baca: Izinkan akses publik untuk semua gambar produk.
+    // Tulis: Izinkan hanya jika pengguna sudah login (creator).
+    match /product_images/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Aturan untuk file produk yang dapat diunduh:
+    // Baca & Tulis: Hanya izinkan jika pengguna sudah login.
+    // Aturan yang lebih ketat (misalnya, hanya pembeli) akan dikelola oleh logika aplikasi.
+    match /product_files/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Aturan default yang lebih ketat untuk path lain yang tidak cocok.
+    // Menolak semua akses baca dan tulis secara default.
+    match /{allOtherPaths=**} {
+        allow read, write: if false;
+    }
+  }
+}
