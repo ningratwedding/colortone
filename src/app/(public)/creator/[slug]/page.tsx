@@ -43,25 +43,29 @@ const socialLinks = {
 };
 
 
-function CreatorProfilePageContent({ params }: { params: { slug: string } }) {
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
   const firestore = useFirestore();
   const [creator, setCreator] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const slug = params.slug;
 
   useEffect(() => {
     const fetchCreatorData = async () => {
-      if (!firestore || !params.slug) return;
+      if (!firestore || !slug) return;
       setLoading(true);
 
       // Fetch creator by slug
       const usersRef = collection(firestore, 'users');
-      const qCreator = query(usersRef, where('slug', '==', params.slug), limit(1));
+      const qCreator = query(usersRef, where('slug', '==', slug), limit(1));
       const creatorSnapshot = await getDocs(qCreator);
 
       if (creatorSnapshot.empty) {
         setLoading(false);
-        notFound();
+        // This should be called on the server, but for client-side fetches,
+        // we can set state to show a "not found" message or redirect.
+        // For now, we'll just stop loading and let the UI handle the null creator state.
+        setCreator(null); 
         return;
       }
 
@@ -69,17 +73,19 @@ function CreatorProfilePageContent({ params }: { params: { slug: string } }) {
       setCreator(creatorData);
 
       // Fetch creator's products
-      const productsRef = collection(firestore, 'products');
-      const qProducts = query(productsRef, where('creatorId', '==', creatorData.id));
-      const productsSnapshot = await getDocs(qProducts);
-      const creatorProducts = productsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
-      setProducts(creatorProducts);
+      if (creatorData.id) {
+        const productsRef = collection(firestore, 'products');
+        const qProducts = query(productsRef, where('creatorId', '==', creatorData.id));
+        const productsSnapshot = await getDocs(qProducts);
+        const creatorProducts = productsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+        setProducts(creatorProducts);
+      }
       
       setLoading(false);
     };
 
     fetchCreatorData();
-  }, [firestore, params.slug]);
+  }, [firestore, slug]);
 
   if (loading) {
     return (
@@ -110,8 +116,16 @@ function CreatorProfilePageContent({ params }: { params: { slug: string } }) {
   }
 
   if (!creator) {
-    // This will be handled by notFound() inside useEffect, but as a fallback
-    return null;
+    // In a real app, you might want to show a more descriptive not found page.
+    // Calling notFound() in a client component after data fetching is complex.
+    // A simple message is often a good approach.
+    return (
+        <div className="container mx-auto px-4 py-6 text-center">
+            <h1 className="text-2xl font-bold">Kreator tidak ditemukan</h1>
+            <p className="text-muted-foreground">Profil yang Anda cari tidak ada.</p>
+            <Link href="/" className="mt-4 inline-block text-primary hover:underline">Kembali ke Beranda</Link>
+        </div>
+    );
   }
 
   return (
@@ -166,9 +180,4 @@ function CreatorProfilePageContent({ params }: { params: { slug: string } }) {
       </main>
     </div>
   );
-}
-
-
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-    return <CreatorProfilePageContent params={params} />;
 }
