@@ -34,6 +34,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
@@ -58,7 +59,7 @@ export default function AdminDashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <Sidebar className="hidden border-r bg-background md:block">
+        <Sidebar className="hidden border-r bg-background md:block" collapsible="offcanvas">
           <SidebarHeader className="p-4">
             <Link href="/" className="flex items-center space-x-2">
               <SlidersHorizontal className="h-6 w-6 text-primary" />
@@ -87,7 +88,7 @@ export default function AdminDashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col md:pl-[16rem]">
+        <div className="flex flex-col md:pl-[56px]">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Sheet>
               <SheetTrigger asChild>
@@ -122,6 +123,7 @@ export default function AdminDashboardLayout({
                 </nav>
               </SheetContent>
             </Sheet>
+             <SidebarTrigger className="hidden md:flex" />
             <div className="flex-1">
               <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
             </div>
