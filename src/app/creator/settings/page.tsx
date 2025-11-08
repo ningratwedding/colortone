@@ -218,7 +218,7 @@ export default function SettingsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="username">Nama Pengguna</Label>
-                        <Input id="username" placeholder="misal: elenapetrova" value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
+                        <Input id="username" placeholder="misal: kartikasari" value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
                       </div>
                     </div>
                     <DialogFooter>
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue="elena@example.com"
+                  defaultValue="kartika.sari@example.com"
                   readOnly
                 />
               </div>

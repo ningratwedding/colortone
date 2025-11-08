@@ -1,5 +1,4 @@
 
-
 import type { ImagePlaceholder } from './placeholder-images';
 import { PlaceHolderImages } from './placeholder-images';
 
@@ -33,10 +32,10 @@ export type Product = {
 };
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Elena Petrova', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital yang bersemangat, mengkhususkan diri dalam menangkap keindahan alam yang belum terjamah.', socials: { instagram: 'elenapetrova', facebook: 'elenapetrova', tiktok: 'elenapetrova' } },
-  { id: 'user-2', name: 'Marcus Chen', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film yang mendokumentasikan denyut nadi kota melalui lensa sinematik.', socials: { instagram: 'marcuschen' } },
-  { id: 'user-3', name: 'Aisha Khan', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna dengan hasrat untuk menghidupkan kisah-kisah manusia melalui warna-warna yang cerah.', socials: { instagram: 'aishakhan' } },
-  { id: 'user-4', name: 'John Doe', avatar: images['avatar-4'], bio: 'Fotografer yang bercita-cita tinggi dengan fokus pada fotografi pernikahan dan acara.' },
+  { id: 'user-1', name: 'Kartika Sari', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital yang bersemangat, mengkhususkan diri dalam menangkap keindahan alam Indonesia yang belum terjamah.', socials: { instagram: 'kartikasari', facebook: 'kartikasari', tiktok: 'kartikasari' } },
+  { id: 'user-2', name: 'Bagus Wijaya', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film yang mendokumentasikan denyut nadi kota-kota di Asia Tenggara melalui lensa sinematik.', socials: { instagram: 'baguswijaya' } },
+  { id: 'user-3', name: 'Dewi Lestari', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna dengan hasrat untuk menghidupkan kisah-kisah manusia melalui warna-warna yang cerah dan otentik.', socials: { instagram: 'dewilestari' } },
+  { id: 'user-4', name: 'Agus Santoso', avatar: images['avatar-4'], bio: 'Fotografer yang bercita-cita tinggi dengan fokus pada fotografi pernikahan adat dan modern.' },
 ];
 
 export const categories = [
