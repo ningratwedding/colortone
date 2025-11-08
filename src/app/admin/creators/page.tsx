@@ -30,7 +30,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { users, products } from "@/lib/data";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { users, products, type User } from "@/lib/data";
 
 type CreatorRevenue = {
     id: string;
@@ -42,6 +52,8 @@ export default function AdminCreatorsPage() {
   const [allCreators] = useState(users);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [creatorRevenues, setCreatorRevenues] = useState<Record<string, CreatorRevenue>>({});
+  const [selectedCreator, setSelectedCreator] = useState<User | null>(null);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
 
   useEffect(() => {
     const counts: Record<string, number> = {};
@@ -66,6 +78,11 @@ export default function AdminCreatorsPage() {
     setProductCounts(counts);
     setCreatorRevenues(revenues);
   }, []);
+
+  const handleDeactivateClick = (creator: User) => {
+    setSelectedCreator(creator);
+    setIsDeactivateDialogOpen(true);
+  }
 
   return (
     <div className="space-y-4">
@@ -128,7 +145,7 @@ export default function AdminCreatorsPage() {
                         <DropdownMenuItem asChild>
                             <Link href={`/creator/${creator.slug}`}>Lihat Profil</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Nonaktifkan Kreator</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleDeactivateClick(creator)}>Nonaktifkan Kreator</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -138,6 +155,23 @@ export default function AdminCreatorsPage() {
           </Table>
         </CardContent>
       </Card>
+
+       <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apakah Anda benar-benar yakin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini akan menonaktifkan kreator <span className="font-semibold">{selectedCreator?.name}</span>. Mereka tidak akan dapat mengakses dasbor kreator mereka.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { /* Logika penonaktifan di sini */ setIsDeactivateDialogOpen(false); }}>
+              Ya, Nonaktifkan
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

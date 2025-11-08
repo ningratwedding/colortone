@@ -30,11 +30,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { products, type Product } from "@/lib/data";
 
 export default function AdminProductsPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [formattedPrices, setFormattedPrices] = useState<{ [key: string]: string }>({});
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [dialogAction, setDialogAction] = useState<'deactivate' | 'delete' | null>(null);
 
   useEffect(() => {
     const sortedProducts = [...products].sort((a, b) => b.sales - a.sales);
@@ -50,6 +62,18 @@ export default function AdminProductsPage() {
     });
     setFormattedPrices(prices);
   }, []);
+
+  const handleActionClick = (product: Product, action: 'deactivate' | 'delete') => {
+    setSelectedProduct(product);
+    setDialogAction(action);
+  };
+
+  const closeDialog = () => {
+    setSelectedProduct(null);
+    setDialogAction(null);
+  }
+
+  const dialogOpen = !!(selectedProduct && dialogAction);
 
   return (
     <div className="space-y-4">
@@ -118,8 +142,8 @@ export default function AdminProductsPage() {
                         <DropdownMenuItem asChild>
                             <Link href={`/product/${product.id}`}>Lihat Produk</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Nonaktifkan</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Hapus</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleActionClick(product, 'deactivate')}>Nonaktifkan</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onSelect={() => handleActionClick(product, 'delete')}>Hapus</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -129,6 +153,30 @@ export default function AdminProductsPage() {
           </Table>
         </CardContent>
       </Card>
+      
+      <AlertDialog open={dialogOpen} onOpenChange={closeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apakah Anda benar-benar yakin?</AlertDialogTitle>
+            <AlertDialogDescription>
+                {dialogAction === 'deactivate' && `Tindakan ini akan menonaktifkan produk "${selectedProduct?.name}". Produk ini tidak akan terlihat oleh publik.`}
+                {dialogAction === 'delete' && `Tindakan ini akan menghapus produk "${selectedProduct?.name}" secara permanen. Tindakan ini tidak dapat dibatalkan.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                // Logika aksi di sini
+                closeDialog();
+              }}
+              className={dialogAction === 'delete' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}
+            >
+              Ya, {dialogAction === 'delete' ? 'Hapus' : 'Nonaktifkan'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
