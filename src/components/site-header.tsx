@@ -30,17 +30,18 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
-const navLinks = [
+const navLinks: { href: string; label: string }[] = [
 ];
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4 md:px-6">
-        <div className="md:hidden mr-4">
+        {/* Left Section (Logo and Mobile Menu) */}
+        <div className="flex items-center">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Alihkan Menu">
+              <Button variant="ghost" size="icon" className="md:hidden mr-2" aria-label="Alihkan Menu">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -68,17 +69,17 @@ export function SiteHeader() {
               </nav>
             </SheetContent>
           </Sheet>
-        </div>
 
-        <div className="hidden md:flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <SlidersHorizontal className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">
               FilterForge
             </span>
           </Link>
-          {navLinks.length > 0 && (
-            <nav className="flex items-center space-x-6 text-sm font-medium">
+        </div>
+        
+        {navLinks.length > 0 && (
+            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
               {navLinks.map(({ href, label }) => (
                 <Link
                   key={href}
@@ -90,21 +91,24 @@ export function SiteHeader() {
               ))}
             </nav>
           )}
+        
+        {/* Center Section (Search) */}
+        <div className="flex-1 flex justify-center px-4">
+           <div className="w-full max-w-sm">
+             <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Cari preset..."
+                  className="w-full bg-card pl-10 rounded-full"
+                />
+              </div>
+           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-end space-x-2">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari preset..."
-                className="w-full bg-card md:w-64 pl-10 rounded-full"
-              />
-            </div>
-          </div>
-          <nav className="flex items-center space-x-2">
-            <Button variant="outline" className="hidden sm:inline-flex" asChild>
+        {/* Right Section (Actions) */}
+        <div className="flex items-center justify-end space-x-2">
+           <Button variant="outline" className="hidden sm:inline-flex" asChild>
               <Link href="/creator/dashboard">Menjadi Kreator</Link>
             </Button>
             <DropdownMenu>
@@ -142,7 +146,6 @@ export function SiteHeader() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </nav>
         </div>
       </div>
     </header>

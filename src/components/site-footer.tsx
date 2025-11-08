@@ -1,7 +1,6 @@
 
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
 export function SiteFooter() {
