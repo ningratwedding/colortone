@@ -104,7 +104,7 @@ export default function OrdersPage() {
     }, []);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       
       <Card>
         <CardHeader className="flex-row items-center justify-between">

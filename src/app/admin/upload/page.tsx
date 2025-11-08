@@ -25,7 +25,7 @@ export default function UploadPage() {
         <div className="flex items-center justify-end">
             
         </div>
-      <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
+      <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Detail Produk</CardTitle>
@@ -33,7 +33,7 @@ export default function UploadPage() {
               Isi informasi untuk paket preset atau LUT baru Anda.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Judul Produk</Label>
               <Input
@@ -86,7 +86,7 @@ export default function UploadPage() {
                 <CardTitle>Media Produk</CardTitle>
                 <CardDescription>Unggah gambar sebelum & sesudah, dan file produk Anda.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
                         <Label>Gambar "Sebelum"</Label>

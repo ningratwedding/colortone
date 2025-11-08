@@ -49,8 +49,8 @@ export default function DashboardProductsPage() {
   }, [sellerProducts]);
 
   return (
-    <div>
-      <div className="flex items-center justify-end mb-8">
+    <div className="space-y-6">
+      <div className="flex items-center justify-end">
         
         <Button asChild>
           <Link href="/admin/upload">Tambah Produk</Link>

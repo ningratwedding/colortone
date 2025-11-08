@@ -48,7 +48,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <Sidebar className="hidden border-r bg-background md:block">
-          <SidebarHeader className="p-4 py-5">
+          <SidebarHeader className="p-4">
             <Link href="/" className="flex items-center space-x-2">
                 <SlidersHorizontal className="h-6 w-6 text-primary" />
                 <span className="text-lg font-bold font-headline">FilterForge</span>
@@ -76,7 +76,7 @@ export default function DashboardLayout({
 
         <div className="flex flex-col md:pl-[16rem]">
           <AdminHeader title={pageTitle} />
-          <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-auto p-4 sm:p-6">
             {children}
           </main>
         </div>

@@ -31,7 +31,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
         <div>
           <ImageCompareSlider
             beforeImage={product.imageBefore}
@@ -40,7 +40,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           />
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline">
               {product.name}

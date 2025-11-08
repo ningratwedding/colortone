@@ -43,7 +43,7 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-12 flex flex-col items-center text-center">
+      <header className="mb-8 flex flex-col items-center text-center">
         <Avatar className="h-32 w-32">
           <AvatarImage src={creator.avatar.imageUrl} alt={creator.name} data-ai-hint={creator.avatar.imageHint} />
           <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
@@ -77,7 +77,7 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
           Produk oleh {creator.name}
         </h2>
         {creatorProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {creatorProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

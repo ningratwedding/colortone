@@ -44,11 +44,11 @@ export default function SettingsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       
 
-      <div className="grid gap-8 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-8">
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-6">
           {/* Store Profile */}
           <Card>
             <CardHeader>
@@ -64,7 +64,7 @@ export default function SettingsPage() {
                     </Link>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
@@ -157,7 +157,7 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Account Settings */}
           <Card>
             <CardHeader>

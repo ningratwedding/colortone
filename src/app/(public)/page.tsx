@@ -13,7 +13,7 @@ import { products, categories, software } from "@/lib/data";
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="text-center mb-12">
+      <header className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary font-headline">
           Setiap Warna Bercerita
         </h1>
@@ -22,7 +22,7 @@ export default function Home() {
         </p>
       </header>
 
-      <div className="mb-8 flex flex-col md:flex-row gap-4 items-center">
+      <div className="mb-6 flex flex-col md:flex-row gap-4 items-center">
         <div className="flex-grow w-full" />
         <div className="flex gap-4 w-full md:w-auto">
           <Select defaultValue="all-categories">
@@ -54,10 +54,10 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator className="mb-8" />
+      <Separator className="mb-6" />
 
       <section>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
