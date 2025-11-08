@@ -1,0 +1,170 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's public and private profile information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The user's full display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's primary email address, used for login and notifications."
+        },
+        "slug": {
+          "type": "string",
+          "description": "A URL-friendly version of the user's name for their public profile page."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography of the user, visible on their public profile."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the user's avatar image."
+        },
+        "avatarHint": {
+          "type": "string",
+          "description": "AI hint for the user's avatar image."
+        },
+        "socials": {
+          "type": "object",
+          "properties": {
+            "instagram": { "type": "string" },
+            "facebook": { "type": "string" },
+            "tiktok": { "type": "string" }
+          },
+          "description": "An object containing the user's social media usernames."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["pembeli", "kreator", "admin"],
+          "description": "Defines the user's role and permissions within the application."
+        }
+      },
+      "required": ["name", "email", "slug", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Represents a digital product (preset or LUT) sold on the platform.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the product."
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "The ID of the user who created this product."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the product in IDR."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the product."
+        },
+        "imageBeforeUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "imageBeforeHint": {
+          "type": "string"
+        },
+        "imageAfterUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "imageAfterHint": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "compatibleSoftware": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sales": {
+          "type": "number",
+          "description": "The total number of sales for this product."
+        },
+        "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The secure URL to the downloadable product file (.zip)."
+        }
+      },
+      "required": ["name", "creatorId", "price", "description", "imageAfterUrl"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Represents a transaction where a user purchases a product.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who made the purchase."
+        },
+        "productId": {
+          "type": "string",
+          "description": "The ID of the product that was purchased."
+        },
+        "productName": {
+            "type": "string",
+            "description": "The name of the product at the time of purchase."
+        },
+        "creatorId": {
+            "type": "string",
+            "description": "The ID of the product's creator."
+        },
+        "purchaseDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the purchase was made."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The total amount paid for the order in IDR."
+        },
+        "status": {
+            "type": "string",
+            "enum": ["Selesai", "Diproses", "Dibatalkan"]
+        }
+      },
+      "required": ["userId", "productId", "purchaseDate", "amount", "status"]
+    }
+  },
+  "auth": {
+    "providers": ["email", "google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/UserProfile"
+      },
+      "description": "Stores public and private user profile information."
+    },
+    "/products/{productId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Product"
+      },
+      "description": "Stores all product listings available on the marketplace."
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Order"
+      },
+      "description": "Stores the order history for each user."
+    }
+  }
+}
