@@ -28,7 +28,7 @@ export default function UploadPage() {
           <CardHeader>
             <CardTitle>Detail Produk</CardTitle>
             <CardDescription>
-              Isi informasi untuk paket preset atau LUT baru Anda.
+              Lengkapi detail di bawah ini untuk produk digital baru Anda. Informasi ini akan ditampilkan di halaman produk.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
