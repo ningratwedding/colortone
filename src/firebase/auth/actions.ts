@@ -63,10 +63,9 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
     return { id: user.uid, ...newUserProfile, createdAt: new Date() } as unknown as UserProfile;
 }
 
-const auth = getAuth(initializeFirebase().app);
-
 // Sign in with Google and create user document if it's a new user
 export async function signInWithGoogle() {
+  const auth = getAuth(initializeFirebase().app);
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
@@ -88,6 +87,7 @@ export async function signInWithGoogle() {
 
 // Sign up with email and password
 export async function signUpWithEmail(email: string, password: string, fullName: string) {
+    const auth = getAuth(initializeFirebase().app);
     try {
         if (!fullName) {
             return { success: false, error: 'Nama lengkap harus diisi.'};
@@ -111,6 +111,7 @@ export async function signUpWithEmail(email: string, password: string, fullName:
 
 // Sign in with email and password
 export async function signInWithEmail(email: string, password: string) {
+    const auth = getAuth(initializeFirebase().app);
     try {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const profile = await getUserProfile(result.user.uid);
@@ -132,6 +133,7 @@ export async function signInWithEmail(email: string, password: string) {
 
 // Sign out
 export async function signOut() {
+  const auth = getAuth(initializeFirebase().app);
   try {
     await firebaseSignOut(auth);
     return { success: true };
