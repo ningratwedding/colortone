@@ -1,15 +1,16 @@
-"use client";
 
-import Link from "next/link";
+'use client';
+
+import Link from 'next/link';
 import {
   CircleUserRound,
   Menu,
   Search,
   Settings,
   SlidersHorizontal,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,13 +19,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 const navLinks = [
-  { href: "/", label: "Preset" },
-  { href: "#", label: "LUT" },
+  { href: '/', label: 'Preset' },
+  { href: '#', label: 'LUT' },
 ];
 
 export function SiteHeader() {
@@ -32,38 +39,36 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4 md:px-6">
         <div className="md:hidden mr-4">
-            <Sheet>
+          <Sheet>
             <SheetTrigger asChild>
-                <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Alihkan Menu"
-                >
+              <Button variant="ghost" size="icon" aria-label="Alihkan Menu">
                 <Menu className="h-6 w-6" />
-                </Button>
+              </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                    <SheetTitle>
-                        <Link href="/" className="flex items-center space-x-2">
-                            <SlidersHorizontal className="h-8 w-8 text-primary" />
-                            <span className="font-bold text-xl font-headline">FilterForge</span>
-                        </Link>
-                    </SheetTitle>
-                </SheetHeader>
-                <nav className="flex flex-col gap-4 pt-6">
+              <SheetHeader>
+                <SheetTitle>
+                  <Link href="/" className="flex items-center space-x-2">
+                    <SlidersHorizontal className="h-8 w-8 text-primary" />
+                    <span className="font-bold text-xl font-headline">
+                      FilterForge
+                    </span>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-4 pt-6">
                 {navLinks.map(({ href, label }) => (
-                    <Link
+                  <Link
                     key={href}
                     href={href}
                     className="text-lg font-medium transition-colors hover:text-primary text-foreground"
-                    >
+                  >
                     {label}
-                    </Link>
+                  </Link>
                 ))}
-                </nav>
+              </nav>
             </SheetContent>
-            </Sheet>
+          </Sheet>
         </div>
 
         <div className="hidden md:flex items-center">
@@ -118,7 +123,7 @@ export function SiteHeader() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/creator/dashboard/settings">
+                    <Link href="/creator/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
                     </Link>
@@ -126,7 +131,7 @@ export function SiteHeader() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href="/login">Masuk</Link>
+                  <Link href="/login">Masuk</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

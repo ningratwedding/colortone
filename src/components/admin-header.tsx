@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -29,26 +30,26 @@ import { useSidebar } from './ui/sidebar';
 
 const navLinks = [
   { href: '/creator/dashboard', label: 'Ringkasan' },
-  { href: '/creator/dashboard/products', label: 'Produk' },
-  { href: '/creator/dashboard/upload', label: 'Unggah' },
-  { href: '/creator/dashboard/analytics', label: 'Analitik' },
-  { href: '/creator/dashboard/settings', label: 'Pengaturan' },
+  { href: '/creator/products', label: 'Produk' },
+  { href: '/creator/upload', label: 'Unggah' },
+  { href: '/creator/analytics', label: 'Analitik' },
+  { href: '/creator/settings', label: 'Pengaturan' },
 ];
 
 export function AdminHeader({ title }: { title: string }) {
   const { toggleSidebar } = useSidebar();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-       <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0 md:hidden"
-          onClick={toggleSidebar}
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Alihkan Menu</span>
-        </Button>
-      
+      <Button
+        variant="outline"
+        size="icon"
+        className="shrink-0 md:hidden"
+        onClick={toggleSidebar}
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Alihkan Menu</span>
+      </Button>
+
       <div className="flex-1">
         <h1 className="text-xl font-semibold">{title}</h1>
       </div>
@@ -75,7 +76,7 @@ export function AdminHeader({ title }: { title: string }) {
               <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/creator/dashboard/settings">
+                <Link href="/creator/settings">
                   <span>Pengaturan</span>
                 </Link>
               </DropdownMenuItem>

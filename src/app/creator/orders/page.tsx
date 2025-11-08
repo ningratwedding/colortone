@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -19,7 +20,13 @@ import { Badge } from '@/components/ui/badge';
 import { products } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Calendar as CalendarIcon, MoreHorizontal } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -68,44 +75,44 @@ const mockOrders = [
 ];
 
 type FormattedData = {
-    [key: string]: {
-        total: string;
-        date: string;
-    }
-}
+  [key: string]: {
+    total: string;
+    date: string;
+  };
+};
 
 export default function OrdersPage() {
+  const [formattedData, setFormattedData] = useState<FormattedData>({});
+  const [date, setDate] = useState<DateRange | undefined>();
 
-    const [formattedData, setFormattedData] = useState<FormattedData>({});
-    const [date, setDate] = useState<DateRange | undefined>();
+  useEffect(() => {
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    };
 
+    const formatDate = (date: Date) => {
+      return new Intl.DateTimeFormat('id-ID', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(date);
+    };
 
-    useEffect(() => {
-        const formatCurrency = (amount: number) => {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-        };
-        
-        const formatDate = (date: Date) => {
-            return new Intl.DateTimeFormat('id-ID', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-            }).format(date);
-        }
-
-        const data: FormattedData = {};
-        mockOrders.forEach(order => {
-            data[order.id] = {
-                total: formatCurrency(order.total),
-                date: formatDate(order.date),
-            }
-        });
-        setFormattedData(data);
-
-    }, []);
+    const data: FormattedData = {};
+    mockOrders.forEach((order) => {
+      data[order.id] = {
+        total: formatCurrency(order.total),
+        date: formatDate(order.date),
+      };
+    });
+    setFormattedData(data);
+  }, []);
 
   return (
     <div className="space-y-4">
-      
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <div>
@@ -114,25 +121,25 @@ export default function OrdersPage() {
               Lihat dan kelola pesanan yang masuk untuk produk Anda.
             </CardDescription>
           </div>
-           <Popover>
+          <Popover>
             <PopoverTrigger asChild>
               <Button
                 id="date"
-                variant={"outline"}
+                variant={'outline'}
                 className={cn(
-                  "w-[260px] justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
+                  'w-[260px] justify-start text-left font-normal',
+                  !date && 'text-muted-foreground'
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "d LLL, y", { locale: id })} -{" "}
-                      {format(date.to, "d LLL, y", { locale: id })}
+                      {format(date.from, 'd LLL, y', { locale: id })} -{' '}
+                      {format(date.to, 'd LLL, y', { locale: id })}
                     </>
                   ) : (
-                    format(date.from, "d LLL, y", { locale: id })
+                    format(date.from, 'd LLL, y', { locale: id })
                   )
                 ) : (
                   <span>Pilih rentang tanggal</span>
@@ -173,16 +180,31 @@ export default function OrdersPage() {
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>
                     <div className="font-medium">{order.customer.name}</div>
-                    <div className="text-sm text-muted-foreground">{order.customer.email}</div>
-                    <div className="text-sm text-muted-foreground">{order.customer.whatsapp}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {order.customer.email}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {order.customer.whatsapp}
+                    </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">{order.product.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {order.product.name}
+                  </TableCell>
                   <TableCell>{formattedData[order.id]?.total}</TableCell>
                   <TableCell>
-                    <Badge variant={order.status === 'Selesai' ? 'default' : 'secondary'} className={order.status === 'Selesai' ? 'bg-green-600' : ''}>{order.status}</Badge>
+                    <Badge
+                      variant={
+                        order.status === 'Selesai' ? 'default' : 'secondary'
+                      }
+                      className={order.status === 'Selesai' ? 'bg-green-600' : ''}
+                    >
+                      {order.status}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">{formattedData[order.id]?.date}</TableCell>
-                   <TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {formattedData[order.id]?.date}
+                  </TableCell>
+                  <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button

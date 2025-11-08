@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   BarChart,
   Home,
@@ -10,10 +10,10 @@ import {
   Settings,
   ShoppingCart,
   Upload,
-} from "lucide-react";
-import { AdminHeader } from "@/components/admin-header";
+} from 'lucide-react';
+import { AdminHeader } from '@/components/admin-header';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 import {
   Sidebar,
   SidebarContent,
@@ -22,27 +22,27 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
-} from "@/components/ui/sidebar";
-import { SlidersHorizontal } from "lucide-react";
+} from '@/components/ui/sidebar';
+import { SlidersHorizontal } from 'lucide-react';
 
 const menuItems = [
-  { href: "/creator/dashboard", label: "Ringkasan", icon: Home },
-  { href: "/creator/dashboard/products", label: "Produk", icon: Package },
-  { href: "/creator/dashboard/orders", label: "Pesanan", icon: ShoppingCart },
-  { href: "/creator/dashboard/upload", label: "Unggah", icon: Upload },
-  { href: "/creator/dashboard/analytics", label: "Analitik", icon: BarChart },
-  { href: "/creator/dashboard/settings", label: "Pengaturan", icon: Settings },
+  { href: '/creator/dashboard', label: 'Ringkasan', icon: Home },
+  { href: '/creator/products', label: 'Produk', icon: Package },
+  { href: '/creator/orders', label: 'Pesanan', icon: ShoppingCart },
+  { href: '/creator/upload', label: 'Unggah', icon: Upload },
+  { href: '/creator/analytics', label: 'Analitik', icon: BarChart },
+  { href: '/creator/settings', label: 'Pengaturan', icon: Settings },
 ];
 
-
-export default function DashboardLayout({
+export default function CreatorDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-    const pathname = usePathname();
-    
-    const pageTitle = menuItems.find(item => item.href === pathname)?.label || "Dasbor";
+  const pathname = usePathname();
+
+  const pageTitle =
+    menuItems.find((item) => pathname.startsWith(item.href))?.label || 'Dasbor';
 
   return (
     <SidebarProvider>
@@ -50,8 +50,10 @@ export default function DashboardLayout({
         <Sidebar className="hidden border-r bg-background md:block">
           <SidebarHeader className="p-4">
             <Link href="/" className="flex items-center space-x-2">
-                <SlidersHorizontal className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold font-headline">FilterForge</span>
+              <SlidersHorizontal className="h-6 w-6 text-primary" />
+              <span className="text-lg font-bold font-headline">
+                FilterForge
+              </span>
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -60,7 +62,7 @@ export default function DashboardLayout({
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === href || (pathname.startsWith(href) && href !== '/creator/dashboard')}
+                    isActive={pathname === href}
                     className="justify-start"
                   >
                     <Link href={href}>
@@ -76,9 +78,7 @@ export default function DashboardLayout({
 
         <div className="flex flex-col md:pl-[16rem]">
           <AdminHeader title={pageTitle} />
-          <main className="flex-1 overflow-auto p-4 sm:p-6">
-            {children}
-          </main>
+          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>
