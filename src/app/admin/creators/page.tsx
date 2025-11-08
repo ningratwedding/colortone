@@ -32,16 +32,39 @@ import {
 } from "@/components/ui/table";
 import { users, products } from "@/lib/data";
 
+type CreatorRevenue = {
+    id: string;
+    revenue: number;
+    formattedRevenue: string;
+};
+
 export default function AdminCreatorsPage() {
   const [allCreators] = useState(users);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
+  const [creatorRevenues, setCreatorRevenues] = useState<Record<string, CreatorRevenue>>({});
 
   useEffect(() => {
     const counts: Record<string, number> = {};
+    const revenues: Record<string, CreatorRevenue> = {};
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
+
     users.forEach(creator => {
-      counts[creator.id] = products.filter(p => p.creator.id === creator.id).length;
+      const creatorProducts = products.filter(p => p.creator.id === creator.id);
+      counts[creator.id] = creatorProducts.length;
+      
+      const totalRevenue = creatorProducts.reduce((acc, product) => acc + (product.price * product.sales), 0);
+      revenues[creator.id] = {
+        id: creator.id,
+        revenue: totalRevenue,
+        formattedRevenue: formatCurrency(totalRevenue)
+      };
     });
+
     setProductCounts(counts);
+    setCreatorRevenues(revenues);
   }, []);
 
   return (
@@ -63,6 +86,7 @@ export default function AdminCreatorsPage() {
                 <TableHead>Nama Kreator</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Jumlah Produk</TableHead>
+                <TableHead>Pendapatan</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
@@ -83,6 +107,9 @@ export default function AdminCreatorsPage() {
                   </TableCell>
                   <TableCell>
                     {productCounts[creator.id] || 0}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {creatorRevenues[creator.id]?.formattedRevenue}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
