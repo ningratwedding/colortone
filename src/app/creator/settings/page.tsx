@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '@/lib/data';
 import Link from 'next/link';
-import { Instagram, Facebook, PlusCircle, Trash2, DollarSign } from 'lucide-react';
+import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +63,7 @@ const socialIcons = {
   instagram: <Instagram className="h-5 w-5" />,
   facebook: <Facebook className="h-5 w-5" />,
   tiktok: <TikTokIcon className="h-5 w-5" />,
+  website: <Globe className="h-5 w-5" />
 };
 
 type SocialPlatform = keyof typeof socialIcons;
@@ -172,7 +173,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid gap-4">
-                <Label>Tautan Sosial</Label>
+                <Label>Tautan Sosial & Situs Web</Label>
                 <div className="space-y-3">
                   {Object.entries(socials).map(([platform, username]) => (
                     <div key={platform} className="flex items-center gap-3">
@@ -200,14 +201,14 @@ export default function SettingsPage() {
                       className="mt-2 w-full sm:w-auto"
                     >
                       <PlusCircle className="mr-2 h-4 w-4" />
-                      Tambah Tautan Sosial
+                      Tambah Tautan
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Tambah Tautan Sosial</DialogTitle>
+                      <DialogTitle>Tambah Tautan Sosial atau Situs Web</DialogTitle>
                       <DialogDescription>
-                        Pilih platform dan masukkan nama pengguna Anda.
+                        Pilih platform dan masukkan nama pengguna atau URL.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -215,18 +216,19 @@ export default function SettingsPage() {
                         <Label htmlFor="platform">Platform</Label>
                         <Select onValueChange={(value) => setNewSocialPlatform(value as SocialPlatform)}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Pilih platform sosial" />
+                            <SelectValue placeholder="Pilih platform" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="instagram">Instagram</SelectItem>
                             <SelectItem value="facebook">Facebook</SelectItem>
                             <SelectItem value="tiktok">TikTok</SelectItem>
+                            <SelectItem value="website">Situs Web</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="username">Nama Pengguna</Label>
-                        <Input id="username" placeholder="misal: kartikasari" value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
+                        <Label htmlFor="username">Nama Pengguna atau URL</Label>
+                        <Input id="username" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'misal: kartikasari'} value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
                       </div>
                     </div>
                     <DialogFooter>

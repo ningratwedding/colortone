@@ -36,9 +36,10 @@
           "properties": {
             "instagram": { "type": "string" },
             "facebook": { "type": "string" },
-            "tiktok": { "type": "string" }
+            "tiktok": { "type": "string" },
+            "website": { "type": "string", "format": "uri" }
           },
-          "description": "An object containing the user's social media usernames."
+          "description": "An object containing the user's social media usernames and website."
         },
         "role": {
           "type": "string",

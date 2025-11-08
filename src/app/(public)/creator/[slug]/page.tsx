@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { users, products } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProductCard } from '@/components/product-card';
-import { Instagram, Facebook } from 'lucide-react';
+import { Instagram, Facebook, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -29,6 +29,10 @@ const socialLinks = {
   tiktok: {
     url: 'https://tiktok.com/@',
     icon: <TikTokIcon className="h-4 w-4" />,
+  },
+  website: {
+    url: '',
+    icon: <Globe className="h-4 w-4" />
   }
 };
 
@@ -58,10 +62,13 @@ export default function CreatorProfilePage({ params }: { params: { slug: string 
           {creator.socials && Object.entries(creator.socials).map(([platform, username]) => {
               const social = socialLinks[platform as keyof typeof socialLinks];
               if (!social || !username) return null;
+              
+              const url = platform === 'website' ? username : `${social.url}${username}`;
+
               return (
                   <Link 
                       key={platform}
-                      href={`${social.url}${username}`}
+                      href={url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"

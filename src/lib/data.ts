@@ -14,6 +14,7 @@ export type User = {
     instagram?: string;
     facebook?: string;
     tiktok?: string;
+    website?: string;
   };
 };
 
@@ -33,7 +34,7 @@ export type Product = {
 };
 
 export const users: User[] = [
-  { id: 'user-1', slug: 'kartika-sari', name: 'Kartika Sari', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital yang bersemangat, mengkhususkan diri dalam menangkap keindahan alam Indonesia yang belum terjamah.', socials: { instagram: 'kartikasari', facebook: 'kartikasari', tiktok: 'kartikasari' } },
+  { id: 'user-1', slug: 'kartika-sari', name: 'Kartika Sari', avatar: images['avatar-1'], bio: 'Fotografer lanskap dan seniman digital yang bersemangat, mengkhususkan diri dalam menangkap keindahan alam Indonesia yang belum terjamah.', socials: { instagram: 'kartikasari', facebook: 'kartikasari', tiktok: 'kartikasari', website: 'https://kartikasari.com' } },
   { id: 'user-2', slug: 'bagus-wijaya', name: 'Bagus Wijaya', avatar: images['avatar-2'], bio: 'Penjelajah kota dan pembuat film yang mendokumentasikan denyut nadi kota-kota di Asia Tenggara melalui lensa sinematik.', socials: { instagram: 'baguswijaya' } },
   { id: 'user-3', slug: 'dewi-lestari', name: 'Dewi Lestari', avatar: images['avatar-3'], bio: 'Spesialis potret dan pewarna dengan hasrat untuk menghidupkan kisah-kisah manusia melalui warna-warna yang cerah dan otentik.', socials: { instagram: 'dewilestari' } },
   { id: 'user-4', slug: 'agus-santoso', name: 'Agus Santoso', avatar: images['avatar-4'], bio: 'Fotografer yang bercita-cita tinggi dengan fokus pada fotografi pernikahan adat dan modern.' },
