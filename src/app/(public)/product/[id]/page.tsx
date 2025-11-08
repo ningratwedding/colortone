@@ -25,13 +25,13 @@ import { useFirestore } from "@/firebase/provider";
 import type { Product, UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 
-function ProductPageContent({ params }: { params: { id: string } }) {
+function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
   
   const productRef = useMemo(() => {
-    if (!firestore || !params.id) return null;
-    return doc(firestore, 'products', params.id);
-  }, [firestore, params.id]);
+    if (!firestore || !productId) return null;
+    return doc(firestore, 'products', productId);
+  }, [firestore, productId]);
 
   const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
@@ -66,6 +66,7 @@ function ProductPageContent({ params }: { params: { id: string } }) {
   }
 
   if (!product) {
+    // This will trigger the not-found.tsx file
     notFound();
   }
 
@@ -131,5 +132,5 @@ function ProductPageContent({ params }: { params: { id: string } }) {
 
 
 export default function ProductPage({ params }: { params: { id: string } }) {
-    return <ProductPageContent params={params} />
+    return <ProductPageContent productId={params.id} />
 }
