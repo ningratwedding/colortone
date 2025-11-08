@@ -71,7 +71,7 @@ export default function AdminDashboardLayout({
               </span>
             </Link>
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="p-2">
             <SidebarMenu>
               {menuItems.map(({ href, label, icon: Icon }) => (
                 <SidebarMenuItem key={href}>
