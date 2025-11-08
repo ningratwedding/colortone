@@ -232,6 +232,7 @@ export default function AdminOrdersPage() {
                   <TableCell>
                     <div className="font-medium">{order.customer.name}</div>
                     <div className="text-sm text-muted-foreground">{order.customer.email}</div>
+                    <div className="text-sm text-muted-foreground">{order.customer.whatsapp}</div>
                   </TableCell>
                   <TableCell>
                     <div>{order.product.name}</div>
@@ -282,12 +283,12 @@ export default function AdminOrdersPage() {
             </DialogDescription>
           </DialogHeader>
           {selectedOrder && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid gap-3 py-4">
+              <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Status</p>
                 <div className="col-span-3">{getStatusBadge(selectedOrder.status)}</div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Pelanggan</p>
                 <div className="col-span-3">
                     <p className="font-medium">{selectedOrder.customer.name}</p>
@@ -295,18 +296,18 @@ export default function AdminOrdersPage() {
                     <p className="text-sm text-muted-foreground">{selectedOrder.customer.whatsapp}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Produk</p>
                 <div className="col-span-3">
                     <p className="font-medium">{selectedOrder.product.name}</p>
                     <p className="text-sm text-muted-foreground">oleh {selectedOrder.product.creator.name}</p>
                 </div>
               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
+               <div className="grid grid-cols-4 items-start gap-3">
                 <p className="text-sm text-muted-foreground col-span-1">Total</p>
                 <p className="font-semibold text-base col-span-3">{formattedData[selectedOrder.id]?.total}</p>
               </div>
-               <div className="mt-4 flex gap-2">
+               <div className="mt-2 flex gap-2">
                 <Button variant="outline" className="w-full">
                     <Mail className="mr-2 h-4 w-4" />
                     Kirim Email
