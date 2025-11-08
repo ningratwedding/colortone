@@ -3,7 +3,7 @@
 
 import { MoreHorizontal, UserPlus, UserMinus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,9 +39,14 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function AdminUsersPage() {
     const firestore = useFirestore();
-    const usersQuery = query(collection(firestore, "users"), orderBy("name"));
-    const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
     const { toast } = useToast();
+
+    const usersQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, "users"), orderBy("name"));
+    }, [firestore]);
+
+    const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
 
     const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli') => {
         const userDocRef = doc(firestore, 'users', userId);
