@@ -34,9 +34,9 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, getDocs } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
-import type { Order, UserProfile } from '@/lib/data';
+import type { Order, UserProfile, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function formatCurrency(amount: number) {
@@ -69,9 +69,22 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
       if (!user || !firestore) return;
       setOrdersLoading(true);
+
+      // 1. Fetch all products for the current creator
+      const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+      const productsSnapshot = await getDocs(productsQuery);
+      const productIds = productsSnapshot.docs.map(doc => doc.id);
+
+      if (productIds.length === 0) {
+        setOrders([]);
+        setOrdersLoading(false);
+        return;
+      }
+      
+      // 2. Fetch all orders where productId is in the creator's product list
       const ordersQuery = query(
         collectionGroup(firestore, 'orders'),
-        where('creatorId', '==', user.uid)
+        where('productId', 'in', productIds)
       );
       const querySnapshot = await getDocs(ordersQuery);
       
@@ -82,11 +95,11 @@ export default function OrdersPage() {
       
       setOrders(fetchedOrders);
 
+      // 3. Fetch customer details
       if (fetchedOrders.length > 0) {
           const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
           const customerProfiles: Record<string, UserProfile> = {};
           
-          // Firestore 'in' query can take up to 30 elements
           const chunks = [];
           for (let i = 0; i < customerIds.length; i += 30) {
               chunks.push(customerIds.slice(i, i + 30));
@@ -94,7 +107,8 @@ export default function OrdersPage() {
           
           for (const chunk of chunks) {
               if (chunk.length > 0) {
-                 const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk));
+                 // Note: this assumes user IDs are globally unique, which they are.
+                 const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk.map(id => doc(firestore, 'users', id).path.substring(doc(firestore, 'users', id).path.indexOf('/')+1))));
                  const userDocs = await getDocs(usersQuery);
                  userDocs.forEach(doc => {
                     customerProfiles[doc.id] = doc.data() as UserProfile;
@@ -245,3 +259,5 @@ export default function OrdersPage() {
     </Card>
   );
 }
+
+    
