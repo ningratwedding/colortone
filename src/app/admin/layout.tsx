@@ -60,7 +60,7 @@ export default function AdminDashboardLayout({
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <Sidebar className="hidden border-r bg-background md:block" collapsible="offcanvas">
-          <SidebarHeader className="p-4">
+          <SidebarHeader className="p-2">
             <Link href="/" className="flex items-center space-x-2">
               <SlidersHorizontal className="h-6 w-6 text-primary" />
               <span className="text-lg font-bold font-headline">
@@ -88,11 +88,11 @@ export default function AdminDashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col md:pl-[56px]">
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Sheet>
               <SheetTrigger asChild>
-                <Button size="icon" variant="outline" className="md:hidden">
+                <Button size="icon" variant="outline" className="sm:hidden">
                   <PanelLeft className="h-5 w-5" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
