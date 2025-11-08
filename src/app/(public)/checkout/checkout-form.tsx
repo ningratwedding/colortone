@@ -103,7 +103,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                     </Button>
                 </div>
                 <p className="text-xs text-muted-foreground pt-1">
-                    Setelah mengklik "Buat Pesanan", Anda akan menerima instruksi pembayaran melalui email dan WhatsApp.
+                  Dengan mengklik "Buat Pesanan", Anda akan diarahkan ke halaman konfirmasi.
                 </p>
             </CardContent>
           </Card>
@@ -153,8 +153,8 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">
-                Buat Pesanan
+              <Button className="w-full" asChild>
+                <Link href={`/checkout/confirmation?productId=${product.id}`}>Buat Pesanan</Link>
               </Button>
             </CardFooter>
           </Card>
