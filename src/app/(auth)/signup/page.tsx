@@ -9,7 +9,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { User } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -72,10 +72,19 @@ export default function SignupPage() {
     } else {
       const name = user.displayName || 'Pengguna Baru';
       const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+      // Check if slug already exists
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where('slug', '==', slug), limit(1));
+      const slugSnapshot = await getDocs(q);
+      if (!slugSnapshot.empty) {
+        throw new Error(`Nama pengguna "${name}" sudah digunakan. Silakan gunakan nama lain.`);
+      }
+
       const newUserProfileData = {
         name: name,
         email: user.email!,
-        slug: `${slug}-${user.uid.substring(0, 5)}`,
+        slug: slug,
         role: 'pembeli' as const,
         createdAt: serverTimestamp(),
         avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
@@ -97,10 +106,11 @@ export default function SignupPage() {
         toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
         handleRedirect(profile);
       } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : "Tidak dapat membuat profil pengguna baru.";
          toast({
           variant: "destructive",
           title: "Gagal Membuat Profil",
-          description: "Tidak dapat membuat profil pengguna baru.",
+          description: errorMessage,
         });
       }
     } else {

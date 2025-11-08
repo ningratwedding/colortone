@@ -14,7 +14,7 @@ import {
   type User,
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
-import { doc, setDoc, getDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import type { UserProfile } from '@/lib/data';
@@ -46,10 +46,20 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
 
     const name = fullName || user.displayName || 'Pengguna Baru';
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+    // Check if slug already exists
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('slug', '==', slug), limit(1));
+    const slugSnapshot = await getDocs(q);
+    if (!slugSnapshot.empty) {
+        // Instead of appending a UID, we now throw an error to be caught by the UI.
+        throw new Error(`Nama pengguna "${name}" sudah digunakan. Silakan gunakan nama lain.`);
+    }
+
     const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
         email: user.email!,
-        slug: `${slug}-${user.uid.substring(0, 5)}`, 
+        slug: slug, 
         role: 'pembeli',
         createdAt: serverTimestamp(),
         avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
@@ -61,7 +71,13 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
         await updateProfile(auth.currentUser, { displayName: fullName });
     }
 
-    return { id: user.uid, ...newUserProfile, createdAt: new Date() } as unknown as UserProfile;
+    // This is problematic as serverTimestamp() returns a sentinel value, not a Date.
+    // We fetch the doc again to get the actual timestamp if needed, or just cast it for now.
+    const createdProfile = await getUserProfile(user.uid);
+    if (!createdProfile) {
+        throw new Error("Failed to retrieve created user profile.");
+    }
+    return createdProfile;
 }
 
 // Sign in with Google and create user document if it's a new user
@@ -70,6 +86,8 @@ export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
+    // After sign-in, the getOrCreateUserProfile handles document creation
+    // It's handled in the page component to provide better UI feedback.
     return { success: true, user: result.user };
   } catch (error) {
     if (error instanceof FirebaseError) {
@@ -92,9 +110,9 @@ export async function signUpWithEmail(email: string, password: string, fullName:
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const user = result.user;
         
-        // Send verification email
         await sendEmailVerification(user);
 
+        // Now, we create the document, which includes the slug uniqueness check
         const profile = await createUserDocument(user, fullName);
 
         return { success: true, user, profile };
@@ -104,6 +122,10 @@ export async function signUpWithEmail(email: string, password: string, fullName:
                 return { success: false, error: 'Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.' };
             }
             return { success: false, error: 'Gagal mendaftar. Pastikan email valid dan kata sandi lebih dari 6 karakter.' };
+        }
+        // Catch the custom error from createUserDocument
+        if (error instanceof Error) {
+            return { success: false, error: error.message };
         }
         return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
     }
@@ -116,6 +138,8 @@ export async function signInWithEmail(email: string, password: string) {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const profile = await getUserProfile(result.user.uid);
         if (!profile) {
+            // This case might happen if a user was created in Auth but not in Firestore.
+            // We could attempt to create it here, but for now, we'll treat it as an error.
             return { success: false, error: 'Profil pengguna tidak ditemukan.'}
         }
         return { success: true, user: result.user, profile };
