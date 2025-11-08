@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -21,53 +22,59 @@ export function ImageCompareSlider({
   ...props
 }: ImageCompareSliderProps) {
   const [sliderPosition, setSliderPosition] = React.useState(initialPosition)
+  const [isDragging, setIsDragging] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  const handleMove = React.useCallback(
-    (
-      event:
-        | React.MouseEvent<HTMLDivElement>
-        | React.TouchEvent<HTMLDivElement>
-        | MouseEvent
-        | TouchEvent
-    ) => {
-      if (!containerRef.current) return;
+  const handleMove = (
+    event: React.MouseEvent<HTMLDivElement> | MouseEvent | React.TouchEvent<HTMLDivElement> | TouchEvent
+  ) => {
+    if (!isDragging || !containerRef.current) return
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const x =
-        ("touches" in event ? event.touches[0].clientX : event.clientX) -
-        rect.left;
-      const position = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    const rect = containerRef.current.getBoundingClientRect()
+    const x =
+      ("touches" in event ? event.touches[0].clientX : event.clientX) -
+      rect.left
+    const position = Math.max(0, Math.min(100, (x / rect.width) * 100))
 
-      setSliderPosition(position);
-    },
-    []
-  );
+    setSliderPosition(position)
+  }
 
-  const handleMouseDown = React.useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", handleMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-      document.addEventListener("mousemove", handleMove);
-      document.addEventListener("mouseup", handleMouseUp);
-    },
-    [handleMove]
-  );
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDragging(true)
+  }
 
-  const handleTouchStart = React.useCallback(
-    (event: React.TouchEvent<HTMLDivElement>) => {
-      const handleTouchEnd = () => {
-        document.removeEventListener("touchmove", handleMove);
-        document.removeEventListener("touchend", handleTouchEnd);
-      };
-      document.addEventListener("touchmove", handleMove);
-      document.addEventListener("touchend", handleTouchEnd);
-    },
-    [handleMove]
-  );
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    setIsDragging(true)
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+  }
+
+  React.useEffect(() => {
+    const handleGlobalMove = (e: MouseEvent | TouchEvent) => {
+      handleMove(e)
+    }
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleGlobalMove)
+      document.addEventListener("touchmove", handleGlobalMove)
+      document.addEventListener("mouseup", handleMouseUp)
+      document.addEventListener("touchend", handleTouchEnd)
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleGlobalMove)
+      document.removeEventListener("touchmove", handleGlobalMove)
+      document.removeEventListener("mouseup", handleMouseUp)
+      document.removeEventListener("touchend", handleTouchEnd)
+    }
+  }, [isDragging])
 
   return (
     <div
@@ -75,6 +82,8 @@ export function ImageCompareSlider({
       className={cn("relative w-full overflow-hidden select-none", className)}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
+      onMouseMove={handleMove}
+      onTouchMove={handleMove}
       {...props}
     >
       <Image
@@ -103,7 +112,7 @@ export function ImageCompareSlider({
 
       {/* Slider Handle */}
       <div
-        className="absolute inset-y-0 w-px bg-white/50 backdrop-blur-sm cursor-ew-resize flex items-center justify-center"
+        className="absolute inset-y-0 w-px bg-white/50 backdrop-blur-sm cursor-ew-resize flex items-center justify-center pointer-events-none"
         style={{ left: `${sliderPosition}%`, transform: "translateX(-50%)" }}
       >
         <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-gray-600">
