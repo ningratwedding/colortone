@@ -48,8 +48,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Ringkasan Platform</h1>
+    <div className="space-y-6">
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>

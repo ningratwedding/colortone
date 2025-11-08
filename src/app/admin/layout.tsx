@@ -25,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +33,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
+  SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
@@ -58,12 +58,11 @@ export default function AdminDashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-muted/40">
-        <Sidebar className="hidden border-r bg-background md:block" collapsible="offcanvas">
-          <SidebarHeader className="p-4">
-            <Link href="/" className="flex items-center space-x-2">
+        <Sidebar collapsible="icon" variant="inset" side="left">
+          <SidebarHeader>
+            <Link href="/" className="flex items-center space-x-2 px-2">
               <SlidersHorizontal className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold font-headline">
+              <span className="text-lg font-bold font-headline group-data-[collapsible=icon]:hidden">
                 FilterForge
               </span>
             </Link>
@@ -76,10 +75,11 @@ export default function AdminDashboardLayout({
                     asChild
                     isActive={pathname === href}
                     className="justify-start"
+                    tooltip={label}
                   >
                     <Link href={href}>
-                      <Icon className="mr-2 h-4 w-4" />
-                      {label}
+                      <Icon />
+                      <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,44 +88,9 @@ export default function AdminDashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col flex-1">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button size="icon" variant="outline" className="sm:hidden">
-                  <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="sm:max-w-xs p-0">
-                <SidebarHeader className="p-4 border-b">
-                  <Link
-                    href="/"
-                    className="flex items-center space-x-2"
-                  >
-                    <SlidersHorizontal className="h-6 w-6 text-primary" />
-                    <span className="text-lg font-bold font-headline">FilterForge</span>
-                  </Link>
-                </SidebarHeader>
-                <nav className="grid gap-2 text-lg font-medium p-4">
-                  {menuItems.map(({ href, label, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      className={`flex items-center gap-4 px-2.5 rounded-lg py-2 ${
-                        pathname === href
-                          ? 'bg-accent text-accent-foreground'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      {label}
-                    </Link>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
-             <SidebarTrigger className="hidden md:flex" />
+        <SidebarInset>
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+             <SidebarTrigger className="flex md:hidden" />
             <div className="flex-1">
               <h1 className="text-xl font-semibold hidden md:block">{pageTitle}</h1>
             </div>
@@ -134,7 +99,7 @@ export default function AdminDashboardLayout({
               <Input
                 type="search"
                 placeholder="Cari..."
-                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
               />
             </div>
             <DropdownMenu>
@@ -162,8 +127,7 @@ export default function AdminDashboardLayout({
             </DropdownMenu>
           </header>
           <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
-        </div>
-      </div>
+        </SidebarInset>
     </SidebarProvider>
   );
 }
