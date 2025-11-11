@@ -24,9 +24,20 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Calendar as CalendarIcon, MoreHorizontal } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Calendar as CalendarIcon, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { DateRange } from 'react-day-picker';
@@ -34,10 +45,11 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 function formatCurrency(amount: number) {
     if (typeof amount !== 'number') return '';
@@ -56,14 +68,33 @@ function formatDate(date: Date) {
     }).format(date);
 }
 
+const getStatusBadge = (status: Order['status']) => {
+    switch (status) {
+        case 'Selesai':
+            return <Badge className="bg-green-600 hover:bg-green-700">Selesai</Badge>;
+        case 'Menunggu Pembayaran':
+             return <Badge variant="secondary">Menunggu Pembayaran</Badge>;
+        case 'Diproses':
+            return <Badge variant="secondary">Diproses</Badge>;
+        case 'Dibatalkan':
+            return <Badge variant="destructive">Dibatalkan</Badge>;
+        default:
+            return <Badge variant="outline">Unknown</Badge>;
+    }
+};
+
 export default function OrdersPage() {
   const [date, setDate] = useState<DateRange | undefined>();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
   const [ordersLoading, setOrdersLoading] = useState(true);
+
+  const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -95,16 +126,42 @@ export default function OrdersPage() {
 
       } catch (error) {
         console.error("Failed to fetch orders:", error);
+         toast({ variant: 'destructive', title: 'Gagal Memuat Pesanan', description: 'Terjadi kesalahan saat mengambil data pesanan.' });
       } finally {
         setOrdersLoading(false);
       }
     }
     fetchOrders();
-  }, [user, firestore]);
+  }, [user, firestore, toast]);
+
+  const handleCancelOrder = async () => {
+    if (!orderToCancel || !firestore) return;
+
+    try {
+        const orderRef = doc(firestore, `users/${orderToCancel.userId}/orders`, orderToCancel.id);
+        await updateDoc(orderRef, { status: 'Dibatalkan' });
+
+        setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));
+
+        toast({ title: 'Pesanan Dibatalkan', description: `Pesanan dengan ID ${orderToCancel.id} telah dibatalkan.` });
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        toast({ variant: 'destructive', title: 'Gagal Membatalkan', description: 'Terjadi kesalahan saat membatalkan pesanan.' });
+    } finally {
+        setIsCancelDialogOpen(false);
+        setOrderToCancel(null);
+    }
+  };
+
+  const openCancelDialog = (order: Order) => {
+    setOrderToCancel(order);
+    setIsCancelDialogOpen(true);
+  };
 
   const loading = userLoading || ordersLoading;
 
   return (
+    <>
     <Card>
       <CardHeader className="flex-row items-center justify-between">
         <div>
@@ -179,7 +236,7 @@ export default function OrdersPage() {
                 </TableRow>
             ))}
             {!loading && orders.map((order) => (
-              <TableRow key={order.id}>
+              <TableRow key={order.id} className={cn(order.status === 'Dibatalkan' && 'bg-muted/50')}>
                 <TableCell className="font-medium">{order.id}</TableCell>
                 <TableCell>
                   <div className="font-medium">{customers[order.userId]?.name || 'Memuat...'}</div>
@@ -192,14 +249,7 @@ export default function OrdersPage() {
                 </TableCell>
                 <TableCell>{formatCurrency(order.amount)}</TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      order.status === 'Selesai' ? 'default' : 'secondary'
-                    }
-                    className={order.status === 'Selesai' ? 'bg-green-600' : ''}
-                  >
-                    {order.status}
-                  </Badge>
+                  {getStatusBadge(order.status)}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
                   {formatDate(new Date(order.purchaseDate.seconds * 1000))}
@@ -211,6 +261,7 @@ export default function OrdersPage() {
                         aria-haspopup="true"
                         size="icon"
                         variant="ghost"
+                        disabled={order.status === 'Dibatalkan'}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">Alihkan menu</span>
@@ -218,8 +269,16 @@ export default function OrdersPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                      <DropdownMenuItem>Lihat Detail</DropdownMenuItem>
-                      <DropdownMenuItem>Tandai Selesai</DropdownMenuItem>
+                       <DropdownMenuItem>Lihat Detail</DropdownMenuItem>
+                       <DropdownMenuItem>Tandai Selesai</DropdownMenuItem>
+                       <DropdownMenuSeparator />
+                       <DropdownMenuItem 
+                         className="text-destructive"
+                         onSelect={() => openCancelDialog(order)}
+                        >
+                         <Trash2 className="mr-2 h-4 w-4" />
+                         Tolak Pesanan
+                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -236,5 +295,21 @@ export default function OrdersPage() {
         </Table>
       </CardContent>
     </Card>
+
+    <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Tindakan ini akan membatalkan pesanan <span className="font-semibold">{orderToCancel?.id}</span>. Status akan diubah menjadi "Dibatalkan" dan tidak dapat diubah kembali.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setOrderToCancel(null)}>Batal</AlertDialogCancel>
+                <AlertDialogAction onClick={handleCancelOrder}>Ya, Batalkan Pesanan</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
