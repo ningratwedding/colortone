@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import {
   Card,
@@ -7,8 +7,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { DollarSign, Package, Users, ShoppingCart } from "lucide-react";
+} from '@/components/ui/card';
+import { DollarSign, Package, ShoppingCart } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -18,56 +18,109 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
-} from "recharts";
-import { useEffect, useState } from "react";
-
-const data = [
-  { name: "Jan", revenue: 40000000 },
-  { name: "Feb", revenue: 30000000 },
-  { name: "Mar", revenue: 50000000 },
-  { name: "Apr", revenue: 45000000 },
-  { name: "May", revenue: 60000000 },
-  { name: "Jun", revenue: 55000000 },
-];
+} from 'recharts';
+import { useEffect, useState, useMemo } from 'react';
+import { useFirestore } from '@/firebase/provider';
+import { useUser } from '@/firebase/auth/use-user';
+import { collection, query, where, getDocs, collectionGroup } from 'firebase/firestore';
+import type { Order, Product } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
+import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { id as fnsIdLocale } from 'date-fns/locale';
 
 export default function DashboardPage() {
-  const [formattedRevenue, setFormattedRevenue] = useState<string>('');
-  const [maxRevenue, setMaxRevenue] = useState(0);
-  
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-    setFormattedRevenue(formatCurrency(452318900));
-    setMaxRevenue(Math.max(...data.map(item => item.revenue)));
-  }, []);
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  const [loading, setLoading] = useState(true);
 
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    totalSales: 0,
+    totalProducts: 0,
+  });
+
+  const [monthlyRevenueData, setMonthlyRevenueData] = useState<{ month: string; revenue: number }[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!firestore || !user) return;
+      setLoading(true);
+
+      try {
+        // Fetch creator's products and orders in parallel
+        const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+        const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+        
+        const [productsSnapshot, ordersSnapshot] = await Promise.all([
+          getDocs(productsQuery),
+          getDocs(ordersQuery),
+        ]);
+
+        const creatorProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        const creatorOrders = ordersSnapshot.docs.map(doc => doc.data() as Order);
+
+        // Calculate stats
+        const totalRevenue = creatorOrders.reduce((acc, order) => acc + order.amount, 0);
+        const totalSales = creatorOrders.length;
+        const totalProducts = creatorProducts.length;
+        setStats({ totalRevenue, totalSales, totalProducts });
+
+        // Process monthly revenue for the chart
+        const last6Months = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i));
+        const revenueByMonth = last6Months.map(monthDate => {
+          const monthStart = startOfMonth(monthDate);
+          const monthEnd = endOfMonth(monthDate);
+          const monthlyRevenue = creatorOrders.reduce((acc, order) => {
+            const purchaseDate = new Date(order.purchaseDate.seconds * 1000);
+            if (isWithinInterval(purchaseDate, { start: monthStart, end: monthEnd })) {
+              return acc + order.amount;
+            }
+            return acc;
+          }, 0);
+          return {
+            month: format(monthDate, 'MMM', { locale: fnsIdLocale }),
+            revenue: monthlyRevenue,
+          };
+        });
+        setMonthlyRevenueData(revenueByMonth);
+
+      } catch (error) {
+        console.error("Error fetching creator dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && firestore) {
+      fetchData();
+    }
+  }, [user, firestore]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+  
   const formatCompact = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(amount);
-  }
+  };
 
   const formatTooltip = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  }
+    return formatCurrency(amount);
+  };
+  
+  const pageLoading = userLoading || loading;
 
   return (
     <div className="space-y-4">
-      
-      
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Pendapatan
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">{formattedRevenue}</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +20.1% dari bulan lalu
-            </p>
+            {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
+            <p className="text-xs text-muted-foreground">Total pendapatan dari seluruh penjualan.</p>
           </CardContent>
         </Card>
         <Card>
@@ -76,24 +129,18 @@ export default function DashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +180.1% dari bulan lalu
-            </p>
+            {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
+            <p className="text-xs text-muted-foreground">Jumlah total unit produk terjual.</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Produk Aktif
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">42</div>
-            <p className="text-xs text-muted-foreground animate-pulse">
-              +2 sejak bulan lalu
-            </p>
+            {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-xl font-bold">{stats.totalProducts}</div>}
+            <p className="text-xs text-muted-foreground">Jumlah produk yang Anda jual.</p>
           </CardContent>
         </Card>
       </div>
@@ -101,30 +148,26 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Pendapatan Bulanan</CardTitle>
-          <CardDescription>
-            Ringkasan penjualan Anda selama 6 bulan terakhir.
-          </CardDescription>
+          <CardDescription>Ringkasan penjualan Anda selama 6 bulan terakhir.</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => formatCompact(value as number)} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  borderColor: "hsl(var(--border))",
-                }}
-                formatter={(value) => formatTooltip(value as number)}
-              />
-              <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]}>
-                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={`hsl(var(--primary) / ${entry.revenue / maxRevenue})`} />
-                ))}
-              </Bar>
-            </BarChart>
+            {pageLoading ? <Skeleton className="h-full w-full" /> : (
+              <BarChart data={monthlyRevenueData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis tickFormatter={(value) => formatCompact(value as number)} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    borderColor: "hsl(var(--border))",
+                  }}
+                  formatter={(value) => formatTooltip(value as number)}
+                />
+                <Legend />
+                <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            )}
           </ResponsiveContainer>
         </CardContent>
       </Card>
