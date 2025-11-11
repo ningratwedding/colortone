@@ -205,7 +205,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
         <div>
            <Carousel className="w-full">
               <CarouselContent>
-                {product.galleryImageUrls.map((url, index) => (
+                {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
                   <CarouselItem key={index}>
                     <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
                       <Image
@@ -231,7 +231,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                   </CarouselItem>
                 )}
               </CarouselContent>
-              {(product.galleryImageUrls.length > 1 || hasComparison) && (
+              {((product.galleryImageUrls?.length ?? 0) > 1 || hasComparison) && (
                 <>
                   <CarouselPrevious className="ml-14" />
                   <CarouselNext className="mr-14" />
