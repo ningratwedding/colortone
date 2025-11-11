@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -221,12 +222,17 @@
             "type": "string",
             "description": "A URL-friendly version of the category name."
         },
+        "type": {
+            "type": "string",
+            "enum": ["digital", "fisik", "semua"],
+            "description": "The type of product this category applies to."
+        },
         "createdAt": {
             "type": "string",
             "format": "date-time"
         }
       },
-      "required": ["name", "slug"]
+      "required": ["name", "slug", "type"]
     },
     "Software": {
       "title": "Software",

@@ -70,6 +70,7 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
+  type: 'digital' | 'fisik' | 'semua';
 };
 
 export type Software = {

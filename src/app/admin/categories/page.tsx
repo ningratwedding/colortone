@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { MoreHorizontal, PlusCircle, Trash2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -50,12 +51,9 @@ import {
 } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import type { Category } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
 
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-};
 
 export default function AdminCategoriesPage() {
   const firestore = useFirestore();
@@ -63,6 +61,7 @@ export default function AdminCategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryName, setCategoryName] = useState('');
+  const [categoryType, setCategoryType] = useState<Category['type']>('digital');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
@@ -80,8 +79,16 @@ export default function AdminCategoriesPage() {
   const handleOpenDialog = (category: Category | null = null) => {
     setEditingCategory(category);
     setCategoryName(category ? category.name : '');
+    setCategoryType(category ? category.type : 'digital');
     setIsDialogOpen(true);
   };
+  
+  const resetDialog = () => {
+    setEditingCategory(null);
+    setCategoryName('');
+    setCategoryType('digital');
+    setIsDialogOpen(false);
+  }
 
   const handleSaveCategory = async () => {
     if (!categoryName || !firestore) return;
@@ -90,21 +97,26 @@ export default function AdminCategoriesPage() {
     const slug = createSlug(categoryName);
 
     try {
+        const dataToSave = {
+            name: categoryName,
+            slug: slug,
+            type: categoryType,
+        };
+
       if (editingCategory) {
         // Update existing category
         const categoryRef = doc(firestore, 'categories', editingCategory.id);
-        await updateDoc(categoryRef, { name: categoryName, slug: slug });
+        await updateDoc(categoryRef, dataToSave);
         toast({ title: 'Kategori Diperbarui', description: `"${categoryName}" telah berhasil diperbarui.` });
       } else {
         // Add new category
         await addDoc(collection(firestore, 'categories'), {
-          name: categoryName,
-          slug: slug,
+          ...dataToSave,
           createdAt: serverTimestamp(),
         });
         toast({ title: 'Kategori Ditambahkan', description: `Kategori "${categoryName}" telah berhasil dibuat.` });
       }
-      setIsDialogOpen(false);
+      resetDialog();
     } catch (error) {
       console.error('Error saving category:', error);
       toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Terjadi kesalahan saat menyimpan kategori.' });
@@ -134,6 +146,19 @@ export default function AdminCategoriesPage() {
     setCategoryToDelete(category);
     setIsDeleteDialogOpen(true);
   }
+  
+  const getTypeBadge = (type: Category['type']) => {
+    switch (type) {
+      case 'digital':
+        return <Badge variant="secondary">Digital</Badge>;
+      case 'fisik':
+        return <Badge variant="outline">Fisik</Badge>;
+      case 'semua':
+        return <Badge>Semua</Badge>;
+      default:
+        return <Badge variant="destructive">Tidak Diketahui</Badge>;
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -156,6 +181,7 @@ export default function AdminCategoriesPage() {
               <TableRow>
                 <TableHead>Nama Kategori</TableHead>
                 <TableHead>Slug</TableHead>
+                <TableHead>Tipe</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
@@ -171,6 +197,9 @@ export default function AdminCategoriesPage() {
                     <TableCell>
                       <Skeleton className="h-5 w-40" />
                     </TableCell>
+                     <TableCell>
+                      <Skeleton className="h-6 w-16" />
+                    </TableCell>
                     <TableCell>
                       <Skeleton className="h-8 w-8" />
                     </TableCell>
@@ -183,6 +212,9 @@ export default function AdminCategoriesPage() {
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {category.slug}
+                    </TableCell>
+                     <TableCell>
+                      {getTypeBadge(category.type)}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -211,7 +243,7 @@ export default function AdminCategoriesPage() {
                 ))}
               {!loading && (!categories || categories.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={3} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     Belum ada kategori.
                   </TableCell>
                 </TableRow>
@@ -222,14 +254,14 @@ export default function AdminCategoriesPage() {
       </Card>
       
       {/* Dialog for Add/Edit Category */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => !open && resetDialog()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingCategory ? 'Ubah Kategori' : 'Tambah Kategori Baru'}
             </DialogTitle>
             <DialogDescription>
-              Masukkan nama untuk kategori ini. Slug akan dibuat secara otomatis.
+              Masukkan detail untuk kategori ini. Slug akan dibuat secara otomatis.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -239,9 +271,26 @@ export default function AdminCategoriesPage() {
                 id="category-name"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
-                placeholder="misal: Pernikahan"
+                placeholder="misal: Pakaian"
                 autoFocus
               />
+            </div>
+             <div className="grid gap-2">
+              <Label>Tipe Kategori</Label>
+              <RadioGroup value={categoryType} onValueChange={(value) => setCategoryType(value as Category['type'])} className="flex gap-4">
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="digital" id="type-digital" />
+                    <Label htmlFor="type-digital">Digital</Label>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="fisik" id="type-fisik" />
+                    <Label htmlFor="type-fisik">Fisik</Label>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="semua" id="type-semua" />
+                    <Label htmlFor="type-semua">Semua</Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
           <DialogFooter>

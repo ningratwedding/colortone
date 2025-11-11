@@ -94,7 +94,12 @@ export default function Home() {
     });
 
     const handleFilterChange = (filterName: keyof typeof filters, value: string) => {
-      setFilters(prev => ({ ...prev, [filterName]: value }));
+      setFilters(prev => ({ 
+          ...prev, 
+          [filterName]: value,
+          // Reset category if type changes
+          ...(filterName === 'type' && { category: 'all-categories' }),
+      }));
     };
 
     const categoriesQuery = useMemo(() => {
@@ -102,6 +107,13 @@ export default function Home() {
         return query(collection(firestore, 'categories'));
     }, [firestore]);
     const { data: categories, loading: categoriesLoading } = useCollection<Category>(categoriesQuery);
+    
+    const filteredCategories = useMemo(() => {
+        if (!categories) return [];
+        if (filters.type === 'all-types') return categories;
+        return categories.filter(cat => cat.type === filters.type || cat.type === 'semua');
+    }, [categories, filters.type]);
+
 
     const softwareQuery = useMemo(() => {
         if (!firestore) return null;
@@ -146,7 +158,7 @@ export default function Home() {
             <SelectContent>
               <SelectItem value="all-categories">Semua Kategori</SelectItem>
               {categoriesLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
-                categories?.map((category) => (
+                filteredCategories?.map((category) => (
                     <SelectItem key={category.id} value={category.slug}>
                     {category.name}
                     </SelectItem>
@@ -154,26 +166,28 @@ export default function Home() {
               }
             </SelectContent>
           </Select>
-          <Select
-            value={filters.software}
-            onValueChange={(value) => handleFilterChange('software', value)}
-          >
-            <SelectTrigger className="w-full md:w-[160px] bg-card">
-              <SelectValue placeholder="Perangkat Lunak" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-software">Semua Perangkat Lunak</SelectItem>
-              {softwareLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
-                softwareList?.map((s) => (
-                <SelectItem key={s.id} value={s.slug}>
-                  <div className="flex items-center gap-2">
-                    {s.icon && <div className="h-4 w-4" dangerouslySetInnerHTML={{ __html: s.icon }} />}
-                    <span>{s.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {filters.type !== 'fisik' && (
+            <Select
+                value={filters.software}
+                onValueChange={(value) => handleFilterChange('software', value)}
+            >
+                <SelectTrigger className="w-full md:w-[160px] bg-card">
+                <SelectValue placeholder="Perangkat Lunak" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="all-software">Semua Perangkat Lunak</SelectItem>
+                {softwareLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
+                    softwareList?.map((s) => (
+                    <SelectItem key={s.id} value={s.slug}>
+                    <div className="flex items-center gap-2">
+                        {s.icon && <div className="h-4 w-4" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                        <span>{s.name}</span>
+                    </div>
+                    </SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
 
