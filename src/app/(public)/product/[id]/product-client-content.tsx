@@ -174,6 +174,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
             <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
                 <div>
                     <Skeleton className="aspect-[3/2] w-full rounded-lg" />
+                    <div className="flex gap-2 mt-2">
+                        <Skeleton className="h-16 w-24 rounded-md" />
+                        <Skeleton className="h-16 w-24 rounded-md" />
+                    </div>
                 </div>
                 <div className="flex flex-col gap-4">
                     <Skeleton className="h-8 w-3/4" />
@@ -192,18 +196,18 @@ export function ProductPageContent({ productId }: { productId: string }) {
   }
 
   if (!product) {
-    // This will trigger the not-found.tsx file
     notFound();
   }
   
   const hasComparison = product.imageBeforeUrl && product.imageAfterUrl;
+  const galleryImage = product.galleryImageUrls?.[0];
+  const comparisonImage = product.imageAfterUrl;
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
+       <Tabs defaultValue="gallery" className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-           <Tabs defaultValue="gallery" className="w-full">
-              <TabsContent value="gallery">
+           <TabsContent value="gallery" className="mt-0">
                  <Carousel className="w-full">
                     <CarouselContent>
                         {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
@@ -230,7 +234,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                     </Carousel>
               </TabsContent>
               {hasComparison && (
-                <TabsContent value="comparison">
+                <TabsContent value="comparison" className="mt-0">
                     <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
                         <ImageCompareSlider
                             beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
@@ -240,11 +244,22 @@ export function ProductPageContent({ productId }: { productId: string }) {
                     </div>
                 </TabsContent>
               )}
-               <TabsList className="grid w-full grid-cols-2 mt-2">
-                <TabsTrigger value="gallery">Galeri</TabsTrigger>
-                {hasComparison && <TabsTrigger value="comparison">Perbandingan</TabsTrigger>}
-              </TabsList>
-            </Tabs>
+            <TabsList className="mt-2 grid grid-cols-5 gap-2 bg-transparent p-0 h-auto">
+                {galleryImage && (
+                    <TabsTrigger value="gallery" className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary">
+                        <div className="aspect-[3/2] w-full rounded-md overflow-hidden relative">
+                            <Image src={galleryImage} alt="Galeri" fill className="object-cover" />
+                        </div>
+                    </TabsTrigger>
+                )}
+                 {hasComparison && comparisonImage && (
+                    <TabsTrigger value="comparison" className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary">
+                       <div className="aspect-[3/2] w-full rounded-md overflow-hidden relative">
+                           <Image src={comparisonImage} alt="Perbandingan" fill className="object-cover" />
+                        </div>
+                    </TabsTrigger>
+                )}
+            </TabsList>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -301,8 +316,9 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </CardContent>
           </Card>
         </div>
-      </div>
+       </Tabs>
     </div>
   );
 }
+
 
