@@ -33,7 +33,7 @@ import { DollarSign, ShoppingCart } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -54,7 +54,7 @@ export default function AnalyticsPage() {
 
   const productsQuery = useMemo(() => {
     if (!user || !firestore) return null;
-    return query(collection(firestore, 'products'), where('creatorId', '==', user.uid), orderBy('sales', 'desc'));
+    return query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
   }, [user, firestore]);
   
   const { data: creatorProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
@@ -66,7 +66,9 @@ export default function AnalyticsPage() {
   
   const topProducts = useMemo(() => {
     if (!creatorProducts) return [];
-    return creatorProducts.slice(0, 5).map(p => ({
+    // Sort on the client side
+    const sortedProducts = [...creatorProducts].sort((a, b) => b.sales - a.sales);
+    return sortedProducts.slice(0, 5).map(p => ({
       ...p,
       revenue: p.price * p.sales,
     }));
