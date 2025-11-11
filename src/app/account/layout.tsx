@@ -4,15 +4,22 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Settings, ShoppingBag } from 'lucide-react';
+import { Settings, ShoppingBag, PartyPopper } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/firebase/auth/use-user';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { UserProfile } from '@/lib/data';
 
-const menuItems = [
+const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
   { href: '/account/settings', label: 'Pengaturan Akun', icon: Settings },
 ];
+
+const affiliateMenuItem = { href: '/account/affiliate', label: 'Afiliasi', icon: PartyPopper };
 
 export default function AccountLayout({
   children,
@@ -20,6 +27,17 @@ export default function AccountLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  
+  const userProfileRef = React.useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
+
+  const menuItems = userProfile?.isAffiliate ? [...baseMenuItems, affiliateMenuItem] : baseMenuItems;
 
   const getPageTitle = () => {
     const currentItem = menuItems.find(item => pathname.startsWith(item.href));
@@ -36,13 +54,13 @@ export default function AccountLayout({
 
         {/* Mobile Navigation */}
         <div className="md:hidden mb-6 border-b">
-          <nav className="flex -mb-px">
+          <nav className="flex -mb-px overflow-x-auto">
             {menuItems.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  'py-3 px-4 text-sm font-medium text-muted-foreground border-b-2 border-transparent',
+                  'py-3 px-4 text-sm font-medium whitespace-nowrap text-muted-foreground border-b-2 border-transparent',
                   pathname.startsWith(href) && 'text-primary border-primary'
                 )}
               >
