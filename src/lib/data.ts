@@ -45,17 +45,17 @@ export type Order = {
     creatorId: string;
     purchaseDate: { seconds: number, nanoseconds: number }; // Firestore Timestamp
     amount: number;
-    status: 'Selesai' | 'Diproses' | 'Dibatalkan';
+    status: 'Selesai' | 'Diproses' | 'Dibatalkan' | 'Menunggu Pembayaran';
 }
 
-export const software = [
-    { id: 'lightroom', name: 'Lightroom' },
-    { id: 'lightroom-mobile', name: 'Lightroom Mobile'},
-    { id: 'photoshop', name: 'Photoshop' },
-    { id: 'capture-one', name: 'Capture One' },
-    { id: 'premiere-pro', name: 'Premiere Pro' },
-    { id: 'final-cut', name: 'Final Cut Pro' },
-    { id: 'davinci-resolve', name: 'DaVinci Resolve' },
-    { id: 'capcut', name: 'CapCut' },
-    { id: 'vn-editor', name: 'VN Video Editor' },
-];
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+export type Software = {
+  id: string;
+  name: string;
+  slug: string;
+};

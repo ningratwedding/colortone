@@ -172,6 +172,26 @@
       },
       "required": ["name", "slug"]
     },
+    "Software": {
+      "title": "Software",
+      "description": "Represents a compatible software for products.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the software."
+        },
+        "slug": {
+            "type": "string",
+            "description": "A URL-friendly version of the software name."
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time"
+        }
+      },
+      "required": ["name", "slug"]
+    },
     "PlatformSettings": {
       "title": "Platform Settings",
       "description": "Stores global settings for the application.",
@@ -221,6 +241,12 @@
         "$ref": "#/backend/entities/Category"
       },
       "description": "Stores all product categories."
+    },
+     "/software/{softwareId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Software"
+      },
+      "description": "Stores all compatible software options."
     },
     "/platform_settings/{settingsId}": {
         "schema": {

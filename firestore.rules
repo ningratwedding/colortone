@@ -30,6 +30,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    
+    match /software/{softwareId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     match /platform_settings/{settingsId} {
       allow read, write: if isAdmin();

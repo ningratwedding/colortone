@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
-import { software, type Product } from "@/lib/data";
+import type { Product, Category, Software } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
 import { collection, query } from "firebase/firestore";
@@ -18,13 +18,6 @@ import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-};
-
 
 function ProductGrid() {
   const firestore = useFirestore();
@@ -85,8 +78,14 @@ export default function Home() {
         if (!firestore) return null;
         return query(collection(firestore, 'categories'));
     }, [firestore]);
-
     const { data: categories, loading: categoriesLoading } = useCollection<Category>(categoriesQuery);
+
+    const softwareQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'software'));
+    }, [firestore]);
+    const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
+
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -122,8 +121,9 @@ export default function Home() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-software">Semua Perangkat Lunak</SelectItem>
-              {software.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
+              {softwareLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
+                softwareList?.map((s) => (
+                <SelectItem key={s.id} value={s.slug}>
                   {s.name}
                 </SelectItem>
               ))}
