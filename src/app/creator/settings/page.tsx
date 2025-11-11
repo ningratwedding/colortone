@@ -389,24 +389,28 @@ export default function SettingsPage() {
 
         <div className="space-y-4">
           {/* Total Balance */}
-          <Card className="bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
-            <CardHeader>
-              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-primary-foreground/80">
-                  Total Saldo
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-primary-foreground/80" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formattedBalance}</div>
-              <p className="text-xs text-primary-foreground/80">
-                Saldo yang tersedia untuk ditarik.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90" disabled>Tarik Dana</Button>
-            </CardFooter>
+          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
+            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
+            <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
+            <div className="relative z-10">
+              <CardHeader>
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-primary-foreground/80">
+                    Total Saldo
+                  </CardTitle>
+                  <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formattedBalance}</div>
+                <p className="text-xs text-primary-foreground/80">
+                  Saldo yang tersedia untuk ditarik.
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90" disabled>Tarik Dana</Button>
+              </CardFooter>
+            </div>
           </Card>
 
           {/* Payment Settings */}
