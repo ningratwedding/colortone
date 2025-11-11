@@ -33,7 +33,7 @@ import { DollarSign, ShoppingCart } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, getDocs, collectionGroup } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product, Order } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,21 +55,41 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-        if (!user || !firestore) return;
+        if (!user || !firestore || !creatorProducts) return;
         setOrdersLoading(true);
         try {
-            const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
-            const querySnapshot = await getDocs(ordersQuery);
-            const fetchedOrders = querySnapshot.docs.map(doc => doc.data() as Order);
-            setOrders(fetchedOrders);
+            const creatorProductIds = new Set(creatorProducts.map(p => p.id));
+            if (creatorProductIds.size === 0) {
+                setOrders([]);
+                setOrdersLoading(false);
+                return;
+            }
+
+            const usersSnapshot = await getDocs(collection(firestore, 'users'));
+            const allCreatorOrders: Order[] = [];
+
+            for (const userDoc of usersSnapshot.docs) {
+                const ordersSnapshot = await getDocs(collection(firestore, `users/${userDoc.id}/orders`));
+                ordersSnapshot.forEach(orderDoc => {
+                    const orderData = orderDoc.data() as Order;
+                    if (creatorProductIds.has(orderData.productId)) {
+                        allCreatorOrders.push(orderData);
+                    }
+                });
+            }
+
+            setOrders(allCreatorOrders);
+
         } catch (error) {
             console.error("Failed to fetch orders:", error);
         } finally {
             setOrdersLoading(false);
         }
     };
-    fetchOrders();
-  }, [user, firestore]);
+    if (creatorProducts) {
+        fetchOrders();
+    }
+  }, [user, firestore, creatorProducts]);
 
   const [formattedStats, setFormattedStats] = useState({
     totalRevenue: '',
