@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
-import { PartyPopper, Copy } from 'lucide-react';
+import { PartyPopper, Copy, Loader2 } from 'lucide-react';
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -64,14 +64,14 @@ export default function AccountSettingsPage() {
     };
 
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !userProfile || !user) return;
+        if (!userProfileRef || !userProfile || !user || !storage) return;
         setIsSaving(true);
         try {
             let newAvatarUrl = userProfile.avatarUrl;
 
             // 1. If a new avatar file is selected, upload it
             if (avatarFile) {
-                toast({ title: 'Mengunggah foto profil...' });
+                toast({ title: 'Mengompres dan mengunggah foto profil...' });
                 newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
             }
 
@@ -131,6 +131,15 @@ export default function AccountSettingsPage() {
         }
     };
 
+    const copyAffiliateId = () => {
+        if (!user) return;
+        navigator.clipboard.writeText(user.uid);
+        toast({
+            title: 'ID Afiliasi Disalin',
+            description: 'Gunakan ID ini atau buat tautan afiliasi dari halaman produk.'
+        });
+    }
+
     const loading = userLoading || profileLoading;
 
     if (loading) {
@@ -177,7 +186,7 @@ export default function AccountSettingsPage() {
         )
     }
 
-    if (!userProfile) {
+    if (!userProfile || !user) {
         return <div>Profil tidak ditemukan.</div>
     }
     
@@ -232,7 +241,7 @@ export default function AccountSettingsPage() {
                                 <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="misal: 081234567890" />
                             </div>
                              <Button onClick={handleSaveChanges} disabled={isSaving}>
-                                {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
+                                {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan"}
                             </Button>
                         </CardContent>
                     </Card>
