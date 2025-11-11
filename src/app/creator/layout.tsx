@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -154,7 +155,7 @@ export default function CreatorDashboardLayout({
                     <Skeleton className="h-8 w-8 rounded-full" />
                   ) : (
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name} />
+                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Creator Avatar'} />
                       <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
                     </Avatar>
                   )}
