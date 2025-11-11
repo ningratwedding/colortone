@@ -34,7 +34,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, collectionGroup, query, where, getDocs, doc } from 'firebase/firestore';
+import { collection, query, getDocs } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -71,45 +71,30 @@ export default function OrdersPage() {
       setOrdersLoading(true);
 
       try {
-        // Query orders collection group directly by creatorId
-        const ordersQuery = query(
-          collectionGroup(firestore, 'orders'),
-          where('creatorId', '==', user.uid)
-        );
-        const querySnapshot = await getDocs(ordersQuery);
-        
-        const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
-        
-        // Sort on the client-side
-        fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
-        
-        setOrders(fetchedOrders);
+        const usersSnapshot = await getDocs(collection(firestore, 'users'));
+        const allOrders: Order[] = [];
+        const allCustomers: Record<string, UserProfile> = {};
 
-        // Fetch customer details if there are any orders
-        if (fetchedOrders.length > 0) {
-            const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
-            const customerProfiles: Record<string, UserProfile> = {};
-            
-            // Chunk the customerIds array to avoid "in" query limitation (max 30)
-            const chunks: string[][] = [];
-            for (let i = 0; i < customerIds.length; i += 30) {
-                chunks.push(customerIds.slice(i, i + 30));
+        for (const userDoc of usersSnapshot.docs) {
+          const userData = { id: userDoc.id, ...userDoc.data() } as UserProfile;
+          allCustomers[userDoc.id] = userData;
+          
+          const ordersSnapshot = await getDocs(collection(firestore, `users/${userDoc.id}/orders`));
+          ordersSnapshot.forEach(orderDoc => {
+            const orderData = { id: orderDoc.id, ...orderDoc.data() } as Order;
+            if (orderData.creatorId === user.uid) {
+              allOrders.push(orderData);
             }
-            
-            for (const chunk of chunks) {
-                if (chunk.length > 0) {
-                   const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk));
-                   const userDocs = await getDocs(usersQuery);
-                   userDocs.forEach(doc => {
-                      customerProfiles[doc.id] = { id: doc.id, ...doc.data() } as UserProfile;
-                   });
-                }
-            }
-            setCustomers(customerProfiles);
+          });
         }
+        
+        allOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
+        
+        setOrders(allOrders);
+        setCustomers(allCustomers);
+
       } catch (error) {
         console.error("Failed to fetch orders:", error);
-        // You might want to set an error state here and display it to the user
       } finally {
         setOrdersLoading(false);
       }
