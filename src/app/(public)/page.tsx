@@ -11,27 +11,22 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
 import { categories, software, type Product } from "@/lib/data";
-// import { useCollection } from "@/firebase/firestore/use-collection";
-// import { useFirestore } from "@/firebase/provider";
-// import { collection, query, orderBy } from "firebase/firestore";
+import { useCollection } from "@/firebase/firestore/use-collection";
+import { useFirestore } from "@/firebase/provider";
+import { collection, query } from "firebase/firestore";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
 function ProductGrid() {
-  // const firestore = useFirestore();
-  // const productsQuery = useMemo(() => {
-  //   if (!firestore) return null;
-  //   return query(collection(firestore, "products"), orderBy("sales", "desc"));
-  // }, [firestore]);
-  // const { data: products, loading, error } = useCollection<Product>(productsQuery);
-
-  // For now, we will show a message indicating the feature is under maintenance.
-  const loading = false;
-  const products: Product[] = [];
-  const error = true;
-
+  const firestore = useFirestore();
+  const productsQuery = useMemo(() => {
+    if (!firestore) return null;
+    // Menghapus orderBy untuk menghindari error indeks
+    return query(collection(firestore, "products"));
+  }, [firestore]);
+  const { data: products, loading, error } = useCollection<Product>(productsQuery);
 
   if (loading) {
     return (
