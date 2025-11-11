@@ -18,6 +18,7 @@ import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, query, whe
 import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import type { UserProfile } from '@/lib/data';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // Helper to get firestore instance
 const getDb = () => getFirestore(initializeFirebase().app);
@@ -56,19 +57,24 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
         throw new Error(`Nama pengguna "${name}" sudah digunakan. Silakan gunakan nama lain.`);
     }
 
+    const defaultAvatars = PlaceHolderImages.filter(img => img.id.startsWith('avatar-'));
+    const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+
     const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
         email: user.email!,
         slug: slug, 
         role: 'pembeli',
         createdAt: serverTimestamp(),
-        avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
-        avatarHint: 'user avatar'
+        avatarUrl: user.photoURL || randomAvatar.imageUrl,
+        avatarHint: user.photoURL ? 'user avatar' : randomAvatar.imageHint,
     };
     await setDoc(doc(db, 'users', user.uid), newUserProfile);
     
     if (fullName && auth.currentUser) {
-        await updateProfile(auth.currentUser, { displayName: fullName });
+        await updateProfile(auth.currentUser, { displayName: fullName, photoURL: newUserProfile.avatarUrl });
+    } else if (auth.currentUser && !auth.currentUser.photoURL) {
+         await updateProfile(auth.currentUser, { photoURL: newUserProfile.avatarUrl });
     }
 
     // This is problematic as serverTimestamp() returns a sentinel value, not a Date.
