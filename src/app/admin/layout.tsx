@@ -95,7 +95,7 @@ export default function AdminDashboardLayout({
             <Link href="/" className="flex items-center space-x-2 px-2">
               <SlidersHorizontal className="h-5 w-5 text-primary" />
               <span className="text-base font-bold font-headline group-data-[collapsible=icon]:hidden">
-                Colortone
+                Di
               </span>
             </Link>
           </SidebarHeader>

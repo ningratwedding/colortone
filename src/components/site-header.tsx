@@ -164,7 +164,7 @@ export function SiteHeader() {
                   <Link href="/" className="flex items-center space-x-2">
                     <SlidersHorizontal className="h-8 w-8 text-primary" />
                     <span className="font-bold text-xl font-headline">
-                      Colortone
+                      Di
                     </span>
                   </Link>
                 </SheetTitle>
@@ -192,7 +192,7 @@ export function SiteHeader() {
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <SlidersHorizontal className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">
-              Colortone
+              Di
             </span>
           </Link>
         </div>

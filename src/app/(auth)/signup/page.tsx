@@ -103,7 +103,7 @@ export default function SignupPage() {
     if (result.success && result.user) {
       try {
         const profile = await getOrCreateUserProfile(result.user);
-        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone!" });
+        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Di!" });
         handleRedirect(profile);
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : "Tidak dapat membuat profil pengguna baru.";
@@ -125,7 +125,7 @@ export default function SignupPage() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signUpWithEmail(data.email, data.password, data.fullName);
     if (result.success && result.profile) {
-      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Colortone! Silakan periksa email Anda untuk verifikasi." });
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Di! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
     } else {
       toast({
@@ -144,7 +144,7 @@ export default function SignupPage() {
            <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
               <SlidersHorizontal className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold font-headline">Colortone</span>
+              <span className="text-2xl font-bold font-headline">Di</span>
             </Link>
           </div>
           <CardTitle className="text-2xl">Mulai Kisah Anda</CardTitle>
