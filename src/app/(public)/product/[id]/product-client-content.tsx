@@ -10,6 +10,8 @@ import {
   ShoppingCart,
   Copy,
   Share2,
+  Image as ImageIcon,
+  Layers,
 } from "lucide-react";
 import { useMemo, useEffect, useState } from 'react';
 
@@ -30,8 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+
 
 function ProductPageClientButtons({
   price,
@@ -136,6 +138,7 @@ function ProductPageClientButtons({
 
 export function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
+  const [activeView, setActiveView] = useState<'main' | 'compare'>('main');
   
   const productRef = useMemo(() => {
     if (!firestore || !productId) return null;
@@ -172,6 +175,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
             <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
                 <div>
                     <Skeleton className="aspect-[3/2] w-full rounded-lg" />
+                     <div className="flex gap-2 mt-2">
+                        <Skeleton className="w-20 h-20 rounded-md" />
+                        <Skeleton className="w-20 h-20 rounded-md" />
+                    </div>
                 </div>
                 <div className="flex flex-col gap-4">
                     <Skeleton className="h-8 w-3/4" />
@@ -194,61 +201,60 @@ export function ProductPageContent({ productId }: { productId: string }) {
     notFound();
   }
   
-  const hasSlider = product.imageBeforeUrl && product.imageAfterUrl;
+  const hasComparison = product.imageBeforeUrl && product.imageAfterUrl;
 
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-          <Tabs defaultValue="main" className="w-full">
-            <TabsContent value="main" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                <Image
-                    src={product.thumbnailUrl}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={product.thumbnailHint}
-                    priority
-                />
-            </TabsContent>
-            {product.imageBeforeUrl && (
-              <TabsContent value="before" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                  <Image
-                      src={product.imageBeforeUrl}
-                      alt={`Before - ${product.name}`}
-                      fill
-                      className="object-cover"
-                      data-ai-hint={product.imageBeforeHint}
-                  />
-              </TabsContent>
+          <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted mb-2">
+            {activeView === 'main' || !hasComparison ? (
+              <Image
+                src={product.thumbnailUrl}
+                alt={product.name}
+                fill
+                className="object-cover"
+                data-ai-hint={product.thumbnailHint}
+                priority
+              />
+            ) : (
+              <ImageCompareSlider
+                beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
+                afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
+                className="w-full h-full"
+              />
             )}
-            {product.imageAfterUrl && (
-               <TabsContent value="after" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                  <Image
-                      src={product.imageAfterUrl}
-                      alt={`After - ${product.name}`}
-                      fill
-                      className="object-cover"
-                      data-ai-hint={product.imageAfterHint}
-                  />
-              </TabsContent>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveView('main')}
+              className={cn(
+                "w-20 h-20 rounded-md overflow-hidden relative border-2 transition-all",
+                activeView === 'main' ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
+              )}
+            >
+              <Image src={product.thumbnailUrl} alt="Thumbnail" fill className="object-cover" />
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
+              </div>
+            </button>
+            
+            {hasComparison && (
+              <button
+                onClick={() => setActiveView('compare')}
+                className={cn(
+                  "w-20 h-20 rounded-md overflow-hidden relative border-2 transition-all",
+                  activeView === 'compare' ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
+                )}
+              >
+                <Image src={product.imageAfterUrl!} alt="Comparison thumbnail" fill className="object-cover" />
+                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <Layers className="w-5 h-5 text-white" />
+                </div>
+              </button>
             )}
-            {hasSlider && (
-              <TabsContent value="compare">
-                  <ImageCompareSlider
-                      beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: product.name }}
-                      afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: product.name }}
-                      className="aspect-[3/2] rounded-lg overflow-hidden"
-                  />
-              </TabsContent>
-            )}
-            <TabsList className="grid w-full grid-cols-4 mt-2">
-              <TabsTrigger value="main">Utama</TabsTrigger>
-              <TabsTrigger value="before" disabled={!product.imageBeforeUrl}>Sebelum</TabsTrigger>
-              <TabsTrigger value="after" disabled={!product.imageAfterUrl}>Sesudah</TabsTrigger>
-              <TabsTrigger value="compare" disabled={!hasSlider}>Bandingkan</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3">
