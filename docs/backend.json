@@ -98,13 +98,14 @@
           "type": "string",
           "description": "A detailed description of the product."
         },
-        "thumbnailUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "The main thumbnail image for the product card."
+        "galleryImageUrls": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" },
+          "description": "A list of URLs for the product's main gallery images."
         },
-        "thumbnailHint": {
-            "type": "string"
+        "galleryImageHints": {
+          "type": "array",
+          "items": { "type": "string" }
         },
         "imageBeforeUrl": {
           "type": "string",
@@ -141,7 +142,7 @@
             "description": "The secure URL to the downloadable product file (.zip)."
         }
       },
-      "required": ["name", "creatorId", "price", "description", "thumbnailUrl"]
+      "required": ["name", "creatorId", "price", "description", "galleryImageUrls"]
     },
     "Order": {
       "title": "Order",

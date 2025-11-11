@@ -43,7 +43,7 @@ const formSchema = z.object({
   price: z.coerce.number().min(1000, 'Harga minimal Rp 1.000.'),
   category: z.string().min(1, 'Kategori harus dipilih.'),
   compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
-  thumbnail: z.any().optional(),
+  galleryImages: z.any().optional(),
   imageBefore: z.any().optional(),
   imageAfter: z.any().optional(),
   uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
@@ -80,9 +80,16 @@ interface EditProductDialogProps {
   product: Product;
 }
 
-const FileEditInput = ({ field, label, description, accept, icon: Icon, currentImageUrl }: any) => {
-  const file = field.value?.[0];
-  const displayUrl = file ? URL.createObjectURL(file) : currentImageUrl;
+const FileEditInput = ({ field, label, description, accept, icon: Icon, currentImageUrl, multiple = false }: any) => {
+  const files = field.value;
+  const fileCount = files?.length || 0;
+  
+  let displayUrl;
+  if (fileCount > 0) {
+    displayUrl = URL.createObjectURL(files[0]);
+  } else if(currentImageUrl) {
+    displayUrl = Array.isArray(currentImageUrl) ? currentImageUrl[0] : currentImageUrl;
+  }
 
   return (
     <div className="grid gap-1.5">
@@ -103,12 +110,15 @@ const FileEditInput = ({ field, label, description, accept, icon: Icon, currentI
             type="file"
             className="hidden"
             accept={accept}
+            multiple={multiple}
             onChange={(e) => field.onChange(e.target.files)}
           />
           <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById(field.name)?.click()}>
-            Ubah Gambar
+            {fileCount > 0 ? 'Ganti Gambar' : 'Ubah Gambar'}
           </Button>
-          <p className="text-xs text-muted-foreground mt-1">{file ? file.name : description}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {fileCount > 0 ? `${fileCount} file dipilih` : description}
+          </p>
         </div>
       </div>
     </div>
@@ -149,7 +159,6 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
         category: product.category,
         compatibleSoftware: product.compatibleSoftware || [],
         downloadUrl: product.downloadUrl,
-        // Determine upload type based on URL content
         uploadType: product.downloadUrl.includes('firebasestorage.googleapis.com') ? 'file' : 'url',
       });
     }
@@ -159,7 +168,7 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
   const uploadType = watch('uploadType');
 
   const onSubmit = async (data: FormData) => {
-    if (!firestore || !user) return;
+    if (!firestore || !user || !storage) return;
     setIsSubmitting(true);
     try {
       const productRef = doc(firestore, 'products', product.id);
@@ -181,10 +190,13 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
         downloadUrl: finalDownloadUrl,
       };
 
-      // Handle image uploads only if new files are selected
-      if (data.thumbnail?.[0]) {
-        toast({ title: 'Mengunggah gambar utama...' });
-        updatedData.thumbnailUrl = await uploadFile(storage, data.thumbnail[0], user.uid, 'product_images');
+      if (data.galleryImages?.length > 0) {
+        toast({ title: 'Mengunggah gambar galeri...' });
+        const galleryUploads = Array.from(data.galleryImages as FileList).map(file =>
+            uploadFile(storage, file, user.uid, 'product_images')
+        );
+        updatedData.galleryImageUrls = await Promise.all(galleryUploads);
+        updatedData.galleryImageHints = updatedData.galleryImageUrls.map(() => 'product gallery image');
       }
       if (data.imageBefore?.[0]) {
         toast({ title: 'Mengunggah gambar "sebelum"...' });
@@ -276,8 +288,8 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
 
             {/* Media */}
             <h3 className="font-semibold text-sm mt-4 border-t pt-4">Media Produk</h3>
-             <Controller name="thumbnail" control={control} render={({ field }) => <FileEditInput field={field} label='Gambar Utama' description='Akan digunakan sebagai sampul.' accept="image/*" icon={Star} currentImageUrl={product.thumbnailUrl} />} />
-             {errors.thumbnail && <p className="text-xs text-destructive mt-1.5">{String(errors.thumbnail.message)}</p>}
+             <Controller name="galleryImages" control={control} render={({ field }) => <FileEditInput field={field} label='Gambar Galeri' description='Akan digunakan sebagai sampul.' accept="image/*" icon={Star} currentImageUrl={product.galleryImageUrls} multiple={true} />} />
+             {errors.galleryImages && <p className="text-xs text-destructive mt-1.5">{String(errors.galleryImages.message)}</p>}
 
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">

@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 
 function ProductPageClientButtons({
@@ -138,7 +139,6 @@ function ProductPageClientButtons({
 
 export function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
-  const [activeView, setActiveView] = useState<'main' | 'compare'>('main');
   
   const productRef = useMemo(() => {
     if (!firestore || !productId) return null;
@@ -175,10 +175,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
             <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
                 <div>
                     <Skeleton className="aspect-[3/2] w-full rounded-lg" />
-                     <div className="flex gap-2 mt-2">
-                        <Skeleton className="w-20 h-20 rounded-md" />
-                        <Skeleton className="w-20 h-20 rounded-md" />
-                    </div>
                 </div>
                 <div className="flex flex-col gap-4">
                     <Skeleton className="h-8 w-3/4" />
@@ -207,54 +203,41 @@ export function ProductPageContent({ productId }: { productId: string }) {
     <div className="container mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-          <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted mb-2">
-            {activeView === 'main' || !hasComparison ? (
-              <Image
-                src={product.thumbnailUrl}
-                alt={product.name}
-                fill
-                className="object-cover"
-                data-ai-hint={product.thumbnailHint}
-                priority
-              />
-            ) : (
-              <ImageCompareSlider
-                beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
-                afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
-                className="w-full h-full"
-              />
-            )}
-          </div>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveView('main')}
-              className={cn(
-                "w-20 h-20 rounded-md overflow-hidden relative border-2 transition-all",
-                activeView === 'main' ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
-              )}
-            >
-              <Image src={product.thumbnailUrl} alt="Thumbnail" fill className="object-cover" />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <ImageIcon className="w-5 h-5 text-white" />
-              </div>
-            </button>
-            
-            {hasComparison && (
-              <button
-                onClick={() => setActiveView('compare')}
-                className={cn(
-                  "w-20 h-20 rounded-md overflow-hidden relative border-2 transition-all",
-                  activeView === 'compare' ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
+           <Carousel className="w-full">
+              <CarouselContent>
+                {product.galleryImageUrls.map((url, index) => (
+                  <CarouselItem key={index}>
+                    <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                      <Image
+                        src={url}
+                        alt={`${product.name} - Gambar Galeri ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={product.galleryImageHints?.[index] || 'product image'}
+                        priority={index === 0}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+                {hasComparison && (
+                  <CarouselItem>
+                     <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                        <ImageCompareSlider
+                            beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
+                            afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
+                            className="w-full h-full"
+                        />
+                     </div>
+                  </CarouselItem>
                 )}
-              >
-                <Image src={product.imageAfterUrl!} alt="Comparison thumbnail" fill className="object-cover" />
-                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <Layers className="w-5 h-5 text-white" />
-                </div>
-              </button>
-            )}
-          </div>
+              </CarouselContent>
+              {(product.galleryImageUrls.length > 1 || hasComparison) && (
+                <>
+                  <CarouselPrevious className="ml-14" />
+                  <CarouselNext className="mr-14" />
+                </>
+              )}
+            </Carousel>
         </div>
 
         <div className="flex flex-col gap-3">

@@ -48,6 +48,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
     };
     setFormattedPrice(formatCurrency(product.price));
   }, [product.price]);
+  
+  const mainImage = product.galleryImageUrls?.[0];
+  const mainImageHint = product.galleryImageHints?.[0];
+
 
   return (
     <Card
@@ -58,14 +62,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
     >
       <CardHeader className="p-0 relative">
          <Link href={`/product/${product.id}`} className="block aspect-[3/2] w-full">
+          {mainImage ? (
             <Image
-              src={product.thumbnailUrl}
+              src={mainImage}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint={product.thumbnailHint}
+              data-ai-hint={mainImageHint}
             />
+          ) : (
+            <div className="w-full h-full bg-muted" />
+          )}
          </Link>
       </CardHeader>
       <CardContent className="p-3 pb-2 flex-grow flex flex-col">

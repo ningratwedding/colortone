@@ -32,8 +32,8 @@ export type Product = {
   creatorId: string; 
   price: number;
   description: string;
-  thumbnailUrl: string;
-  thumbnailHint: string;
+  galleryImageUrls: string[];
+  galleryImageHints: string[];
   imageBeforeUrl?: string;
   imageBeforeHint?: string;
   imageAfterUrl?: string;

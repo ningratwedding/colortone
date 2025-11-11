@@ -153,9 +153,9 @@ export default function DashboardProductsPage() {
                       alt={product.name}
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={product.imageAfterUrl}
+                      src={product.galleryImageUrls[0]}
                       width="64"
-                      data-ai-hint={product.imageAfterHint}
+                      data-ai-hint={product.galleryImageHints[0]}
                     />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
@@ -215,9 +215,9 @@ export default function DashboardProductsPage() {
                 alt={product.name}
                 className="aspect-square rounded-md object-cover"
                 height="64"
-                src={product.imageAfterUrl}
+                src={product.galleryImageUrls[0]}
                 width="64"
-                data-ai-hint={product.imageAfterHint}
+                data-ai-hint={product.galleryImageHints[0]}
               />
               <div className="flex-grow">
                 <CardTitle className="text-base leading-tight mb-1">

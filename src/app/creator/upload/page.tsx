@@ -47,7 +47,7 @@ const formSchema = z.object({
   price: z.coerce.number().min(1000, 'Harga minimal Rp 1.000.'),
   category: z.string().min(1, 'Kategori harus dipilih.'),
   compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
-  thumbnail: z.any().refine(file => file?.length == 1, 'Gambar utama harus diunggah.'),
+  galleryImages: z.any().refine(files => files?.length >= 1, 'Unggah minimal satu gambar utama.'),
   imageBefore: z.any().optional(),
   imageAfter: z.any().optional(),
   uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
@@ -90,15 +90,19 @@ const FileUploadDropzone = ({
   label,
   description,
   accept,
-  icon: Icon
+  icon: Icon,
+  multiple = false
 }: {
   field: any;
   label: string;
   description: string;
   accept: string;
   icon: React.ElementType;
+  multiple?: boolean;
 }) => {
-    const file = field.value?.[0];
+    const files = field.value;
+    const fileCount = files?.length || 0;
+
     return (
         <div className="grid gap-1.5">
             <Label>{label}</Label>
@@ -107,10 +111,10 @@ const FileUploadDropzone = ({
                 htmlFor={field.name}
                 className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted"
             >
-                {file ? (
+                {fileCount > 0 ? (
                     <div className="flex flex-col items-center justify-center text-center text-primary">
                         <FileCheck2 className="w-8 h-8 mb-2" />
-                        <p className="font-semibold text-sm truncate max-w-full px-2">{file.name}</p>
+                        <p className="font-semibold text-sm truncate max-w-full px-2">{fileCount} file dipilih</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center text-center px-2">
@@ -126,6 +130,7 @@ const FileUploadDropzone = ({
                     type="file"
                     className="hidden"
                     accept={accept}
+                    multiple={multiple}
                     onChange={(e) => field.onChange(e.target.files)}
                 />
             </Label>
@@ -173,7 +178,7 @@ export default function UploadPage() {
 
 
   const onSubmit = async (data: FormData) => {
-    if (!user) {
+    if (!user || !storage) {
         toast({ variant: 'destructive', title: 'Anda harus masuk untuk mengunggah produk.' });
         return;
     }
@@ -190,7 +195,12 @@ export default function UploadPage() {
             finalDownloadUrl = data.downloadUrl!;
         }
 
-        const thumbnailUrl = await uploadFile(storage, data.thumbnail[0], user.uid, 'product_images');
+        const galleryImageUploads = Array.from(data.galleryImages as FileList).map(file => 
+            uploadFile(storage, file, user.uid, 'product_images')
+        );
+
+        const galleryImageUrls = await Promise.all(galleryImageUploads);
+
         const imageBeforeUrl = data.imageBefore?.[0] ? await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images') : undefined;
         const imageAfterUrl = data.imageAfter?.[0] ? await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images') : undefined;
         
@@ -203,8 +213,8 @@ export default function UploadPage() {
             description: data.description,
             category: data.category,
             compatibleSoftware: data.compatibleSoftware,
-            thumbnailUrl: thumbnailUrl,
-            thumbnailHint: 'product thumbnail',
+            galleryImageUrls,
+            galleryImageHints: galleryImageUrls.map(() => "product gallery image"),
             imageBeforeUrl: imageBeforeUrl,
             imageBeforeHint: imageBeforeUrl ? 'product image before' : undefined,
             imageAfterUrl: imageAfterUrl,
@@ -341,18 +351,19 @@ export default function UploadPage() {
           </CardHeader>
           <CardContent className="space-y-4">
              <Controller
-                name="thumbnail"
+                name="galleryImages"
                 control={control}
                 render={({ field }) => (
                     <div>
                         <FileUploadDropzone 
                             field={field} 
-                            label='Gambar Utama (Wajib)' 
+                            label='Gambar Galeri (Wajib)' 
                             description='Rasio aspek 3:2 direkomendasikan' 
                             accept="image/*"
                             icon={Star}
+                            multiple={true}
                         />
-                        {errors.thumbnail && <p className="text-xs text-destructive mt-1.5">{String(errors.thumbnail.message)}</p>}
+                        {errors.galleryImages && <p className="text-xs text-destructive mt-1.5">{String(errors.galleryImages.message)}</p>}
                     </div>
                 )}
                 />
@@ -479,4 +490,3 @@ export default function UploadPage() {
     </form>
   );
 }
-
