@@ -78,25 +78,25 @@ const socialIcons = {
 type SocialPlatform = keyof typeof socialIcons;
 
 const bankList = [
-    { code: 'bca', name: 'BCA' },
-    { code: 'mandiri', name: 'Bank Mandiri' },
-    { code: 'bni', name: 'BNI' },
-    { code: 'bri', name: 'BRI' },
-    { code: 'bsi', name: 'BSI' },
-    { code: 'cimb', name: 'CIMB Niaga' },
-    { code: 'permata', name: 'Bank Permata' },
-    { code: 'danamon', name: 'Bank Danamon' },
-    { code: 'panin', name: 'Panin Bank' },
-    { code: 'ocbc', name: 'OCBC NISP' },
-    { code: 'btn', name: 'BTN' },
-    { code: 'maybank', name: 'Maybank Indonesia' },
-    { code: 'uob', name: 'UOB Indonesia' },
-    { code: 'mega', name: 'Bank Mega' },
-    { code: 'jago', name: 'Bank Jago' },
-    { code: 'artos', name: 'Bank Artos' },
-    { code: 'dbs', name: 'DBS Indonesia' },
-    { code: 'bcasyariah', name: 'BCA Syariah' },
-    { code: 'muamalat', name: 'Bank Muamalat' },
+    { code: '014', name: 'BCA' },
+    { code: '008', name: 'Bank Mandiri' },
+    { code: '009', name: 'BNI' },
+    { code: '002', name: 'BRI' },
+    { code: '451', name: 'BSI' },
+    { code: '022', name: 'CIMB Niaga' },
+    { code: '013', name: 'Bank Permata' },
+    { code: '011', name: 'Bank Danamon' },
+    { code: '019', name: 'Panin Bank' },
+    { code: '028', name: 'OCBC NISP' },
+    { code: '200', name: 'BTN' },
+    { code: '016', name: 'Maybank Indonesia' },
+    { code: '023', name: 'UOB Indonesia' },
+    { code: '426', name: 'Bank Mega' },
+    { code: '547', name: 'Bank Jago' },
+    { code: '542', name: 'SeaBank' },
+    { code: '046', name: 'DBS Indonesia' },
+    { code: '536', name: 'BCA Syariah' },
+    { code: '147', name: 'Bank Muamalat' },
 ];
 
 export default function SettingsPage() {
@@ -391,7 +391,7 @@ export default function SettingsPage() {
                     <ScrollArea className="h-72">
                          {bankList.map((bank) => (
                             <SelectItem key={bank.code} value={bank.code}>
-                                {bank.name}
+                                {bank.name} ({bank.code})
                             </SelectItem>
                         ))}
                     </ScrollArea>
@@ -492,4 +492,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
