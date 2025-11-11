@@ -20,6 +20,10 @@ export type UserProfile = {
   role: 'pembeli' | 'kreator' | 'admin';
   isAffiliate?: boolean;
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
+  bankName?: string;
+  bankCode?: string;
+  accountHolderName?: string;
+  accountNumber?: string;
 };
 
 export type Product = {

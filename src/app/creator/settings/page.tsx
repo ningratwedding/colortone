@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe } from 'lucide-react';
+import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -113,25 +113,39 @@ export default function SettingsPage() {
 
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
+  // Profile States
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [socials, setSocials] = useState<UserProfile['socials']>({});
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
+  // Bank Info States
+  const [bankCode, setBankCode] = useState('');
+  const [accountHolderName, setAccountHolderName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+
+  // Dialog States
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
   const [newSocialUsername, setNewSocialUsername] = useState('');
   
-  const [isSaving, setIsSaving] = useState(false);
+  // Loading States
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingBankInfo, setIsSavingBankInfo] = useState(false);
   const [formattedBalance, setFormattedBalance] = useState('');
 
    useEffect(() => {
     if (userProfile) {
+      // Profile
       setName(userProfile.name || '');
       setBio(userProfile.bio || '');
       setSocials(userProfile.socials || {});
       setAvatarPreview(userProfile.avatarUrl);
+      // Bank Info
+      setBankCode(userProfile.bankCode || '');
+      setAccountHolderName(userProfile.accountHolderName || '');
+      setAccountNumber(userProfile.accountNumber || '');
     }
   }, [userProfile]);
 
@@ -151,9 +165,9 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveProfile = async () => {
     if (!userProfileRef || !user) return;
-    setIsSaving(true);
+    setIsSavingProfile(true);
     try {
       let newAvatarUrl = userProfile?.avatarUrl;
       if (avatarFile) {
@@ -186,9 +200,32 @@ export default function SettingsPage() {
         description: error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan perubahan.",
       });
     } finally {
-      setIsSaving(false);
+      setIsSavingProfile(false);
       setAvatarFile(null);
     }
+  };
+
+  const handleSaveBankInfo = async () => {
+      if (!userProfileRef) return;
+      setIsSavingBankInfo(true);
+      try {
+          const selectedBank = bankList.find(b => b.code === bankCode);
+          const bankNameToSave = selectedBank ? selectedBank.name : '';
+
+          const bankData: Partial<UserProfile> = {
+              bankCode: bankCode,
+              bankName: bankNameToSave,
+              accountHolderName: accountHolderName,
+              accountNumber: accountNumber
+          };
+          await updateDoc(userProfileRef, bankData);
+          toast({ title: 'Informasi Bank Disimpan', description: 'Detail rekening bank Anda telah diperbarui.' });
+      } catch (error) {
+          console.error('Error saving bank info:', error);
+          toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Terjadi kesalahan saat menyimpan info bank.' });
+      } finally {
+          setIsSavingBankInfo(false);
+      }
   };
 
 
@@ -343,8 +380,8 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveChanges} disabled={isSaving}>
-                {isSaving ? 'Menyimpan...' : 'Simpan Profil'}
+              <Button onClick={handleSaveProfile} disabled={isSavingProfile}>
+                {isSavingProfile ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : 'Simpan Profil'}
               </Button>
             </CardFooter>
           </Card>
@@ -383,7 +420,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="bank-name">Nama Bank</Label>
-                <Select>
+                <Select value={bankCode} onValueChange={setBankCode}>
                   <SelectTrigger id="bank-name">
                     <SelectValue placeholder="Pilih Bank" />
                   </SelectTrigger>
@@ -400,15 +437,17 @@ export default function SettingsPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="account-holder-name">Nama Pemilik Rekening</Label>
-                <Input id="account-holder-name" placeholder="Sesuai nama di buku tabungan" />
+                <Input id="account-holder-name" placeholder="Sesuai nama di buku tabungan" value={accountHolderName} onChange={(e) => setAccountHolderName(e.target.value)}/>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="account-number">Nomor Rekening</Label>
-                <Input id="account-number" placeholder="Masukkan nomor rekening" />
+                <Input id="account-number" placeholder="Masukkan nomor rekening" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} />
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" disabled>Simpan Informasi Bank</Button>
+              <Button className="w-full" onClick={handleSaveBankInfo} disabled={isSavingBankInfo}>
+                {isSavingBankInfo ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : 'Simpan Informasi Bank'}
+                </Button>
             </CardFooter>
           </Card>
 

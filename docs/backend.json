@@ -57,6 +57,22 @@
         "createdAt": {
             "type": "string",
             "format": "date-time"
+        },
+        "bankName": {
+          "type": "string",
+          "description": "The name of the user's bank for payouts."
+        },
+        "bankCode": {
+          "type": "string",
+          "description": "The code of the user's bank."
+        },
+        "accountHolderName": {
+          "type": "string",
+          "description": "The name of the bank account holder."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "The user's bank account number."
         }
       },
       "required": ["name", "email", "slug", "role", "createdAt"]
