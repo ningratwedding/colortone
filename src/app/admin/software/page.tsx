@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { MoreHorizontal, PlusCircle, Trash2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -57,6 +58,7 @@ export default function AdminSoftwarePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSoftware, setEditingSoftware] = useState<Software | null>(null);
   const [softwareName, setSoftwareName] = useState('');
+  const [softwareIcon, setSoftwareIcon] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [softwareToDelete, setSoftwareToDelete] = useState<Software | null>(null);
@@ -74,8 +76,16 @@ export default function AdminSoftwarePage() {
   const handleOpenDialog = (software: Software | null = null) => {
     setEditingSoftware(software);
     setSoftwareName(software ? software.name : '');
+    setSoftwareIcon(software ? software.icon || '' : '');
     setIsDialogOpen(true);
   };
+  
+  const resetDialog = () => {
+    setEditingSoftware(null);
+    setSoftwareName('');
+    setSoftwareIcon('');
+    setIsDialogOpen(false);
+  }
 
   const handleSaveSoftware = async () => {
     if (!softwareName || !firestore) return;
@@ -84,21 +94,26 @@ export default function AdminSoftwarePage() {
     const slug = createSlug(softwareName);
 
     try {
+      const dataToSave: Partial<Software> = {
+          name: softwareName,
+          slug: slug,
+          icon: softwareIcon,
+      };
+
       if (editingSoftware) {
         // Update existing software
         const softwareRef = doc(firestore, 'software', editingSoftware.id);
-        await updateDoc(softwareRef, { name: softwareName, slug: slug });
+        await updateDoc(softwareRef, dataToSave);
         toast({ title: 'Software Diperbarui', description: `"${softwareName}" telah berhasil diperbarui.` });
       } else {
         // Add new software
         await addDoc(collection(firestore, 'software'), {
-          name: softwareName,
-          slug: slug,
+          ...dataToSave,
           createdAt: serverTimestamp(),
         });
         toast({ title: 'Software Ditambahkan', description: `Software "${softwareName}" telah berhasil dibuat.` });
       }
-      setIsDialogOpen(false);
+      resetDialog();
     } catch (error) {
       console.error('Error saving software:', error);
       toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Terjadi kesalahan saat menyimpan software.' });
@@ -174,7 +189,16 @@ export default function AdminSoftwarePage() {
                 softwareList &&
                 softwareList.map((software) => (
                   <TableRow key={software.id}>
-                    <TableCell className="font-medium">{software.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        {software.icon ? (
+                          <div className="h-6 w-6 flex items-center justify-center" dangerouslySetInnerHTML={{ __html: software.icon }} />
+                        ) : (
+                          <div className="h-6 w-6 bg-muted rounded-sm" />
+                        )}
+                        <span>{software.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {software.slug}
                     </TableCell>
@@ -216,14 +240,14 @@ export default function AdminSoftwarePage() {
       </Card>
       
       {/* Dialog for Add/Edit Software */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => !open && resetDialog()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingSoftware ? 'Ubah Software' : 'Tambah Software Baru'}
             </DialogTitle>
             <DialogDescription>
-              Masukkan nama untuk software ini. Slug akan dibuat secara otomatis.
+              Masukkan detail untuk software ini. Slug akan dibuat secara otomatis.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -236,6 +260,18 @@ export default function AdminSoftwarePage() {
                 placeholder="misal: Lightroom"
                 autoFocus
               />
+            </div>
+             <div className="grid gap-2">
+              <Label htmlFor="software-icon">Ikon (SVG)</Label>
+              <Textarea
+                id="software-icon"
+                value={softwareIcon}
+                onChange={(e) => setSoftwareIcon(e.target.value)}
+                placeholder='<svg>...</svg>'
+                className="font-mono text-xs"
+                rows={4}
+              />
+              <p className="text-xs text-muted-foreground">Tempelkan kode SVG untuk ikon di sini.</p>
             </div>
           </div>
           <DialogFooter>

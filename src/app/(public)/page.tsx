@@ -124,7 +124,10 @@ export default function Home() {
               {softwareLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
                 softwareList?.map((s) => (
                 <SelectItem key={s.id} value={s.slug}>
-                  {s.name}
+                  <div className="flex items-center gap-2">
+                    {s.icon && <div className="h-4 w-4" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                    <span>{s.name}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

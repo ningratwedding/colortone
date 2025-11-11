@@ -311,8 +311,10 @@ export default function UploadPage() {
                                         : [...selectedSoftware, s.name];
                                         field.onChange(newValue);
                                     }}
+                                    className="flex items-center justify-center gap-2"
                                 >
-                                    {s.name}
+                                    {s.icon && <div className="h-4 w-4 flex-shrink-0" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                                    <span className="truncate">{s.name}</span>
                                 </Button>
                             ))}
                         </div>
@@ -441,5 +443,3 @@ export default function UploadPage() {
     </form>
   );
 }
-
-    

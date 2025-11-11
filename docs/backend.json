@@ -185,6 +185,10 @@
             "type": "string",
             "description": "A URL-friendly version of the software name."
         },
+        "icon": {
+          "type": "string",
+          "description": "The SVG string for the software icon."
+        },
         "createdAt": {
             "type": "string",
             "format": "date-time"

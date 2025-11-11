@@ -58,4 +58,5 @@ export type Software = {
   id: string;
   name: string;
   slug: string;
+  icon?: string;
 };
