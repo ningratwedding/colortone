@@ -10,8 +10,6 @@ import {
   ShoppingCart,
   Copy,
   Share2,
-  Image as ImageIcon,
-  Layers,
 } from "lucide-react";
 import { useMemo, useEffect, useState } from 'react';
 
@@ -34,6 +32,7 @@ import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 function ProductPageClientButtons({
@@ -203,41 +202,49 @@ export function ProductPageContent({ productId }: { productId: string }) {
     <div className="container mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-           <Carousel className="w-full">
-              <CarouselContent>
-                {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
-                  <CarouselItem key={index}>
+           <Tabs defaultValue="gallery" className="w-full">
+              <TabsContent value="gallery">
+                 <Carousel className="w-full">
+                    <CarouselContent>
+                        {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
+                        <CarouselItem key={index}>
+                            <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                            <Image
+                                src={url}
+                                alt={`${product.name} - Gambar Galeri ${index + 1}`}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={product.galleryImageHints?.[index] || 'product image'}
+                                priority={index === 0}
+                            />
+                            </div>
+                        </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    {(product.galleryImageUrls?.length ?? 0) > 1 && (
+                        <>
+                        <CarouselPrevious className="ml-14" />
+                        <CarouselNext className="mr-14" />
+                        </>
+                    )}
+                    </Carousel>
+              </TabsContent>
+              {hasComparison && (
+                <TabsContent value="comparison">
                     <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                      <Image
-                        src={url}
-                        alt={`${product.name} - Gambar Galeri ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={product.galleryImageHints?.[index] || 'product image'}
-                        priority={index === 0}
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-                {hasComparison && (
-                  <CarouselItem>
-                     <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
                         <ImageCompareSlider
                             beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
                             afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
                             className="w-full h-full"
                         />
-                     </div>
-                  </CarouselItem>
-                )}
-              </CarouselContent>
-              {((product.galleryImageUrls?.length ?? 0) > 1 || hasComparison) && (
-                <>
-                  <CarouselPrevious className="ml-14" />
-                  <CarouselNext className="mr-14" />
-                </>
+                    </div>
+                </TabsContent>
               )}
-            </Carousel>
+               <TabsList className="grid w-full grid-cols-2 mt-2">
+                <TabsTrigger value="gallery">Galeri</TabsTrigger>
+                {hasComparison && <TabsTrigger value="comparison">Perbandingan</TabsTrigger>}
+              </TabsList>
+            </Tabs>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -298,3 +305,4 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
