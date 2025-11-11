@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,10 +32,22 @@ import {
 } from '@/components/ui/table';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, doc, deleteDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EditProductDialog } from './edit-product-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 function formatCurrency(amount: number) {
     if (typeof amount !== 'number') return '';
@@ -49,14 +61,43 @@ function formatCurrency(amount: number) {
 export default function DashboardProductsPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
+    const { toast } = useToast();
 
     const productsQuery = useMemo(() => {
         if (!firestore || !user) return null;
-        // Query all products created by the current user
         return query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
     }, [firestore, user]);
 
     const { data: sellerProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+    const handleEditClick = (product: Product) => {
+        setEditingProduct(product);
+        setIsEditDialogOpen(true);
+    };
+
+    const handleDeleteClick = (product: Product) => {
+      setProductToDelete(product);
+      setIsDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = async () => {
+      if (!productToDelete || !firestore) return;
+      try {
+        await deleteDoc(doc(firestore, 'products', productToDelete.id));
+        toast({ title: 'Produk Dihapus', description: `"${productToDelete.name}" telah dihapus.` });
+      } catch (error) {
+        toast({ variant: 'destructive', title: 'Gagal Menghapus', description: 'Terjadi kesalahan saat menghapus produk.' });
+        console.error('Error deleting product:', error);
+      } finally {
+        setIsDeleteDialogOpen(false);
+        setProductToDelete(null);
+      }
+    };
 
     const loading = userLoading || productsLoading;
 
@@ -139,8 +180,12 @@ export default function DashboardProductsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                        <DropdownMenuItem>Ubah</DropdownMenuItem>
-                        <DropdownMenuItem>Hapus</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleEditClick(product)}>
+                            Ubah
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleDeleteClick(product)} className="text-destructive">
+                            Hapus
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -196,8 +241,12 @@ export default function DashboardProductsPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                  <DropdownMenuItem>Ubah</DropdownMenuItem>
-                  <DropdownMenuItem>Hapus</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleEditClick(product)}>
+                    Ubah
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleDeleteClick(product)} className="text-destructive">
+                    Hapus
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </CardHeader>
@@ -221,6 +270,30 @@ export default function DashboardProductsPage() {
             </Card>
         )}
       </div>
+
+       {editingProduct && (
+        <EditProductDialog
+          isOpen={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          product={editingProduct}
+        />
+      )}
+      
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Ini akan menghapus produk
+              "{productToDelete?.name}" secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Hapus</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
