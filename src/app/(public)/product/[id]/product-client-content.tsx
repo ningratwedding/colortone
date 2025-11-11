@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from "next/image";
@@ -32,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function ProductPageClientButtons({
   price,
@@ -194,21 +194,15 @@ export function ProductPageContent({ productId }: { productId: string }) {
     notFound();
   }
   
-  const showSlider = product.imageBeforeUrl && product.imageAfterUrl;
+  const hasSlider = product.imageBeforeUrl && product.imageAfterUrl;
 
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-          {showSlider ? (
-             <ImageCompareSlider
-                beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: product.name }}
-                afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: product.name }}
-                className="aspect-[3/2] rounded-lg overflow-hidden"
-            />
-          ) : (
-            <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                 <Image
+          <Tabs defaultValue="main" className="w-full">
+            <TabsContent value="main" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                <Image
                     src={product.thumbnailUrl}
                     alt={product.name}
                     fill
@@ -216,8 +210,45 @@ export function ProductPageContent({ productId }: { productId: string }) {
                     data-ai-hint={product.thumbnailHint}
                     priority
                 />
-            </div>
-          )}
+            </TabsContent>
+            {product.imageBeforeUrl && (
+              <TabsContent value="before" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                  <Image
+                      src={product.imageBeforeUrl}
+                      alt={`Before - ${product.name}`}
+                      fill
+                      className="object-cover"
+                      data-ai-hint={product.imageBeforeHint}
+                  />
+              </TabsContent>
+            )}
+            {product.imageAfterUrl && (
+               <TabsContent value="after" className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                  <Image
+                      src={product.imageAfterUrl}
+                      alt={`After - ${product.name}`}
+                      fill
+                      className="object-cover"
+                      data-ai-hint={product.imageAfterHint}
+                  />
+              </TabsContent>
+            )}
+            {hasSlider && (
+              <TabsContent value="compare">
+                  <ImageCompareSlider
+                      beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: product.name }}
+                      afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: product.name }}
+                      className="aspect-[3/2] rounded-lg overflow-hidden"
+                  />
+              </TabsContent>
+            )}
+            <TabsList className="grid w-full grid-cols-4 mt-2">
+              <TabsTrigger value="main">Utama</TabsTrigger>
+              <TabsTrigger value="before" disabled={!product.imageBeforeUrl}>Sebelum</TabsTrigger>
+              <TabsTrigger value="after" disabled={!product.imageAfterUrl}>Sesudah</TabsTrigger>
+              <TabsTrigger value="compare" disabled={!hasSlider}>Bandingkan</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -278,5 +309,3 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
-
-    
