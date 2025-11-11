@@ -42,8 +42,8 @@ const formSchema = z.object({
   category: z.string().min(1, 'Kategori harus dipilih.'),
   compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
   thumbnail: z.any().refine(file => file?.length == 1, 'Gambar utama harus diunggah.'),
-  imageBefore: z.any().refine(file => file?.length == 1, 'Gambar "sebelum" harus diunggah.'),
-  imageAfter: z.any().refine(file => file?.length == 1, 'Gambar "sesudah" harus diunggah.'),
+  imageBefore: z.any().optional(),
+  imageAfter: z.any().optional(),
   uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
   productFile: z.any().optional(),
   downloadUrl: z.string().optional(),
@@ -178,17 +178,15 @@ export default function UploadPage() {
 
         let finalDownloadUrl = '';
 
-        if (data.uploadType === 'file') {
+        if (data.uploadType === 'file' && data.productFile?.[0]) {
             finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
         } else {
             finalDownloadUrl = data.downloadUrl!;
         }
 
-        const [thumbnailUrl, imageBeforeUrl, imageAfterUrl] = await Promise.all([
-            uploadFile(storage, data.thumbnail[0], user.uid, 'product_images'),
-            uploadFile(storage, data.imageBefore[0], user.uid, 'product_images'),
-            uploadFile(storage, data.imageAfter[0], user.uid, 'product_images'),
-        ]);
+        const thumbnailUrl = await uploadFile(storage, data.thumbnail[0], user.uid, 'product_images');
+        const imageBeforeUrl = data.imageBefore?.[0] ? await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images') : undefined;
+        const imageAfterUrl = data.imageAfter?.[0] ? await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images') : undefined;
         
         toast({ title: 'Menyimpan detail produk...' });
 
@@ -202,9 +200,9 @@ export default function UploadPage() {
             thumbnailUrl: thumbnailUrl,
             thumbnailHint: 'product thumbnail',
             imageBeforeUrl: imageBeforeUrl,
-            imageBeforeHint: 'product image before',
+            imageBeforeHint: imageBeforeUrl ? 'product image before' : undefined,
             imageAfterUrl: imageAfterUrl,
-            imageAfterHint: 'product image after',
+            imageAfterHint: imageAfterUrl ? 'product image after' : undefined,
             downloadUrl: finalDownloadUrl,
             sales: 0,
             tags: [], // Placeholder for tags
@@ -343,7 +341,7 @@ export default function UploadPage() {
                     <div>
                         <FileUploadDropzone 
                             field={field} 
-                            label='Gambar Utama (Thumbnail)' 
+                            label='Gambar Utama (Wajib)' 
                             description='Rasio aspek 3:2 direkomendasikan' 
                             accept="image/*"
                             icon={Star}
@@ -360,8 +358,8 @@ export default function UploadPage() {
                     <div>
                         <FileUploadDropzone 
                             field={field} 
-                            label='Gambar "Sebelum"' 
-                            description='Gambar asli' 
+                            label='Gambar "Sebelum" (Opsional)' 
+                            description='Gambar asli untuk perbandingan' 
                             accept="image/*"
                             icon={ImageIcon}
                         />
@@ -376,7 +374,7 @@ export default function UploadPage() {
                      <div>
                         <FileUploadDropzone 
                             field={field} 
-                            label='Gambar "Sesudah"' 
+                            label='Gambar "Sesudah" (Opsional)' 
                             description='Gambar yang telah diedit' 
                             accept="image/*"
                             icon={ImageIcon}

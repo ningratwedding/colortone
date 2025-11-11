@@ -34,10 +34,10 @@ export type Product = {
   description: string;
   thumbnailUrl: string;
   thumbnailHint: string;
-  imageBeforeUrl: string;
-  imageBeforeHint: string;
-  imageAfterUrl: string;
-  imageAfterHint: string;
+  imageBeforeUrl?: string;
+  imageBeforeHint?: string;
+  imageAfterUrl?: string;
+  imageAfterHint?: string;
   category: string;
   compatibleSoftware: string[];
   tags: string[];

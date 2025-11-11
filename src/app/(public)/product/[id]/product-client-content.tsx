@@ -159,7 +159,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
   const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
 
   const compatibleSoftwareDetails = useMemo(() => {
-    if (!product || !softwareList) return [];
+    if (!product?.compatibleSoftware || !softwareList) return [];
     return product.compatibleSoftware
         .map(name => softwareList.find(s => s.name === name))
         .filter((s): s is Software => !!s);
@@ -193,16 +193,31 @@ export function ProductPageContent({ productId }: { productId: string }) {
     // This will trigger the not-found.tsx file
     notFound();
   }
+  
+  const showSlider = product.imageBeforeUrl && product.imageAfterUrl;
 
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-          <ImageCompareSlider
-            beforeImage={{ imageUrl: product.imageBeforeUrl, imageHint: product.imageBeforeHint, description: product.name }}
-            afterImage={{ imageUrl: product.imageAfterUrl, imageHint: product.imageAfterHint, description: product.name }}
-            className="aspect-[3/2] rounded-lg overflow-hidden"
-          />
+          {showSlider ? (
+             <ImageCompareSlider
+                beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: product.name }}
+                afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: product.name }}
+                className="aspect-[3/2] rounded-lg overflow-hidden"
+            />
+          ) : (
+            <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                 <Image
+                    src={product.thumbnailUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={product.thumbnailHint}
+                    priority
+                />
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3">

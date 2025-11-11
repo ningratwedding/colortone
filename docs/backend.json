@@ -141,7 +141,7 @@
             "description": "The secure URL to the downloadable product file (.zip)."
         }
       },
-      "required": ["name", "creatorId", "price", "description", "thumbnailUrl", "imageAfterUrl"]
+      "required": ["name", "creatorId", "price", "description", "thumbnailUrl"]
     },
     "Order": {
       "title": "Order",
