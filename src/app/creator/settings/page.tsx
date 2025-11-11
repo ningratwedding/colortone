@@ -389,23 +389,23 @@ export default function SettingsPage() {
 
         <div className="space-y-4">
           {/* Total Balance */}
-          <Card>
+          <Card className="bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
             <CardHeader>
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-sm font-medium text-primary-foreground/80">
                   Total Saldo
                 </CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <DollarSign className="h-4 w-4 text-primary-foreground/80" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{formattedBalance}</div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-primary-foreground/80">
                 Saldo yang tersedia untuk ditarik.
               </p>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" disabled>Tarik Dana</Button>
+              <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90" disabled>Tarik Dana</Button>
             </CardFooter>
           </Card>
 
