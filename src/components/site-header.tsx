@@ -45,10 +45,7 @@ import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 
-const navLinks: { href: string; label: string }[] = [
-  { href: '/tutorial/order', label: 'Cara Pesan' },
-  { href: '/tutorial/installation', label: 'Cara Instalasi' },
-];
+const navLinks: { href: string; label: string }[] = [];
 
 export function SiteHeader() {
   const { user, loading: userLoading } = useUser();
