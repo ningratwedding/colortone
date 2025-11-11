@@ -19,15 +19,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useMemo, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type PlatformSettings = {
-    appName: string;
-    supportEmail: string;
-    notifications: {
-        newCreator: boolean;
-        newProduct: boolean;
-    }
-}
+import type { PlatformSettings } from '@/lib/data';
 
 export default function AdminSettingsPage() {
     const firestore = useFirestore();
@@ -42,6 +34,7 @@ export default function AdminSettingsPage() {
 
     const [appName, setAppName] = useState('');
     const [supportEmail, setSupportEmail] = useState('');
+    const [commissionRate, setCommissionRate] = useState<number | string>('');
     const [notifNewCreator, setNotifNewCreator] = useState(true);
     const [notifNewProduct, setNotifNewProduct] = useState(true);
     const [isSavingGeneral, setIsSavingGeneral] = useState(false);
@@ -51,6 +44,7 @@ export default function AdminSettingsPage() {
         if (settings) {
             setAppName(settings.appName || '');
             setSupportEmail(settings.supportEmail || '');
+            setCommissionRate(settings.affiliateCommissionRate ? settings.affiliateCommissionRate * 100 : '');
             setNotifNewCreator(settings.notifications?.newCreator ?? true);
             setNotifNewProduct(settings.notifications?.newProduct ?? true);
         }
@@ -60,9 +54,17 @@ export default function AdminSettingsPage() {
         if (!settingsRef) return;
         setIsSavingGeneral(true);
         try {
+            const rate = parseFloat(String(commissionRate)) / 100;
+            if (isNaN(rate) || rate < 0 || rate > 1) {
+                toast({ variant: 'destructive', title: 'Nilai Tidak Valid', description: 'Persentase komisi harus antara 0 dan 100.'});
+                setIsSavingGeneral(false);
+                return;
+            }
+
             await setDoc(settingsRef, {
                 appName,
                 supportEmail,
+                affiliateCommissionRate: rate,
             }, { merge: true });
             toast({ title: 'Pengaturan Disimpan', description: 'Pengaturan umum telah diperbarui.'});
         } catch (error) {
@@ -115,6 +117,11 @@ export default function AdminSettingsPage() {
                 <div className="grid gap-1.5">
                     <Label htmlFor="support-email">Email Dukungan</Label>
                     <Input id="support-email" type="email" value={supportEmail} onChange={e => setSupportEmail(e.target.value)} />
+                </div>
+                 <div className="grid gap-1.5">
+                    <Label htmlFor="commission-rate">Komisi Afiliasi (%)</Label>
+                    <Input id="commission-rate" type="number" value={commissionRate} onChange={e => setCommissionRate(e.target.value)} placeholder="misal: 10" />
+                    <p className="text-xs text-muted-foreground">Masukkan nilai antara 0 dan 100.</p>
                 </div>
             </CardContent>
             <CardFooter>

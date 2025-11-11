@@ -67,3 +67,13 @@ export type Software = {
   slug: string;
   icon?: string;
 };
+
+export type PlatformSettings = {
+    appName: string;
+    supportEmail: string;
+    affiliateCommissionRate?: number;
+    notifications: {
+        newCreator: boolean;
+        newProduct: boolean;
+    }
+}

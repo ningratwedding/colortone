@@ -21,14 +21,15 @@ import { DollarSign, Link as LinkIcon, ShoppingCart, Users, Copy } from 'lucide-
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useState, useEffect, useMemo } from 'react';
-import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
-import type { Order } from '@/lib/data';
+import { collectionGroup, query, where, getDocs, doc } from 'firebase/firestore';
+import type { Order, PlatformSettings } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
-const COMMISSION_RATE = 0.10; // 10%
+const DEFAULT_COMMISSION_RATE = 0.10; // 10% default
 
 export default function AffiliatePage() {
   const { user, loading: userLoading } = useUser();
@@ -37,6 +38,18 @@ export default function AffiliatePage() {
   
   const [referredOrders, setReferredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Fetch platform settings to get the commission rate
+  const settingsRef = useMemo(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'platform_settings', 'main');
+  }, [firestore]);
+  const { data: settings, loading: settingsLoading } = useDoc<PlatformSettings>(settingsRef);
+  
+  const commissionRate = useMemo(() => {
+    return settings?.affiliateCommissionRate ?? DEFAULT_COMMISSION_RATE;
+  }, [settings]);
+
 
   useEffect(() => {
     if (user && firestore) {
@@ -62,9 +75,9 @@ export default function AffiliatePage() {
   const stats = useMemo(() => {
     const totalSales = referredOrders.length;
     const totalRevenue = referredOrders.reduce((acc, order) => acc + order.amount, 0);
-    const totalCommission = totalRevenue * COMMISSION_RATE;
+    const totalCommission = totalRevenue * commissionRate;
     return { totalSales, totalCommission };
-  }, [referredOrders]);
+  }, [referredOrders, commissionRate]);
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
@@ -77,17 +90,7 @@ export default function AffiliatePage() {
     });
   }
 
-  if (userLoading || loading) {
-    return (
-        <div>
-            <div className="grid gap-4 md:grid-cols-2 mb-4">
-                <Skeleton className="h-28" />
-                <Skeleton className="h-28" />
-            </div>
-            <Skeleton className="h-64" />
-        </div>
-    )
-  }
+  const pageLoading = userLoading || loading || settingsLoading;
 
   return (
     <div className="space-y-4">
@@ -99,7 +102,7 @@ export default function AffiliatePage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(stats.totalCommission)}</div>
+            {pageLoading ? <Skeleton className="h-8 w-40" /> : <div className="text-2xl font-bold">{formatCurrency(stats.totalCommission)}</div>}
             <p className="text-xs text-muted-foreground">Estimasi total pendapatan dari komisi.</p>
           </CardContent>
         </Card>
@@ -109,7 +112,7 @@ export default function AffiliatePage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalSales}</div>
+            {pageLoading ? <Skeleton className="h-8 w-16" /> : <div className="text-2xl font-bold">{stats.totalSales}</div>}
             <p className="text-xs text-muted-foreground">Jumlah total produk yang terjual melalui tautan Anda.</p>
           </CardContent>
         </Card>
@@ -132,7 +135,7 @@ export default function AffiliatePage() {
       <Card>
         <CardHeader>
           <CardTitle>Riwayat Komisi</CardTitle>
-          <CardDescription>Daftar penjualan yang berhasil Anda rujuk.</CardDescription>
+          <CardDescription>Daftar penjualan yang berhasil Anda rujuk. Komisi saat ini {commissionRate * 100}%. </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -140,16 +143,24 @@ export default function AffiliatePage() {
               <TableRow>
                 <TableHead>Nama Produk</TableHead>
                 <TableHead className="text-right">Harga Jual</TableHead>
-                <TableHead className="text-right">Komisi (10%)</TableHead>
+                <TableHead className="text-right">Komisi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {referredOrders.length > 0 ? (
+              {pageLoading ? (
+                 Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-5 w-24 ml-auto" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
+                    </TableRow>
+                 ))
+              ) : referredOrders.length > 0 ? (
                 referredOrders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.productName}</TableCell>
                     <TableCell className="text-right">{formatCurrency(order.amount)}</TableCell>
-                    <TableCell className="text-right font-semibold text-primary">{formatCurrency(order.amount * COMMISSION_RATE)}</TableCell>
+                    <TableCell className="text-right font-semibold text-primary">{formatCurrency(order.amount * commissionRate)}</TableCell>
                   </TableRow>
                 ))
               ) : (

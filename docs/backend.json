@@ -233,6 +233,10 @@
           "type": "string",
           "format": "email"
         },
+        "affiliateCommissionRate": {
+          "type": "number",
+          "description": "The commission rate for affiliates, as a decimal (e.g., 0.1 for 10%)."
+        },
         "notifications": {
           "type": "object",
           "properties": {
