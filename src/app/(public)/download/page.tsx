@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function DownloadPage() {
   return (
     <div className="bg-background">
-        <div className="relative bg-gradient-to-br from-primary/90 to-primary text-primary-foreground overflow-hidden">
+        <div className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
             <div className="container mx-auto px-4 py-12 md:py-20 text-center relative z-10">
                 <h1 className="text-3xl md:text-4xl font-bold font-headline">
                     Unduh Aplikasi Di
@@ -81,5 +82,3 @@ export default function DownloadPage() {
     </div>
   );
 }
-
-    
