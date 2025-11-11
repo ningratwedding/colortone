@@ -33,6 +33,12 @@ import { collection, addDoc, query } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category, Software } from '@/lib/data';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 const formSchema = z.object({
@@ -350,40 +356,52 @@ export default function UploadPage() {
                     </div>
                 )}
                 />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <Controller
-                  name="imageBefore"
-                  control={control}
-                  render={({ field }) => (
-                    <div>
-                        <FileUploadDropzone 
-                            field={field} 
-                            label='Gambar "Sebelum" (Opsional)' 
-                            description='Gambar asli untuk perbandingan' 
-                            accept="image/*"
-                            icon={ImageIcon}
-                        />
-                        {errors.imageBefore && <p className="text-xs text-destructive mt-1.5">{String(errors.imageBefore.message)}</p>}
-                    </div>
-                  )}
-                />
-                 <Controller
-                  name="imageAfter"
-                  control={control}
-                  render={({ field }) => (
-                     <div>
-                        <FileUploadDropzone 
-                            field={field} 
-                            label='Gambar "Sesudah" (Opsional)' 
-                            description='Gambar yang telah diedit' 
-                            accept="image/*"
-                            icon={ImageIcon}
-                        />
-                         {errors.imageAfter && <p className="text-xs text-destructive mt-1.5">{String(errors.imageAfter.message)}</p>}
-                    </div>
-                  )}
-                />
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">Gambar Perbandingan (Opsional)</span>
+                    <span className="text-sm font-normal text-muted-foreground">Tambahkan gambar sebelum & sesudah untuk slider.</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <Controller
+                      name="imageBefore"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                            <FileUploadDropzone 
+                                field={field} 
+                                label='Gambar "Sebelum"' 
+                                description='Gambar asli untuk perbandingan' 
+                                accept="image/*"
+                                icon={ImageIcon}
+                            />
+                            {errors.imageBefore && <p className="text-xs text-destructive mt-1.5">{String(errors.imageBefore.message)}</p>}
+                        </div>
+                      )}
+                    />
+                      <Controller
+                      name="imageAfter"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                            <FileUploadDropzone 
+                                field={field} 
+                                label='Gambar "Sesudah"' 
+                                description='Gambar yang telah diedit' 
+                                accept="image/*"
+                                icon={ImageIcon}
+                            />
+                            {errors.imageAfter && <p className="text-xs text-destructive mt-1.5">{String(errors.imageAfter.message)}</p>}
+                        </div>
+                      )}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
              <Controller
               name="uploadType"
               control={control}
@@ -461,3 +479,4 @@ export default function UploadPage() {
     </form>
   );
 }
+
