@@ -14,7 +14,6 @@ import {
   Users,
   SlidersHorizontal,
   Search,
-  CircleUserRound,
   LayoutGrid,
   Bell,
   Laptop,
@@ -42,6 +41,13 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { useUser } from "@/firebase/auth/use-user";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
+import type { UserProfile } from "@/lib/data";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
@@ -61,10 +67,26 @@ export default function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+
+  const userProfileRef = React.useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   const allMenuItems = [...menuItems, settingsItem];
   const pageTitle =
     allMenuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/admin' || pathname === '/admin'))?.label || "Dasbor Admin";
+
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'A';
+    return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+
+  const loading = userLoading || (user && profileLoading);
 
   return (
     <SidebarProvider>
@@ -137,15 +159,22 @@ export default function AdminDashboardLayout({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   className="overflow-hidden rounded-full"
                 >
-                  <CircleUserRound />
+                   {loading ? (
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  ) : (
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name} />
+                      <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                    </Avatar>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Admin</DropdownMenuLabel>
+                <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href="/admin/settings">Pengaturan</Link>

@@ -12,7 +12,6 @@ import {
   ShoppingCart,
   Upload,
   Search,
-  CircleUserRound,
   SlidersHorizontal
 } from 'lucide-react';
 import {
@@ -38,6 +37,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { useUser } from "@/firebase/auth/use-user";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
+import type { UserProfile } from "@/lib/data";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const menuItems = [
@@ -56,8 +62,24 @@ export default function CreatorDashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+
+  const userProfileRef = React.useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+
   const allMenuItems = [...menuItems, settingsItem];
   const pageTitle = allMenuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/creator/dashboard' || pathname === '/creator/dashboard'))?.label || "Dasbor Kreator";
+  
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'K';
+    return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+
+  const loading = userLoading || (user && profileLoading);
 
   return (
     <SidebarProvider>
@@ -124,15 +146,22 @@ export default function CreatorDashboardLayout({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   className="overflow-hidden rounded-full"
                 >
-                  <CircleUserRound />
+                   {loading ? (
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  ) : (
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name} />
+                      <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                    </Avatar>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuLabel>{userProfile?.name || 'Akun Saya'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/creator/settings">Pengaturan</Link>
