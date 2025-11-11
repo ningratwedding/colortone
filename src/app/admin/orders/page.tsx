@@ -48,7 +48,7 @@ import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useFirestore } from '@/firebase/provider';
-import { collectionGroup, query, getDocs, orderBy } from 'firebase/firestore';
+import { collectionGroup, query, getDocs, orderBy, where } from 'firebase/firestore';
 import type { Order, UserProfile, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -62,33 +62,71 @@ export default function AdminOrdersPage() {
     const [creators, setCreators] = useState<Record<string, UserProfile>>({});
     const [loading, setLoading] = useState(true);
 
-    useMemo(async () => {
-        if (!firestore) return;
-        setLoading(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!firestore) return;
+            setLoading(true);
 
-        // Fetch all orders from the collection group
-        const ordersQuery = query(collectionGroup(firestore, 'orders'), orderBy('purchaseDate', 'desc'));
-        const querySnapshot = await getDocs(ordersQuery);
-        const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
-        setOrders(fetchedOrders);
+            try {
+                // Fetch all orders from the collection group without ordering
+                const ordersQuery = query(collectionGroup(firestore, 'orders'));
+                const querySnapshot = await getDocs(ordersQuery);
+                const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+                
+                // Sort on the client-side
+                fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
+                setOrders(fetchedOrders);
 
-        // Batch fetch related data
-        const userIds = [...new Set(fetchedOrders.flatMap(o => [o.userId, o.creatorId]))];
-        const productIds = [...new Set(fetchedOrders.map(o => o.productId))];
+                // Batch fetch related data if there are orders
+                if (fetchedOrders.length > 0) {
+                    const userIds = [...new Set(fetchedOrders.flatMap(o => [o.userId, o.creatorId]))];
+                    const productIds = [...new Set(fetchedOrders.map(o => o.productId))];
 
-        const [userDocs, productDocs] = await Promise.all([
-            userIds.length ? getDocs(query(collectionGroup(firestore, 'users'), where('__name__', 'in', userIds.map(id => `users/${id}`)))) : Promise.resolve({ docs: [] }),
-            productIds.length ? getDocs(query(collectionGroup(firestore, 'products'), where('__name__', 'in', productIds.map(id => `products/${id}`)))) : Promise.resolve({ docs: [] }),
-        ]);
+                    const userDocsPromises = [];
+                    for (let i = 0; i < userIds.length; i += 30) {
+                        const chunk = userIds.slice(i, i + 30);
+                        if (chunk.length > 0) {
+                           userDocsPromises.push(getDocs(query(collectionGroup(firestore, 'users'), where('__name__', 'in', chunk.map(id => `users/${id}`)))));
+                        }
+                    }
 
-        const usersMap = Object.fromEntries(userDocs.docs.map(doc => [doc.id, { ...doc.data(), id: doc.id } as UserProfile]));
-        const productsMap = Object.fromEntries(productDocs.docs.map(doc => [doc.id, { ...doc.data(), id: doc.id } as Product]));
-        
-        setCustomers(usersMap);
-        setCreators(usersMap);
-        setProducts(productsMap);
+                    const productDocsPromises = [];
+                     for (let i = 0; i < productIds.length; i += 30) {
+                        const chunk = productIds.slice(i, i + 30);
+                         if (chunk.length > 0) {
+                           productDocsPromises.push(getDocs(query(collectionGroup(firestore, 'products'), where('__name__', 'in', chunk.map(id => `products/${id}`)))));
+                        }
+                    }
 
-        setLoading(false);
+                    const userDocsSnapshots = await Promise.all(userDocsPromises);
+                    const productDocsSnapshots = await Promise.all(productDocsPromises);
+
+                    const usersMap: Record<string, UserProfile> = {};
+                    userDocsSnapshots.forEach(snapshot => {
+                        snapshot.docs.forEach(doc => {
+                            usersMap[doc.id] = { ...doc.data(), id: doc.id } as UserProfile;
+                        });
+                    });
+
+                    const productsMap: Record<string, Product> = {};
+                    productDocsSnapshots.forEach(snapshot => {
+                        snapshot.docs.forEach(doc => {
+                           productsMap[doc.id] = { ...doc.data(), id: doc.id } as Product;
+                        });
+                    });
+                    
+                    setCustomers(usersMap);
+                    setCreators(usersMap);
+                    setProducts(productsMap);
+                }
+            } catch (error) {
+                console.error("Error fetching orders data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [firestore]);
 
 
@@ -100,6 +138,8 @@ export default function AdminOrdersPage() {
         switch (status) {
             case 'Selesai':
                 return <Badge className="bg-green-600 hover:bg-green-700">Selesai</Badge>;
+            case 'Menunggu Pembayaran':
+                 return <Badge variant="secondary">Menunggu Pembayaran</Badge>;
             case 'Diproses':
                 return <Badge variant="secondary">Diproses</Badge>;
             case 'Dibatalkan':
