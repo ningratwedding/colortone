@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, FileCheck2, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/use-user';
 import { useStorage, useFirestore } from '@/firebase/provider';
@@ -32,6 +32,7 @@ import { uploadFile } from '@/firebase/storage/actions';
 import { collection, addDoc, query } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category, Software } from '@/lib/data';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 const formSchema = z.object({
@@ -42,7 +43,37 @@ const formSchema = z.object({
   compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
   imageBefore: z.any().refine(file => file?.length == 1, 'Gambar "sebelum" harus diunggah.'),
   imageAfter: z.any().refine(file => file?.length == 1, 'Gambar "sesudah" harus diunggah.'),
-  productFile: z.any().refine(file => file?.length == 1, 'File produk .zip harus diunggah.'),
+  uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
+  productFile: z.any().optional(),
+  downloadUrl: z.string().optional(),
+}).superRefine((data, ctx) => {
+    if (data.uploadType === 'file') {
+        if (!data.productFile || data.productFile.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'File produk .zip harus diunggah.',
+                path: ['productFile'],
+            });
+        }
+    } else if (data.uploadType === 'url') {
+        if (!data.downloadUrl) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'URL unduhan tidak boleh kosong.',
+                path: ['downloadUrl'],
+            });
+        } else {
+            try {
+                new URL(data.downloadUrl);
+            } catch {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'URL unduhan tidak valid.',
+                    path: ['downloadUrl'],
+                });
+            }
+        }
+    }
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -126,10 +157,13 @@ export default function UploadPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       compatibleSoftware: [],
+      uploadType: 'file',
     },
   });
   
   const selectedSoftware = watch('compatibleSoftware');
+  const uploadType = watch('uploadType');
+
 
   const onSubmit = async (data: FormData) => {
     if (!user) {
@@ -141,10 +175,17 @@ export default function UploadPage() {
     try {
         toast({ title: 'Mengunggah file...', description: 'Mohon tunggu, ini mungkin memerlukan waktu beberapa saat.' });
 
-        const [imageBeforeUrl, imageAfterUrl, downloadUrl] = await Promise.all([
+        let finalDownloadUrl = '';
+
+        if (data.uploadType === 'file') {
+            finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
+        } else {
+            finalDownloadUrl = data.downloadUrl!;
+        }
+
+        const [imageBeforeUrl, imageAfterUrl] = await Promise.all([
             uploadFile(storage, data.imageBefore[0], user.uid, 'product_images'),
             uploadFile(storage, data.imageAfter[0], user.uid, 'product_images'),
-            uploadFile(storage, data.productFile[0], user.uid, 'product_files')
         ]);
         
         toast({ title: 'Menyimpan detail produk...' });
@@ -160,7 +201,7 @@ export default function UploadPage() {
             imageBeforeHint: 'product image',
             imageAfterUrl: imageAfterUrl,
             imageAfterHint: 'product image',
-            downloadUrl: downloadUrl,
+            downloadUrl: finalDownloadUrl,
             sales: 0,
             tags: [], // Placeholder for tags
             createdAt: new Date(),
@@ -323,22 +364,71 @@ export default function UploadPage() {
                   )}
                 />
             </div>
-            <Controller
+             <Controller
+              name="uploadType"
+              control={control}
+              render={({ field }) => (
+                <div className="grid gap-2">
+                  <Label>Jenis Produk</Label>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="file" id="file" />
+                      <Label htmlFor="file">Unggah File</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="url" id="url" />
+                      <Label htmlFor="url">Tautan Eksternal</Label>
+                    </div>
+                  </RadioGroup>
+                  {errors.uploadType && <p className="text-xs text-destructive">{errors.uploadType.message}</p>}
+                </div>
+              )}
+            />
+
+            {uploadType === 'file' ? (
+              <Controller
                 name="productFile"
                 control={control}
                 render={({ field }) => (
-                    <div>
-                        <FileUploadDropzone 
-                            field={field} 
-                            label='File Produk (.zip)' 
-                            description='Unggah file .zip Anda' 
-                            accept=".zip"
-                            icon={Upload}
-                        />
-                        {errors.productFile && <p className="text-xs text-destructive mt-1.5">{String(errors.productFile.message)}</p>}
-                    </div>
+                  <div>
+                    <FileUploadDropzone
+                      field={field}
+                      label="File Produk (.zip)"
+                      description="Unggah file .zip Anda"
+                      accept=".zip"
+                      icon={Upload}
+                    />
+                    {errors.productFile && (
+                      <p className="text-xs text-destructive mt-1.5">
+                        {String(errors.productFile.message)}
+                      </p>
+                    )}
+                  </div>
                 )}
-            />
+              />
+            ) : (
+              <div className="grid gap-1.5">
+                <Label htmlFor="downloadUrl">URL Unduhan Produk</Label>
+                 <div className="relative">
+                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        id="downloadUrl"
+                        placeholder="https://contoh.com/produk-keren.zip"
+                        {...register('downloadUrl')}
+                        className="pl-10"
+                    />
+                 </div>
+                {errors.downloadUrl && (
+                  <p className="text-xs text-destructive">
+                    {errors.downloadUrl.message}
+                  </p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
         <div className="flex items-center justify-end gap-2">
@@ -351,3 +441,5 @@ export default function UploadPage() {
     </form>
   );
 }
+
+    
