@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { users } from '@/lib/data';
 import Link from 'next/link';
 import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe } from 'lucide-react';
 import {
@@ -36,6 +35,16 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useUser } from '@/firebase/auth/use-user';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useFirestore, useStorage } from '@/firebase/provider';
+import type { UserProfile } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { uploadFile } from '@/firebase/storage/actions';
+import { updateProfile as updateAuthProfile } from 'firebase/auth';
+
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -91,19 +100,97 @@ const bankList = [
 ];
 
 export default function SettingsPage() {
-  const user = users[0];
-  const [socials, setSocials] = useState(user.socials || {});
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  const storage = useStorage();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const userProfileRef = useMemo(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [socials, setSocials] = useState<UserProfile['socials']>({});
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
   const [newSocialUsername, setNewSocialUsername] = useState('');
+  
+  const [isSaving, setIsSaving] = useState(false);
   const [formattedBalance, setFormattedBalance] = useState('');
+
+   useEffect(() => {
+    if (userProfile) {
+      setName(userProfile.name || '');
+      setBio(userProfile.bio || '');
+      setSocials(userProfile.socials || {});
+      setAvatarPreview(userProfile.avatarUrl);
+    }
+  }, [userProfile]);
 
   useEffect(() => {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     };
+    // Placeholder balance, replace with actual data when available
     setFormattedBalance(formatCurrency(2500000));
   }, []);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!userProfileRef || !user) return;
+    setIsSaving(true);
+    try {
+      let newAvatarUrl = userProfile?.avatarUrl;
+      if (avatarFile) {
+        toast({ title: 'Mengunggah foto profil...' });
+        newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
+      }
+
+      const updatedData: Partial<UserProfile> = {
+        name: name,
+        bio: bio,
+        socials: socials,
+        avatarUrl: newAvatarUrl,
+      };
+
+      await updateDoc(userProfileRef, updatedData);
+
+      if (user && (name !== user.displayName || newAvatarUrl !== user.photoURL)) {
+        await updateAuthProfile(user, { displayName: name, photoURL: newAvatarUrl });
+      }
+
+      toast({
+        title: "Profil Diperbarui",
+        description: "Perubahan Anda telah berhasil disimpan.",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Gagal Menyimpan",
+        description: error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan perubahan.",
+      });
+    } finally {
+      setIsSaving(false);
+      setAvatarFile(null);
+    }
+  };
+
 
   const handleAddSocial = () => {
     if (newSocialPlatform && newSocialUsername) {
@@ -117,10 +204,22 @@ export default function SettingsPage() {
   const handleRemoveSocial = (platform: SocialPlatform) => {
     setSocials(prev => {
         const newSocials = {...prev};
-        delete newSocials[platform];
+        if (prev) {
+          delete (newSocials as any)[platform];
+        }
         return newSocials;
     });
   };
+
+  const loading = userLoading || profileLoading;
+
+  if (loading) {
+    return <Skeleton className="w-full h-[80vh]" />;
+  }
+
+  if (!userProfile) {
+    return <div>Profil tidak ditemukan.</div>
+  }
 
   return (
     <div className="space-y-4">
@@ -137,7 +236,7 @@ export default function SettingsPage() {
                   </CardDescription>
                 </div>
                 <Link
-                  href={`/creator/${user.slug}`}
+                  href={`/creator/${userProfile.slug}`}
                   className="text-sm font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Lihat Profil Saya
@@ -147,26 +246,31 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage
-                    src={user.avatar.imageUrl}
-                    data-ai-hint={user.avatar.imageHint}
-                  />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                   <AvatarImage src={avatarPreview || undefined} alt={name} />
+                  <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex gap-2">
-                  <Button>Ubah Foto</Button>
-                  <Button variant="outline">Hapus</Button>
+                   <Input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                    />
+                  <Button onClick={() => fileInputRef.current?.click()}>Ubah Foto</Button>
+                  <Button variant="outline" onClick={() => { setAvatarPreview(undefined); setAvatarFile(null)}}>Hapus</Button>
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="store-name">Nama Kreator</Label>
-                <Input id="store-name" defaultValue={user.name} />
+                <Input id="store-name" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
                   id="bio"
-                  defaultValue={user.bio}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
                   placeholder="Ceritakan sedikit tentang diri Anda"
                   className="min-h-[120px]"
                 />
@@ -175,14 +279,14 @@ export default function SettingsPage() {
               <div className="grid gap-4">
                 <Label>Tautan Sosial & Situs Web</Label>
                 <div className="space-y-3">
-                  {Object.entries(socials).map(([platform, username]) => (
+                  {socials && Object.entries(socials).map(([platform, username]) => (
                     <div key={platform} className="flex items-center gap-3">
                       <div className="relative flex-grow">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                           {socialIcons[platform as keyof typeof socialIcons]}
                         </span>
                         <Input
-                          defaultValue={username as string}
+                          value={username as string}
                           className="pl-10"
                           readOnly
                         />
@@ -239,7 +343,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Simpan Profil</Button>
+              <Button onClick={handleSaveChanges} disabled={isSaving}>
+                {isSaving ? 'Menyimpan...' : 'Simpan Profil'}
+              </Button>
             </CardFooter>
           </Card>
         </div>
@@ -262,7 +368,7 @@ export default function SettingsPage() {
               </p>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Tarik Dana</Button>
+              <Button className="w-full" disabled>Tarik Dana</Button>
             </CardFooter>
           </Card>
 
@@ -302,7 +408,7 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Simpan Informasi Bank</Button>
+              <Button className="w-full" disabled>Simpan Informasi Bank</Button>
             </CardFooter>
           </Card>
 
@@ -317,7 +423,7 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue="kartika.sari@example.com"
+                  defaultValue={user?.email || ''}
                   readOnly
                 />
               </div>
@@ -378,7 +484,7 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Simpan Preferensi</Button>
+              <Button disabled>Simpan Preferensi</Button>
             </CardFooter>
           </Card>
         </div>
@@ -386,3 +492,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

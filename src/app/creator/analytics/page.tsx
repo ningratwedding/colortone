@@ -33,24 +33,18 @@ import { DollarSign, ShoppingCart } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, getDocs, collectionGroup } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
-import type { Product } from '@/lib/data';
+import type { Product, Order } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const monthlyRevenueData = [
-  { month: 'Jan', revenue: 4000000 },
-  { month: 'Feb', revenue: 3000000 },
-  { month: 'Mar', revenue: 5000000 },
-  { month: 'Apr', revenue: 4500000 },
-  { month: 'May', revenue: 6000000 },
-  { month: 'Jun', revenue: 5500000 },
-];
-
+import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { id as fnsIdLocale } from 'date-fns/locale';
 
 export default function AnalyticsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   const productsQuery = useMemo(() => {
     if (!user || !firestore) return null;
@@ -59,6 +53,24 @@ export default function AnalyticsPage() {
   
   const { data: creatorProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+        if (!user || !firestore) return;
+        setOrdersLoading(true);
+        try {
+            const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+            const querySnapshot = await getDocs(ordersQuery);
+            const fetchedOrders = querySnapshot.docs.map(doc => doc.data() as Order);
+            setOrders(fetchedOrders);
+        } catch (error) {
+            console.error("Failed to fetch orders:", error);
+        } finally {
+            setOrdersLoading(false);
+        }
+    };
+    fetchOrders();
+  }, [user, firestore]);
+
   const [formattedStats, setFormattedStats] = useState({
     totalRevenue: '',
     totalSales: '0',
@@ -66,7 +78,6 @@ export default function AnalyticsPage() {
   
   const topProducts = useMemo(() => {
     if (!creatorProducts) return [];
-    // Sort on the client side
     const sortedProducts = [...creatorProducts].sort((a, b) => b.sales - a.sales);
     return sortedProducts.slice(0, 5).map(p => ({
       ...p,
@@ -89,6 +100,28 @@ export default function AnalyticsPage() {
   }, [creatorProducts]);
 
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+
+  const monthlyRevenueData = useMemo(() => {
+    const last6Months = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i));
+    
+    return last6Months.map(monthDate => {
+        const monthStart = startOfMonth(monthDate);
+        const monthEnd = endOfMonth(monthDate);
+        
+        const monthlyRevenue = orders.reduce((acc, order) => {
+            const purchaseDate = new Date(order.purchaseDate.seconds * 1000);
+            if (isWithinInterval(purchaseDate, { start: monthStart, end: monthEnd })) {
+                return acc + order.amount;
+            }
+            return acc;
+        }, 0);
+
+        return {
+            month: format(monthDate, 'MMM', { locale: fnsIdLocale }),
+            revenue: monthlyRevenue,
+        };
+    });
+  }, [orders]);
 
 
   useEffect(() => {
@@ -122,7 +155,7 @@ export default function AnalyticsPage() {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
   }
   
-  const loading = userLoading || productsLoading;
+  const loading = userLoading || productsLoading || ordersLoading;
 
   return (
     <div className="space-y-4">
@@ -159,33 +192,37 @@ export default function AnalyticsPage() {
         <CardHeader>
           <CardTitle>Grafik Pendapatan</CardTitle>
           <CardDescription>
-            Pendapatan Anda selama 6 bulan terakhir (data placeholder).
+            Pendapatan Anda selama 6 bulan terakhir.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyRevenueData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis tickFormatter={(value) => formatCompact(value as number)} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  borderColor: 'hsl(var(--border))',
-                }}
-                formatter={(value) => formatTooltip(value as number)}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                name="Pendapatan"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                dot={{ r: 4, fill: 'hsl(var(--primary))' }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
+            {loading ? (
+                <Skeleton className="h-full w-full" />
+            ) : (
+                 <LineChart data={monthlyRevenueData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis tickFormatter={(value) => formatCompact(value as number)} />
+                    <Tooltip
+                        contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        borderColor: 'hsl(var(--border))',
+                        }}
+                        formatter={(value) => formatTooltip(value as number)}
+                    />
+                    <Legend />
+                    <Line
+                        type="monotone"
+                        dataKey="revenue"
+                        name="Pendapatan"
+                        stroke="hsl(var(--primary))"
+                        strokeWidth={2}
+                        dot={{ r: 4, fill: 'hsl(var(--primary))' }}
+                        activeDot={{ r: 6 }}
+                    />
+                    </LineChart>
+            )}
           </ResponsiveContainer>
         </CardContent>
       </Card>
@@ -274,3 +311,5 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+
+    
