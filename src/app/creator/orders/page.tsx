@@ -34,9 +34,9 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, collectionGroup, query, where, getDocs } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, getDocs, doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
-import type { Order, UserProfile, Product } from '@/lib/data';
+import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function formatCurrency(amount: number) {
@@ -70,55 +70,49 @@ export default function OrdersPage() {
       if (!user || !firestore) return;
       setOrdersLoading(true);
 
-      // 1. Fetch all products for the current creator
-      const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
-      const productsSnapshot = await getDocs(productsQuery);
-      const productIds = productsSnapshot.docs.map(doc => doc.id);
+      try {
+        // Query orders collection group directly by creatorId
+        const ordersQuery = query(
+          collectionGroup(firestore, 'orders'),
+          where('creatorId', '==', user.uid)
+        );
+        const querySnapshot = await getDocs(ordersQuery);
+        
+        const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+        
+        // Sort on the client-side
+        fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
+        
+        setOrders(fetchedOrders);
 
-      if (productIds.length === 0) {
-        setOrders([]);
+        // Fetch customer details if there are any orders
+        if (fetchedOrders.length > 0) {
+            const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
+            const customerProfiles: Record<string, UserProfile> = {};
+            
+            // Chunk the customerIds array to avoid "in" query limitation (max 30)
+            const chunks: string[][] = [];
+            for (let i = 0; i < customerIds.length; i += 30) {
+                chunks.push(customerIds.slice(i, i + 30));
+            }
+            
+            for (const chunk of chunks) {
+                if (chunk.length > 0) {
+                   const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk));
+                   const userDocs = await getDocs(usersQuery);
+                   userDocs.forEach(doc => {
+                      customerProfiles[doc.id] = { id: doc.id, ...doc.data() } as UserProfile;
+                   });
+                }
+            }
+            setCustomers(customerProfiles);
+        }
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        // You might want to set an error state here and display it to the user
+      } finally {
         setOrdersLoading(false);
-        return;
       }
-      
-      // 2. Fetch all orders where productId is in the creator's product list
-      const ordersQuery = query(
-        collectionGroup(firestore, 'orders'),
-        where('productId', 'in', productIds)
-      );
-      const querySnapshot = await getDocs(ordersQuery);
-      
-      const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
-      
-      // Sort on the client-side
-      fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
-      
-      setOrders(fetchedOrders);
-
-      // 3. Fetch customer details
-      if (fetchedOrders.length > 0) {
-          const customerIds = [...new Set(fetchedOrders.map(o => o.userId))];
-          const customerProfiles: Record<string, UserProfile> = {};
-          
-          const chunks = [];
-          for (let i = 0; i < customerIds.length; i += 30) {
-              chunks.push(customerIds.slice(i, i + 30));
-          }
-          
-          for (const chunk of chunks) {
-              if (chunk.length > 0) {
-                 // Note: this assumes user IDs are globally unique, which they are.
-                 const usersQuery = query(collection(firestore, 'users'), where('__name__', 'in', chunk.map(id => doc(firestore, 'users', id).path.substring(doc(firestore, 'users', id).path.indexOf('/')+1))));
-                 const userDocs = await getDocs(usersQuery);
-                 userDocs.forEach(doc => {
-                    customerProfiles[doc.id] = doc.data() as UserProfile;
-                 })
-              }
-          }
-          setCustomers(customerProfiles);
-      }
-      
-      setOrdersLoading(false);
     }
     fetchOrders();
   }, [user, firestore]);
@@ -203,7 +197,7 @@ export default function OrdersPage() {
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.id}</TableCell>
                 <TableCell>
-                  <div className="font-medium">{customers[order.userId]?.name || '...'}</div>
+                  <div className="font-medium">{customers[order.userId]?.name || 'Memuat...'}</div>
                   <div className="text-sm text-muted-foreground">
                     {customers[order.userId]?.email || '...'}
                   </div>
@@ -259,5 +253,3 @@ export default function OrdersPage() {
     </Card>
   );
 }
-
-    
