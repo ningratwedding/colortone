@@ -26,6 +26,14 @@ service firebase.storage {
       allow read, write: if request.auth != null;
     }
 
+    // Aturan untuk ikon perangkat lunak:
+    // Baca: Izinkan akses publik untuk semua ikon perangkat lunak.
+    // Tulis: Izinkan hanya jika pengguna sudah login.
+    match /software_icons/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     // Aturan default yang lebih ketat untuk path lain yang tidak cocok.
     // Menolak semua akses baca dan tulis secara default.
     match /{allOtherPaths=**} {
