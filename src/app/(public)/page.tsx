@@ -13,18 +13,32 @@ import { ProductCard } from "@/components/product-card";
 import type { Product, Category, Software } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
-import { collection, query } from "firebase/firestore";
-import { useMemo } from "react";
+import { collection, query, where, QueryConstraint } from "firebase/firestore";
+import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
-function ProductGrid() {
+function ProductGrid({ filters }: { filters: { category: string; software: string; type: string } }) {
   const firestore = useFirestore();
+
   const productsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, "products"));
-  }, [firestore]);
+    
+    const constraints: QueryConstraint[] = [];
+    if (filters.category && filters.category !== 'all-categories') {
+      constraints.push(where('category', '==', filters.category));
+    }
+    if (filters.software && filters.software !== 'all-software') {
+      constraints.push(where('compatibleSoftware', 'array-contains', filters.software));
+    }
+    if (filters.type && filters.type !== 'all-types') {
+      constraints.push(where('type', '==', filters.type));
+    }
+
+    return query(collection(firestore, "products"), ...constraints);
+  }, [firestore, filters]);
+
   const { data: products, loading, error } = useCollection<Product>(productsQuery);
 
   if (loading) {
@@ -56,7 +70,7 @@ function ProductGrid() {
   if (!products || products.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
-        Belum ada produk yang tersedia.
+        Belum ada produk yang cocok dengan filter Anda.
       </div>
     );
   }
@@ -73,6 +87,15 @@ function ProductGrid() {
 
 export default function Home() {
     const firestore = useFirestore();
+    const [filters, setFilters] = useState({
+      category: 'all-categories',
+      software: 'all-software',
+      type: 'all-types',
+    });
+
+    const handleFilterChange = (filterName: keyof typeof filters, value: string) => {
+      setFilters(prev => ({ ...prev, [filterName]: value }));
+    };
 
     const categoriesQuery = useMemo(() => {
         if (!firestore) return null;
@@ -100,7 +123,23 @@ export default function Home() {
 
       <div className="mb-4 flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
-          <Select defaultValue="all-categories">
+           <Select
+            value={filters.type}
+            onValueChange={(value) => handleFilterChange('type', value)}
+          >
+            <SelectTrigger className="w-full md:w-[160px] bg-card">
+              <SelectValue placeholder="Jenis Produk" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-types">Semua Jenis</SelectItem>
+              <SelectItem value="digital">Digital</SelectItem>
+              <SelectItem value="fisik">Fisik</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={filters.category}
+            onValueChange={(value) => handleFilterChange('category', value)}
+          >
             <SelectTrigger className="w-full md:w-[160px] bg-card">
               <SelectValue placeholder="Kategori" />
             </SelectTrigger>
@@ -115,7 +154,10 @@ export default function Home() {
               }
             </SelectContent>
           </Select>
-          <Select defaultValue="all-software">
+          <Select
+            value={filters.software}
+            onValueChange={(value) => handleFilterChange('software', value)}
+          >
             <SelectTrigger className="w-full md:w-[160px] bg-card">
               <SelectValue placeholder="Perangkat Lunak" />
             </SelectTrigger>
@@ -138,7 +180,7 @@ export default function Home() {
       <Separator className="mb-4" />
 
       <section>
-        <ProductGrid />
+        <ProductGrid filters={filters} />
       </section>
     </div>
   );
