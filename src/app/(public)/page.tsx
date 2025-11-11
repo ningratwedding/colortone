@@ -11,19 +11,27 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
 import { categories, software, type Product } from "@/lib/data";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { useFirestore } from "@/firebase/provider";
-import { collection, query, orderBy } from "firebase/firestore";
+// import { useCollection } from "@/firebase/firestore/use-collection";
+// import { useFirestore } from "@/firebase/provider";
+// import { collection, query, orderBy } from "firebase/firestore";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
 function ProductGrid() {
-  const firestore = useFirestore();
-  const productsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "products"), orderBy("sales", "desc"));
-  }, [firestore]);
-  const { data: products, loading } = useCollection<Product>(productsQuery);
+  // const firestore = useFirestore();
+  // const productsQuery = useMemo(() => {
+  //   if (!firestore) return null;
+  //   return query(collection(firestore, "products"), orderBy("sales", "desc"));
+  // }, [firestore]);
+  // const { data: products, loading, error } = useCollection<Product>(productsQuery);
+
+  // For now, we will show a message indicating the feature is under maintenance.
+  const loading = false;
+  const products: Product[] = [];
+  const error = true;
+
 
   if (loading) {
     return (
@@ -37,6 +45,18 @@ function ProductGrid() {
         ))}
       </div>
     );
+  }
+
+  if (error) {
+    return (
+        <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Gagal Memuat Produk</AlertTitle>
+            <AlertDescription>
+                Saat ini terjadi masalah saat mengambil data produk. Tim kami sedang menanganinya.
+            </AlertDescription>
+        </Alert>
+    )
   }
 
   if (!products || products.length === 0) {
