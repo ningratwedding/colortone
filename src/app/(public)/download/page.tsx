@@ -21,57 +21,65 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function DownloadPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
-      <Card className="overflow-hidden shadow-lg">
-        <CardHeader className="bg-muted p-6 md:p-8 text-center">
-          <CardTitle className="text-3xl md:text-4xl font-bold font-headline text-primary">
-            Unduh Aplikasi Di
-          </CardTitle>
-          <CardDescription className="text-base md:text-lg max-w-2xl mx-auto pt-2">
-            Akses semua fitur, kelola produk, dan berinteraksi dengan komunitas langsung dari perangkat seluler Anda.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 md:p-8">
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-8">
-            <Button size="lg" asChild className="h-14 text-base">
-              <Link href="https://apps.apple.com" target="_blank" rel="noopener noreferrer">
-                <AppleIcon className="h-6 w-6 mr-2.5 fill-current" />
-                <div>
-                  <p className="text-xs text-left">Download on the</p>
-                  <p className="text-lg font-semibold text-left -mt-1">App Store</p>
-                </div>
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild className="h-14 text-base">
-              <Link href="https://play.google.com" target="_blank" rel="noopener noreferrer">
-                <AndroidIcon className="h-6 w-6 mr-2.5" />
-                 <div>
-                  <p className="text-xs text-left">GET IT ON</p>
-                  <p className="text-lg font-semibold text-left -mt-1">Google Play</p>
-                </div>
-              </Link>
-            </Button>
-          </div>
+    <div className="bg-background">
+        <div className="relative bg-gradient-to-br from-primary/90 to-primary text-primary-foreground overflow-hidden">
+            <div className="container mx-auto px-4 py-12 md:py-20 text-center relative z-10">
+                <h1 className="text-3xl md:text-4xl font-bold font-headline">
+                    Unduh Aplikasi Di
+                </h1>
+                <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
+                    Akses semua fitur, kelola produk, dan berinteraksi dengan komunitas langsung dari perangkat seluler Anda.
+                </p>
+            </div>
+             <div className="absolute -bottom-1 left-0 w-full h-16 bg-background" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }} />
+        </div>
 
-          <div className="space-y-4 text-center md:text-left">
-            <h3 className="text-xl font-semibold">Pengalaman Terbaik di Tangan Anda</h3>
-            <ul className="space-y-2 text-muted-foreground list-inside md:list-none">
-              <li className="flex items-center justify-center md:justify-start">
-                <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
-                Notifikasi instan untuk penjualan dan interaksi.
-              </li>
-              <li className="flex items-center justify-center md:justify-start">
-                <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
-                Unggah dan kelola produk Anda di mana saja.
-              </li>
-              <li className="flex items-center justify-center md:justify-start">
-                <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
-                Antarmuka yang dioptimalkan untuk pengalaman mobile.
-              </li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="container mx-auto max-w-4xl px-4 pb-8 md:pb-12 -mt-8 relative z-20">
+            <Card className="overflow-hidden shadow-lg">
+                <CardContent className="p-6 md:p-8">
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-8">
+                    <Button size="lg" asChild className="h-14 text-base">
+                    <Link href="https://apps.apple.com" target="_blank" rel="noopener noreferrer">
+                        <AppleIcon className="h-6 w-6 mr-2.5 fill-current" />
+                        <div>
+                        <p className="text-xs text-left">Download on the</p>
+                        <p className="text-lg font-semibold text-left -mt-1">App Store</p>
+                        </div>
+                    </Link>
+                    </Button>
+                    <Button size="lg" asChild className="h-14 text-base bg-[#000] hover:bg-[#111] text-white">
+                    <Link href="https://play.google.com" target="_blank" rel="noopener noreferrer">
+                        <AndroidIcon className="h-7 w-7 mr-2.5" />
+                        <div>
+                        <p className="text-xs text-left uppercase">Get it on</p>
+                        <p className="text-lg font-semibold text-left -mt-1">Google Play</p>
+                        </div>
+                    </Link>
+                    </Button>
+                </div>
+
+                <div className="space-y-4 text-center md:text-left">
+                    <h3 className="text-xl font-semibold">Pengalaman Terbaik di Tangan Anda</h3>
+                    <ul className="space-y-2 text-muted-foreground list-inside md:list-none">
+                    <li className="flex items-center justify-center md:justify-start">
+                        <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+                        Notifikasi instan untuk penjualan dan interaksi.
+                    </li>
+                    <li className="flex items-center justify-center md:justify-start">
+                        <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+                        Unggah dan kelola produk Anda di mana saja.
+                    </li>
+                    <li className="flex items-center justify-center md:justify-start">
+                        <CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+                        Antarmuka yang dioptimalkan untuk pengalaman mobile.
+                    </li>
+                    </ul>
+                </div>
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
+
+    
