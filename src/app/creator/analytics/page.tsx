@@ -17,16 +17,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -41,12 +39,12 @@ import type { Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const monthlyRevenueData = [
-  { month: 'Jan', revenue: 40000000 },
-  { month: 'Feb', revenue: 30000000 },
-  { month: 'Mar', revenue: 50000000 },
-  { month: 'Apr', revenue: 45000000 },
-  { month: 'May', revenue: 60000000 },
-  { month: 'Jun', revenue: 55000000 },
+  { month: 'Jan', revenue: 4000000 },
+  { month: 'Feb', revenue: 3000000 },
+  { month: 'Mar', revenue: 5000000 },
+  { month: 'Apr', revenue: 4500000 },
+  { month: 'May', revenue: 6000000 },
+  { month: 'Jun', revenue: 5500000 },
 ];
 
 
@@ -69,18 +67,27 @@ export default function AnalyticsPage() {
   
   const topProducts = useMemo(() => {
     if (!creatorProducts) return [];
-    return creatorProducts.slice(0, 3).map(p => ({
+    return creatorProducts.slice(0, 5).map(p => ({
       ...p,
       revenue: p.price * p.sales,
     }));
   }, [creatorProducts]);
   
   const salesCompositionData = useMemo(() => {
-    if (!topProducts) return [];
-    return topProducts.map(p => ({ name: p.name, value: p.sales }));
-  }, [topProducts]);
+    if (!creatorProducts || creatorProducts.length === 0) return [];
+    const sortedBySales = [...creatorProducts].sort((a, b) => b.sales - a.sales);
+    const top4 = sortedBySales.slice(0, 4);
+    const otherSales = sortedBySales.slice(4).reduce((acc, p) => acc + p.sales, 0);
 
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))'];
+    const data = top4.map(p => ({ name: p.name, value: p.sales }));
+    if (otherSales > 0) {
+      data.push({ name: 'Lainnya', value: otherSales });
+    }
+    return data;
+
+  }, [creatorProducts]);
+
+  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 
   useEffect(() => {
@@ -101,7 +108,9 @@ export default function AnalyticsPage() {
     } else {
         setFormattedStats(prev => ({
             ...prev,
-            totalRevenue: formatCurrency(0)
+            totalRevenue: formatCurrency(0),
+            totalSales: '0',
+            followers: '573' // Placeholder
         }))
     }
   }, [creatorProducts]);
@@ -129,7 +138,7 @@ export default function AnalyticsPage() {
           <CardContent>
             {loading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-2xl font-bold">{formattedStats.totalRevenue}</div>}
             <p className="text-xs text-muted-foreground">
-              +20.1% dari bulan lalu
+              Berdasarkan semua penjualan Anda.
             </p>
           </CardContent>
         </Card>
@@ -140,8 +149,8 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             {loading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">+{formattedStats.totalSales}</div>}
-            <p className="text-xs text-muted-foreground">
-              +180.1% dari bulan lalu
+             <p className="text-xs text-muted-foreground">
+              Total unit terjual dari semua produk.
             </p>
           </CardContent>
         </Card>
@@ -153,7 +162,7 @@ export default function AnalyticsPage() {
           <CardContent>
             <div className="text-2xl font-bold">+{formattedStats.followers}</div>
             <p className="text-xs text-muted-foreground">
-              +32 sejak bulan lalu
+              Fitur ini akan segera hadir.
             </p>
           </CardContent>
         </Card>
@@ -163,7 +172,7 @@ export default function AnalyticsPage() {
         <CardHeader>
           <CardTitle>Grafik Pendapatan</CardTitle>
           <CardDescription>
-            Pendapatan Anda selama 6 bulan terakhir.
+            Pendapatan Anda selama 6 bulan terakhir (data placeholder).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -199,7 +208,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle>Produk Terlaris</CardTitle>
             <CardDescription>
-              Produk dengan penjualan tertinggi bulan ini.
+              Produk dengan pendapatan tertinggi.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -239,7 +248,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle>Komposisi Penjualan</CardTitle>
              <CardDescription>
-              Distribusi penjualan di antara produk terlaris Anda.
+              Distribusi penjualan di antara produk Anda.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center">
