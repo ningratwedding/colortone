@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -29,6 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function ProductPageClientButtons({
   price,
@@ -111,18 +113,19 @@ function ProductPageClientButtons({
   return (
     <>
       <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Button size="lg" className="w-full sm:w-auto" asChild disabled={loading}>
+      <div className="flex flex-col gap-2">
+        <Button size="lg" className="w-full" asChild disabled={loading}>
             <Link href={getCheckoutUrl()}>
                 <ShoppingCart className="mr-2 h-4 w-4" /> 
                 {loading ? "Memuat..." : "Beli Sekarang"}
             </Link>
         </Button>
         {userProfile?.isAffiliate && (
-          <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={copyAffiliateLink} disabled={loading}>
-            <Copy className="mr-2 h-4 w-4" />
-            Buat Tautan Afiliasi
-          </Button>
+          <Alert className="text-center p-3">
+             <AlertDescription>
+                Anda adalah afiliator! <Button variant="link" className="p-1 h-auto" onClick={copyAffiliateLink} disabled={loading}>Buat Tautan Afiliasi</Button> untuk produk ini.
+            </AlertDescription>
+          </Alert>
         )}
       </div>
     </>
@@ -210,7 +213,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                  <div className="mt-2 flex items-center gap-3">
                     <Link href={`/creator/${creator.slug}`} className="flex items-center gap-2 group">
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={creator.avatarUrl} data-ai-hint={creator.avatarHint} />
+                            <AvatarImage src={creator.avatarUrl} data-ai-hint={creator.avatarHint} alt={creator.name} />
                             <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
@@ -259,3 +262,5 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
+    
