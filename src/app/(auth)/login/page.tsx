@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/form";
 import type { UserProfile } from "@/lib/data";
 import { useFirestore } from "@/firebase/provider";
+import { Logo } from "@/components/logo";
 
 
 const formSchema = z.object({
@@ -158,7 +159,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
-              <SlidersHorizontal className="h-8 w-8 text-primary" />
+              <Logo className="h-8 w-8" />
               <span className="text-2xl font-bold font-headline">Di</span>
             </Link>
           </div>

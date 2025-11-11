@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import {
-  CircleUserRound,
   Menu,
   Search,
   Settings,
@@ -44,6 +43,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
+import { Logo } from './logo';
 
 const navLinks: { href: string; label: string }[] = [];
 
@@ -89,7 +89,7 @@ export function SiteHeader() {
                 <AvatarFallback>{getInitials(userProfile?.name || user.displayName)}</AvatarFallback>
               </Avatar>
             ) : (
-              <CircleUserRound className="h-5 w-5" />
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-pink-500 to-yellow-500" />
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -162,7 +162,7 @@ export function SiteHeader() {
               <SheetHeader>
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2">
-                    <SlidersHorizontal className="h-8 w-8 text-primary" />
+                    <Logo className="h-8 w-8" />
                     <span className="font-bold text-xl font-headline">
                       Di
                     </span>
@@ -190,7 +190,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <SlidersHorizontal className="h-6 w-6" />
+            <Logo className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">
               Di
             </span>

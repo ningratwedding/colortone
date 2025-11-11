@@ -26,6 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Logo } from "@/components/logo";
 
 const formSchema = z.object({
   email: z.string().email("Format email tidak valid."),
@@ -66,7 +67,7 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
-              <SlidersHorizontal className="h-8 w-8 text-primary" />
+              <Logo className="h-8 w-8" />
               <span className="text-2xl font-bold font-headline">Di</span>
             </Link>
           </div>

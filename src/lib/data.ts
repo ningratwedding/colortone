@@ -51,6 +51,9 @@ export type Product = {
     width: number; // in cm
     height: number; // in cm
   };
+  reviewsCount: number;
+  imageAfter: { imageUrl: string; imageHint: string; };
+
 };
 
 export type Order = {
@@ -87,3 +90,31 @@ export type PlatformSettings = {
         newProduct: boolean;
     }
 }
+
+export const products: Product[] = [
+    {
+        id: '1',
+        name: 'Cinematic Film Presets',
+        creatorId: '1',
+        price: 150000,
+        description: 'A collection of professional presets for a cinematic look.',
+        type: 'digital',
+        galleryImageUrls: [],
+        galleryImageHints: [],
+        category: 'presets',
+        compatibleSoftware: ['lightroom', 'photoshop'],
+        tags: ['cinematic', 'film', 'presets'],
+        sales: 120,
+        reviewsCount: 25,
+        imageAfter: { imageUrl: '/placeholder.svg', imageHint: 'after' },
+    }
+];
+export const categories: Category[] = [
+    { id: 'presets', name: 'Presets', slug: 'presets' },
+    { id: 'luts', name: 'LUTs', slug: 'luts' },
+];
+export const software: Software[] = [
+    { id: 'lightroom', name: 'Lightroom', slug: 'lightroom' },
+    { id: 'photoshop', name: 'Photoshop', slug: 'photoshop' },
+    { id: 'davinci', name: 'DaVinci Resolve', slug: 'davinci' },
+];

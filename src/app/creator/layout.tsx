@@ -45,6 +45,7 @@ import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Logo } from "@/components/logo";
 
 
 const menuItems = [
@@ -87,7 +88,7 @@ export default function CreatorDashboardLayout({
         <Sidebar collapsible="icon" variant="inset" side="left">
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2">
-              <SlidersHorizontal className="h-5 w-5 text-primary" />
+              <Logo className="h-5 w-5" />
               <span className="text-base font-bold font-headline group-data-[collapsible=icon]:hidden">
                 Di
               </span>
