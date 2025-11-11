@@ -149,14 +149,18 @@ export default function DashboardProductsPage() {
               {!loading && sellerProducts && sellerProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt={product.name}
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={product.galleryImageUrls[0]}
-                      width="64"
-                      data-ai-hint={product.galleryImageHints[0]}
-                    />
+                    {product.galleryImageUrls && product.galleryImageUrls.length > 0 ? (
+                      <Image
+                        alt={product.name}
+                        className="aspect-square rounded-md object-cover"
+                        height="64"
+                        src={product.galleryImageUrls[0]}
+                        width="64"
+                        data-ai-hint={product.galleryImageHints?.[0]}
+                      />
+                    ) : (
+                      <div className="h-16 w-16 bg-muted rounded-md" />
+                    )}
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>
@@ -211,14 +215,18 @@ export default function DashboardProductsPage() {
         {!loading && sellerProducts && sellerProducts.map((product) => (
           <Card key={product.id}>
             <CardHeader className="flex flex-row items-start gap-4 p-4">
-              <Image
-                alt={product.name}
-                className="aspect-square rounded-md object-cover"
-                height="64"
-                src={product.galleryImageUrls[0]}
-                width="64"
-                data-ai-hint={product.galleryImageHints[0]}
-              />
+              {product.galleryImageUrls && product.galleryImageUrls.length > 0 ? (
+                <Image
+                  alt={product.name}
+                  className="aspect-square rounded-md object-cover"
+                  height="64"
+                  src={product.galleryImageUrls[0]}
+                  width="64"
+                  data-ai-hint={product.galleryImageHints?.[0]}
+                />
+              ) : (
+                <div className="h-16 w-16 bg-muted rounded-md" />
+              )}
               <div className="flex-grow">
                 <CardTitle className="text-base leading-tight mb-1">
                   {product.name}
