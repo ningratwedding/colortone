@@ -48,18 +48,6 @@ export type Order = {
     status: 'Selesai' | 'Diproses' | 'Dibatalkan';
 }
 
-export const categories = [
-    { id: 'pernikahan', name: 'Pernikahan' },
-    { id: 'pre-wedding', name: 'Pre-wedding' },
-    { id: 'wisuda', name: 'Wisuda' },
-    { id: 'studio', name: 'Foto Studio' },
-    { id: 'keluarga', name: 'Keluarga' },
-    { id: 'perjalanan', name: 'Perjalanan' },
-    { id: 'fashion', name: 'Fashion' },
-    { id: 'makanan', name: 'Makanan' },
-    { id: 'color-profile-camera', name: 'Color profile camera' },
-];
-
 export const software = [
     { id: 'lightroom', name: 'Lightroom' },
     { id: 'lightroom-mobile', name: 'Lightroom Mobile'},

@@ -1,12 +1,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Card,
   CardContent,
@@ -25,13 +24,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { categories, software } from '@/lib/data';
+import { software } from '@/lib/data';
 import { Upload, FileCheck2, Loader2, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/use-user';
 import { useStorage, useFirestore } from '@/firebase/provider';
 import { uploadFile } from '@/firebase/storage/actions';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query } from 'firebase/firestore';
+import { useCollection } from '@/firebase/firestore/use-collection';
+
+
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
 
 const formSchema = z.object({
   name: z.string().min(5, 'Judul produk minimal 5 karakter.'),
@@ -102,6 +109,13 @@ export default function UploadPage() {
   const storage = useStorage();
   const firestore = useFirestore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const categoriesQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'categories'));
+  }, [firestore]);
+
+  const { data: categories, loading: categoriesLoading } = useCollection<Category>(categoriesQuery);
   
   const {
     register,
@@ -213,16 +227,20 @@ export default function UploadPage() {
                 render={({ field }) => (
                   <div className="grid gap-1.5">
                     <Label htmlFor="category">Kategori</Label>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={categoriesLoading}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Pilih kategori" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
+                        {categoriesLoading ? (
+                            <SelectItem value="loading" disabled>Memuat kategori...</SelectItem>
+                        ) : (
+                            categories?.map((c) => (
+                            <SelectItem key={c.id} value={c.slug}>
+                                {c.name}
+                            </SelectItem>
+                            ))
+                        )}
                       </SelectContent>
                     </Select>
                      {errors.category && <p className="text-xs text-destructive">{errors.category.message}</p>}

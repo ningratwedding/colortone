@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
-import { categories, software, type Product } from "@/lib/data";
+import { software, type Product } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
 import { collection, query } from "firebase/firestore";
@@ -19,11 +19,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+
 function ProductGrid() {
   const firestore = useFirestore();
   const productsQuery = useMemo(() => {
     if (!firestore) return null;
-    // Menghapus orderBy untuk menghindari error indeks
     return query(collection(firestore, "products"));
   }, [firestore]);
   const { data: products, loading, error } = useCollection<Product>(productsQuery);
@@ -73,6 +79,15 @@ function ProductGrid() {
 
 
 export default function Home() {
+    const firestore = useFirestore();
+
+    const categoriesQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'categories'));
+    }, [firestore]);
+
+    const { data: categories, loading: categoriesLoading } = useCollection<Category>(categoriesQuery);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <header className="text-center mb-6">
@@ -92,11 +107,13 @@ export default function Home() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-categories">Semua Kategori</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
+              {categoriesLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
+                categories?.map((category) => (
+                    <SelectItem key={category.id} value={category.slug}>
+                    {category.name}
+                    </SelectItem>
+                ))
+              }
             </SelectContent>
           </Select>
           <Select defaultValue="all-software">

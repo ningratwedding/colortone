@@ -14,6 +14,7 @@ import {
   SlidersHorizontal,
   Search,
   CircleUserRound,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,6 +43,7 @@ import {
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
   { href: "/admin/products", label: "Produk", icon: Package },
+  { href: "/admin/categories", label: "Kategori", icon: LayoutGrid },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/orders", label: "Pesanan", icon: ShoppingCart },
   { href: "/admin/analytics", label: "Analitik", icon: BarChart },

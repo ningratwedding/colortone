@@ -147,6 +147,22 @@
         }
       },
       "required": ["userId", "productId", "purchaseDate", "amount", "status"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Represents a product category.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the category."
+        },
+        "slug": {
+            "type": "string",
+            "description": "A URL-friendly version of the category name."
+        }
+      },
+      "required": ["name", "slug"]
     }
   },
   "auth": {
@@ -170,6 +186,12 @@
         "$ref": "#/backend/entities/Order"
       },
       "description": "Stores the order history for each user."
+    },
+    "/categories/{categoryId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Category"
+      },
+      "description": "Stores all product categories."
     }
   }
 }
