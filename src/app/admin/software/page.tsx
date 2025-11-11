@@ -34,7 +34,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { MoreHorizontal, PlusCircle, Trash2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -192,7 +191,7 @@ export default function AdminSoftwarePage() {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         {software.icon ? (
-                          <div className="h-6 w-6 flex items-center justify-center" dangerouslySetInnerHTML={{ __html: software.icon }} />
+                          <img src={software.icon} alt={software.name} className="h-6 w-6 object-contain" />
                         ) : (
                           <div className="h-6 w-6 bg-muted rounded-sm" />
                         )}
@@ -262,16 +261,14 @@ export default function AdminSoftwarePage() {
               />
             </div>
              <div className="grid gap-2">
-              <Label htmlFor="software-icon">Ikon (SVG)</Label>
-              <Textarea
+              <Label htmlFor="software-icon">URL Ikon (.png)</Label>
+              <Input
                 id="software-icon"
                 value={softwareIcon}
                 onChange={(e) => setSoftwareIcon(e.target.value)}
-                placeholder='<svg>...</svg>'
-                className="font-mono text-xs"
-                rows={4}
+                placeholder='https://example.com/icon.png'
               />
-              <p className="text-xs text-muted-foreground">Tempelkan kode SVG untuk ikon di sini.</p>
+              <p className="text-xs text-muted-foreground">Tempelkan URL ke gambar ikon di sini.</p>
             </div>
           </div>
           <DialogFooter>
