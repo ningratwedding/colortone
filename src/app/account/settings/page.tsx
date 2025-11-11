@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
+import { PartyPopper, Copy } from 'lucide-react';
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -43,6 +44,7 @@ export default function AccountSettingsPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
     
     useEffect(() => {
         if (userProfile) {
@@ -108,6 +110,32 @@ export default function AccountSettingsPage() {
             setAvatarFile(null); // Clear the file state after saving
         }
     };
+    
+    const handleJoinAffiliate = async () => {
+        if (!userProfileRef) return;
+        setIsJoiningAffiliate(true);
+        try {
+            await updateDoc(userProfileRef, { isAffiliate: true });
+            toast({
+                title: 'Selamat Bergabung!',
+                description: 'Anda sekarang adalah mitra afiliasi. Mulai bagikan tautan untuk mendapatkan komisi.',
+            });
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Gagal Bergabung",
+                description: "Terjadi kesalahan. Coba lagi nanti.",
+            });
+        } finally {
+            setIsJoiningAffiliate(false);
+        }
+    };
+
+    const copyAffiliateLink = (slug: string) => {
+        const link = `${window.location.origin}/creator/${slug}?ref=${user?.uid}`;
+        navigator.clipboard.writeText(link);
+        toast({ title: "Tautan Afiliasi Disalin!", description: "Bagikan tautan profil kreator ini." });
+    };
 
     const loading = userLoading || profileLoading;
 
@@ -163,7 +191,7 @@ export default function AccountSettingsPage() {
     const fallbackName = name || userProfile.name || user.displayName || 'U';
 
     return (
-        <div>
+        <div className="space-y-6">
             <div className="mb-4">
                 <h1 className="font-headline text-2xl font-bold">Pengaturan Akun</h1>
                 <p className="text-muted-foreground">Kelola informasi profil dan detail akun Anda.</p>
@@ -239,6 +267,30 @@ export default function AccountSettingsPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Program Afiliasi</CardTitle>
+                    <CardDescription>
+                        {userProfile.isAffiliate 
+                            ? 'Anda adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
+                            : 'Dapatkan penghasilan dengan membagikan produk dari kreator favorit Anda.'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {userProfile.isAffiliate ? (
+                        <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-900/20">
+                            <div className="flex items-center gap-3">
+                                <PartyPopper className="h-6 w-6 text-green-600" />
+                                <p className="text-sm font-medium text-green-800 dark:text-green-300">Anda telah terdaftar sebagai mitra afiliasi.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <Button onClick={handleJoinAffiliate} disabled={isJoiningAffiliate}>
+                            {isJoiningAffiliate ? 'Memproses...' : 'Gabung Program Afiliasi'}
+                        </Button>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     )
 }

@@ -36,6 +36,7 @@ export default function ConfirmationClient() {
     const firestore = useFirestore();
     const searchParams = useSearchParams();
     const productId = searchParams.get('productId');
+    const affiliateRefId = searchParams.get('ref');
     const { toast } = useToast();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -56,7 +57,7 @@ export default function ConfirmationClient() {
                 try {
                     const totalAmount = product.price * 1.08; // price + 8% tax
                     
-                    const orderData = {
+                    const orderData: any = {
                         userId: user.uid,
                         productId: product.id,
                         productName: product.name,
@@ -65,6 +66,14 @@ export default function ConfirmationClient() {
                         amount: totalAmount,
                         status: 'Menunggu Pembayaran' as const,
                     };
+                    
+                    const refId = affiliateRefId || sessionStorage.getItem('affiliate_ref');
+                    if (refId && refId !== user.uid) {
+                        orderData.affiliateId = refId;
+                    }
+                    if (sessionStorage.getItem('affiliate_ref')) {
+                        sessionStorage.removeItem('affiliate_ref');
+                    }
                     
                     const orderRef = await addDoc(collection(firestore, `users/${user.uid}/orders`), orderData);
                     setOrder({ ...orderData, id: orderRef.id, purchaseDate: { seconds: Date.now() / 1000, nanoseconds: 0 } });
@@ -82,7 +91,7 @@ export default function ConfirmationClient() {
             };
             createOrder();
         }
-    }, [product, user, order, isCreatingOrder, firestore, toast]);
+    }, [product, user, order, isCreatingOrder, firestore, toast, affiliateRefId]);
 
     useEffect(() => {
         if (!order?.purchaseDate) return;

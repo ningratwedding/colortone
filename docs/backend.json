@@ -50,6 +50,10 @@
           "enum": ["pembeli", "kreator", "admin"],
           "description": "Defines the user's role and permissions within the application."
         },
+        "isAffiliate": {
+          "type": "boolean",
+          "description": "Indicates if the user is an affiliate partner."
+        },
         "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -136,6 +140,10 @@
             "type": "string",
             "description": "The ID of the product's creator."
         },
+        "affiliateId": {
+            "type": "string",
+            "description": "The ID of the affiliate user who referred this purchase."
+        },
         "purchaseDate": {
           "type": "string",
           "format": "date-time",
@@ -187,7 +195,8 @@
         },
         "icon": {
           "type": "string",
-          "description": "The SVG string for the software icon."
+          "format": "uri",
+          "description": "The URL to the software icon."
         },
         "createdAt": {
             "type": "string",

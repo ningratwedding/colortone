@@ -18,6 +18,7 @@ export type UserProfile = {
     website?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin';
+  isAffiliate?: boolean;
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
 };
 
@@ -44,6 +45,7 @@ export type Order = {
     productId: string;
     productName: string;
     creatorId: string;
+    affiliateId?: string;
     purchaseDate: { seconds: number, nanoseconds: number }; // Firestore Timestamp
     amount: number;
     status: 'Selesai' | 'Diproses' | 'Dibatalkan' | 'Menunggu Pembayaran';

@@ -2,12 +2,13 @@
 'use client';
 
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
   Tag,
   Download,
   ShoppingCart,
+  Copy,
 } from "lucide-react";
 import { useMemo, useEffect, useState } from 'react';
 
@@ -27,16 +28,30 @@ import type { Product, UserProfile, Software } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
+import { useToast } from "@/hooks/use-toast";
 
-function ProductPageClientContent({
+function ProductPageClientButtons({
   price,
   productId,
+  productName,
 }: {
   price: number;
   productId: string;
+  productName: string;
 }) {
-  const { user, loading } = useUser();
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
   const [formattedPrice, setFormattedPrice] = useState<string>("");
+  const { toast } = useToast();
+  
+  const searchParams = useSearchParams();
+  const ref = searchParams.get('ref');
+
+  const userProfileRef = useMemo(() => {
+    if (!user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   useEffect(() => {
     const formatCurrency = (amount: number) => {
@@ -48,15 +63,39 @@ function ProductPageClientContent({
     };
     setFormattedPrice(formatCurrency(price));
   }, [price]);
+  
+  useEffect(() => {
+    if (ref) {
+      sessionStorage.setItem('affiliate_ref', ref);
+    }
+  }, [ref]);
 
   const getCheckoutUrl = () => {
-    if (loading) return "#"; // Or a loading state
-    if (user) {
-      return `/checkout?productId=${productId}`;
+    if (userLoading) return "#";
+    let url = `/checkout?productId=${productId}`;
+    const storedRef = sessionStorage.getItem('affiliate_ref');
+    if (storedRef) {
+      url += `&ref=${storedRef}`;
     }
-    // Redirect to login, and then redirect back to this product page after login.
-    return `/login?redirect=/product/${productId}`;
+    
+    if (user) {
+      return url;
+    }
+    
+    return `/login?redirect=/checkout?productId=${productId}${storedRef ? '&ref='+storedRef : ''}`;
   };
+
+  const copyAffiliateLink = () => {
+    if (!user) return;
+    const link = `${window.location.origin}/product/${productId}?ref=${user.uid}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Tautan Afiliasi Disalin",
+      description: `Bagikan tautan untuk produk "${productName}" dan dapatkan komisi!`,
+    });
+  };
+
+  const loading = userLoading || profileLoading;
 
   return (
     <>
@@ -68,6 +107,12 @@ function ProductPageClientContent({
                 {loading ? "Memuat..." : "Beli Sekarang"}
             </Link>
         </Button>
+        {userProfile?.isAffiliate && (
+          <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={copyAffiliateLink}>
+            <Copy className="mr-2 h-4 w-4" />
+            Buat Tautan Afiliasi
+          </Button>
+        )}
       </div>
     </>
   );
@@ -164,7 +209,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
           </div>
           <p className="text-base text-muted-foreground">{product.description}</p>
           
-          <ProductPageClientContent price={product.price} productId={product.id} />
+          <ProductPageClientButtons price={product.price} productId={product.id} productName={product.name} />
 
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
