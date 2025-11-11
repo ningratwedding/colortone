@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import * as React from "react";
@@ -15,6 +16,7 @@ import {
   Search,
   CircleUserRound,
   LayoutGrid,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -116,13 +118,19 @@ export default function AdminDashboardLayout({
             <div className="flex-1">
               <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
             </div>
-            <div className="relative ml-auto flex-initial md:grow-0">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari..."
-                className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
-              />
+            <div className="flex items-center gap-2 ml-auto">
+              <div className="relative flex-initial md:grow-0">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Cari..."
+                  className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
+                />
+              </div>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                  <Bell className="h-4 w-4" />
+                  <span className="sr-only">Notifikasi</span>
+              </Button>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
