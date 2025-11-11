@@ -6,7 +6,7 @@ import { SlidersHorizontal, Eye, EyeOff } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { User } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
@@ -43,6 +43,8 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const firestore = useFirestore();
@@ -56,6 +58,10 @@ export default function LoginPage() {
   });
   
   const handleRedirect = (profile: UserProfile) => {
+    if (redirectUrl) {
+      router.push(redirectUrl);
+      return;
+    }
     switch (profile.role) {
       case 'admin':
         router.push('/admin');
@@ -71,6 +77,9 @@ export default function LoginPage() {
   };
 
   const getOrCreateUserProfile = async (user: User): Promise<UserProfile> => {
+    if (!firestore) {
+      throw new Error("Firestore is not initialized");
+    }
     const userRef = doc(firestore, 'users', user.uid);
     const docSnap = await getDoc(userRef);
 

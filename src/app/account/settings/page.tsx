@@ -87,7 +87,7 @@ export default function AccountSettingsPage() {
 
             // 4. Update the Firebase Auth user profile
             // This ensures user.displayName and user.photoURL are up-to-date across the app
-            if (name !== user.displayName || newAvatarUrl !== user.photoURL) {
+            if (user && (name !== user.displayName || newAvatarUrl !== user.photoURL)) {
                  await updateAuthProfile(user, {
                     displayName: name,
                     photoURL: newAvatarUrl,
@@ -118,7 +118,7 @@ export default function AccountSettingsPage() {
             await updateDoc(userProfileRef, { isAffiliate: true });
             toast({
                 title: 'Selamat Bergabung!',
-                description: 'Anda sekarang adalah mitra afiliasi. Mulai bagikan tautan untuk mendapatkan komisi.',
+                description: 'Anda sekarang adalah mitra afiliasi. Buat tautan afiliasi dari halaman produk.',
             });
         } catch (error) {
             toast({
@@ -129,12 +129,6 @@ export default function AccountSettingsPage() {
         } finally {
             setIsJoiningAffiliate(false);
         }
-    };
-
-    const copyAffiliateLink = (slug: string) => {
-        const link = `${window.location.origin}/creator/${slug}?ref=${user?.uid}`;
-        navigator.clipboard.writeText(link);
-        toast({ title: "Tautan Afiliasi Disalin!", description: "Bagikan tautan profil kreator ini." });
     };
 
     const loading = userLoading || profileLoading;
@@ -272,7 +266,7 @@ export default function AccountSettingsPage() {
                     <CardTitle>Program Afiliasi</CardTitle>
                     <CardDescription>
                         {userProfile.isAffiliate 
-                            ? 'Anda adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
+                            ? 'Anda sekarang adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
                             : 'Dapatkan penghasilan dengan membagikan produk dari kreator favorit Anda.'}
                     </CardDescription>
                 </CardHeader>

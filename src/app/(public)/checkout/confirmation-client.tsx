@@ -67,10 +67,12 @@ export default function ConfirmationClient() {
                         status: 'Menunggu Pembayaran' as const,
                     };
                     
+                    // Prioritize ref from URL, fallback to session storage
                     const refId = affiliateRefId || sessionStorage.getItem('affiliate_ref');
-                    if (refId && refId !== user.uid) {
+                    if (refId && refId !== user.uid) { // Prevent self-referral
                         orderData.affiliateId = refId;
                     }
+                    // Clear session storage after using it
                     if (sessionStorage.getItem('affiliate_ref')) {
                         sessionStorage.removeItem('affiliate_ref');
                     }
