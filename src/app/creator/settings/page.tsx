@@ -248,6 +248,14 @@ export default function SettingsPage() {
     });
   };
 
+  const handleWithdraw = () => {
+    toast({
+        title: "Permintaan Penarikan Diterima",
+        description: "Tim kami akan menghubungi Anda melalui email dalam 1-2 hari kerja untuk memproses penarikan dana Anda. Terima kasih!",
+        duration: 8000,
+    })
+  }
+
   const loading = userLoading || profileLoading;
 
   if (loading) {
@@ -407,8 +415,16 @@ export default function SettingsPage() {
                   Saldo yang tersedia untuk ditarik.
                 </p>
               </CardContent>
-              <CardFooter>
-                <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90" disabled>Tarik Dana</Button>
+              <CardFooter className="flex-col items-start gap-2">
+                <Button 
+                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                    onClick={handleWithdraw}
+                >
+                    Tarik Dana
+                </Button>
+                <p className="text-xs text-primary-foreground/80 text-center w-full">
+                    Penarikan diproses secara manual dalam 1-2 hari kerja.
+                </p>
               </CardFooter>
             </div>
           </Card>
