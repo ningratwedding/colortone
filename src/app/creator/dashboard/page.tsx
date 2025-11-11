@@ -47,9 +47,10 @@ export default function DashboardPage() {
       setLoading(true);
 
       try {
-        // Fetch creator's products and orders in parallel
+        // Fetch creator's products and all orders in parallel
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
-        const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+        // Fetch all orders and filter on the client. This avoids the index error while the index is being created.
+        const ordersQuery = query(collectionGroup(firestore, 'orders'));
         
         const [productsSnapshot, ordersSnapshot] = await Promise.all([
           getDocs(productsQuery),
@@ -57,7 +58,9 @@ export default function DashboardPage() {
         ]);
 
         const creatorProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-        const creatorOrders = ordersSnapshot.docs.map(doc => doc.data() as Order);
+        // Filter orders on the client side
+        const creatorOrders = ordersSnapshot.docs.map(doc => doc.data() as Order).filter(order => order.creatorId === user.uid);
+
 
         // Calculate stats
         const totalRevenue = creatorOrders.reduce((acc, order) => acc + order.amount, 0);
