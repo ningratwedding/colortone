@@ -49,9 +49,13 @@
           "type": "string",
           "enum": ["pembeli", "kreator", "admin"],
           "description": "Defines the user's role and permissions within the application."
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time"
         }
       },
-      "required": ["name", "email", "slug", "role"]
+      "required": ["name", "email", "slug", "role", "createdAt"]
     },
     "Product": {
       "title": "Product",
@@ -160,9 +164,34 @@
         "slug": {
             "type": "string",
             "description": "A URL-friendly version of the category name."
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time"
         }
       },
       "required": ["name", "slug"]
+    },
+    "PlatformSettings": {
+      "title": "Platform Settings",
+      "description": "Stores global settings for the application.",
+      "type": "object",
+      "properties": {
+        "appName": {
+          "type": "string"
+        },
+        "supportEmail": {
+          "type": "string",
+          "format": "email"
+        },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "newCreator": { "type": "boolean" },
+            "newProduct": { "type": "boolean" }
+          }
+        }
+      }
     }
   },
   "auth": {
@@ -192,6 +221,12 @@
         "$ref": "#/backend/entities/Category"
       },
       "description": "Stores all product categories."
+    },
+    "/platform_settings/{settingsId}": {
+        "schema": {
+            "$ref": "#/backend/entities/PlatformSettings"
+        },
+        "description": "Stores global settings for the platform, typically a single document."
     }
   }
 }
