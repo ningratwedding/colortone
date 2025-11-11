@@ -91,10 +91,10 @@ export default function Home() {
     <div className="container mx-auto px-4 py-6">
       <header className="text-center mb-6">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary font-headline">
-          Mewadahi Kreativitas Visual
+          Wadah Kreativitas Tanpa Batas
         </h1>
         <p className="mt-3 text-base text-muted-foreground max-w-2xl mx-auto">
-          Misi kami adalah menjadi platform terdepan yang memberdayakan para pencerita visual. Kami menyediakan ruang di mana para kreator dapat berbagi karya, menginspirasi, dan mengubah gairah mereka menjadi peluang.
+          Misi kami adalah menjadi platform terdepan yang memberdayakan para kreator. Kami menyediakan ruang di mana Anda dapat berbagi karya, menginspirasi, dan mengubah gairah menjadi peluang, baik produk digital maupun fisik.
         </p>
       </header>
 

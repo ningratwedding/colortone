@@ -32,6 +32,7 @@ export type Product = {
   creatorId: string; 
   price: number;
   description: string;
+  type: 'digital' | 'fisik';
   galleryImageUrls: string[];
   galleryImageHints: string[];
   imageBeforeUrl?: string;
@@ -39,10 +40,17 @@ export type Product = {
   imageAfterUrl?: string;
   imageAfterHint?: string;
   category: string;
-  compatibleSoftware: string[];
+  compatibleSoftware?: string[];
   tags: string[];
   sales: number;
-  downloadUrl: string;
+  downloadUrl?: string;
+  stock?: number;
+  weight?: number; // in grams
+  dimensions?: {
+    length: number; // in cm
+    width: number; // in cm
+    height: number; // in cm
+  };
 };
 
 export type Order = {

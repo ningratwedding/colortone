@@ -8,7 +8,6 @@ import {
   Tag,
   Download,
   ShoppingCart,
-  Copy,
   Share2,
 } from "lucide-react";
 import { useMemo, useEffect, useState } from 'react';
@@ -30,19 +29,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 
 function ProductPageClientButtons({
-  price,
-  productId,
-  productName,
+  product,
 }: {
-  price: number;
-  productId: string;
-  productName: string;
+  product: Product;
 }) {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -66,8 +60,8 @@ function ProductPageClientButtons({
         minimumFractionDigits: 0,
       }).format(amount);
     };
-    setFormattedPrice(formatCurrency(price));
-  }, [price]);
+    setFormattedPrice(formatCurrency(product.price));
+  }, [product.price]);
   
   useEffect(() => {
     // If a referral code is in the URL, store it in session storage.
@@ -83,7 +77,7 @@ function ProductPageClientButtons({
     const storedRef = sessionStorage.getItem('affiliate_ref');
     const refQueryParam = storedRef ? `&ref=${storedRef}` : '';
     
-    let url = `/checkout?productId=${productId}${refQueryParam}`;
+    let url = `/checkout?productId=${product.id}${refQueryParam}`;
     
     if (user) {
       return url;
@@ -102,11 +96,11 @@ function ProductPageClientButtons({
       });
       return;
     }
-    const link = `${window.location.origin}/product/${productId}?ref=${user.uid}`;
+    const link = `${window.location.origin}/product/${product.id}?ref=${user.uid}`;
     navigator.clipboard.writeText(link);
     toast({
       title: "Tautan Afiliasi Disalin",
-      description: `Bagikan tautan untuk produk "${productName}" dan dapatkan komisi!`,
+      description: `Bagikan tautan untuk produk "${product.name}" dan dapatkan komisi!`,
     });
   };
 
@@ -138,6 +132,7 @@ function ProductPageClientButtons({
 
 export function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
+  const [activeTab, setActiveTab] = useState('gallery');
   
   const productRef = useMemo(() => {
     if (!firestore || !productId) return null;
@@ -205,61 +200,59 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   return (
     <div className="container mx-auto px-4 py-6">
-       <Tabs defaultValue="gallery" className="grid md:grid-cols-2 gap-4 lg:gap-6">
+       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
-           <TabsContent value="gallery" className="mt-0">
-                 <Carousel className="w-full">
-                    <CarouselContent>
-                        {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
-                        <CarouselItem key={index}>
-                            <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                            <Image
-                                src={url}
-                                alt={`${product.name} - Gambar Galeri ${index + 1}`}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={product.galleryImageHints?.[index] || 'product image'}
-                                priority={index === 0}
-                            />
-                            </div>
-                        </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    {(product.galleryImageUrls?.length ?? 0) > 1 && (
-                        <>
-                        <CarouselPrevious className="ml-14" />
-                        <CarouselNext className="mr-14" />
-                        </>
-                    )}
-                    </Carousel>
-              </TabsContent>
-              {hasComparison && (
-                <TabsContent value="comparison" className="mt-0">
-                    <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
-                        <ImageCompareSlider
-                            beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
-                            afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
-                            className="w-full h-full"
-                        />
-                    </div>
-                </TabsContent>
-              )}
-            <TabsList className="mt-2 grid grid-cols-5 gap-2 bg-transparent p-0 h-auto">
+           {activeTab === 'gallery' && (
+              <Carousel className="w-full">
+                 <CarouselContent>
+                    {Array.isArray(product.galleryImageUrls) && product.galleryImageUrls.map((url, index) => (
+                      <CarouselItem key={index}>
+                          <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                          <Image
+                              src={url}
+                              alt={`${product.name} - Gambar Galeri ${index + 1}`}
+                              fill
+                              className="object-cover"
+                              data-ai-hint={product.galleryImageHints?.[index] || 'product image'}
+                              priority={index === 0}
+                          />
+                          </div>
+                      </CarouselItem>
+                    ))}
+                 </CarouselContent>
+                 {(product.galleryImageUrls?.length ?? 0) > 1 && (
+                    <>
+                    <CarouselPrevious className="ml-14" />
+                    <CarouselNext className="mr-14" />
+                    </>
+                 )}
+                </Carousel>
+           )}
+            {activeTab === 'comparison' && hasComparison && (
+                <div className="aspect-[3/2] w-full rounded-lg overflow-hidden relative bg-muted">
+                    <ImageCompareSlider
+                        beforeImage={{ imageUrl: product.imageBeforeUrl!, imageHint: product.imageBeforeHint!, description: `Before - ${product.name}` }}
+                        afterImage={{ imageUrl: product.imageAfterUrl!, imageHint: product.imageAfterHint!, description: `After - ${product.name}` }}
+                        className="w-full h-full"
+                    />
+                </div>
+            )}
+            <div className="mt-2 grid grid-cols-5 gap-2 bg-transparent p-0 h-auto">
                 {galleryImage && (
-                    <TabsTrigger value="gallery" className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary">
+                    <button onClick={() => setActiveTab('gallery')} className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary" data-state={activeTab === 'gallery' ? 'active' : 'inactive'}>
                         <div className="aspect-[3/2] w-full rounded-md overflow-hidden relative">
                             <Image src={galleryImage} alt="Galeri" fill className="object-cover" />
                         </div>
-                    </TabsTrigger>
+                    </button>
                 )}
                  {hasComparison && comparisonImage && (
-                    <TabsTrigger value="comparison" className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary">
+                    <button onClick={() => setActiveTab('comparison')} className="p-0 rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:ring-2 data-[state=active]:ring-primary" data-state={activeTab === 'comparison' ? 'active' : 'inactive'}>
                        <div className="aspect-[3/2] w-full rounded-md overflow-hidden relative">
                            <Image src={comparisonImage} alt="Perbandingan" fill className="object-cover" />
                         </div>
-                    </TabsTrigger>
+                    </button>
                 )}
-            </TabsList>
+            </div>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -281,11 +274,11 @@ export function ProductPageContent({ productId }: { productId: string }) {
           </div>
           <p className="text-base text-muted-foreground">{product.description}</p>
           
-          <ProductPageClientButtons price={product.price} productId={product.id} productName={product.name} />
+          <ProductPageClientButtons product={product} />
 
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
-                {compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+                {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                     <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-primary flex-shrink-0"/>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -301,10 +294,12 @@ export function ProductPageContent({ productId }: { productId: string }) {
                         </div>
                     </div>
                 )}
-                <div className="flex items-center gap-2">
-                    <Download className="h-4 w-4 text-primary"/>
-                    <span>Unduhan digital instan</span>
-                </div>
+                {product.type === 'digital' && (
+                    <div className="flex items-center gap-2">
+                        <Download className="h-4 w-4 text-primary"/>
+                        <span>Unduhan digital instan</span>
+                    </div>
+                )}
                 {product.tags && product.tags.length > 0 && (
                     <div className="flex items-center gap-2">
                         <Tag className="h-4 w-4 text-primary"/>
@@ -316,9 +311,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </CardContent>
           </Card>
         </div>
-       </Tabs>
+       </div>
     </div>
   );
 }
-
-

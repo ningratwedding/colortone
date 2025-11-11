@@ -24,12 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon, Star } from 'lucide-react';
+import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon, Star, Box, Package, Weight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/use-user';
 import { useStorage, useFirestore } from '@/firebase/provider';
 import { uploadFile } from '@/firebase/storage/actions';
-import { collection, addDoc, query } from 'firebase/firestore';
+import { collection, addDoc, query, serverTimestamp } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category, Software } from '@/lib/data';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -46,39 +46,42 @@ const formSchema = z.object({
   description: z.string().min(20, 'Deskripsi minimal 20 karakter.'),
   price: z.coerce.number().min(1000, 'Harga minimal Rp 1.000.'),
   category: z.string().min(1, 'Kategori harus dipilih.'),
-  compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
+  type: z.enum(['digital', 'fisik'], { required_error: 'Anda harus memilih jenis produk.' }),
+  
+  // Digital specific
+  compatibleSoftware: z.array(z.string()).optional(),
+  downloadUrl: z.string().optional(),
+  productFile: z.any().optional(),
+
+  // Physical specific
+  stock: z.coerce.number().optional(),
+  weight: z.coerce.number().optional(), // in grams
+  
+  // Media
   galleryImages: z.any().refine(files => files?.length >= 1, 'Unggah minimal satu gambar utama.'),
   imageBefore: z.any().optional(),
   imageAfter: z.any().optional(),
-  uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
-  productFile: z.any().optional(),
-  downloadUrl: z.string().optional(),
+
 }).superRefine((data, ctx) => {
-    if (data.uploadType === 'file') {
-        if (!data.productFile || data.productFile.length === 0) {
-            ctx.addIssue({
+    if (data.type === 'digital') {
+        if (!data.productFile && !data.downloadUrl) {
+             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: 'File produk .zip harus diunggah.',
+                message: 'Unggah file produk atau berikan URL unduhan.',
                 path: ['productFile'],
             });
         }
-    } else if (data.uploadType === 'url') {
-        if (!data.downloadUrl) {
-             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: 'URL unduhan tidak boleh kosong.',
-                path: ['downloadUrl'],
-            });
-        } else {
-            try {
-                new URL(data.downloadUrl);
-            } catch {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: 'URL unduhan tidak valid.',
-                    path: ['downloadUrl'],
-                });
+         if (data.downloadUrl) {
+            try { new URL(data.downloadUrl); } catch {
+                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'URL unduhan tidak valid.', path: ['downloadUrl'] });
             }
+        }
+    } else if (data.type === 'fisik') {
+        if (data.stock === undefined || data.stock < 0) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Stok harus 0 atau lebih.', path: ['stock']});
+        }
+        if (data.weight === undefined || data.weight <= 0) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Berat produk harus diisi (dalam gram).', path: ['weight']});
         }
     }
 });
@@ -169,12 +172,11 @@ export default function UploadPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       compatibleSoftware: [],
-      uploadType: 'file',
     },
   });
   
-  const selectedSoftware = watch('compatibleSoftware');
-  const uploadType = watch('uploadType');
+  const selectedSoftware = watch('compatibleSoftware') || [];
+  const productType = watch('type');
 
 
   const onSubmit = async (data: FormData) => {
@@ -187,12 +189,14 @@ export default function UploadPage() {
     try {
         toast({ title: 'Mengunggah file...', description: 'Mohon tunggu, ini mungkin memerlukan waktu beberapa saat.' });
 
-        let finalDownloadUrl = '';
+        let finalDownloadUrl: string | undefined = undefined;
 
-        if (data.uploadType === 'file' && data.productFile?.[0]) {
-            finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
-        } else {
-            finalDownloadUrl = data.downloadUrl!;
+        if (data.type === 'digital') {
+            if (data.productFile?.[0]) {
+                finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
+            } else {
+                finalDownloadUrl = data.downloadUrl!;
+            }
         }
 
         const galleryImageUploads = Array.from(data.galleryImages as FileList).map(file => 
@@ -211,18 +215,23 @@ export default function UploadPage() {
             creatorId: user.uid,
             price: data.price,
             description: data.description,
+            type: data.type,
             category: data.category,
-            compatibleSoftware: data.compatibleSoftware,
             galleryImageUrls,
             galleryImageHints: galleryImageUrls.map(() => "product gallery image"),
+            sales: 0,
+            tags: [], // Placeholder for tags
+            createdAt: serverTimestamp(),
+            // Digital
+            compatibleSoftware: data.type === 'digital' ? data.compatibleSoftware : [],
+            downloadUrl: finalDownloadUrl,
             imageBeforeUrl: imageBeforeUrl,
             imageBeforeHint: imageBeforeUrl ? 'product image before' : undefined,
             imageAfterUrl: imageAfterUrl,
             imageAfterHint: imageAfterUrl ? 'product image after' : undefined,
-            downloadUrl: finalDownloadUrl,
-            sales: 0,
-            tags: [], // Placeholder for tags
-            createdAt: new Date(),
+            // Physical
+            stock: data.type === 'fisik' ? data.stock : null,
+            weight: data.type === 'fisik' ? data.weight : null,
         };
 
         const docRef = await addDoc(collection(firestore, 'products'), newProduct);
@@ -254,14 +263,28 @@ export default function UploadPage() {
           <CardHeader>
             <CardTitle>Detail Produk</CardTitle>
             <CardDescription>
-              Lengkapi detail di bawah ini untuk produk digital baru Anda. Informasi ini akan ditampilkan di halaman produk.
+              Lengkapi detail di bawah ini untuk produk baru Anda. Informasi ini akan ditampilkan di halaman produk.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-1.5">
               <Label htmlFor="name">Judul Produk</Label>
-              <Input id="name" placeholder="misalnya, Preset Film Sinematik" {...register('name')} />
+              <Input id="name" placeholder="misalnya, Kaos Edisi Terbatas" {...register('name')} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+            </div>
+             <div className="grid gap-1.5">
+                <Label>Jenis Produk</Label>
+                 <Controller
+                    name="type"
+                    control={control}
+                    render={({ field }) => (
+                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="digital" id="digital" /><Label htmlFor="digital">Digital</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="fisik" id="fisik" /><Label htmlFor="fisik">Fisik</Label></div>
+                        </RadioGroup>
+                    )}
+                 />
+                 {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="description">Deskripsi</Label>
@@ -306,47 +329,62 @@ export default function UploadPage() {
                 )}
               />
             </div>
-            <Controller
-                name="compatibleSoftware"
-                control={control}
-                render={({ field }) => (
-                    <div className="grid gap-1.5">
-                        <Label>Perangkat Lunak yang Kompatibel</Label>
-                        <p className="text-xs text-muted-foreground">
-                            Pilih semua yang berlaku.
-                        </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                           {softwareLoading ? Array.from({length: 4}).map((_, i) => <Button key={i} type="button" disabled variant="outline" size="sm"><Loader2 className="animate-spin h-4 w-4" /></Button>) :
-                            softwareList?.map((s) => (
-                                <Button
-                                    key={s.id}
-                                    type="button"
-                                    variant={selectedSoftware.includes(s.name) ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => {
-                                        const newValue = selectedSoftware.includes(s.name)
-                                        ? selectedSoftware.filter(name => name !== s.name)
-                                        : [...selectedSoftware, s.name];
-                                        field.onChange(newValue);
-                                    }}
-                                    className="flex items-center justify-center gap-2"
-                                >
-                                    {s.icon && <div className="h-4 w-4 flex-shrink-0" dangerouslySetInnerHTML={{ __html: s.icon }} />}
-                                    <span className="truncate">{s.name}</span>
-                                </Button>
-                            ))}
-                        </div>
-                        {errors.compatibleSoftware && <p className="text-xs text-destructive">{errors.compatibleSoftware.message}</p>}
+
+            {productType === 'fisik' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="grid gap-1.5">
+                        <Label htmlFor="stock">Jumlah Stok</Label>
+                        <Input id="stock" type="number" placeholder="100" {...register('stock')} />
+                        {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
                     </div>
-                )}
-            />
+                     <div className="grid gap-1.5">
+                        <Label htmlFor="weight">Berat (gram)</Label>
+                        <Input id="weight" type="number" placeholder="misal: 250" {...register('weight')} />
+                        {errors.weight && <p className="text-xs text-destructive">{errors.weight.message}</p>}
+                    </div>
+                </div>
+            )}
+
+            {productType === 'digital' && (
+                <Controller
+                    name="compatibleSoftware"
+                    control={control}
+                    render={({ field }) => (
+                        <div className="grid gap-1.5">
+                            <Label>Perangkat Lunak yang Kompatibel (untuk produk digital)</Label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                            {softwareLoading ? Array.from({length: 4}).map((_, i) => <Button key={i} type="button" disabled variant="outline" size="sm"><Loader2 className="animate-spin h-4 w-4" /></Button>) :
+                                softwareList?.map((s) => (
+                                    <Button
+                                        key={s.id}
+                                        type="button"
+                                        variant={selectedSoftware.includes(s.name) ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => {
+                                            const newValue = selectedSoftware.includes(s.name)
+                                            ? selectedSoftware.filter(name => name !== s.name)
+                                            : [...selectedSoftware, s.name];
+                                            field.onChange(newValue);
+                                        }}
+                                        className="flex items-center justify-center gap-2"
+                                    >
+                                        {s.icon && <div className="h-4 w-4 flex-shrink-0" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                                        <span className="truncate">{s.name}</span>
+                                    </Button>
+                                ))}
+                            </div>
+                            {errors.compatibleSoftware && <p className="text-xs text-destructive">{errors.compatibleSoftware.message}</p>}
+                        </div>
+                    )}
+                />
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Media Produk</CardTitle>
             <CardDescription>
-              Unggah gambar dan file produk Anda. Gambar utama akan menjadi sampul produk.
+              Unggah gambar dan file produk Anda.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -367,116 +405,101 @@ export default function UploadPage() {
                     </div>
                 )}
                 />
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium">Gambar Perbandingan (Opsional)</span>
-                    <span className="text-sm font-normal text-muted-foreground">Tambahkan gambar sebelum & sesudah untuk slider.</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <Controller
-                      name="imageBefore"
-                      control={control}
-                      render={({ field }) => (
-                        <div>
-                            <FileUploadDropzone 
-                                field={field} 
-                                label='Gambar "Sebelum"' 
-                                description='Gambar asli untuk perbandingan' 
-                                accept="image/*"
-                                icon={ImageIcon}
-                            />
-                            {errors.imageBefore && <p className="text-xs text-destructive mt-1.5">{String(errors.imageBefore.message)}</p>}
-                        </div>
-                      )}
-                    />
-                      <Controller
-                      name="imageAfter"
-                      control={control}
-                      render={({ field }) => (
-                        <div>
-                            <FileUploadDropzone 
-                                field={field} 
-                                label='Gambar "Sesudah"' 
-                                description='Gambar yang telah diedit' 
-                                accept="image/*"
-                                icon={ImageIcon}
-                            />
-                            {errors.imageAfter && <p className="text-xs text-destructive mt-1.5">{String(errors.imageAfter.message)}</p>}
-                        </div>
-                      )}
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-             <Controller
-              name="uploadType"
-              control={control}
-              render={({ field }) => (
-                <div className="grid gap-2">
-                  <Label>Jenis Produk</Label>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="file" id="file" />
-                      <Label htmlFor="file">Unggah File</Label>
+            {productType === 'digital' && (
+                <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1">
+                    <AccordionTrigger>
+                    <div className="flex flex-col items-start">
+                        <span className="font-medium">Gambar Perbandingan (Opsional)</span>
+                        <span className="text-sm font-normal text-muted-foreground">Tambahkan gambar sebelum & sesudah untuk slider.</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="url" id="url" />
-                      <Label htmlFor="url">Tautan Eksternal</Label>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <Controller
+                        name="imageBefore"
+                        control={control}
+                        render={({ field }) => (
+                            <div>
+                                <FileUploadDropzone 
+                                    field={field} 
+                                    label='Gambar "Sebelum"' 
+                                    description='Gambar asli untuk perbandingan' 
+                                    accept="image/*"
+                                    icon={ImageIcon}
+                                />
+                                {errors.imageBefore && <p className="text-xs text-destructive mt-1.5">{String(errors.imageBefore.message)}</p>}
+                            </div>
+                        )}
+                        />
+                        <Controller
+                        name="imageAfter"
+                        control={control}
+                        render={({ field }) => (
+                            <div>
+                                <FileUploadDropzone 
+                                    field={field} 
+                                    label='Gambar "Sesudah"' 
+                                    description='Gambar yang telah diedit' 
+                                    accept="image/*"
+                                    icon={ImageIcon}
+                                />
+                                {errors.imageAfter && <p className="text-xs text-destructive mt-1.5">{String(errors.imageAfter.message)}</p>}
+                            </div>
+                        )}
+                        />
                     </div>
-                  </RadioGroup>
-                  {errors.uploadType && <p className="text-xs text-destructive">{errors.uploadType.message}</p>}
-                </div>
-              )}
-            />
+                    </AccordionContent>
+                </AccordionItem>
+                </Accordion>
+            )}
 
-            {uploadType === 'file' ? (
-              <Controller
-                name="productFile"
-                control={control}
-                render={({ field }) => (
-                  <div>
-                    <FileUploadDropzone
-                      field={field}
-                      label="File Produk (.zip)"
-                      description="Unggah file .zip Anda"
-                      accept=".zip"
-                      icon={Upload}
+            {productType === 'digital' && (
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-sm pt-4 border-t">File Produk Digital</h3>
+                     <Controller
+                        name="productFile"
+                        control={control}
+                        render={({ field }) => (
+                        <div>
+                            <FileUploadDropzone
+                            field={field}
+                            label="File Produk (.zip)"
+                            description="Unggah file .zip Anda, atau berikan tautan di bawah"
+                            accept=".zip"
+                            icon={Upload}
+                            />
+                            {errors.productFile && (
+                            <p className="text-xs text-destructive mt-1.5">
+                                {String(errors.productFile.message)}
+                            </p>
+                            )}
+                        </div>
+                        )}
                     />
-                    {errors.productFile && (
-                      <p className="text-xs text-destructive mt-1.5">
-                        {String(errors.productFile.message)}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            ) : (
-              <div className="grid gap-1.5">
-                <Label htmlFor="downloadUrl">URL Unduhan Produk</Label>
-                 <div className="relative">
-                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        id="downloadUrl"
-                        placeholder="https://contoh.com/produk-keren.zip"
-                        {...register('downloadUrl')}
-                        className="pl-10"
-                    />
-                 </div>
-                {errors.downloadUrl && (
-                  <p className="text-xs text-destructive">
-                    {errors.downloadUrl.message}
-                  </p>
-                )}
-              </div>
+                    <div className="relative flex items-center">
+                        <div className="flex-grow border-t border-muted"></div>
+                        <span className="flex-shrink mx-4 text-muted-foreground text-xs">ATAU</span>
+                        <div className="flex-grow border-t border-muted"></div>
+                    </div>
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="downloadUrl">Tautan Unduhan Eksternal</Label>
+                        <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                id="downloadUrl"
+                                placeholder="https://contoh.com/produk-keren.zip"
+                                {...register('downloadUrl')}
+                                className="pl-10"
+                            />
+                        </div>
+                        {errors.downloadUrl && (
+                        <p className="text-xs text-destructive">
+                            {errors.downloadUrl.message}
+                        </p>
+                        )}
+                    </div>
+                </div>
             )}
           </CardContent>
         </Card>

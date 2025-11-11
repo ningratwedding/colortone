@@ -79,7 +79,7 @@
     },
     "Product": {
       "title": "Product",
-      "description": "Represents a digital product (preset or LUT) sold on the platform.",
+      "description": "Represents a digital or physical product sold on the platform.",
       "type": "object",
       "properties": {
         "name": {
@@ -97,6 +97,11 @@
         "description": {
           "type": "string",
           "description": "A detailed description of the product."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["digital", "fisik"],
+          "description": "The type of the product."
         },
         "galleryImageUrls": {
           "type": "array",
@@ -126,7 +131,8 @@
         },
         "compatibleSoftware": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": { "type": "string" },
+          "description": "For digital products, lists compatible software."
         },
         "tags": {
           "type": "array",
@@ -139,10 +145,27 @@
         "downloadUrl": {
             "type": "string",
             "format": "uri",
-            "description": "The secure URL to the downloadable product file (.zip)."
+            "description": "For digital products, the secure URL to the downloadable file."
+        },
+        "stock": {
+          "type": "number",
+          "description": "Available stock for physical products. Null for digital."
+        },
+        "weight": {
+          "type": "number",
+          "description": "Weight of the physical product in grams for shipping calculation."
+        },
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "length": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          },
+          "description": "Dimensions of the physical product in centimeters."
         }
       },
-      "required": ["name", "creatorId", "price", "description", "galleryImageUrls"]
+      "required": ["name", "creatorId", "price", "description", "type", "galleryImageUrls"]
     },
     "Order": {
       "title": "Order",
