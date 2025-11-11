@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from './ui/card';
 import { useState, useEffect, useMemo } from 'react';
-import { ImageCompareSlider } from './image-compare-slider';
+import Image from 'next/image';
 import { Button } from './ui/button';
 import { CreditCard } from 'lucide-react';
 import { useDoc } from '@/firebase/firestore/use-doc';
@@ -57,19 +57,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
       )}
     >
       <CardHeader className="p-0 relative">
-        <ImageCompareSlider
-          beforeImage={{
-            imageUrl: product.imageBeforeUrl,
-            imageHint: product.imageBeforeHint,
-            description: product.name,
-          }}
-          afterImage={{
-            imageUrl: product.imageAfterUrl,
-            imageHint: product.imageAfterHint,
-            description: product.name,
-          }}
-          className="aspect-[3/2]"
-        />
+         <Link href={`/product/${product.id}`} className="block aspect-[3/2] w-full">
+            <Image
+              src={product.thumbnailUrl}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              data-ai-hint={product.thumbnailHint}
+            />
+         </Link>
       </CardHeader>
       <CardContent className="p-3 pb-2 flex-grow flex flex-col">
         <Link href={`/product/${product.id}`} className="space-y-1">

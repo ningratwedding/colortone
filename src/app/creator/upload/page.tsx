@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/use-user';
 import { useStorage, useFirestore } from '@/firebase/provider';
@@ -41,6 +41,7 @@ const formSchema = z.object({
   price: z.coerce.number().min(1000, 'Harga minimal Rp 1.000.'),
   category: z.string().min(1, 'Kategori harus dipilih.'),
   compatibleSoftware: z.array(z.string()).min(1, 'Pilih minimal satu perangkat lunak.'),
+  thumbnail: z.any().refine(file => file?.length == 1, 'Gambar utama harus diunggah.'),
   imageBefore: z.any().refine(file => file?.length == 1, 'Gambar "sebelum" harus diunggah.'),
   imageAfter: z.any().refine(file => file?.length == 1, 'Gambar "sesudah" harus diunggah.'),
   uploadType: z.enum(['file', 'url'], { required_error: 'Anda harus memilih jenis produk.' }),
@@ -183,7 +184,8 @@ export default function UploadPage() {
             finalDownloadUrl = data.downloadUrl!;
         }
 
-        const [imageBeforeUrl, imageAfterUrl] = await Promise.all([
+        const [thumbnailUrl, imageBeforeUrl, imageAfterUrl] = await Promise.all([
+            uploadFile(storage, data.thumbnail[0], user.uid, 'product_images'),
             uploadFile(storage, data.imageBefore[0], user.uid, 'product_images'),
             uploadFile(storage, data.imageAfter[0], user.uid, 'product_images'),
         ]);
@@ -197,10 +199,12 @@ export default function UploadPage() {
             description: data.description,
             category: data.category,
             compatibleSoftware: data.compatibleSoftware,
+            thumbnailUrl: thumbnailUrl,
+            thumbnailHint: 'product thumbnail',
             imageBeforeUrl: imageBeforeUrl,
-            imageBeforeHint: 'product image',
+            imageBeforeHint: 'product image before',
             imageAfterUrl: imageAfterUrl,
-            imageAfterHint: 'product image',
+            imageAfterHint: 'product image after',
             downloadUrl: finalDownloadUrl,
             sales: 0,
             tags: [], // Placeholder for tags
@@ -328,10 +332,26 @@ export default function UploadPage() {
           <CardHeader>
             <CardTitle>Media Produk</CardTitle>
             <CardDescription>
-              Unggah gambar sebelum & sesudah, dan file produk Anda.
+              Unggah gambar dan file produk Anda. Gambar utama akan menjadi sampul produk.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+             <Controller
+                name="thumbnail"
+                control={control}
+                render={({ field }) => (
+                    <div>
+                        <FileUploadDropzone 
+                            field={field} 
+                            label='Gambar Utama (Thumbnail)' 
+                            description='Rasio aspek 3:2 direkomendasikan' 
+                            accept="image/*"
+                            icon={Star}
+                        />
+                        {errors.thumbnail && <p className="text-xs text-destructive mt-1.5">{String(errors.thumbnail.message)}</p>}
+                    </div>
+                )}
+                />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <Controller
                   name="imageBefore"
