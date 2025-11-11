@@ -82,7 +82,7 @@ export function SiteHeader() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Menu Pengguna">
+          <Button variant="ghost" size="icon" aria-label="Menu Pengguna" className="hover:bg-primary-foreground/10 data-[state=open]:bg-primary-foreground/10">
             {user ? (
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'} />
@@ -148,13 +148,13 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground shadow-sm">
       <div className="container flex h-16 items-center px-4 md:px-6">
         {/* Left Section (Logo and Mobile Menu) */}
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden mr-2" aria-label="Alihkan Menu">
+              <Button variant="ghost" size="icon" className="md:hidden mr-2 hover:bg-primary-foreground/10 data-[state=open]:bg-primary-foreground/10" aria-label="Alihkan Menu">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -190,7 +190,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <SlidersHorizontal className="h-6 w-6 text-primary" />
+            <SlidersHorizontal className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">
               Di
             </span>
@@ -203,7 +203,7 @@ export function SiteHeader() {
               <Link
                 key={href}
                 href={href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
+                className="transition-colors hover:text-primary-foreground/80 text-primary-foreground/60"
               >
                 {label}
               </Link>
@@ -219,7 +219,7 @@ export function SiteHeader() {
               <Input
                 type="search"
                 placeholder="Cari produk..."
-                className="w-full bg-card pl-10 rounded-full"
+                className="w-full bg-background/90 text-foreground pl-10 rounded-full"
               />
             </div>
           </div>
@@ -228,7 +228,7 @@ export function SiteHeader() {
         {/* Right Section (Actions) */}
         <div className="flex items-center justify-end space-x-2">
           {!user && !loading && (
-            <Button variant="outline" className="hidden sm:inline-flex" asChild>
+            <Button variant="secondary" className="hidden sm:inline-flex" asChild>
               <Link href="/creator/dashboard">Menjadi Kreator</Link>
             </Button>
           )}
