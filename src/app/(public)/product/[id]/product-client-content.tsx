@@ -20,9 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { doc } from "firebase/firestore";
+import { useCollection } from "@/firebase/firestore/use-collection";
+import { doc, collection, query } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
-import type { Product, UserProfile } from "@/lib/data";
+import type { Product, UserProfile, Software } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
@@ -90,7 +91,22 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
 
-  if (productLoading || creatorLoading) {
+  const softwareQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'software'));
+  }, [firestore]);
+
+  const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
+
+  const compatibleSoftwareDetails = useMemo(() => {
+    if (!product || !softwareList) return [];
+    return product.compatibleSoftware
+        .map(name => softwareList.find(s => s.name === name))
+        .filter((s): s is Software => !!s);
+  }, [product, softwareList]);
+
+
+  if (productLoading || creatorLoading || softwareLoading) {
     return (
         <div className="container mx-auto px-4 py-6">
             <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
@@ -152,10 +168,20 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
-                {product.compatibleSoftware && product.compatibleSoftware.length > 0 && (
+                {compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                     <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-primary"/>
-                        <span>Kompatibel dengan: {product.compatibleSoftware.join(', ')}</span>
+                        <CheckCircle className="h-4 w-4 text-primary flex-shrink-0"/>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="font-medium">Kompatibel dengan:</span>
+                            {compatibleSoftwareDetails.map(s => (
+                                <div key={s.id} className="flex items-center gap-1.5 text-muted-foreground">
+                                    {s.icon ? (
+                                        <img src={s.icon} alt={`${s.name} icon`} className="h-4 w-4 object-contain" />
+                                    ) : <div className="h-4 w-4 bg-muted rounded-sm" />}
+                                    <span>{s.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
                 <div className="flex items-center gap-2">

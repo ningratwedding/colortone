@@ -35,6 +35,7 @@ export type Product = {
   compatibleSoftware: string[];
   tags: string[];
   sales: number;
+  downloadUrl: string;
 };
 
 export type Order = {
