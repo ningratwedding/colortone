@@ -43,14 +43,14 @@ import {
 import type { Product } from '@/lib/data';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore } from '@/firebase/provider';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminProductsPage() {
   const firestore = useFirestore();
   const productsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'products'), orderBy('sales', 'desc'));
+    return query(collection(firestore, 'products'));
   }, [firestore]);
 
   const { data: allProducts, loading } = useCollection<Product>(productsQuery);
