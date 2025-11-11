@@ -29,7 +29,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { DollarSign, ShoppingCart, Users } from 'lucide-react';
+import { DollarSign, ShoppingCart } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -62,7 +62,6 @@ export default function AnalyticsPage() {
   const [formattedStats, setFormattedStats] = useState({
     totalRevenue: '',
     totalSales: '0',
-    followers: '0',
   });
   
   const topProducts = useMemo(() => {
@@ -103,14 +102,12 @@ export default function AnalyticsPage() {
             ...prev, 
             totalRevenue: formatCurrency(totalRevenue),
             totalSales: totalSales.toLocaleString('id-ID'),
-            followers: '573' // Placeholder
         }));
     } else {
         setFormattedStats(prev => ({
             ...prev,
             totalRevenue: formatCurrency(0),
             totalSales: '0',
-            followers: '573' // Placeholder
         }))
     }
   }, [creatorProducts]);
@@ -127,7 +124,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -151,18 +148,6 @@ export default function AnalyticsPage() {
             {loading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">+{formattedStats.totalSales}</div>}
              <p className="text-xs text-muted-foreground">
               Total unit terjual dari semua produk.
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pengikut</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{formattedStats.followers}</div>
-            <p className="text-xs text-muted-foreground">
-              Fitur ini akan segera hadir.
             </p>
           </CardContent>
         </Card>
