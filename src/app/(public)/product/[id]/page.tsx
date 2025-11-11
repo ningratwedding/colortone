@@ -1,71 +1,35 @@
 
-import { doc, getDoc } from 'firebase/firestore';
-import type { Metadata, ResolvingMetadata } from 'next';
-import { initializeFirebase } from '@/firebase';
-import type { Product } from '@/lib/data';
 import { ProductPageContent } from "./product-client-content";
+import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
 
 type Props = {
   params: { id: string }
 }
 
-// Function to fetch product data on the server
-async function getProduct(id: string): Promise<Product | null> {
-  // We can't use hooks on the server, so we initialize a connection to fetch data.
-  const { firestore } = initializeFirebase();
-  const productRef = doc(firestore, 'products', id);
-  const productSnap = await getDoc(productRef);
-
-  if (!productSnap.exists()) {
-    return null;
-  }
-  return { id: productSnap.id, ...productSnap.data() } as Product;
-}
-
-// Function to generate dynamic metadata for each product page
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
-  // Fetch product data
-  const product = await getProduct(params.id);
-
-  if (!product) {
-    return {
-      title: 'Produk tidak ditemukan',
-    }
-  }
-
-  // Get parent metadata to use as a base
-  const previousImages = (await parent).openGraph?.images || []
+  // Since we can't fetch dynamic data on the server without a proper admin setup,
+  // we'll use a generic title and description for now.
+  // The specific product details will be loaded on the client.
+  const productName = "Detail Produk"; // Generic name
 
   return {
-    title: product.name,
-    description: product.description,
+    title: productName,
+    description: `Lihat detail untuk produk di ${siteConfig.name}.`,
     openGraph: {
-      title: `${product.name} | ${siteConfig.name}`,
-      description: product.description,
-      url: `${siteConfig.url}/product/${product.id}`,
-      images: [
-        {
-          url: product.imageAfterUrl, // Use the product's 'after' image for the preview
-          width: 1200,
-          height: 630,
-          alt: product.name,
-        },
-        ...previousImages,
-      ],
+      title: `${productName} | ${siteConfig.name}`,
+      description: `Temukan preset dan LUT berkualitas tinggi di ${siteConfig.name}.`,
+      url: `${siteConfig.url}/product/${params.id}`,
     },
      twitter: {
       card: 'summary_large_image',
-      title: `${product.name} | ${siteConfig.name}`,
-      description: product.description,
-      images: [product.imageAfterUrl],
+      title: `${productName} | ${siteConfig.name}`,
+      description: `Temukan preset dan LUT berkualitas tinggi di ${siteConfig.name}.`,
     },
   }
 }
-
 
 export default function ProductPage({ params }: { params: { id: string } }) {
     return <ProductPageContent productId={params.id} />
