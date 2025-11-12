@@ -175,9 +175,10 @@ function CreatorProfileContent({ slug }: { slug: string }) {
 }
 
 export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+    const { slug } = params;
     return (
         <>
-            <CreatorProfileContent slug={params.slug} />
+            <CreatorProfileContent slug={slug} />
             <SiteFooter />
         </>
     )
