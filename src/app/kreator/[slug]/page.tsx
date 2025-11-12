@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -185,10 +184,10 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   );
 }
 
-export default function CreatorProfilePage({ params: { slug } }: { params: { slug: string } }) {
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
     return (
         <>
-            <CreatorProfileContent slug={slug} />
+            <CreatorProfileContent slug={params.slug} />
             <SiteFooter />
         </>
     )
