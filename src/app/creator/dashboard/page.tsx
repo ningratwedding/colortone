@@ -202,36 +202,30 @@ export default function DashboardPage() {
                {/* Desktop View - Single Card with 3 stats */}
               <div className="hidden md:grid md:grid-cols-3">
                 {/* Total Pendapatan */}
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-1">
+                <div className="p-4 space-y-1">
+                  <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
+                    <h3 className="text-sm font-medium text-muted-foreground">Total Pendapatan</h3>
                   </div>
-                  <CardContent className="p-0">
-                      {pageLoading ? <Skeleton className="h-7 w-40 mt-1" /> : <div className="text-xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
-                  </CardContent>
+                  {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
                 </div>
                 
                 {/* Penjualan */}
-                <div className="p-4 border-l">
-                   <div className="flex items-center gap-2 mb-1">
+                <div className="p-4 border-l space-y-1">
+                   <div className="flex items-center gap-2">
                     <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
+                    <h3 className="text-sm font-medium text-muted-foreground">Penjualan</h3>
                   </div>
-                  <CardContent className="p-0">
-                      {pageLoading ? <Skeleton className="h-7 w-16 mt-1" /> : <div className="text-xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
-                  </CardContent>
+                  {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-2xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
                 </div>
 
                 {/* Produk Aktif */}
-                 <div className="p-4 border-l">
-                   <div className="flex items-center gap-2 mb-1">
+                 <div className="p-4 border-l space-y-1">
+                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
+                    <h3 className="text-sm font-medium text-muted-foreground">Produk Aktif</h3>
                   </div>
-                  <CardContent className="p-0">
-                      {pageLoading ? <Skeleton className="h-7 w-12 mt-1" /> : <div className="text-xl font-bold">{stats.totalProducts}</div>}
-                  </CardContent>
+                  {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{stats.totalProducts}</div>}
                 </div>
               </div>
             </CardContent>
