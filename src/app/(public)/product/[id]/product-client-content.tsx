@@ -300,7 +300,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
           <Card>
             <CardContent className="pt-4">
-              <p className="text-base text-muted-foreground">{product.description}</p>
+              <p className="text-base text-foreground">{product.description}</p>
             </CardContent>
           </Card>
           
