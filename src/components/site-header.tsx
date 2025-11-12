@@ -191,9 +191,9 @@ export function SiteHeader() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6 hidden sm:block" />
-            <span className="hidden font-bold sm:inline-block font-headline">
+          <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
+            <Logo className="h-6 w-6" />
+            <span className="font-bold font-headline">
               Di
             </span>
           </Link>
