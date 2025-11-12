@@ -122,7 +122,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={product.imageAfterUrl}
+                    src={product.imageAfterUrl || `https://picsum.photos/seed/${product.id}/56/37`}
                     alt={product.name}
                     width={56}
                     height={37}
