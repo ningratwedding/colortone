@@ -47,7 +47,7 @@ function ProductPageClientButtons({
   const ref = searchParams.get('ref');
 
   const userProfileRef = useMemo(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
@@ -264,7 +264,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                  <div className="mt-2 flex items-center gap-3">
                     <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint} />
+                            <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
                             <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
