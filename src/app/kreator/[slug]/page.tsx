@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -164,7 +163,8 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   );
 }
 
-export default function CreatorProfilePage({ params: { slug } }: { params: { slug: string } }) {
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+    const { slug } = params;
     return (
         <>
             <SiteHeader />
