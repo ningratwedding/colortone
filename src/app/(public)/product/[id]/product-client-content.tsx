@@ -302,24 +302,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </CardContent>
           </Card>
           
-          <Card className="rounded-lg">
-            <CardContent className="pt-4 grid gap-3 text-sm">
-                {product.type === 'digital' && (
-                    <div className="flex items-center gap-2">
-                        <Download className="h-4 w-4 text-primary"/>
-                        <span>Unduhan digital instan</span>
-                    </div>
-                )}
-                {product.tags && product.tags.length > 0 && (
-                    <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-primary"/>
-                        <div className="flex flex-wrap gap-1">
-                        {product.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                        </div>
-                    </div>
-                )}
-            </CardContent>
-          </Card>
         </div>
        </div>
        <ProductPageClientButtons product={product} />
