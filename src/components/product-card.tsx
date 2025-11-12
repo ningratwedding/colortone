@@ -99,18 +99,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </Link>
         ) : null}
       </CardContent>
-      <CardFooter className="p-3 pt-0 mt-auto">
-        <div className="flex w-full items-center justify-between">
-          <div className="font-semibold text-base text-primary truncate">
-            {formattedPrice}
-          </div>
-          <Button size="sm" asChild>
-            <Link href={`/checkout?productId=${product.id}`}>
-              <CreditCard className="mr-1.5 h-4 w-4" />
-              Beli
-            </Link>
-          </Button>
+      <CardFooter className="p-3 pt-0 mt-auto flex-col items-start gap-2">
+        <div className="font-semibold text-base text-primary truncate">
+          {formattedPrice}
         </div>
+        <Button size="sm" asChild className="w-full">
+          <Link href={`/checkout?productId=${product.id}`}>
+            <CreditCard className="mr-1.5 h-4 w-4" />
+            Beli
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );
