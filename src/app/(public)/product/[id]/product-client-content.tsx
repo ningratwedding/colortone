@@ -34,93 +34,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
-function ProductPageClientButtons({
-  product,
-}: {
-  product: Product;
-}) {
-  const { user, loading: userLoading } = useUser();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  
-  const searchParams = useSearchParams();
-  const ref = searchParams.get('ref');
-
-  const userProfileRef = useMemo(() => {
-    if (!user || !firestore) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [user, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
-  
-  useEffect(() => {
-    // If a referral code is in the URL, store it in session storage.
-    if (ref) {
-      sessionStorage.setItem('affiliate_ref', ref);
-    }
-  }, [ref]);
-
-  const getCheckoutUrl = () => {
-    if (userLoading) return "#";
-    
-    // Always check session storage for the ref ID.
-    const storedRef = sessionStorage.getItem('affiliate_ref');
-    const refQueryParam = storedRef ? `&ref=${storedRef}` : '';
-    
-    let url = `/checkout?productId=${product.id}${refQueryParam}`;
-    
-    if (user) {
-      return url;
-    }
-    
-    // If not logged in, redirect to login, but carry over the checkout and ref params.
-    return `/login?redirect=${encodeURIComponent(url)}`;
-  };
-
-  const copyAffiliateLink = () => {
-    if (!userProfile?.isAffiliate || !user) {
-       toast({
-        variant: "destructive",
-        title: "Akses Ditolak",
-        description: "Anda harus menjadi mitra afiliasi untuk membuat tautan.",
-      });
-      return;
-    }
-    const link = `${window.location.origin}/product/${product.id}?ref=${user.uid}`;
-    navigator.clipboard.writeText(link);
-    toast({
-      title: "Tautan Afiliasi Disalin",
-      description: `Bagikan tautan untuk produk "${product.name}" dan dapatkan komisi!`,
-    });
-  };
-
-  const loading = userLoading || profileLoading;
-
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
-      <div className="container flex items-center justify-between h-20 px-4">
-        <div className="flex-shrink-0">
-           {/* Price can be shown here if desired, or kept in the main content */}
-        </div>
-         <div className="flex-grow flex justify-end items-center gap-2">
-            <Button size="lg" className="w-full max-w-xs" asChild disabled={loading}>
-                <Link href={getCheckoutUrl()}>
-                    <ShoppingCart className="mr-2 h-4 w-4" /> 
-                    {loading ? "Memuat..." : "Beli Sekarang"}
-                </Link>
-            </Button>
-             {userProfile?.isAffiliate && (
-                <Button size="lg" variant="outline" className="w-auto" onClick={copyAffiliateLink} disabled={loading}>
-                    <Share2 className="mr-2 h-4 w-4" />
-                    Bagikan
-                </Button>
-             )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
 export function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
   const [activeTab, setActiveTab] = useState('gallery');
@@ -146,6 +59,61 @@ export function ProductPageContent({ productId }: { productId: string }) {
   }, [firestore]);
 
   const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
+  
+  // --- Start of logic from ProductPageClientButtons ---
+  const { user, loading: userLoading } = useUser();
+  const { toast } = useToast();
+  
+  const searchParams = useSearchParams();
+  const ref = searchParams.get('ref');
+
+  const userProfileRef = useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+  
+  useEffect(() => {
+    if (ref) {
+      sessionStorage.setItem('affiliate_ref', ref);
+    }
+  }, [ref]);
+
+  const getCheckoutUrl = () => {
+    if (userLoading || !product) return "#";
+    
+    const storedRef = sessionStorage.getItem('affiliate_ref');
+    const refQueryParam = storedRef ? `&ref=${storedRef}` : '';
+    
+    let url = `/checkout?productId=${product.id}${refQueryParam}`;
+    
+    if (user) {
+      return url;
+    }
+    
+    return `/login?redirect=${encodeURIComponent(url)}`;
+  };
+
+  const copyAffiliateLink = () => {
+    if (!userProfile?.isAffiliate || !user || !product) {
+       toast({
+        variant: "destructive",
+        title: "Akses Ditolak",
+        description: "Anda harus menjadi mitra afiliasi untuk membuat tautan.",
+      });
+      return;
+    }
+    const link = `${window.location.origin}/product/${product.id}?ref=${user.uid}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Tautan Afiliasi Disalin",
+      description: `Bagikan tautan untuk produk "${product.name}" dan dapatkan komisi!`,
+    });
+  };
+
+  const buttonLoading = userLoading || profileLoading;
+  // --- End of logic from ProductPageClientButtons ---
+
 
   const compatibleSoftwareDetails = useMemo(() => {
     if (!product?.compatibleSoftware || !softwareList) return [];
@@ -204,7 +172,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
   const comparisonImage = product.imageAfterUrl;
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-28">
+    <div className="container mx-auto px-4 py-6 pb-28 md:pb-6">
        <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
            {activeTab === 'gallery' && (
@@ -262,6 +230,24 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
         <div className="flex flex-col gap-3">
           <div>
+             {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+                <TooltipProvider>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pb-2">
+                    {compatibleSoftwareDetails.map(s => (
+                        <Tooltip key={s.id}>
+                            <TooltipTrigger>
+                                {s.icon ? (
+                                    <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                                ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{s.name}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    ))}
+                  </div>
+                </TooltipProvider>
+            )}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
               {product.name}
             </h1>
@@ -279,34 +265,48 @@ export function ProductPageContent({ productId }: { productId: string }) {
           </div>
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
           
-           {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-                <TooltipProvider>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
-                    {compatibleSoftwareDetails.map(s => (
-                        <Tooltip key={s.id}>
-                            <TooltipTrigger>
-                                {s.icon ? (
-                                    <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
-                                ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{s.name}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    ))}
-                  </div>
-                </TooltipProvider>
-            )}
-
           <Card>
             <CardContent className="pt-4">
               <p className="text-base text-foreground">{product.description}</p>
             </CardContent>
           </Card>
-          
+
+           {/* Buttons - displayed statically on desktop */}
+           <div className="hidden md:flex flex-grow items-center gap-2">
+            <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
+                <Link href={getCheckoutUrl()}>
+                    <ShoppingCart className="mr-2 h-4 w-4" /> 
+                    {buttonLoading ? "Memuat..." : "Beli Sekarang"}
+                </Link>
+            </Button>
+             {userProfile?.isAffiliate && (
+                <Button size="lg" variant="outline" className="w-auto" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Bagikan
+                </Button>
+             )}
+            </div>
         </div>
        </div>
-       <ProductPageClientButtons product={product} />
+
+       {/* Sticky bottom bar for mobile */}
+       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
+        <div className="container flex items-center justify-between h-20 px-4">
+            <div className="flex-grow flex justify-end items-center gap-2">
+                <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
+                    <Link href={getCheckoutUrl()}>
+                        <ShoppingCart className="mr-2 h-4 w-4" /> 
+                        {buttonLoading ? "Memuat..." : "Beli Sekarang"}
+                    </Link>
+                </Button>
+                {userProfile?.isAffiliate && (
+                    <Button size="icon" variant="outline" className="w-12 h-12" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                        <Share2 className="h-5 w-5" />
+                    </Button>
+                )}
+            </div>
+        </div>
+      </div>
     </div>
   );
 }
