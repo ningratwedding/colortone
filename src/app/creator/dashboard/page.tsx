@@ -259,10 +259,10 @@ export default function DashboardPage() {
       
       {/* Right Column */}
       <div className="lg:col-span-3 space-y-4">
-        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground h-full">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
             <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
             <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
-            <div className="relative z-10 h-full flex flex-col">
+            <div className="relative z-10 flex flex-col">
             <CardHeader>
                 <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-primary-foreground/80">
@@ -357,4 +357,4 @@ export default function DashboardPage() {
     </div>
   );
 
-    
+}
