@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -328,7 +327,7 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
                             {softwareLoading ? Array.from({length: 4}).map((_, i) => <Button key={i} type="button" disabled variant="outline" size="sm"><Loader2 className="animate-spin h-4 w-4" /></Button>) :
                             softwareList?.map((s) => (
                                 <Button key={s.id} type="button" variant={selectedSoftware.includes(s.name) ? "default" : "outline"} size="sm" onClick={() => field.onChange(selectedSoftware.includes(s.name) ? selectedSoftware.filter(name => name !== s.name) : [...selectedSoftware, s.name])} className="flex items-center justify-center gap-2">
-                                    {s.icon && <div className="h-4 w-4 flex-shrink-0" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                                    {s.icon && <img src={s.icon} alt={s.name} className="h-4 w-4 object-contain" />}
                                     <span className="truncate">{s.name}</span>
                                 </Button>
                             ))}
@@ -412,5 +411,3 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
     </Dialog>
   );
 }
-
-    

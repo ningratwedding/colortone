@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -39,6 +38,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const formSchema = z.object({
@@ -357,28 +357,39 @@ export default function UploadPage() {
                     control={control}
                     render={({ field }) => (
                         <div className="grid gap-1.5">
-                            <Label>Perangkat Lunak yang Kompatibel (untuk produk digital)</Label>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                            {softwareLoading ? Array.from({length: 4}).map((_, i) => <Button key={i} type="button" disabled variant="outline" size="sm"><Loader2 className="animate-spin h-4 w-4" /></Button>) :
-                                softwareList?.map((s) => (
-                                    <Button
-                                        key={s.id}
-                                        type="button"
-                                        variant={selectedSoftware.includes(s.name) ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => {
-                                            const newValue = selectedSoftware.includes(s.name)
-                                            ? selectedSoftware.filter(name => name !== s.name)
-                                            : [...selectedSoftware, s.name];
-                                            field.onChange(newValue);
-                                        }}
-                                        className="flex items-center justify-center gap-2"
-                                    >
-                                        {s.icon && <div className="h-4 w-4 flex-shrink-0" dangerouslySetInnerHTML={{ __html: s.icon }} />}
-                                        <span className="truncate">{s.name}</span>
-                                    </Button>
-                                ))}
-                            </div>
+                            <Label>Perangkat Lunak yang Kompatibel</Label>
+                            <TooltipProvider>
+                                <div className="flex flex-wrap gap-2">
+                                {softwareLoading ? Array.from({length: 4}).map((_, i) => <Button key={i} type="button" disabled variant="outline" size="icon" className="h-10 w-10"><Loader2 className="animate-spin h-4 w-4" /></Button>) :
+                                    softwareList?.map((s) => (
+                                        <Tooltip key={s.id}>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant={selectedSoftware.includes(s.name) ? "default" : "outline"}
+                                                    size="icon"
+                                                    onClick={() => {
+                                                        const newValue = selectedSoftware.includes(s.name)
+                                                        ? selectedSoftware.filter(name => name !== s.name)
+                                                        : [...selectedSoftware, s.name];
+                                                        field.onChange(newValue);
+                                                    }}
+                                                    className="h-10 w-10"
+                                                >
+                                                    {s.icon ? (
+                                                        <img src={s.icon} alt={s.name} className="h-5 w-5 object-contain" />
+                                                    ) : (
+                                                        <span className="text-xs">{s.name.substring(0, 2)}</span>
+                                                    )}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{s.name}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    ))}
+                                </div>
+                            </TooltipProvider>
                             {errors.compatibleSoftware && <p className="text-xs text-destructive">{errors.compatibleSoftware.message}</p>}
                         </div>
                     )}
