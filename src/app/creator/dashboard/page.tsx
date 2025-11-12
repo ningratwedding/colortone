@@ -80,6 +80,7 @@ export default function DashboardPage() {
       try {
         // Fetch creator's products and all orders in parallel
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+        
         const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
         
         const [productsSnapshot, allOrdersSnapshot] = await Promise.all([
@@ -184,111 +185,38 @@ export default function DashboardPage() {
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
 
       {/* Left Column */}
-      <div className="lg:col-span-4">
-        <Card>
-           <CardHeader>
-            <CardTitle>Ringkasan Pendapatan</CardTitle>
-            <CardDescription>
-              Ringkasan penjualan dan produk Anda selama 6 bulan terakhir.
-            </CardDescription>
-            {/* Pills for mobile */}
-            <div className="flex flex-wrap items-center gap-2 pt-4 md:hidden">
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{formatCurrency(stats.totalRevenue)}</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{stats.totalSales.toLocaleString('id-ID')} Penjualan</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{stats.totalProducts} Produk</span>
-              </div>
-            </div>
-
-             {/* Desktop View - Single Card with 3 stats */}
-             <div className="hidden md:grid md:grid-cols-3 pt-4">
-                <div className="p-4 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-medium text-muted-foreground">Total Pendapatan</h3>
-                  </div>
-                  {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
-                </div>
-                
-                <div className="p-4 border-l space-y-1">
-                   <div className="flex items-center gap-2">
-                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-medium text-muted-foreground">Penjualan</h3>
-                  </div>
-                  {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-2xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
-                </div>
-
-                 <div className="p-4 border-l space-y-1">
-                   <div className="flex items-center gap-2">
-                    <Package className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-medium text-muted-foreground">Produk Aktif</h3>
-                  </div>
-                  {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{stats.totalProducts}</div>}
-                </div>
-              </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              {pageLoading ? <Skeleton className="h-full w-full" /> : (
-                <BarChart data={monthlyRevenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(value) => formatCompact(value as number)} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderColor: "hsl(var(--border))",
-                    }}
-                    formatter={(value) => formatTooltip(value as number)}
-                  />
-                  <Legend />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Right Column */}
       <div className="lg:col-span-3 space-y-4">
-        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
-            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
-            <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
-            <div className="relative z-10 flex flex-col">
-            <CardHeader>
-                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-primary-foreground/80">
-                    Total Saldo
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+        <div>
+            <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
+                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
+                <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
+                <div className="relative z-10 flex flex-col">
+                <CardHeader>
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-primary-foreground/80">
+                        Total Saldo
+                    </CardTitle>
+                    <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+                    </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                    {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
+                    <p className="text-xs text-primary-foreground/80">
+                    Saldo yang tersedia untuk ditarik.
+                    </p>
+                </CardContent>
+                <CardFooter>
+                    <Button 
+                        className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                        onClick={handleWithdraw}
+                        disabled={pageLoading}
+                    >
+                        Tarik Dana
+                    </Button>
+                </CardFooter>
                 </div>
-            </CardHeader>
-            <CardContent className="flex-grow">
-                {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
-                <p className="text-xs text-primary-foreground/80">
-                Saldo yang tersedia untuk ditarik.
-                </p>
-            </CardContent>
-            <CardFooter>
-                <Button 
-                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                    onClick={handleWithdraw}
-                    disabled={pageLoading}
-                >
-                    Tarik Dana
-                </Button>
-            </CardFooter>
-            </div>
-        </Card>
-        
+            </Card>
+        </div>
         <Card>
           <CardHeader>
             <CardTitle>Pesanan Terbaru</CardTitle>
@@ -354,6 +282,80 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Right Column */}
+      <div className="lg:col-span-4">
+        <Card className="flex flex-col h-full">
+           <CardHeader>
+            <CardTitle>Ringkasan Pendapatan</CardTitle>
+            <CardDescription>
+              Ringkasan penjualan dan produk Anda selama 6 bulan terakhir.
+            </CardDescription>
+            {/* Pills for mobile */}
+            <div className="flex flex-wrap items-center gap-2 pt-4 md:hidden">
+              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{formatCurrency(stats.totalRevenue)}</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{stats.totalSales.toLocaleString('id-ID')} Penjualan</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
+                <Package className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{stats.totalProducts} Produk</span>
+              </div>
+            </div>
+
+             {/* Desktop View - Single Card with 3 stats */}
+             <div className="hidden md:grid md:grid-cols-3 pt-4">
+                <div className="p-4 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <h3 className="text-sm font-medium text-muted-foreground">Total Pendapatan</h3>
+                  </div>
+                  {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
+                </div>
+                
+                <div className="p-4 border-l space-y-1">
+                   <div className="flex items-center gap-2">
+                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                    <h3 className="text-sm font-medium text-muted-foreground">Penjualan</h3>
+                  </div>
+                  {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-2xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
+                </div>
+
+                 <div className="p-4 border-l space-y-1">
+                   <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <h3 className="text-sm font-medium text-muted-foreground">Produk Aktif</h3>
+                  </div>
+                  {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{stats.totalProducts}</div>}
+                </div>
+              </div>
+          </CardHeader>
+          <CardContent className="flex-grow">
+            <ResponsiveContainer width="100%" height={300}>
+              {pageLoading ? <Skeleton className="h-full w-full" /> : (
+                <BarChart data={monthlyRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(value) => formatCompact(value as number)} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      borderColor: "hsl(var(--border))",
+                    }}
+                    formatter={(value) => formatTooltip(value as number)}
+                  />
+                  <Legend />
+                  <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+      
     </div>
   );
 
