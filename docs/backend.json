@@ -191,7 +191,7 @@
         },
         "affiliateId": {
             "type": "string",
-            "description": "The ID of the affiliate user who referred this purchase. This field is optional and only present if the sale was referred."
+            "description": "The ID of the affiliate user who referred this purchase. This field is optional and only present if the sale was referred by a valid affiliate."
         },
         "purchaseDate": {
           "type": "string",
