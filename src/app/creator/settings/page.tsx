@@ -281,7 +281,7 @@ export default function SettingsPage() {
                   </CardDescription>
                 </div>
                 <Link
-                  href={`/creator/${userProfile.slug}`}
+                  href={`/kreator/${userProfile.slug}`}
                   className="text-sm font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Lihat Profil Saya
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                         onChange={handleAvatarChange}
                     />
                   <Button onClick={() => fileInputRef.current?.click()}>Ubah Foto</Button>
-                  <Button variant="outline" onClick={() => { setAvatarPreview(undefined); setAvatarFile(null)}}>Hapus</Button>
+                  <Button variant="outline" onClick={() => { setAvatarPreview(null); setAvatarFile(null)}}>Hapus</Button>
                 </div>
               </div>
               <div className="grid gap-2">
