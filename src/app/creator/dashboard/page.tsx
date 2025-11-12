@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -7,6 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { DollarSign, Package, ShoppingCart, ArrowUpRight } from 'lucide-react';
 import {
@@ -22,14 +22,13 @@ import {
 import { useEffect, useState, useMemo } from 'react';
 import { useFirestore } from '@/firebase/provider';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, where, getDocs, collectionGroup, orderBy, limit as firestoreLimit } from 'firebase/firestore';
+import { collection, query, where, getDocs, collectionGroup, limit as firestoreLimit } from 'firebase/firestore';
 import type { Order, Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -126,7 +125,9 @@ export default function DashboardPage() {
         if (fetchedRecentOrders.length > 0) {
           const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))];
           if(customerIds.length > 0) {
-            const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds.map(id => `users/${id}`)));
+            // Firestore 'in' queries are limited to 30 elements.
+            // We'll assume for recent orders this is fine. For a larger scale app, chunking would be needed.
+            const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds));
             const customersSnapshot = await getDocs(customersQuery);
             const customersData: Record<string, UserProfile> = {};
             customersSnapshot.forEach(doc => {
