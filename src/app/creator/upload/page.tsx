@@ -177,6 +177,12 @@ export default function UploadPage() {
   
   const selectedSoftware = watch('compatibleSoftware') || [];
   const productType = watch('type');
+  
+  const filteredCategories = useMemo(() => {
+    if (!categories) return [];
+    if (!productType) return categories; // Show all if no type is selected yet
+    return categories.filter(cat => cat.type === productType || cat.type === 'semua');
+  }, [categories, productType]);
 
 
   const onSubmit = async (data: FormData) => {
@@ -308,15 +314,15 @@ export default function UploadPage() {
                 render={({ field }) => (
                   <div className="grid gap-1.5">
                     <Label htmlFor="category">Kategori</Label>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={categoriesLoading}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={categoriesLoading || !productType}>
                       <SelectTrigger id="category">
-                        <SelectValue placeholder="Pilih kategori" />
+                        <SelectValue placeholder={!productType ? "Pilih jenis produk dulu" : "Pilih kategori"} />
                       </SelectTrigger>
                       <SelectContent>
                         {categoriesLoading ? (
                             <SelectItem value="loading" disabled>Memuat kategori...</SelectItem>
                         ) : (
-                            categories?.map((c) => (
+                            filteredCategories.map((c) => (
                             <SelectItem key={c.id} value={c.slug}>
                                 {c.name}
                             </SelectItem>
