@@ -41,7 +41,6 @@ function ProductPageClientButtons({
 }) {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const [formattedPrice, setFormattedPrice] = useState<string>("");
   const { toast } = useToast();
   
   const searchParams = useSearchParams();
@@ -52,17 +51,6 @@ function ProductPageClientButtons({
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
-
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      }).format(amount);
-    };
-    setFormattedPrice(formatCurrency(product.price));
-  }, [product.price]);
   
   useEffect(() => {
     // If a referral code is in the URL, store it in session storage.
@@ -108,25 +96,27 @@ function ProductPageClientButtons({
   const loading = userLoading || profileLoading;
 
   return (
-    <>
-      <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-      <div className="flex flex-col gap-2">
-         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-            <Button size="lg" className="w-full sm:col-span-4" asChild disabled={loading}>
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
+      <div className="container flex items-center justify-between h-20 px-4">
+        <div className="flex-shrink-0">
+           {/* Price can be shown here if desired, or kept in the main content */}
+        </div>
+         <div className="flex-grow flex justify-end items-center gap-2">
+            <Button size="lg" className="w-full max-w-xs" asChild disabled={loading}>
                 <Link href={getCheckoutUrl()}>
                     <ShoppingCart className="mr-2 h-4 w-4" /> 
                     {loading ? "Memuat..." : "Beli Sekarang"}
                 </Link>
             </Button>
              {userProfile?.isAffiliate && (
-                <Button size="lg" variant="outline" className="w-full" onClick={copyAffiliateLink} disabled={loading}>
+                <Button size="lg" variant="outline" className="w-auto" onClick={copyAffiliateLink} disabled={loading}>
                     <Share2 className="mr-2 h-4 w-4" />
                     Bagikan
                 </Button>
              )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -134,6 +124,7 @@ function ProductPageClientButtons({
 export function ProductPageContent({ productId }: { productId: string }) {
   const firestore = useFirestore();
   const [activeTab, setActiveTab] = useState('gallery');
+  const [formattedPrice, setFormattedPrice] = useState<string>("");
   
   const productRef = useMemo(() => {
     if (!firestore || !productId) return null;
@@ -162,6 +153,19 @@ export function ProductPageContent({ productId }: { productId: string }) {
         .map(name => softwareList.find(s => s.name === name))
         .filter((s): s is Software => !!s);
   }, [product, softwareList]);
+
+  useEffect(() => {
+    if (product) {
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(amount);
+      };
+      setFormattedPrice(formatCurrency(product.price));
+    }
+  }, [product]);
 
 
   if (productLoading || creatorLoading || softwareLoading) {
@@ -200,7 +204,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
   const comparisonImage = product.imageAfterUrl;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 pb-28">
        <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
         <div>
            {activeTab === 'gallery' && (
@@ -291,10 +295,9 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 </div>
             )}
           </div>
+          <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
           <p className="text-base text-muted-foreground">{product.description}</p>
           
-          <ProductPageClientButtons product={product} />
-
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
                 {product.type === 'digital' && (
@@ -315,6 +318,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
           </Card>
         </div>
        </div>
+       <ProductPageClientButtons product={product} />
     </div>
   );
 }
