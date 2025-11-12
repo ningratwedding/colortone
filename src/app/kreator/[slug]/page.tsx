@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -11,12 +12,14 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useDoc, useCollection } from '@/firebase/firestore/use-doc'; // Assuming these are correct paths
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where, limit, getDocs, doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -157,16 +160,16 @@ function CreatorProfileContent({ slug }: { slug: string }) {
         )}
       </main>
     </div>
-    <SiteFooter />
     </>
   );
 }
 
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default function CreatorProfilePage({ params: { slug } }: { params: { slug: string } }) {
     return (
         <>
+            <SiteHeader />
             <CreatorProfileContent slug={slug} />
+            <SiteFooter />
         </>
     )
 }
