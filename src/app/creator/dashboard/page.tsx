@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -80,13 +81,15 @@ export default function DashboardPage() {
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
         
         const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
-        const recentOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid), firestoreLimit(5));
         
-        const [productsSnapshot, allOrdersSnapshot, recentOrdersSnapshot] = await Promise.all([
+        const [productsSnapshot, allOrdersSnapshot] = await Promise.all([
           getDocs(productsQuery),
           getDocs(allOrdersQuery),
-          getDocs(recentOrdersQuery),
         ]);
+        
+        const recentOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid), firestoreLimit(5));
+        const recentOrdersSnapshot = await getDocs(recentOrdersQuery);
+
 
         const creatorProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         const creatorOrders = allOrdersSnapshot.docs.map(doc => doc.data() as Order);
@@ -182,7 +185,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
-        
         <div className="order-first md:order-last md:col-span-1">
             <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground h-full">
                 <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
@@ -215,36 +217,17 @@ export default function DashboardPage() {
             </Card>
         </div>
 
-        <div className="md:col-span-3">
-          <Card>
-            <CardContent className="p-0">
-               {/* Mobile View - Pills */}
-              <div className="md:hidden p-4 space-y-3">
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <DollarSign className="h-5 w-5 text-muted-foreground" />
-                          <span className="text-sm font-medium">Pendapatan</span>
-                      </div>
-                      {pageLoading ? <Skeleton className="h-6 w-24" /> : <div className="text-base font-bold">{formatCurrency(stats.totalRevenue)}</div>}
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <ShoppingCart className="h-5 w-5 text-muted-foreground" />
-                          <span className="text-sm font-medium">Penjualan</span>
-                      </div>
-                      {pageLoading ? <Skeleton className="h-6 w-12" /> : <div className="text-base font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <Package className="h-5 w-5 text-muted-foreground" />
-                          <span className="text-sm font-medium">Produk Aktif</span>
-                      </div>
-                      {pageLoading ? <Skeleton className="h-6 w-8" /> : <div className="text-base font-bold">{stats.totalProducts}</div>}
-                  </div>
-              </div>
-              
-               {/* Desktop View - Single Card with 3 stats */}
-              <div className="hidden md:grid md:grid-cols-3">
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
+           <CardHeader>
+            <CardTitle>Ringkasan Pendapatan</CardTitle>
+            <CardDescription>
+              Ringkasan penjualan dan produk Anda selama 6 bulan terakhir.
+            </CardDescription>
+             {/* Desktop View - Single Card with 3 stats */}
+             <div className="hidden md:grid md:grid-cols-3 pt-4">
                 {/* Total Pendapatan */}
                 <div className="p-4 space-y-1">
                   <div className="flex items-center gap-2">
@@ -272,16 +255,6 @@ export default function DashboardPage() {
                   {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{stats.totalProducts}</div>}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Pendapatan Bulanan</CardTitle>
-            <CardDescription>Ringkasan penjualan Anda selama 6 bulan terakhir.</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -373,3 +346,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
