@@ -88,7 +88,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 <Skeleton className="h-4 w-24" />
             </div>
         ) : creator ? (
-          <Link href={`/creator/${creator.slug}`} className="flex items-center gap-2 mt-2 group/creator">
+          <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 mt-2 group/creator">
             <Avatar className="h-6 w-6">
               <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
               <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
