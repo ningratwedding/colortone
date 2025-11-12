@@ -4,9 +4,6 @@
 import Image from "next/image";
 import { notFound, useSearchParams } from "next/navigation";
 import {
-  CheckCircle,
-  Tag,
-  Download,
   ShoppingCart,
   Share2,
 } from "lucide-react";
@@ -17,7 +14,6 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -29,7 +25,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -171,7 +166,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   return (
     <div className="container mx-auto px-4 py-6 pb-28 md:pb-6">
-       <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
+       <div className="grid md:grid-cols-2 gap-2 md:gap-4 lg:gap-6">
         <div>
            {activeTab === 'gallery' && (
               <Carousel className="w-full">
@@ -226,7 +221,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2 md:gap-3">
           {creator && (
             <div className="flex items-center gap-3">
               <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
@@ -261,7 +256,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
              )}
             </div>
 
-          <Card className="mt-2">
+          <Card>
             <CardContent className="pt-4">
               <p className="text-base text-foreground">{product.description}</p>
             </CardContent>
