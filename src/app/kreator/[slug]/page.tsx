@@ -1,13 +1,10 @@
-'use client';
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { CheckCircle, Tag, Download, ShoppingCart, Share2, Instagram, Facebook, Globe } from 'lucide-react';
-import { useMemo, useEffect, useState } from 'react';
+import { Globe, Instagram, Facebook } from 'lucide-react';
+import { useMemo, useEffect, useState, use } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,6 +16,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
+import * as React from 'react';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -52,6 +50,8 @@ const socialIcons = {
 type SocialPlatform = keyof typeof socialIcons;
 
 function CreatorProfileContent({ slug }: { slug: string }) {
+  'use client';
+  
   const firestore = useFirestore();
   const [creator, setCreator] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -163,8 +163,8 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   );
 }
 
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default function CreatorProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = React.use(params);
     return (
         <>
             <SiteHeader />
