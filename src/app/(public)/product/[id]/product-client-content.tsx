@@ -27,6 +27,7 @@ import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Separator } from "@/components/ui/separator";
 
 
 export function ProductPageContent({ productId }: { productId: string }) {
@@ -222,26 +223,15 @@ export function ProductPageContent({ productId }: { productId: string }) {
         </div>
 
         <div className="flex flex-col gap-2 md:gap-3">
-          {creator && (
-            <div className="flex items-center gap-3">
-              <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
-                  <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
-              </Link>
-            </div>
-          )}
 
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-          
+
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
             {product.name}
           </h1>
 
            {/* Buttons - displayed on desktop */}
-           <div className="hidden md:flex items-center gap-2 pt-2">
+           <div className="hidden md:flex items-center gap-2 pt-2 mb-2">
             <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
                 <Link href={getCheckoutUrl()}>
                     <ShoppingCart className="mr-2 h-4 w-4" /> 
@@ -255,31 +245,45 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 </Button>
              )}
             </div>
-
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-base text-foreground">{product.description}</p>
-            </CardContent>
-          </Card>
           
-          {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-            <TooltipProvider>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                {compatibleSoftwareDetails.map(s => (
-                    <Tooltip key={s.id}>
-                        <TooltipTrigger>
-                            {s.icon ? (
-                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
-                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{s.name}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
-              </div>
-            </TooltipProvider>
-          )}
+          <div className="flex flex-col gap-3">
+              <Separator />
+              {creator && (
+                <div className="flex items-center gap-3">
+                  <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
+                      <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
+                  </Link>
+                </div>
+              )}
+              <Card>
+                <CardContent className="p-3">
+                  <p className="text-base text-foreground">{product.description}</p>
+                </CardContent>
+              </Card>
+              
+              {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+                <TooltipProvider>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    {compatibleSoftwareDetails.map(s => (
+                        <Tooltip key={s.id}>
+                            <TooltipTrigger>
+                                {s.icon ? (
+                                    <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                                ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{s.name}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    ))}
+                  </div>
+                </TooltipProvider>
+              )}
+          </div>
 
         </div>
        </div>
