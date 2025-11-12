@@ -247,27 +247,27 @@ export function ProductPageContent({ productId }: { productId: string }) {
           </div>
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
             
-            {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-                <TooltipProvider>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    {compatibleSoftwareDetails.map(s => (
-                        <Tooltip key={s.id}>
-                            <TooltipTrigger>
-                                {s.icon ? (
-                                    <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
-                                ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{s.name}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    ))}
-                  </div>
-                </TooltipProvider>
-            )}
+          {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+            <TooltipProvider>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                {compatibleSoftwareDetails.map(s => (
+                    <Tooltip key={s.id}>
+                        <TooltipTrigger>
+                            {s.icon ? (
+                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{s.name}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                ))}
+              </div>
+            </TooltipProvider>
+          )}
           
-           {/* Buttons - displayed statically on desktop */}
-           <div className="hidden md:flex flex-grow items-center">
+           {/* Buttons - displayed on desktop */}
+           <div className="hidden md:flex items-center gap-2 pt-2">
             <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
                 <Link href={getCheckoutUrl()}>
                     <ShoppingCart className="mr-2 h-4 w-4" /> 
@@ -275,14 +275,14 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 </Link>
             </Button>
              {userProfile?.isAffiliate && (
-                <Button size="lg" variant="outline" className="w-auto ml-2" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                <Button size="lg" variant="outline" className="w-auto" onClick={copyAffiliateLink} disabled={buttonLoading}>
                     <Share2 className="mr-2 h-4 w-4" />
                     Bagikan
                 </Button>
              )}
             </div>
 
-          <Card>
+          <Card className="mt-2">
             <CardContent className="pt-4">
               <p className="text-base text-foreground">{product.description}</p>
             </CardContent>
