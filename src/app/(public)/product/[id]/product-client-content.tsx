@@ -31,6 +31,7 @@ import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 function ProductPageClientButtons({
@@ -281,17 +282,23 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                     <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-primary flex-shrink-0"/>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                            <span className="font-medium">Kompatibel dengan:</span>
-                            {compatibleSoftwareDetails.map(s => (
-                                <div key={s.id} className="flex items-center gap-1.5 text-muted-foreground">
-                                    {s.icon ? (
-                                        <img src={s.icon} alt={`${s.name} icon`} className="h-4 w-4 object-contain" />
-                                    ) : <div className="h-4 w-4 bg-muted rounded-sm" />}
-                                    <span>{s.name}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <TooltipProvider>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <span className="font-medium">Kompatibel dengan:</span>
+                                {compatibleSoftwareDetails.map(s => (
+                                    <Tooltip key={s.id}>
+                                        <TooltipTrigger>
+                                            {s.icon ? (
+                                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{s.name}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                ))}
+                            </div>
+                        </TooltipProvider>
                     </div>
                 )}
                 {product.type === 'digital' && (
