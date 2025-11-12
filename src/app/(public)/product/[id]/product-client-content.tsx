@@ -296,7 +296,11 @@ export function ProductPageContent({ productId }: { productId: string }) {
             )}
           </div>
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-          <p className="text-base text-muted-foreground">{product.description}</p>
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-base text-muted-foreground">{product.description}</p>
+            </CardContent>
+          </Card>
           
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
@@ -322,4 +326,3 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
-
