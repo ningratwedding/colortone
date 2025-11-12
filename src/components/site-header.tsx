@@ -30,7 +30,6 @@ import { Input } from '@/components/ui/input';
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
@@ -192,7 +191,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6 hidden sm:block" />
+            <Logo className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">
               Di
             </span>
