@@ -190,9 +190,8 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="hidden h-6 w-6 sm:block" />
             <span className="hidden font-bold sm:inline-block font-headline">
-              Di
+              
             </span>
           </Link>
         </div>
