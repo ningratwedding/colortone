@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe, Loader2, Copy } from 'lucide-react';
+import { Instagram, Facebook, PlusCircle, Trash2, Globe, Loader2, Copy } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -133,7 +133,6 @@ export default function SettingsPage() {
   // Loading States
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingBankInfo, setIsSavingBankInfo] = useState(false);
-  const [formattedBalance, setFormattedBalance] = useState('');
 
    useEffect(() => {
     if (userProfile) {
@@ -148,14 +147,6 @@ export default function SettingsPage() {
       setAccountNumber(userProfile.accountNumber || '');
     }
   }, [userProfile]);
-
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-    // Placeholder balance, replace with actual data when available
-    setFormattedBalance(formatCurrency(2500000));
-  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -247,14 +238,6 @@ export default function SettingsPage() {
         return newSocials;
     });
   };
-
-  const handleWithdraw = () => {
-    toast({
-        title: "Permintaan Penarikan Diterima",
-        description: "Tim kami akan menghubungi Anda melalui email dalam 1-2 hari kerja untuk memproses penarikan dana Anda. Terima kasih!",
-        duration: 8000,
-    })
-  }
 
   const copyProfileLink = () => {
     if (!userProfile) return;
@@ -414,39 +397,6 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          {/* Total Balance */}
-          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
-            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
-            <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
-            <div className="relative z-10">
-              <CardHeader>
-                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-primary-foreground/80">
-                    Total Saldo
-                  </CardTitle>
-                  <DollarSign className="h-4 w-4 text-primary-foreground/80" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formattedBalance}</div>
-                <p className="text-xs text-primary-foreground/80">
-                  Saldo yang tersedia untuk ditarik.
-                </p>
-              </CardContent>
-              <CardFooter className="flex-col items-start gap-2">
-                <Button 
-                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                    onClick={handleWithdraw}
-                >
-                    Tarik Dana
-                </Button>
-                <p className="text-xs text-primary-foreground/80 text-center w-full">
-                    Penarikan diproses secara manual dalam 1-2 hari kerja.
-                </p>
-              </CardFooter>
-            </div>
-          </Card>
-
           {/* Payment Settings */}
           <Card>
             <CardHeader>

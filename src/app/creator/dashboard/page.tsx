@@ -27,10 +27,13 @@ import type { Order, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState({
@@ -40,6 +43,23 @@ export default function DashboardPage() {
   });
 
   const [monthlyRevenueData, setMonthlyRevenueData] = useState<{ month: string; revenue: number }[]>([]);
+  const [formattedBalance, setFormattedBalance] = useState('');
+
+  useEffect(() => {
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+    };
+    // Placeholder balance, replace with actual data when available
+    setFormattedBalance(formatCurrency(2500000));
+  }, []);
+
+  const handleWithdraw = () => {
+    toast({
+        title: "Permintaan Penarikan Diterima",
+        description: "Tim kami akan menghubungi Anda melalui email dalam 1-2 hari kerja untuk memproses penarikan dana Anda. Terima kasih!",
+        duration: 8000,
+    })
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,7 +135,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
@@ -146,6 +166,35 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">Jumlah produk yang Anda jual.</p>
           </CardContent>
         </Card>
+        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground lg:col-span-1">
+            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
+            <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
+            <div className="relative z-10 h-full flex flex-col">
+              <CardHeader>
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-primary-foreground/80">
+                    Total Saldo
+                  </CardTitle>
+                  <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+                </div>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
+                <p className="text-xs text-primary-foreground/80">
+                  Saldo yang tersedia untuk ditarik.
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                    onClick={handleWithdraw}
+                    disabled={pageLoading}
+                >
+                    Tarik Dana
+                </Button>
+              </CardFooter>
+            </div>
+          </Card>
       </div>
 
       <Card>
