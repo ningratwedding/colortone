@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { DollarSign, Package, ShoppingCart } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, ArrowUpRight } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -23,14 +23,18 @@ import {
 import { useEffect, useState, useMemo } from 'react';
 import { useFirestore } from '@/firebase/provider';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, where, getDocs, collectionGroup } from 'firebase/firestore';
-import type { Order, Product } from '@/lib/data';
+import { collection, query, where, getDocs, collectionGroup, orderBy, limit as firestoreLimit } from 'firebase/firestore';
+import type { Order, Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
@@ -43,6 +47,10 @@ export default function DashboardPage() {
     totalSales: 0,
     totalProducts: 0,
   });
+
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   const [monthlyRevenueData, setMonthlyRevenueData] = useState<{ month: string; revenue: number }[]>([]);
   const [formattedBalance, setFormattedBalance] = useState('');
@@ -67,22 +75,25 @@ export default function DashboardPage() {
     const fetchData = async () => {
       if (!firestore || !user) return;
       setLoading(true);
+      setOrdersLoading(true);
 
       try {
         // Fetch creator's products and all orders in parallel
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
-        // Fetch all orders and filter on the client. This avoids the index error while the index is being created.
-        const ordersQuery = query(collectionGroup(firestore, 'orders'));
         
-        const [productsSnapshot, ordersSnapshot] = await Promise.all([
+        // This query is inefficient. A collectionGroup query is better.
+        // We will switch to a collectionGroup query to fetch recent orders.
+        const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+        const recentOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid), orderBy('purchaseDate', 'desc'), firestoreLimit(5));
+        
+        const [productsSnapshot, allOrdersSnapshot, recentOrdersSnapshot] = await Promise.all([
           getDocs(productsQuery),
-          getDocs(ordersQuery),
+          getDocs(allOrdersQuery),
+          getDocs(recentOrdersQuery),
         ]);
 
         const creatorProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-        // Filter orders on the client side
-        const creatorOrders = ordersSnapshot.docs.map(doc => doc.data() as Order).filter(order => order.creatorId === user.uid);
-
+        const creatorOrders = allOrdersSnapshot.docs.map(doc => doc.data() as Order);
 
         // Calculate stats
         const totalRevenue = creatorOrders.reduce((acc, order) => acc + order.amount, 0);
@@ -109,10 +120,26 @@ export default function DashboardPage() {
         });
         setMonthlyRevenueData(revenueByMonth);
 
+        // Process recent orders
+        const fetchedRecentOrders = recentOrdersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+        setRecentOrders(fetchedRecentOrders);
+
+        if (fetchedRecentOrders.length > 0) {
+          const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))];
+          const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds.map(id => `users/${id}`)));
+          const customersSnapshot = await getDocs(customersQuery);
+          const customersData: Record<string, UserProfile> = {};
+          customersSnapshot.forEach(doc => {
+            customersData[doc.id] = {id: doc.id, ...doc.data()} as UserProfile;
+          });
+          setCustomers(customersData);
+        }
+
       } catch (error) {
         console.error("Error fetching creator dashboard data:", error);
       } finally {
         setLoading(false);
+        setOrdersLoading(false);
       }
     };
 
@@ -134,6 +161,21 @@ export default function DashboardPage() {
   };
   
   const pageLoading = userLoading || loading;
+
+  const getStatusBadge = (status: Order['status']) => {
+    switch (status) {
+        case 'Selesai':
+            return <Badge className="bg-green-600 hover:bg-green-700">Selesai</Badge>;
+        case 'Menunggu Pembayaran':
+             return <Badge variant="secondary">Menunggu Pembayaran</Badge>;
+        case 'Diproses':
+            return <Badge variant="secondary">Diproses</Badge>;
+        case 'Dibatalkan':
+            return <Badge variant="destructive">Dibatalkan</Badge>;
+        default:
+            return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -232,33 +274,102 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle>Pendapatan Bulanan</CardTitle>
+            <CardDescription>Ringkasan penjualan Anda selama 6 bulan terakhir.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              {pageLoading ? <Skeleton className="h-full w-full" /> : (
+                <BarChart data={monthlyRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(value) => formatCompact(value as number)} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      borderColor: "hsl(var(--border))",
+                    }}
+                    formatter={(value) => formatTooltip(value as number)}
+                  />
+                  <Legend />
+                  <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Pesanan Terbaru</CardTitle>
+            <CardDescription>5 pesanan terakhir yang Anda terima.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Pelanggan</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordersLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="h-8 w-8 rounded-full" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </TableCell>
+                      <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : recentOrders.length > 0 ? (
+                  recentOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="hidden h-8 w-8 sm:flex">
+                            <AvatarImage src={customers[order.userId]?.avatarUrl} alt="Avatar" />
+                            <AvatarFallback>{customers[order.userId]?.name?.charAt(0) || 'P'}</AvatarFallback>
+                          </Avatar>
+                          <div className="font-medium truncate">{customers[order.userId]?.name || 'Pelanggan'}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(order.status)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(order.amount)}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      Belum ada pesanan.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+           <CardFooter>
+            <Button className="w-full" asChild>
+                <Link href="/creator/orders">
+                    Lihat Semua Pesanan
+                    <ArrowUpRight className="h-4 w-4 ml-2" />
+                </Link>
+            </Button>
+           </CardFooter>
+        </Card>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Pendapatan Bulanan</CardTitle>
-          <CardDescription>Ringkasan penjualan Anda selama 6 bulan terakhir.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            {pageLoading ? <Skeleton className="h-full w-full" /> : (
-              <BarChart data={monthlyRevenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => formatCompact(value as number)} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    borderColor: "hsl(var(--border))",
-                  }}
-                  formatter={(value) => formatTooltip(value as number)}
-                />
-                <Legend />
-                <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Pendapatan" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            )}
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
     </div>
   );
 }
+
+    
