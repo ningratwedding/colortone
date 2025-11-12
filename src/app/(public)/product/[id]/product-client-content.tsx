@@ -60,7 +60,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
   
-  // --- Start of logic from ProductPageClientButtons ---
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
   
@@ -112,7 +111,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
   };
 
   const buttonLoading = userLoading || profileLoading;
-  // --- End of logic from ProductPageClientButtons ---
 
 
   const compatibleSoftwareDetails = useMemo(() => {
@@ -229,43 +227,24 @@ export function ProductPageContent({ productId }: { productId: string }) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
-              {product.name}
-            </h1>
-            {creator && (
-                 <div className="mt-2 flex items-center gap-3">
-                    <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
-                            <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
-                    </Link>
-                </div>
-            )}
-          </div>
-          <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-            
-          {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-            <TooltipProvider>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                {compatibleSoftwareDetails.map(s => (
-                    <Tooltip key={s.id}>
-                        <TooltipTrigger>
-                            {s.icon ? (
-                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
-                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{s.name}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
-              </div>
-            </TooltipProvider>
+          {creator && (
+            <div className="flex items-center gap-3">
+              <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
+                  <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
+              </Link>
+            </div>
           )}
+
+          <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
           
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
+            {product.name}
+          </h1>
+
            {/* Buttons - displayed on desktop */}
            <div className="hidden md:flex items-center gap-2 pt-2">
             <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
@@ -287,6 +266,26 @@ export function ProductPageContent({ productId }: { productId: string }) {
               <p className="text-base text-foreground">{product.description}</p>
             </CardContent>
           </Card>
+          
+          {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+            <TooltipProvider>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                {compatibleSoftwareDetails.map(s => (
+                    <Tooltip key={s.id}>
+                        <TooltipTrigger>
+                            {s.icon ? (
+                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{s.name}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                ))}
+              </div>
+            </TooltipProvider>
+          )}
+
         </div>
        </div>
 
