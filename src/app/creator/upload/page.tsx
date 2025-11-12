@@ -30,7 +30,7 @@ import { useStorage, useFirestore } from '@/firebase/provider';
 import { uploadFile } from '@/firebase/storage/actions';
 import { collection, addDoc, query, serverTimestamp } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import type { Category, Software } from '@/lib/data';
+import type { Category, Software, Product } from '@/lib/data';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Accordion,
@@ -195,28 +195,12 @@ export default function UploadPage() {
     try {
         toast({ title: 'Mengunggah file...', description: 'Mohon tunggu, ini mungkin memerlukan waktu beberapa saat.' });
 
-        let finalDownloadUrl: string | undefined = undefined;
-
-        if (data.type === 'digital') {
-            if (data.productFile?.[0]) {
-                finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
-            } else {
-                finalDownloadUrl = data.downloadUrl!;
-            }
-        }
-
         const galleryImageUploads = Array.from(data.galleryImages as FileList).map(file => 
             uploadFile(storage, file, user.uid, 'product_images')
         );
-
         const galleryImageUrls = await Promise.all(galleryImageUploads);
 
-        const imageBeforeUrl = data.imageBefore?.[0] ? await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images') : undefined;
-        const imageAfterUrl = data.imageAfter?.[0] ? await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images') : undefined;
-        
-        toast({ title: 'Menyimpan detail produk...' });
-
-        const newProduct = {
+        const newProduct: Omit<Product, 'id'> & { createdAt: any } = {
             name: data.name,
             creatorId: user.uid,
             price: data.price,
@@ -226,19 +210,31 @@ export default function UploadPage() {
             galleryImageUrls,
             galleryImageHints: galleryImageUrls.map(() => "product gallery image"),
             sales: 0,
-            tags: [], // Placeholder for tags
+            tags: [],
             createdAt: serverTimestamp(),
-            // Digital
             compatibleSoftware: data.type === 'digital' ? data.compatibleSoftware : [],
-            downloadUrl: finalDownloadUrl,
-            imageBeforeUrl: imageBeforeUrl,
-            imageBeforeHint: imageBeforeUrl ? 'product image before' : undefined,
-            imageAfterUrl: imageAfterUrl,
-            imageAfterHint: imageAfterUrl ? 'product image after' : undefined,
-            // Physical
             stock: data.type === 'fisik' ? data.stock : null,
             weight: data.type === 'fisik' ? data.weight : null,
         };
+
+        if (data.type === 'digital') {
+            if (data.productFile?.[0]) {
+                newProduct.downloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
+            } else if (data.downloadUrl) {
+                newProduct.downloadUrl = data.downloadUrl;
+            }
+
+            if (data.imageBefore?.[0]) {
+                newProduct.imageBeforeUrl = await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images');
+                newProduct.imageBeforeHint = 'product image before';
+            }
+            if (data.imageAfter?.[0]) {
+                newProduct.imageAfterUrl = await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images');
+                newProduct.imageAfterHint = 'product image after';
+            }
+        }
+        
+        toast({ title: 'Menyimpan detail produk...' });
 
         const docRef = await addDoc(collection(firestore, 'products'), newProduct);
 
