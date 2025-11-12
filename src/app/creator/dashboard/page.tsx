@@ -138,7 +138,7 @@ export default function DashboardPage() {
     <div className="space-y-4">
       <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="order-first md:order-last lg:col-span-1">
-            <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground h-full">
                 <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
                 <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
                 <div className="relative z-10 h-full flex flex-col">
@@ -179,16 +179,18 @@ export default function DashboardPage() {
                     </div>
                     {pageLoading ? <Skeleton className="h-6 w-24" /> : <div className="text-base font-bold">{formatCurrency(stats.totalRevenue)}</div>}
                 </div>
-                <Card className="hidden md:block">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
-                        <p className="text-xs text-muted-foreground">Total pendapatan dari seluruh penjualan.</p>
-                    </CardContent>
-                </Card>
+                <div className="hidden md:flex flex-col h-full">
+                  <Card className="flex-grow">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
+                          <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                          {pageLoading ? <Skeleton className="h-7 w-40" /> : <div className="text-xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
+                          <p className="text-xs text-muted-foreground">Total pendapatan dari seluruh penjualan.</p>
+                      </CardContent>
+                  </Card>
+                </div>
 
                 {/* Stat 2: Penjualan */}
                 <div className="md:hidden p-3 border rounded-lg flex items-center justify-between">
@@ -198,16 +200,18 @@ export default function DashboardPage() {
                     </div>
                     {pageLoading ? <Skeleton className="h-6 w-12" /> : <div className="text-base font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
                 </div>
-                <Card className="hidden md:block">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
-                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
-                        <p className="text-xs text-muted-foreground">Jumlah total unit produk terjual.</p>
-                    </CardContent>
-                </Card>
+                <div className="hidden md:flex flex-col h-full">
+                  <Card className="flex-grow">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
+                          <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                          {pageLoading ? <Skeleton className="h-7 w-16" /> : <div className="text-xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
+                          <p className="text-xs text-muted-foreground">Jumlah total unit produk terjual.</p>
+                      </CardContent>
+                  </Card>
+                </div>
 
                 {/* Stat 3: Produk Aktif */}
                  <div className="md:hidden p-3 border rounded-lg flex items-center justify-between">
@@ -217,16 +221,18 @@ export default function DashboardPage() {
                     </div>
                     {pageLoading ? <Skeleton className="h-6 w-8" /> : <div className="text-base font-bold">{stats.totalProducts}</div>}
                 </div>
-                <Card className="hidden md:block">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
-                        <Package className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-xl font-bold">{stats.totalProducts}</div>}
-                        <p className="text-xs text-muted-foreground">Jumlah produk yang Anda jual.</p>
-                    </CardContent>
-                </Card>
+                <div className="hidden md:flex flex-col h-full">
+                  <Card className="flex-grow">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
+                          <Package className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                          {pageLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-xl font-bold">{stats.totalProducts}</div>}
+                          <p className="text-xs text-muted-foreground">Jumlah produk yang Anda jual.</p>
+                      </CardContent>
+                  </Card>
+                </div>
             </div>
         </div>
 
