@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 import type { UserProfile, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
+
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -85,6 +87,7 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   if (loading) {
     return (
         <div className="container mx-auto px-4 py-6">
+             <SiteHeader />
             <header className="mb-6 flex flex-col items-center text-center">
                 <Skeleton className="h-24 w-24 rounded-full" />
                 <Skeleton className="h-8 w-48 mt-3" />
@@ -113,6 +116,7 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   if (!creator) {
     return (
         <div className="container mx-auto px-4 py-6 text-center">
+             <SiteHeader />
             <h1 className="text-2xl font-bold">Kreator tidak ditemukan</h1>
             <p className="text-muted-foreground">Profil yang Anda cari tidak ada.</p>
             <Link href="/" className="mt-4 inline-block text-primary hover:underline">Kembali ke Beranda</Link>
@@ -122,6 +126,7 @@ function CreatorProfileContent({ slug }: { slug: string }) {
 
   return (
     <div className="container mx-auto px-4 py-6">
+       <SiteHeader />
       <header className="mb-6 flex flex-col items-center text-center">
         <Avatar className="h-24 w-24">
           <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
