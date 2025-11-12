@@ -262,8 +262,25 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
         <div className="flex flex-col gap-3">
           <div>
-            {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-                <Card className="mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
+              {product.name}
+            </h1>
+            {creator && (
+                 <div className="mt-2 flex items-center gap-3">
+                    <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
+                            <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
+                    </Link>
+                </div>
+            )}
+          </div>
+          <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
+
+           {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+                <Card>
                   <CardContent className="p-2">
                     <TooltipProvider>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -284,22 +301,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                   </CardContent>
                 </Card>
             )}
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
-              {product.name}
-            </h1>
-            {creator && (
-                 <div className="mt-2 flex items-center gap-3">
-                    <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
-                            <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-sm group-hover:text-primary transition-colors">{creator.name}</span>
-                    </Link>
-                </div>
-            )}
-          </div>
-          <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
+
           <Card>
             <CardContent className="pt-4">
               <p className="text-base text-muted-foreground">{product.description}</p>
