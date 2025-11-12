@@ -203,10 +203,10 @@ export default function DashboardPage() {
               <div className="hidden md:grid md:grid-cols-3">
                 {/* Total Pendapatan */}
                 <div className="p-4">
-                  <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
+                  <div className="flex items-center gap-2 mb-1">
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
+                  </div>
                   <CardContent className="p-0">
                       {pageLoading ? <Skeleton className="h-7 w-40 mt-1" /> : <div className="text-xl font-bold">{formatCurrency(stats.totalRevenue)}</div>}
                   </CardContent>
@@ -214,10 +214,10 @@ export default function DashboardPage() {
                 
                 {/* Penjualan */}
                 <div className="p-4 border-l">
-                   <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
-                      <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
+                   <div className="flex items-center gap-2 mb-1">
+                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Penjualan</CardTitle>
+                  </div>
                   <CardContent className="p-0">
                       {pageLoading ? <Skeleton className="h-7 w-16 mt-1" /> : <div className="text-xl font-bold">{stats.totalSales.toLocaleString('id-ID')}</div>}
                   </CardContent>
@@ -225,10 +225,10 @@ export default function DashboardPage() {
 
                 {/* Produk Aktif */}
                  <div className="p-4 border-l">
-                   <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
-                      <Package className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
+                   <div className="flex items-center gap-2 mb-1">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Produk Aktif</CardTitle>
+                  </div>
                   <CardContent className="p-0">
                       {pageLoading ? <Skeleton className="h-7 w-12 mt-1" /> : <div className="text-xl font-bold">{stats.totalProducts}</div>}
                   </CardContent>
