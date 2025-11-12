@@ -162,8 +162,8 @@ export function SiteHeader() {
               <SheetHeader>
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2">
-                    
-                    <span className="font-bold text-xl font-headline">
+                    <Logo className="h-6 w-6" />
+                    <span className="font-bold text-xl font-headline text-foreground">
                       Di
                     </span>
                   </Link>
