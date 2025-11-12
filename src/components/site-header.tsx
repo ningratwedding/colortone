@@ -181,19 +181,13 @@ export function SiteHeader() {
                     {label}
                   </Link>
                 ))}
-                <Link
-                  href="/creator/dashboard"
-                  className="text-lg font-medium transition-colors hover:text-primary text-foreground"
-                >
-                  Menjadi Kreator
-                </Link>
               </nav>
             </SheetContent>
           </Sheet>
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
             <Logo className="h-6 w-6" />
-            <span className="font-bold font-headline">
+            <span className="hidden sm:inline-block font-bold font-headline">
               Di
             </span>
           </Link>
