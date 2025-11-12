@@ -109,16 +109,16 @@ export function CreatorProfileContent({ slug }: { slug: string }) {
   return (
     <>
     <div className="container mx-auto px-4 py-6">
-      <header className="flex flex-col md:flex-row items-center gap-6 mb-8">
+      <header className="flex flex-col items-center gap-6 mb-8 text-center">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
           <AvatarImage src={creator.avatarUrl} alt={creator.name} />
           <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <div className="text-center md:text-left">
+        <div>
           <h1 className="text-3xl font-bold font-headline">{creator.name}</h1>
-          <p className="text-muted-foreground mt-1 max-w-2xl">{creator.bio}</p>
+          <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{creator.bio}</p>
           {creator.socials && (
-             <div className="flex justify-center md:justify-start items-center gap-4 mt-3">
+             <div className="flex justify-center items-center gap-4 mt-3">
               {Object.entries(creator.socials).map(([platform, username]) => (
                 <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   {socialIcons[platform as SocialPlatform]}
