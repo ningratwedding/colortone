@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,6 +9,7 @@ import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import type { UserProfile, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SiteFooter } from '@/components/site-footer';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -42,7 +42,7 @@ const socialLinks = {
 };
 
 
-export default function CreatorProfileContent({ slug }: { slug: string }) {
+function CreatorProfileContent({ slug }: { slug: string }) {
   const firestore = useFirestore();
   const [creator, setCreator] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -172,4 +172,13 @@ export default function CreatorProfileContent({ slug }: { slug: string }) {
       </main>
     </div>
   );
+}
+
+export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+    return (
+        <>
+            <CreatorProfileContent slug={params.slug} />
+            <SiteFooter />
+        </>
+    )
 }
