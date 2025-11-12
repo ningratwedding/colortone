@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -81,10 +80,8 @@ export default function DashboardPage() {
         // Fetch creator's products and all orders in parallel
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
         
-        // This query is inefficient. A collectionGroup query is better.
-        // We will switch to a collectionGroup query to fetch recent orders.
         const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
-        const recentOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid), orderBy('purchaseDate', 'desc'), firestoreLimit(5));
+        const recentOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid), firestoreLimit(5));
         
         const [productsSnapshot, allOrdersSnapshot, recentOrdersSnapshot] = await Promise.all([
           getDocs(productsQuery),
@@ -122,17 +119,21 @@ export default function DashboardPage() {
 
         // Process recent orders
         const fetchedRecentOrders = recentOrdersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+        // Sort on the client side
+        fetchedRecentOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
         setRecentOrders(fetchedRecentOrders);
 
         if (fetchedRecentOrders.length > 0) {
           const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))];
-          const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds.map(id => `users/${id}`)));
-          const customersSnapshot = await getDocs(customersQuery);
-          const customersData: Record<string, UserProfile> = {};
-          customersSnapshot.forEach(doc => {
-            customersData[doc.id] = {id: doc.id, ...doc.data()} as UserProfile;
-          });
-          setCustomers(customersData);
+          if(customerIds.length > 0) {
+            const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds.map(id => `users/${id}`)));
+            const customersSnapshot = await getDocs(customersQuery);
+            const customersData: Record<string, UserProfile> = {};
+            customersSnapshot.forEach(doc => {
+              customersData[doc.id] = {id: doc.id, ...doc.data()} as UserProfile;
+            });
+            setCustomers(customersData);
+          }
         }
 
       } catch (error) {
@@ -371,5 +372,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
