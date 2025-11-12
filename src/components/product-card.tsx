@@ -82,22 +82,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
             {product.name}
           </CardTitle>
         </Link>
-        {creatorLoading ? (
-            <div className="flex items-center gap-2 mt-2">
-                <Skeleton className="h-6 w-6 rounded-full" />
-                <Skeleton className="h-4 w-24" />
-            </div>
-        ) : creator ? (
-          <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 mt-2 group/creator">
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
-              <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <p className="text-xs text-muted-foreground group-hover/creator:text-primary transition-colors">
-              {creator.name}
-            </p>
-          </Link>
-        ) : null}
       </CardContent>
       <CardFooter className="p-3 pt-0 mt-auto flex-col items-start gap-2">
         <div className="font-semibold text-base text-primary truncate">
