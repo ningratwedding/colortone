@@ -44,6 +44,7 @@ import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Logo } from './logo';
+import { Separator } from './ui/separator';
 
 const navLinks: { href: string; label: string }[] = [];
 
@@ -169,7 +170,8 @@ export function SiteHeader() {
                   </Link>
                 </SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col gap-4 pt-6">
+              <Separator className="my-4" />
+              <nav className="flex flex-col gap-4">
                 {navLinks.map(({ href, label }) => (
                   <Link
                     key={href}
@@ -180,7 +182,7 @@ export function SiteHeader() {
                   </Link>
                 ))}
                 <Link
-                  href="/login"
+                  href="/creator/dashboard"
                   className="text-lg font-medium transition-colors hover:text-primary text-foreground"
                 >
                   Menjadi Kreator
@@ -190,6 +192,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
+            <Logo className="h-6 w-6 hidden sm:block" />
             <span className="hidden font-bold sm:inline-block font-headline">
               
             </span>
