@@ -122,12 +122,12 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={product.imageAfterUrl || `https://picsum.photos/seed/${product.id}/56/37`}
+                    src={product.galleryImageUrls?.[0] || `https://picsum.photos/seed/${product.id}/56/37`}
                     alt={product.name}
                     width={56}
                     height={37}
                     className="rounded-md"
-                    data-ai-hint={product.imageAfterHint}
+                    data-ai-hint={product.galleryImageHints?.[0]}
                   />
                   <div>
                     <p className="font-medium text-sm">{product.name}</p>
