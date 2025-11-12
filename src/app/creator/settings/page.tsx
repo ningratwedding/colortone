@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe, Loader2 } from 'lucide-react';
+import { Instagram, Facebook, PlusCircle, Trash2, DollarSign, Globe, Loader2, Copy } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -256,6 +256,16 @@ export default function SettingsPage() {
     })
   }
 
+  const copyProfileLink = () => {
+    if (!userProfile) return;
+    const url = `${window.location.origin}/kreator/${userProfile.slug}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: 'Tautan Profil Disalin',
+      description: 'Bagikan tautan profil publik Anda.',
+    });
+  };
+
   const loading = userLoading || profileLoading;
 
   if (loading) {
@@ -280,12 +290,20 @@ export default function SettingsPage() {
                     Informasi ini akan ditampilkan secara publik.
                   </CardDescription>
                 </div>
-                <Link
-                  href={`/kreator/${userProfile.slug}`}
-                  className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                >
-                  Lihat Profil Saya
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={copyProfileLink}>
+                        <Copy className="mr-2 h-3 w-3" />
+                        Salin Tautan
+                    </Button>
+                    <Button variant="ghost" size="sm" asChild>
+                        <Link
+                        href={`/kreator/${userProfile.slug}`}
+                        className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                        >
+                        Lihat Profil
+                        </Link>
+                    </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
