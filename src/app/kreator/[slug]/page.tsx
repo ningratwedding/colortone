@@ -162,16 +162,11 @@ function CreatorProfileContent({ slug }: { slug: string }) {
   );
 }
 
-// This is the new page component
 export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-    // A list of reserved paths that should not be treated as creator slugs
-    const reservedPaths = ['login', 'signup', 'forgot-password', 'account', 'admin', 'creator', 'checkout', 'download', 'privacy', 'terms', 'product'];
-
-    if (reservedPaths.includes(params.slug)) {
-        notFound();
-    }
-    
+    const { slug } = params;
     return (
-        <CreatorProfileContent slug={params.slug} />
+        <>
+            <CreatorProfileContent slug={slug} />
+        </>
     )
 }
