@@ -246,6 +246,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
             )}
           </div>
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
+            
             {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                 <TooltipProvider>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -265,12 +266,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 </TooltipProvider>
             )}
           
-          <Card>
-            <CardContent className="pt-4">
-              <p className="text-base text-foreground">{product.description}</p>
-            </CardContent>
-          </Card>
-
            {/* Buttons - displayed statically on desktop */}
            <div className="hidden md:flex flex-grow items-center">
             <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
@@ -286,6 +281,12 @@ export function ProductPageContent({ productId }: { productId: string }) {
                 </Button>
              )}
             </div>
+
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-base text-foreground">{product.description}</p>
+            </CardContent>
+          </Card>
         </div>
        </div>
 
