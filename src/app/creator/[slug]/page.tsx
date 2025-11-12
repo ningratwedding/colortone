@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +10,7 @@ import { useEffect, useState } from 'react';
 import type { UserProfile, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
 
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -85,6 +85,8 @@ function CreatorProfileContent({ slug }: { slug: string }) {
 
   if (loading) {
     return (
+        <>
+        <SiteHeader />
         <div className="container mx-auto px-4 py-6">
             <header className="mb-6 flex flex-col items-center text-center">
                 <Skeleton className="h-24 w-24 rounded-full" />
@@ -108,20 +110,26 @@ function CreatorProfileContent({ slug }: { slug: string }) {
                 </div>
             </main>
         </div>
+        </>
     );
   }
 
   if (!creator) {
     return (
+        <>
+        <SiteHeader />
         <div className="container mx-auto px-4 py-6 text-center">
             <h1 className="text-2xl font-bold">Kreator tidak ditemukan</h1>
             <p className="text-muted-foreground">Profil yang Anda cari tidak ada.</p>
             <Link href="/" className="mt-4 inline-block text-primary hover:underline">Kembali ke Beranda</Link>
         </div>
+        </>
     );
   }
 
   return (
+    <>
+    <SiteHeader />
     <div className="container mx-auto px-4 py-6">
       <header className="mb-6 flex flex-col items-center text-center">
         <Avatar className="h-24 w-24">
@@ -172,14 +180,14 @@ function CreatorProfileContent({ slug }: { slug: string }) {
         )}
       </main>
     </div>
+    </>
   );
 }
 
 export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
     return (
         <>
-            <CreatorProfileContent slug={slug} />
+            <CreatorProfileContent slug={params.slug} />
             <SiteFooter />
         </>
     )
