@@ -189,7 +189,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
         <div className="lg:col-span-1">
           <Card className="sticky top-20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5" /> Ringkasan Pesanan</CardTitle>
+              <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div
