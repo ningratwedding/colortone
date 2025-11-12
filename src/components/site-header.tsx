@@ -32,6 +32,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from '@/components/ui/sheet';
 import { useUser } from '@/firebase/auth/use-user';
 import { signOut } from '@/firebase/auth/actions';
@@ -191,7 +192,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6" />
+            <Logo className="h-6 w-6 " />
             <span className="hidden font-bold sm:inline-block font-headline">
               Di
             </span>
