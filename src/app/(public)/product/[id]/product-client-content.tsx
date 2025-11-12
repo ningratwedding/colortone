@@ -278,10 +278,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
             )}
           </div>
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-
+          
            {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                 <Card>
-                  <CardContent className="p-2">
+                  <CardContent className="p-3">
                     <TooltipProvider>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         {compatibleSoftwareDetails.map(s => (
