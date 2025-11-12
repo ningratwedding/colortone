@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 
 export function ProductPageContent({ productId }: { productId: string }) {
@@ -222,17 +223,16 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </div>
         </div>
 
-        <div className="flex flex-col gap-2 md:gap-3">
-
+        <div className="flex flex-col gap-1 md:gap-3">
           <div className="text-3xl font-bold text-primary">{formattedPrice}</div>
-
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
+          
+           <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
             {product.name}
           </h1>
 
            {/* Buttons - displayed on desktop */}
            <div className="hidden md:flex items-center gap-2 pt-2 mb-2">
-            <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
+            <Button size="lg" className={cn("flex-grow", !userProfile?.isAffiliate && 'w-full')} asChild disabled={buttonLoading}>
                 <Link href={getCheckoutUrl()}>
                     <ShoppingCart className="mr-2 h-4 w-4" /> 
                     {buttonLoading ? "Memuat..." : "Beli Sekarang"}
@@ -247,6 +247,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
             </div>
           
           <div className="flex flex-col gap-3">
+              <p className="text-base text-foreground">{product.description}</p>
               <Separator />
               {creator && (
                 <div className="flex items-center gap-3">
@@ -259,12 +260,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
                   </Link>
                 </div>
               )}
-              <Card>
-                <CardContent className="p-3">
-                  <p className="text-base text-foreground">{product.description}</p>
-                </CardContent>
-              </Card>
-              
               {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
                 <TooltipProvider>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -291,15 +286,15 @@ export function ProductPageContent({ productId }: { productId: string }) {
        {/* Sticky bottom bar for mobile */}
        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
         <div className="container flex items-center justify-between h-20 px-4">
-            <div className="flex-grow flex justify-end items-center gap-2">
-                <Button size="lg" className="w-full max-w-xs" asChild disabled={buttonLoading}>
+            <div className="flex-grow flex items-center gap-2">
+                <Button size="lg" className="flex-grow" asChild disabled={buttonLoading}>
                     <Link href={getCheckoutUrl()}>
                         <ShoppingCart className="mr-2 h-4 w-4" /> 
                         {buttonLoading ? "Memuat..." : "Beli Sekarang"}
                     </Link>
                 </Button>
                 {userProfile?.isAffiliate && (
-                    <Button size="icon" variant="outline" className="w-12 h-12" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                    <Button size="icon" variant="outline" className="w-12 h-12 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
                         <Share2 className="h-5 w-5" />
                     </Button>
                 )}
@@ -309,3 +304,4 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
