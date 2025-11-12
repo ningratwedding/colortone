@@ -184,8 +184,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
-        <div className="order-first md:order-last md:col-span-1">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+
+        <div className="lg:col-span-7 order-first">
             <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground h-full">
                 <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
                 <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
@@ -216,10 +217,7 @@ export default function DashboardPage() {
                 </div>
             </Card>
         </div>
-
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        
         <Card className="lg:col-span-4">
            <CardHeader>
             <CardTitle>Ringkasan Pendapatan</CardTitle>
@@ -346,4 +344,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
