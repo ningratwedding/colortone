@@ -263,8 +263,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
         <div className="flex flex-col gap-3">
           <div>
             {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                <Card className="mb-2">
+                  <CardContent className="p-2">
                     <TooltipProvider>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         {compatibleSoftwareDetails.map(s => (
                             <Tooltip key={s.id}>
                                 <TooltipTrigger>
@@ -277,8 +279,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
                                 </TooltipContent>
                             </Tooltip>
                         ))}
+                      </div>
                     </TooltipProvider>
-                </div>
+                  </CardContent>
+                </Card>
             )}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
               {product.name}
