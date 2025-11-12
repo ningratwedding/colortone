@@ -258,6 +258,24 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
         <div className="flex flex-col gap-3">
           <div>
+            {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                    <TooltipProvider>
+                        {compatibleSoftwareDetails.map(s => (
+                            <Tooltip key={s.id}>
+                                <TooltipTrigger>
+                                    {s.icon ? (
+                                        <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
+                                    ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{s.name}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ))}
+                    </TooltipProvider>
+                </div>
+            )}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline">
               {product.name}
             </h1>
@@ -279,28 +297,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
           <Card className="rounded-lg">
             <CardContent className="pt-4 grid gap-3 text-sm">
-                {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
-                    <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-primary flex-shrink-0"/>
-                        <TooltipProvider>
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                <span className="font-medium">Kompatibel dengan:</span>
-                                {compatibleSoftwareDetails.map(s => (
-                                    <Tooltip key={s.id}>
-                                        <TooltipTrigger>
-                                            {s.icon ? (
-                                                <img src={s.icon} alt={`${s.name} icon`} className="h-5 w-5 object-contain" />
-                                            ) : <div className="h-5 w-5 bg-muted rounded-sm" />}
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{s.name}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                ))}
-                            </div>
-                        </TooltipProvider>
-                    </div>
-                )}
                 {product.type === 'digital' && (
                     <div className="flex items-center gap-2">
                         <Download className="h-4 w-4 text-primary"/>
@@ -322,3 +318,4 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
