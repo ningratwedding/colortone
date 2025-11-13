@@ -111,7 +111,7 @@ export default function AffiliatePage() {
                     <Skeleton className="h-9 w-36" />
                 ) : userProfile?.slug && (
                     <Button asChild variant="outline">
-                        <Link href={`/affiliate/${userProfile.slug}`}>Lihat Profil Publik</Link>
+                        <Link href={`/${userProfile.slug}`}>Lihat Profil Publik</Link>
                     </Button>
                 )}
                  <Button asChild>
@@ -201,4 +201,3 @@ export default function AffiliatePage() {
     </div>
   );
 }
-    
