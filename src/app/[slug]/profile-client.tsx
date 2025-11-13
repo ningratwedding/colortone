@@ -5,7 +5,7 @@
 import { notFound } from 'next/navigation';
 import { Globe } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
-
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -199,8 +199,18 @@ export function ProfileContent({ slug }: { slug: string }) {
   const displayName = profileUser.fullName || profileUser.name;
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <header className="flex flex-col items-center gap-6 mb-8 text-center">
+    <div className="container mx-auto px-4 pb-6">
+       <div className="relative h-48 md:h-64 rounded-b-lg overflow-hidden -mx-4">
+            <Image
+                src={`https://picsum.photos/seed/${profileUser.id}/1200/400`}
+                alt="Header background"
+                fill
+                className="object-cover"
+                data-ai-hint="header background"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        </div>
+      <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
           <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
           <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
