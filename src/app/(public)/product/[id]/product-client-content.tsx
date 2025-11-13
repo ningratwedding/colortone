@@ -91,7 +91,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
   };
 
   const copyAffiliateLink = () => {
-    if (!userProfile?.isAffiliate || !user || !product) {
+    if (userProfile?.role !== 'affiliator' || !user || !product) {
        toast({
         variant: "destructive",
         title: "Akses Ditolak",
@@ -232,13 +232,13 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
            {/* Buttons - displayed on desktop */}
            <div className="hidden md:flex items-center gap-2 pt-2 mb-2">
-            <Button size="lg" className={cn("flex-grow", !userProfile?.isAffiliate && 'w-full')} asChild disabled={buttonLoading}>
+            <Button size="lg" className={cn("flex-grow", userProfile?.role !== 'affiliator' && 'w-full')} asChild disabled={buttonLoading}>
                 <Link href={getCheckoutUrl()}>
                     <ShoppingCart className="mr-2 h-4 w-4" /> 
                     {buttonLoading ? "Memuat..." : "Beli Sekarang"}
                 </Link>
             </Button>
-             {userProfile?.isAffiliate && (
+             {userProfile?.role === 'affiliator' && (
                 <Button size="lg" variant="outline" className="w-auto" onClick={copyAffiliateLink} disabled={buttonLoading}>
                     <Share2 className="mr-2 h-4 w-4" />
                     Bagikan
@@ -251,7 +251,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
               <Separator />
               {creator && (
                 <div className="flex items-center gap-3">
-                  <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
+                  <Link href={`/${creator.slug}`} className="flex items-center gap-2 group">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
                       <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
@@ -293,7 +293,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
                         {buttonLoading ? "Memuat..." : "Beli Sekarang"}
                     </Link>
                 </Button>
-                {userProfile?.isAffiliate && (
+                {userProfile?.role === 'affiliator' && (
                     <Button size="icon" variant="outline" className="w-12 h-12 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
                         <Share2 className="h-5 w-5" />
                     </Button>
