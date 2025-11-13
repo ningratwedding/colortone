@@ -51,11 +51,20 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+        </svg>
+    )
+}
+
 const socialIcons = {
   instagram: <InstagramIcon className="h-5 w-5" />,
   facebook: <FacebookIcon className="h-5 w-5" />,
   tiktok: <TikTokIcon className="h-5 w-5" />,
-  website: <Globe className="h-5 w-5" />
+  website: <Globe className="h-5 w-5" />,
+  whatsapp: <WhatsAppIcon className="h-5 w-5" />,
 };
 
 type SocialPlatform = keyof typeof socialIcons;
@@ -243,6 +252,17 @@ export function ProfileContent({ slug }: { slug: string }) {
     "transition-transform hover:scale-110 flex items-center gap-2",
     socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
   );
+  
+   const getSocialLink = (platform: string, username: string) => {
+    switch (platform) {
+      case 'website':
+        return username;
+      case 'whatsapp':
+        return `https://wa.me/${username}`;
+      default:
+        return `https://www.${platform}.com/${username}`;
+    }
+  };
 
   return (
     <div className="pb-6">
@@ -298,7 +318,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                   return (
                   <Link 
                     key={platform} 
-                    href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
+                    href={getSocialLink(platform, username as string)} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className={socialLinkClasses(socialsSettings.pillSize)}
