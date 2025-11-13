@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -27,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useDoc } from '@/firebase/firestore/use-doc';
+import Link from 'next/link';
 
 const DEFAULT_COMMISSION_RATE = 0.10; // 10% default
 
@@ -93,7 +95,12 @@ export default function AffiliatePage() {
 
   return (
     <div className="space-y-4">
-        <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
+        <div className="flex justify-between items-center">
+            <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
+            <Button asChild variant="outline">
+                <Link href="/account/settings">Atur Profil Publik</Link>
+            </Button>
+        </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -121,7 +128,7 @@ export default function AffiliatePage() {
         <LinkIcon className="h-4 w-4" />
         <AlertTitle>Bagaimana Cara Kerjanya?</AlertTitle>
         <AlertDescription>
-          Salin ID Afiliasi Anda dan tambahkan <code className="font-mono bg-muted px-1 py-0.5 rounded text-xs">?ref=ID_ANDA</code> di akhir URL produk apa pun, atau cukup gunakan tombol 'Buat Tautan Afiliasi' di halaman produk.
+          Salin ID Afiliasi Anda dan tambahkan <code className="font-mono bg-muted px-1 py-0.5 rounded text-xs">?ref=ID_ANDA</code> di akhir URL produk apa pun, atau cukup gunakan tombol 'Bagikan' di halaman produk.
           <div className="flex items-center gap-2 mt-2">
             <p className="text-sm text-muted-foreground">ID Afiliasi Anda: <code className="font-mono">{user?.uid}</code></p>
             <Button size="icon" variant="ghost" className="h-6 w-6" onClick={copyAffiliateId}>
