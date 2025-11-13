@@ -23,7 +23,42 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
-import { PartyPopper, Copy, Loader2 } from 'lucide-react';
+import { PartyPopper, Copy, Loader2, PlusCircle, Trash2, Instagram, Facebook, Globe } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Link from 'next/link';
+
+function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M12.528 8.001v5.25c-1.423.115-2.585.83-3.415 1.942C8.253 16.34 7.6 17.34 6.75 17.34c-1.84 0-2.5-1.72-2.5-1.72" />
+      <path d="M12.528 8.001c.883-2.48 3.02-3.514 5.31-2.07C20.137 7.37 20.08 11.2 17 11.2v5.123c-1.872 0-3.352-1.33-4.472-2.37" />
+      <path d="M12.528 8.001q.44-1.47.79-2.515" />
+      <path d="M17.5 4.5c.31.02.62.06.94.13" />
+    </svg>
+  );
+}
+
+const socialIcons = {
+  instagram: <Instagram className="h-5 w-5" />,
+  facebook: <Facebook className="h-5 w-5" />,
+  tiktok: <TikTokIcon className="h-5 w-5" />,
+  website: <Globe className="h-5 w-5" />
+};
+type SocialPlatform = keyof typeof socialIcons;
+
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -41,16 +76,26 @@ export default function AccountSettingsPage() {
     
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [bio, setBio] = useState('');
+    const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
+
+    // Dialog States
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
+    const [newSocialUsername, setNewSocialUsername] = useState('');
     
     useEffect(() => {
         if (userProfile) {
             setName(userProfile.name);
             setPhoneNumber(userProfile.phoneNumber || '');
             setAvatarPreview(userProfile.avatarUrl);
+            setBio(userProfile.bio || '');
+            setSocials(userProfile.socials || {});
         }
     }, [userProfile]);
 
@@ -58,7 +103,6 @@ export default function AccountSettingsPage() {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setAvatarFile(file);
-            // Create a temporary URL for client-side preview
             setAvatarPreview(URL.createObjectURL(file));
         }
     };
@@ -69,24 +113,21 @@ export default function AccountSettingsPage() {
         try {
             let newAvatarUrl = userProfile.avatarUrl;
 
-            // 1. If a new avatar file is selected, upload it
             if (avatarFile) {
                 toast({ title: 'Mengompres dan mengunggah foto profil...' });
                 newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
             }
 
-            // 2. Prepare the data to be updated in Firestore
             const updatedData: Partial<UserProfile> = {
                 name: name,
                 phoneNumber: phoneNumber,
                 avatarUrl: newAvatarUrl,
+                bio: bio,
+                socials: socials,
             };
 
-            // 3. Update the Firestore document
             await updateDoc(userProfileRef, updatedData);
 
-            // 4. Update the Firebase Auth user profile
-            // This ensures user.displayName and user.photoURL are up-to-date across the app
             if (user && (name !== user.displayName || newAvatarUrl !== user.photoURL)) {
                  await updateAuthProfile(user, {
                     displayName: name,
@@ -120,8 +161,6 @@ export default function AccountSettingsPage() {
                 title: 'Selamat Bergabung!',
                 description: 'Anda sekarang adalah seorang afiliator. Anda akan diarahkan ke dasbor afiliasi.',
             });
-            // You might want to redirect or refresh the page to reflect the role change
-            // router.push('/account/affiliate');
         } catch (error) {
             toast({
                 variant: "destructive",
@@ -133,14 +172,24 @@ export default function AccountSettingsPage() {
         }
     };
 
-    const copyAffiliateId = () => {
-        if (!user) return;
-        navigator.clipboard.writeText(user.uid);
-        toast({
-            title: 'ID Afiliasi Disalin',
-            description: 'Gunakan ID ini atau buat tautan afiliasi dari halaman produk.'
+    const handleAddSocial = () => {
+        if (newSocialPlatform && newSocialUsername) {
+        setSocials(prev => ({...prev, [newSocialPlatform]: newSocialUsername}));
+        setIsDialogOpen(false);
+        setNewSocialPlatform('');
+        setNewSocialUsername('');
+        }
+    };
+
+    const handleRemoveSocial = (platform: SocialPlatform) => {
+        setSocials(prev => {
+            const newSocials = {...prev};
+            if (prev) {
+            delete (newSocials as any)[platform];
+            }
+            return newSocials;
         });
-    }
+    };
 
     const loading = userLoading || profileLoading;
 
@@ -151,39 +200,31 @@ export default function AccountSettingsPage() {
                     <Skeleton className="h-8 w-48" />
                     <Skeleton className="h-5 w-64 mt-2" />
                 </div>
-                 <Tabs defaultValue="profile">
-                    <TabsList className="grid w-full grid-cols-2 max-w-sm">
-                        <TabsTrigger value="profile">Profil</TabsTrigger>
-                        <TabsTrigger value="security">Keamanan</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="profile">
-                        <Card>
-                            <CardHeader>
-                                <Skeleton className="h-6 w-32" />
-                                <Skeleton className="h-4 w-56 mt-2" />
-                            </CardHeader>
-                            <CardContent className="space-y-6 pt-6">
-                                <div className="flex items-center gap-4">
-                                    <Skeleton className="h-16 w-16 rounded-full" />
-                                    <Skeleton className="h-10 w-24" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-16" />
-                                    <Skeleton className="h-9 w-full" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-24" />
-                                    <Skeleton className="h-9 w-full" />
-                                </div>
-                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 w-20" />
-                                    <Skeleton className="h-9 w-full" />
-                                </div>
-                                <Skeleton className="h-10 w-32" />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-56 mt-2" />
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-16 w-16 rounded-full" />
+                            <Skeleton className="h-10 w-24" />
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-9 w-full" />
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-9 w-full" />
+                        </div>
+                            <div className="space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-9 w-full" />
+                        </div>
+                        <Skeleton className="h-10 w-32" />
+                    </CardContent>
+                </Card>
             </div>
         )
     }
@@ -192,8 +233,8 @@ export default function AccountSettingsPage() {
         return <div>Profil tidak ditemukan.</div>
     }
     
-    // Determine what to display for fallback
     const fallbackName = name || userProfile.name || user.displayName || 'U';
+    const showPublicProfileSettings = userProfile.role === 'kreator' || userProfile.role === 'affiliator';
 
     return (
         <div className="space-y-6">
@@ -201,77 +242,122 @@ export default function AccountSettingsPage() {
                 <h1 className="font-headline text-2xl font-bold">Pengaturan Akun</h1>
                 <p className="text-muted-foreground">Kelola informasi profil dan detail akun Anda.</p>
             </div>
-             <Tabs defaultValue="profile">
-                <TabsList className="grid w-full grid-cols-2 max-w-sm">
-                    <TabsTrigger value="profile">Profil</TabsTrigger>
-                    <TabsTrigger value="security">Keamanan</TabsTrigger>
-                </TabsList>
-                <TabsContent value="profile">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Informasi Profil</CardTitle>
-                            <CardDescription>Perbarui foto, nama, dan detail kontak Anda.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pt-6">
-                            <div className="space-y-2">
-                                <Label>Foto Profil</Label>
-                                <div className="flex items-center gap-4">
-                                    <Avatar className="h-16 w-16">
-                                        <AvatarImage src={avatarPreview || undefined} alt={name} />
-                                        <AvatarFallback>{fallbackName.charAt(0)}</AvatarFallback>
-                                    </Avatar>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Informasi Profil</CardTitle>
+                    <CardDescription>Perbarui foto, nama, dan detail kontak Anda.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 pt-6">
+                    <div className="space-y-2">
+                        <Label>Foto Profil</Label>
+                        <div className="flex items-center gap-4">
+                            <Avatar className="h-16 w-16">
+                                <AvatarImage src={avatarPreview || undefined} alt={name} />
+                                <AvatarFallback>{fallbackName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <Input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                            />
+                            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Ubah Foto</Button>
+                        </div>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="fullname">Nama Lengkap</Label>
+                        <Input id="fullname" value={name} onChange={(e) => setName(e.target.value)} />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="email">Alamat Email</Label>
+                        <Input id="email" type="email" value={user.email || ''} readOnly disabled />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="phone">Nomor Telepon</Label>
+                        <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="misal: 081234567890" />
+                    </div>
+                    
+                    {showPublicProfileSettings && (
+                        <>
+                        <div className="grid gap-2">
+                            <Label htmlFor="bio">Bio Profil Publik</Label>
+                            <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
+                        </div>
+                        <div className="grid gap-4">
+                            <Label>Tautan Sosial & Situs Web</Label>
+                            <div className="space-y-3">
+                            {socials && Object.entries(socials).map(([platform, username]) => (
+                                <div key={platform} className="flex items-center gap-3">
+                                <div className="relative flex-grow">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    {socialIcons[platform as keyof typeof socialIcons]}
+                                    </span>
                                     <Input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        className="hidden"
-                                        accept="image/*"
-                                        onChange={handleAvatarChange}
+                                    value={username as string}
+                                    className="pl-10"
+                                    readOnly
                                     />
-                                    <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Ubah Foto</Button>
                                 </div>
+                                <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(platform as SocialPlatform)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                                </div>
+                            ))}
                             </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="fullname">Nama Lengkap</Label>
-                                <Input id="fullname" value={name} onChange={(e) => setName(e.target.value)} />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Alamat Email</Label>
-                                <Input id="email" type="email" value={user.email || ''} readOnly disabled />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="phone">Nomor Telepon</Label>
-                                <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="misal: 081234567890" />
-                            </div>
-                             <Button onClick={handleSaveChanges} disabled={isSaving}>
-                                {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan"}
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="security">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Keamanan</CardTitle>
-                            <CardDescription>Ubah kata sandi Anda.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4 pt-6">
-                             <div className="grid gap-2">
-                                <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
-                                <Input id="current-password" type="password" />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="new-password">Kata Sandi Baru</Label>
-                                <Input id="new-password" type="password" />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="confirm-password">Konfirmasi Kata Sandi Baru</Label>
-                                <Input id="confirm-password" type="password" />
-                            </div>
-                             <Button disabled>Ubah Kata Sandi</Button>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button
+                                variant="outline"
+                                className="mt-2 w-full sm:w-auto"
+                                >
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Tambah Tautan
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                <DialogTitle>Tambah Tautan Sosial atau Situs Web</DialogTitle>
+                                <DialogDescription>
+                                    Pilih platform dan masukkan nama pengguna atau URL.
+                                </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="platform">Platform</Label>
+                                    <Select onValueChange={(value) => setNewSocialPlatform(value as SocialPlatform)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih platform" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="instagram">Instagram</SelectItem>
+                                        <SelectItem value="facebook">Facebook</SelectItem>
+                                        <SelectItem value="tiktok">TikTok</SelectItem>
+                                        <SelectItem value="website">Situs Web</SelectItem>
+                                    </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="username">Nama Pengguna atau URL</Label>
+                                    <Input id="username" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'misal: kartikasari'} value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
+                                </div>
+                                </div>
+                                <DialogFooter>
+                                <Button onClick={handleAddSocial}>Simpan</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                            </Dialog>
+                        </div>
+                        </>
+                    )}
+                </CardContent>
+                <CardHeader>
+                     <Button onClick={handleSaveChanges} disabled={isSaving}>
+                        {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan"}
+                    </Button>
+                </CardHeader>
+            </Card>
              <Card>
                 <CardHeader>
                     <CardTitle>Program Afiliasi</CardTitle>
