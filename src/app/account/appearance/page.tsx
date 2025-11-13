@@ -91,13 +91,15 @@ function ProfilePreview({
   bio,
   socials,
   headerColor,
-  profileBackgroundColor
+  profileBackgroundColor,
+  profileFontColor,
 }: {
   profile: UserProfile;
   bio: string;
   socials: UserProfile['socials'];
   headerColor: string | undefined;
   profileBackgroundColor: string | undefined;
+  profileFontColor: string | undefined;
 }) {
   const displayName = profile.fullName || profile.name;
   
@@ -139,9 +141,9 @@ function ProfilePreview({
             <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
         </Avatar>
-        <div>
+        <div style={{ color: profileFontColor || undefined }}>
             <h1 className="text-xl font-bold font-headline">{displayName}</h1>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{bio || "Bio Anda akan muncul di sini."}</p>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto" style={{ color: profileFontColor || undefined }}>{bio || "Bio Anda akan muncul di sini."}</p>
             {socials && Object.keys(socials).length > 0 && (
             <div className="flex justify-center items-center gap-4 mt-3">
                 {Object.entries(socials).map(([platform, username]) => (
@@ -177,6 +179,7 @@ export default function AppearancePage() {
     const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [headerColor, setHeaderColor] = useState<string | undefined>('');
     const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
+    const [profileFontColor, setProfileFontColor] = useState<string | undefined>('');
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -191,6 +194,7 @@ export default function AppearancePage() {
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
+            setProfileFontColor(userProfile.profileFontColor || '');
         }
     }, [userProfile]);
 
@@ -203,6 +207,7 @@ export default function AppearancePage() {
                 socials: socials,
                 headerColor: headerColor,
                 profileBackgroundColor: profileBackgroundColor,
+                profileFontColor: profileFontColor,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -417,6 +422,30 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="font-color">
+                            <AccordionTrigger className="text-sm font-medium">Warna Font</AccordionTrigger>
+                            <AccordionContent className="pt-4">
+                                <div className="flex flex-wrap gap-2">
+                                    {colorOptions.map((color) => (
+                                        <button 
+                                            key={`font-${color.value}`}
+                                            type="button"
+                                            onClick={() => setProfileFontColor(color.value)}
+                                            className={cn(
+                                                "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
+                                                profileFontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
+                                                color.value === '' && 'border-muted-foreground border-dashed'
+                                            )}
+                                            style={{ backgroundColor: color.value || 'transparent' }}
+                                            aria-label={`Pilih warna font ${color.name}`}
+                                        >
+                                            {profileFontColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                            {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
+                                        </button>
+                                    ))}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                     </Accordion>
                 </CardContent>
                 <CardFooter>
@@ -441,6 +470,7 @@ export default function AppearancePage() {
                                     socials={socials}
                                     headerColor={headerColor}
                                     profileBackgroundColor={profileBackgroundColor}
+                                    profileFontColor={profileFontColor}
                                 />
                             </div>
                         </div>

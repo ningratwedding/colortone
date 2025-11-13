@@ -57,6 +57,10 @@
             "type": "string",
             "description": "A solid hex color for the entire profile page background."
         },
+        "profileFontColor": {
+            "type": "string",
+            "description": "A solid hex color for the main text on the profile page."
+        },
         "socials": {
           "type": "object",
           "properties": {
