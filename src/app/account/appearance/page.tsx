@@ -94,6 +94,7 @@ function ProfilePreview({
   headerColor,
   headerImagePreview,
   profileBackgroundColor,
+  profileBackgroundImagePreview,
   profileTitleFontColor,
   profileBodyFontColor,
 }: {
@@ -103,6 +104,7 @@ function ProfilePreview({
   headerColor: string | undefined;
   headerImagePreview: string | null;
   profileBackgroundColor: string | undefined;
+  profileBackgroundImagePreview: string | null;
   profileTitleFontColor: string | undefined;
   profileBodyFontColor: string | undefined;
 }) {
@@ -111,9 +113,13 @@ function ProfilePreview({
   const headerGradientStyle = profileBackgroundColor
     ? { backgroundImage: `linear-gradient(to top, ${profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
     : {};
+    
+  const pageBackgroundStyle = profileBackgroundImagePreview 
+    ? { backgroundImage: `url(${profileBackgroundImagePreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: profileBackgroundColor || undefined };
 
   return (
-    <div className="w-full h-full overflow-y-auto" style={{ backgroundColor: profileBackgroundColor || undefined }}>
+    <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
         <div
         className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
         style={{ backgroundColor: headerColor }}
@@ -146,7 +152,7 @@ function ProfilePreview({
             "h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2",
             !headerColor && "ring-primary"
           )}
-          style={{ ringColor: headerColor || undefined }}
+          style={{ borderColor: profileBackgroundColor || undefined, ringColor: headerColor || undefined }}
         >
             <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
@@ -179,6 +185,7 @@ export default function AppearancePage() {
     const storage = useStorage();
     const { toast } = useToast();
     const headerImageInputRef = useRef<HTMLInputElement>(null);
+    const pageImageInputRef = useRef<HTMLInputElement>(null);
 
     const userProfileRef = useMemo(() => {
         if (!firestore || !user) return null;
@@ -193,6 +200,8 @@ export default function AppearancePage() {
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
     const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
     const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
+    const [profileBackgroundImageFile, setProfileBackgroundImageFile] = useState<File | null>(null);
+    const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState<string | undefined>('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState<string | undefined>('');
 
@@ -211,6 +220,7 @@ export default function AppearancePage() {
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
+            setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
         }
@@ -221,6 +231,14 @@ export default function AppearancePage() {
             const file = e.target.files[0];
             setHeaderImageFile(file);
             setHeaderImagePreview(URL.createObjectURL(file));
+        }
+    };
+    
+    const handlePageImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setProfileBackgroundImageFile(file);
+            setProfileBackgroundImagePreview(URL.createObjectURL(file));
         }
     };
 
@@ -234,6 +252,12 @@ export default function AppearancePage() {
                 toast({ title: 'Mengunggah gambar header...' });
                 newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
             }
+            
+            let newProfileBackgroundImageUrl = userProfile?.profileBackgroundImageUrl;
+            if (profileBackgroundImageFile) {
+                toast({ title: 'Mengunggah gambar latar...' });
+                newProfileBackgroundImageUrl = await uploadFile(storage, profileBackgroundImageFile, user.uid, 'profile_backgrounds');
+            }
 
             const updatedData: Partial<UserProfile> = {
                 bio: bio,
@@ -241,6 +265,7 @@ export default function AppearancePage() {
                 headerColor: headerColor,
                 headerImageUrl: newHeaderImageUrl,
                 profileBackgroundColor: profileBackgroundColor,
+                profileBackgroundImageUrl: newProfileBackgroundImageUrl,
                 profileTitleFontColor: profileTitleFontColor,
                 profileBodyFontColor: profileBodyFontColor,
             };
@@ -261,6 +286,7 @@ export default function AppearancePage() {
         } finally {
             setIsSaving(false);
             setHeaderImageFile(null);
+            setProfileBackgroundImageFile(null);
         }
     };
     
@@ -451,6 +477,23 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="page-image">
+                            <AccordionTrigger className="text-sm font-medium">Gambar Latar Halaman</AccordionTrigger>
+                            <AccordionContent className="pt-4">
+                               <div className="grid gap-2">
+                                    <div className="flex items-center gap-4">
+                                        {profileBackgroundImagePreview && <Image src={profileBackgroundImagePreview} alt="Pratinjau Latar Halaman" width={128} height={64} className="rounded-md object-cover aspect-[2/1] bg-muted" />}
+                                        <div className="flex-1">
+                                            <Input type="file" ref={pageImageInputRef} className="hidden" accept="image/*" onChange={handlePageImageChange} />
+                                            <Button type="button" variant="outline" onClick={() => pageImageInputRef.current?.click()}>
+                                            <ImageIcon className="mr-2 h-4 w-4" /> {profileBackgroundImagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}
+                                            </Button>
+                                            <p className="text-xs text-muted-foreground mt-1">Rasio 9:16 atau 1:1 disarankan.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                         <AccordionItem value="page-background">
                             <AccordionTrigger className="text-sm font-medium">Warna Latar Halaman</AccordionTrigger>
                             <AccordionContent className="pt-4">
@@ -549,6 +592,7 @@ export default function AppearancePage() {
                                     headerColor={headerColor}
                                     headerImagePreview={headerImagePreview}
                                     profileBackgroundColor={profileBackgroundColor}
+                                    profileBackgroundImagePreview={profileBackgroundImagePreview}
                                     profileTitleFontColor={profileTitleFontColor}
                                     profileBodyFontColor={profileBodyFontColor}
                                 />

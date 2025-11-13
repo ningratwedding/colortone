@@ -16,6 +16,8 @@ export type UserProfile = {
   headerImageHint?: string;
   headerColor?: string;
   profileBackgroundColor?: string;
+  profileBackgroundImageUrl?: string;
+  profileBackgroundImageHint?: string;
   profileTitleFontColor?: string;
   profileBodyFontColor?: string;
   socials?: {

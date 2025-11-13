@@ -57,6 +57,15 @@
             "type": "string",
             "description": "A solid hex color for the entire profile page background."
         },
+        "profileBackgroundImageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the user's custom profile page background image."
+        },
+        "profileBackgroundImageHint": {
+          "type": "string",
+          "description": "AI hint for the user's page background image."
+        },
         "profileTitleFontColor": {
             "type": "string",
             "description": "A solid hex color for the name/title text on the profile page."
@@ -395,4 +404,3 @@
     }
   }
 }
-    

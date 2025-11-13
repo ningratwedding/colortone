@@ -153,12 +153,21 @@ export function ProfileContent({ slug }: { slug: string }) {
   }, [userQuery]);
 
   useEffect(() => {
-    if (profileUser?.profileBackgroundColor) {
+    if (profileUser?.profileBackgroundColor && !profileUser.profileBackgroundImageUrl) {
       document.body.style.backgroundColor = profileUser.profileBackgroundColor;
+    } else if (profileUser?.profileBackgroundImageUrl) {
+      document.body.style.backgroundImage = `url(${profileUser.profileBackgroundImageUrl})`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundAttachment = 'fixed';
     }
-    // Cleanup function to reset the background color when the component unmounts
+    // Cleanup function to reset the background style when the component unmounts
     return () => {
       document.body.style.backgroundColor = '';
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundAttachment = '';
     };
   }, [profileUser]);
 
@@ -237,7 +246,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 />
             )}
             <div 
-              className={cn("absolute inset-0", !profileUser.profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+              className={cn("absolute inset-0", !profileUser.profileBackgroundColor && !profileUser.profileBackgroundImageUrl && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
               style={headerGradientStyle}
             />
         </div>
@@ -249,7 +258,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 "h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2",
                 !profileUser.headerColor && "ring-primary"
             )}
-            style={{ ringColor: profileUser.headerColor || undefined }}
+            style={{ borderColor: profileUser.profileBackgroundColor || undefined, ringColor: profileUser.headerColor || undefined }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
