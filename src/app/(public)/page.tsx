@@ -38,7 +38,7 @@ function CampaignBanner() {
     }
 
     if (loading) {
-        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full" />;
+        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg" />;
     }
 
     if (!campaigns || campaigns.length === 0) {
@@ -48,7 +48,7 @@ function CampaignBanner() {
     const campaign = campaigns[0];
 
     return (
-        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full group overflow-hidden">
+        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full group overflow-hidden rounded-lg">
             <Image
                 src={campaign.imageUrl}
                 alt={campaign.title}
@@ -56,9 +56,6 @@ function CampaignBanner() {
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 data-ai-hint={campaign.imageHint}
             />
-             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
-                <Link href={campaign.linkUrl} className="group/link block absolute inset-0" aria-label={campaign.title} />
-            </div>
         </div>
     )
 }
@@ -167,10 +164,10 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4 py-4">
       <CampaignBanner />
-      <div className="flex flex-col md:flex-row gap-1 justify-end p-1">
-        <div className="flex gap-1 w-full md:w-auto">
+      <div className="flex flex-col md:flex-row gap-2 justify-end py-4">
+        <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
             onValueChange={(value) => handleFilterChange('type', value)}
@@ -227,9 +224,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator className="my-1"/>
-
-      <section className="p-1">
+      <section>
         <ProductGrid filters={filters} />
       </section>
     </div>
