@@ -60,7 +60,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
   return (
     <Card
       className={cn(
-        'overflow-hidden group flex flex-col rounded-none',
+        'overflow-hidden group flex flex-col rounded-lg',
         className
       )}
     >

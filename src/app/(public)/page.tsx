@@ -48,7 +48,7 @@ function CampaignBanner() {
     const campaign = campaigns[0];
 
     return (
-        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full group">
+        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full group overflow-hidden rounded-lg">
             <Link href={campaign.linkUrl} className="group/link block absolute inset-0">
                 <Image
                     src={campaign.imageUrl}
@@ -86,7 +86,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 p-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-48 w-full" />
@@ -119,7 +119,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 p-1">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -166,9 +166,9 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto p-1">
+    <div className="container mx-auto p-4">
       <CampaignBanner />
-      <div className="flex flex-col md:flex-row gap-2 justify-end p-1">
+      <div className="flex flex-col md:flex-row gap-4 justify-end p-1 pt-4">
         <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
@@ -226,7 +226,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator />
+      <Separator className="my-4"/>
 
       <section>
         <ProductGrid filters={filters} />
