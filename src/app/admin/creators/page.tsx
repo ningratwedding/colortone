@@ -130,7 +130,7 @@ export default function AdminCreatorsPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
                         <DropdownMenuItem asChild>
-                            <Link href={`/creator/${creator.slug}`}>Lihat Profil</Link>
+                            <Link href={`/${creator.slug}`}>Lihat Profil</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => handleDeactivateClick(creator)}>Nonaktifkan Kreator</DropdownMenuItem>
                       </DropdownMenuContent>

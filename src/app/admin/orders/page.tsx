@@ -240,7 +240,7 @@ export default function AdminOrdersPage() {
                     <div>{order.productName}</div>
                     <div className="text-sm text-muted-foreground">
                         oleh{' '}
-                        <Link href={`/creator/${creators[order.creatorId]?.slug}`} className="hover:underline">
+                        <Link href={`/${creators[order.creatorId]?.slug}`} className="hover:underline">
                             {creators[order.creatorId]?.name || '...'}
                         </Link>
                     </div>

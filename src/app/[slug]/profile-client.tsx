@@ -1,7 +1,7 @@
 
 'use client';
 
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Globe, Instagram, Facebook } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
 
@@ -45,7 +45,68 @@ const socialIcons = {
 
 type SocialPlatform = keyof typeof socialIcons;
 
-export function AffiliateProfileContent({ slug }: { slug: string }) {
+function CreatorProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+  const displayName = user.fullName || user.name;
+  return (
+    <>
+        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Produk dari {user.name}</h2>
+        {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : products && products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} hideCreator={true} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>{displayName} belum memiliki produk.</p>
+          </div>
+        )}
+    </>
+  );
+}
+
+function AffiliateProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+  const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
+  return (
+     <>
+        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk Unggulan</h2>
+        {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : hasFeaturedProducts && products && products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} affiliateId={user.id} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Afiliator ini belum memilih produk unggulan.</p>
+          </div>
+        )}
+      </>
+  );
+}
+
+
+export function ProfileContent({ slug }: { slug: string }) {
   const firestore = useFirestore();
   const [profileUser, setProfileUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,14 +126,10 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
           setProfileUser(null);
         } else {
           const user = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
-          
-          // This route is only for affiliates. If a user with this slug exists but is not
-          // an affiliate (e.g., they are a creator or buyer), we treat it as not found.
-          // The creator profile will be at /kreator/[slug].
-          if (user.role === 'affiliator') {
+          if (user.role === 'kreator' || user.role === 'affiliator') {
             setProfileUser(user);
           } else {
-            setProfileUser(null);
+             setProfileUser(null);
           }
         }
       } catch (e) {
@@ -86,11 +143,18 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
 
 
   const productsQuery = useMemo(() => {
-    if (!firestore || !profileUser || !profileUser.featuredProductIds || profileUser.featuredProductIds.length === 0) {
-        return null;
+    if (!firestore || !profileUser) return null;
+    
+    if (profileUser.role === 'kreator') {
+        return query(collection(firestore, "products"), where('creatorId', '==', profileUser.id));
     }
-    // Firestore 'in' queries are limited to 30 items.
-    return query(collection(firestore, "products"), where(documentId(), 'in', profileUser.featuredProductIds.slice(0, 30)));
+    
+    if (profileUser.role === 'affiliator' && profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0) {
+        // Firestore 'in' queries are limited to 30 items.
+        return query(collection(firestore, "products"), where(documentId(), 'in', profileUser.featuredProductIds.slice(0, 30)));
+    }
+
+    return null;
   }, [firestore, profileUser]);
 
   const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
@@ -98,7 +162,13 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-6 space-y-6">
-        <Skeleton className="h-32 w-full" />
+        <div className="flex flex-col items-center gap-6 text-center">
+            <Skeleton className="h-32 w-32 rounded-full" />
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-5 w-64" />
+            </div>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="space-y-2">
@@ -116,7 +186,6 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
     notFound();
   }
   
-  const hasFeaturedProducts = profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0;
   const displayName = profileUser.fullName || profileUser.name;
 
   return (
@@ -128,7 +197,7 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
         </Avatar>
         <div>
           <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
-          <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{profileUser.bio || `Rekomendasi produk dari ${profileUser.name}`}</p>
+          <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{profileUser.bio}</p>
           {profileUser.socials && (
              <div className="flex justify-center items-center gap-4 mt-3">
               {Object.entries(profileUser.socials).map(([platform, username]) => (
@@ -143,28 +212,8 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
       </header>
 
       <main>
-        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk Unggulan</h2>
-        {productsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : hasFeaturedProducts && products && products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} affiliateId={profileUser.id} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Afiliator ini belum memilih produk unggulan.</p>
-          </div>
-        )}
+        {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
+        {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
       </main>
     </div>
   );

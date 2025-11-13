@@ -251,7 +251,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
               <Separator />
               {creator && (
                 <div className="flex items-center gap-3">
-                  <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group">
+                  <Link href={`/${creator.slug}`} className="flex items-center gap-2 group">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} data-ai-hint={creator.avatarHint || undefined} />
                       <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
@@ -304,3 +304,4 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
