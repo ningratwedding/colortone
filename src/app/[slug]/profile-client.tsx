@@ -248,9 +248,9 @@ export function ProfileContent({ slug }: { slug: string }) {
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div style={{ color: profileUser.profileFontColor || undefined }}>
-            <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
-            <p className="text-muted-foreground mt-1 max-w-2xl mx-auto" style={{ color: profileUser.profileFontColor || undefined }}>{profileUser.bio}</p>
+          <div>
+            <h1 className="text-3xl font-bold font-headline" style={{ color: profileUser.profileTitleFontColor || undefined }}>{displayName}</h1>
+            <p className="text-muted-foreground mt-1 max-w-2xl mx-auto" style={{ color: profileUser.profileBodyFontColor || undefined }}>{profileUser.bio}</p>
             {profileUser.socials && (
               <div className="flex justify-center items-center gap-4 mt-3">
                 {Object.entries(profileUser.socials).map(([platform, username]) => (

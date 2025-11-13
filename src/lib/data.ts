@@ -16,7 +16,8 @@ export type UserProfile = {
   headerImageHint?: string;
   headerColor?: string;
   profileBackgroundColor?: string;
-  profileFontColor?: string;
+  profileTitleFontColor?: string;
+  profileBodyFontColor?: string;
   socials?: {
     instagram?: string;
     facebook?: string;
