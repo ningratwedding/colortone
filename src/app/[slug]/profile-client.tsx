@@ -16,6 +16,8 @@ import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { hexToRgba } from '@/lib/hex-to-rgba';
+
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -223,7 +225,7 @@ export function ProfileContent({ slug }: { slug: string }) {
     : {};
 
   const showGradient = profileUser.showHeaderGradient ?? true;
-  const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly' };
+  const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly', layout: 'horizontal' };
   
   const socialLinkClasses = cn(
     "transition-transform hover:scale-110",
@@ -274,8 +276,13 @@ export function ProfileContent({ slug }: { slug: string }) {
             <h1 className="text-3xl font-bold font-headline" style={{ color: profileUser.profileTitleFontColor || undefined }}>{displayName}</h1>
             <p className="text-muted-foreground mt-1 max-w-2xl mx-auto" style={{ color: profileUser.profileBodyFontColor || undefined }}>{profileUser.bio}</p>
             {profileUser.socials && (
-              <div className="flex justify-center items-center gap-2 mt-3 flex-wrap">
-                {Object.entries(profileUser.socials).map(([platform, username]) => (
+              <div className={cn(
+                "flex justify-center items-center gap-2 mt-3 flex-wrap",
+                socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
+              )}>
+                {Object.entries(profileUser.socials).map(([platform, username]) => {
+                  const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
+                  return (
                   <Link 
                     key={platform} 
                     href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
@@ -283,15 +290,16 @@ export function ProfileContent({ slug }: { slug: string }) {
                     rel="noopener noreferrer" 
                     className={socialLinkClasses}
                     style={{
-                      backgroundColor: socialsSettings.style === 'pill' ? socialsSettings.backgroundColor : 'transparent',
-                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : profileUser.profileBodyFontColor || undefined
+                      backgroundColor: rgbaBg,
+                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined)
                     }}
                   >
                     {socialIcons[platform as SocialPlatform]}
                      {socialsSettings.style === 'pill' && <span className="font-medium capitalize">{platform}</span>}
                     <span className="sr-only">{platform}</span>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>

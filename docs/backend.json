@@ -100,8 +100,16 @@
                 "backgroundColor": {
                     "type": "string"
                 },
+                "backgroundOpacity": {
+                    "type": "number",
+                    "description": "Opacity of the pill background, from 0 to 1."
+                },
                 "fontColor": {
                     "type": "string"
+                },
+                "layout": {
+                    "type": "string",
+                    "enum": ["horizontal", "vertical"]
                 }
             }
         },

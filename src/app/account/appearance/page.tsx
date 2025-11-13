@@ -33,6 +33,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { uploadFile } from '@/firebase/storage/actions';
 import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Slider } from '@/components/ui/slider';
+import { hexToRgba } from '@/lib/hex-to-rgba';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -171,25 +173,31 @@ function ProfilePreview({
             <h1 className="text-xl font-bold font-headline" style={{ color: profileTitleFontColor || undefined }}>{displayName}</h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto" style={{ color: profileBodyFontColor || undefined }}>{bio || "Bio Anda akan muncul di sini."}</p>
             {socials && Object.keys(socials).length > 0 && (
-            <div className="flex justify-center items-center gap-2 mt-3 flex-wrap">
-                {Object.entries(socials).map(([platform, username]) => (
-                  <Link 
-                    key={platform} 
-                    href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className={socialLinkClasses}
-                    style={{
-                      backgroundColor: socialsSettings?.style === 'pill' ? socialsSettings?.backgroundColor : 'transparent',
-                      color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : profileBodyFontColor || undefined
-                    }}
-                  >
-                    {socialIcons[platform as SocialPlatform]}
-                     {socialsSettings?.style === 'pill' && <span className="font-medium capitalize">{platform}</span>}
-                    <span className="sr-only">{platform}</span>
-                  </Link>
-                ))}
-            </div>
+              <div className={cn(
+                "flex justify-center items-center gap-2 mt-3 flex-wrap",
+                socialsSettings?.layout === 'vertical' ? 'flex-col' : 'flex-row'
+              )}>
+                {Object.entries(socials).map(([platform, username]) => {
+                  const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
+                  return (
+                    <Link 
+                      key={platform} 
+                      href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className={socialLinkClasses}
+                      style={{
+                        backgroundColor: rgbaBg,
+                        color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined)
+                      }}
+                    >
+                      {socialIcons[platform as SocialPlatform]}
+                      {socialsSettings?.style === 'pill' && <span className="font-medium capitalize">{platform}</span>}
+                      <span className="sr-only">{platform}</span>
+                    </Link>
+                  )
+                })}
+              </div>
             )}
         </div>
         </header>
@@ -226,7 +234,7 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '' });
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1 });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -246,7 +254,12 @@ export default function AppearancePage() {
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
-            setSocialsSettings(userProfile.socialsSettings || { style: 'iconOnly', backgroundColor: '', fontColor: '' });
+            setSocialsSettings({
+                style: 'iconOnly',
+                layout: 'horizontal',
+                backgroundOpacity: 1,
+                ...userProfile.socialsSettings
+            });
         }
     }, [userProfile]);
     
@@ -618,6 +631,25 @@ export default function AppearancePage() {
                         <AccordionItem value="socials-appearance">
                             <AccordionTrigger className="text-sm font-medium">Tampilan Tautan Sosial</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
+                                <div>
+                                <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tata Letak</Label>
+                                <RadioGroup 
+                                    value={socialsSettings?.layout}
+                                    onValueChange={(value) => setSocialsSettings(prev => ({...prev, layout: value as 'horizontal' | 'vertical'}))}
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="horizontal" id="horizontal" />
+                                        <Label htmlFor="horizontal">Horizontal</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="vertical" id="vertical" />
+                                        <Label htmlFor="vertical">Vertikal</Label>
+                                    </div>
+                                </RadioGroup>
+                                </div>
+
+                                <div>
+                                <Label className="text-xs font-normal text-muted-foreground mb-2 block">Gaya Tombol</Label>
                                 <RadioGroup 
                                     value={socialsSettings?.style}
                                     onValueChange={(value) => setSocialsSettings(prev => ({...prev, style: value as 'iconOnly' | 'pill'}))}
@@ -631,8 +663,21 @@ export default function AppearancePage() {
                                         <Label htmlFor="pill">Pil Latar</Label>
                                     </div>
                                 </RadioGroup>
+                                </div>
                                 {socialsSettings?.style === 'pill' && (
                                     <div className="space-y-4 pl-6 border-l ml-2 pt-4">
+                                        <div>
+                                            <Label className="text-xs font-normal text-muted-foreground mb-2 block">Opasitas Latar Pil</Label>
+                                            <div className="flex items-center gap-4">
+                                                <Slider
+                                                    value={[ (socialsSettings.backgroundOpacity ?? 1) * 100 ]}
+                                                    onValueChange={(value) => setSocialsSettings(prev => ({...prev, backgroundOpacity: value[0] / 100}))}
+                                                    max={100}
+                                                    step={1}
+                                                />
+                                                <span className="text-xs w-12 text-right">{Math.round((socialsSettings.backgroundOpacity ?? 1) * 100)}%</span>
+                                            </div>
+                                        </div>
                                         <div>
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Pil</Label>
                                             <div className="flex flex-wrap items-center gap-2">
@@ -642,7 +687,7 @@ export default function AppearancePage() {
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings.backgroundColor} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings.backgroundColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                          <div>
@@ -654,7 +699,7 @@ export default function AppearancePage() {
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                     </div>

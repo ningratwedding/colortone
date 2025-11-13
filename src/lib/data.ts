@@ -29,7 +29,9 @@ export type UserProfile = {
   };
   socialsSettings?: {
     style: 'iconOnly' | 'pill';
+    layout?: 'horizontal' | 'vertical';
     backgroundColor?: string;
+    backgroundOpacity?: number;
     fontColor?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
