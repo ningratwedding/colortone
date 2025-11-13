@@ -270,7 +270,14 @@ export function ProfileContent({ slug }: { slug: string }) {
             {profileUser.socials && (
               <div className="flex justify-center items-center gap-4 mt-3">
                 {Object.entries(profileUser.socials).map(([platform, username]) => (
-                  <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                  <Link 
+                    key={platform} 
+                    href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-muted-foreground hover:text-primary"
+                    style={{ color: profileUser.profileBodyFontColor || undefined }}
+                  >
                     {socialIcons[platform as SocialPlatform]}
                     <span className="sr-only">{platform}</span>
                   </Link>
