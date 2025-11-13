@@ -13,7 +13,7 @@ import { ProductCard } from "@/components/product-card";
 import type { Product, Category, Software, Campaign } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
-import { collection, query, where, QueryConstraint } from "firebase/firestore";
+import { collection, query, where, QueryConstraint, limit } from "firebase/firestore";
 import { useMemo, useState }from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,7 +27,7 @@ function CampaignBanner() {
 
     const campaignQuery = useMemo(() => {
         if (!firestore) return undefined;
-        return query(collection(firestore, "campaigns"), where('isActive', '==', true));
+        return query(collection(firestore, "campaigns"), where('isActive', '==', true), limit(1));
     }, [firestore]);
 
     const { data: campaigns, loading, error } = useCollection<Campaign>(campaignQuery);
@@ -57,7 +57,6 @@ function CampaignBanner() {
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     data-ai-hint={campaign.imageHint}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </Link>
         </div>
     )
@@ -167,7 +166,7 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="container mx-auto p-2 space-y-4">
       <CampaignBanner />
       <div className="flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
