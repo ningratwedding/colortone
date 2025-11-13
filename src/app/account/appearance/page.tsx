@@ -128,7 +128,7 @@ function ProfilePreview({
 
   const socialLinkClasses = cn(
     "transition-transform hover:scale-110",
-    socialsSettings?.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-8 px-3 rounded-full flex items-center gap-2 text-sm',
+    socialsSettings?.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-10 px-4 flex items-center gap-2 text-sm',
   );
 
   return (
@@ -179,6 +179,8 @@ function ProfilePreview({
               )}>
                 {Object.entries(socials).map(([platform, username]) => {
                   const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
+                  const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
+
                   return (
                     <Link 
                       key={platform} 
@@ -188,7 +190,8 @@ function ProfilePreview({
                       className={socialLinkClasses}
                       style={{
                         backgroundColor: rgbaBg,
-                        color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined)
+                        color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),
+                        borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
                       }}
                     >
                       {socialIcons[platform as SocialPlatform]}
@@ -234,7 +237,7 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1 });
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1, borderRadius: 9999 });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -258,6 +261,7 @@ export default function AppearancePage() {
                 style: 'iconOnly',
                 layout: 'horizontal',
                 backgroundOpacity: 1,
+                borderRadius: 9999,
                 ...userProfile.socialsSettings
             });
         }
@@ -660,12 +664,24 @@ export default function AppearancePage() {
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="pill" id="pill" />
-                                        <Label htmlFor="pill">Pil Latar</Label>
+                                        <Label htmlFor="pill">Pil</Label>
                                     </div>
                                 </RadioGroup>
                                 </div>
                                 {socialsSettings?.style === 'pill' && (
                                     <div className="space-y-4 pl-6 border-l ml-2 pt-4">
+                                        <div>
+                                            <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tingkat Bulat (Border Radius)</Label>
+                                            <div className="flex items-center gap-4">
+                                                <Slider
+                                                    value={[ socialsSettings.borderRadius ?? 32 ]}
+                                                    onValueChange={(value) => setSocialsSettings(prev => ({...prev, borderRadius: value[0]}))}
+                                                    max={32}
+                                                    step={1}
+                                                />
+                                                <span className="text-xs w-12 text-right">{socialsSettings.borderRadius ?? 32}px</span>
+                                            </div>
+                                        </div>
                                         <div>
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Opasitas Latar Pil</Label>
                                             <div className="flex items-center gap-4">

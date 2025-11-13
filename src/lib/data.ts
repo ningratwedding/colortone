@@ -32,6 +32,7 @@ export type UserProfile = {
     layout?: 'horizontal' | 'vertical';
     backgroundColor?: string;
     backgroundOpacity?: number;
+    borderRadius?: number;
     fontColor?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';

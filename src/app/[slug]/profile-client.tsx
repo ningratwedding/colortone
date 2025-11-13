@@ -229,7 +229,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   
   const socialLinkClasses = cn(
     "transition-transform hover:scale-110",
-    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-8 px-3 rounded-full flex items-center gap-2 text-sm',
+    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-10 px-4 flex items-center gap-2 text-sm',
   );
 
   return (
@@ -282,6 +282,7 @@ export function ProfileContent({ slug }: { slug: string }) {
               )}>
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
                   const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
+                  const borderRadius = socialsSettings.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   return (
                   <Link 
                     key={platform} 
@@ -291,7 +292,8 @@ export function ProfileContent({ slug }: { slug: string }) {
                     className={socialLinkClasses}
                     style={{
                       backgroundColor: rgbaBg,
-                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined)
+                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
+                      borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
                     }}
                   >
                     {socialIcons[platform as SocialPlatform]}
