@@ -139,7 +139,13 @@ function ProfilePreview({
         </div>
         <div className="px-4">
         <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
-        <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2 ring-primary">
+        <Avatar 
+          className={cn(
+            "h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2",
+            !headerColor && "ring-primary"
+          )}
+          style={{ ringColor: headerColor || undefined }}
+        >
             <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
         </Avatar>
