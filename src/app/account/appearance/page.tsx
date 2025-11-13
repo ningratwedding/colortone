@@ -99,6 +99,8 @@ function ProfilePreview({
   profileBackgroundImagePreview,
   profileTitleFontColor,
   profileBodyFontColor,
+  avatarRingColor,
+  showAvatarRing,
 }: {
   profile: UserProfile;
   bio: string;
@@ -110,6 +112,8 @@ function ProfilePreview({
   profileBackgroundImagePreview: string | null;
   profileTitleFontColor: string | undefined;
   profileBodyFontColor: string | undefined;
+  avatarRingColor: string | undefined;
+  showAvatarRing: boolean;
 }) {
   const displayName = profile.fullName || profile.name;
   
@@ -154,10 +158,10 @@ function ProfilePreview({
         <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
         <Avatar 
           className={cn(
-            "h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2",
-            !headerColor && "ring-primary"
+            "h-20 w-20 md:h-24 md:w-24 border-4 border-background",
+            showAvatarRing && 'ring-2'
           )}
-          style={{ borderColor: profileBackgroundColor || undefined, ringColor: headerColor || undefined }}
+          style={{ borderColor: profileBackgroundColor || undefined, ringColor: avatarRingColor || undefined }}
         >
             <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
@@ -210,6 +214,8 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState<string | undefined>('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState<string | undefined>('');
+    const [avatarRingColor, setAvatarRingColor] = useState<string | undefined>('');
+    const [showAvatarRing, setShowAvatarRing] = useState(true);
 
 
     const [isSaving, setIsSaving] = useState(false);
@@ -230,6 +236,8 @@ export default function AppearancePage() {
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
+            setAvatarRingColor(userProfile.avatarRingColor || '');
+            setShowAvatarRing(userProfile.showAvatarRing ?? true);
         }
     }, [userProfile]);
     
@@ -276,6 +284,8 @@ export default function AppearancePage() {
                 profileBackgroundImageUrl: newProfileBackgroundImageUrl,
                 profileTitleFontColor: profileTitleFontColor,
                 profileBodyFontColor: profileBodyFontColor,
+                avatarRingColor: avatarRingColor,
+                showAvatarRing: showAvatarRing,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -441,6 +451,45 @@ export default function AppearancePage() {
                                         </DialogFooter>
                                     </DialogContent>
                                     </Dialog>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="avatar-ring">
+                            <AccordionTrigger className="text-sm font-medium">Bingkai Avatar</AccordionTrigger>
+                            <AccordionContent className="pt-4 space-y-4">
+                                <div>
+                                    <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Bingkai</Label>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        {colorOptions.map((color) => (
+                                            <button
+                                                key={`avatar-ring-${color.value}`}
+                                                type="button"
+                                                onClick={() => setAvatarRingColor(color.value)}
+                                                className={cn(
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
+                                                    avatarRingColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
+                                                    color.value === '' && 'border-muted-foreground border-dashed'
+                                                )}
+                                                style={{ backgroundColor: color.value || 'transparent' }}
+                                                aria-label={`Pilih warna bingkai avatar ${color.name}`}
+                                            >
+                                                {avatarRingColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
+                                            </button>
+                                        ))}
+                                        <Label htmlFor="avatar-ring-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: avatarRingColor && !colorOptions.some(c => c.value === avatarRingColor) ? avatarRingColor : 'transparent' }}>
+                                            <Palette className="h-4 w-4 text-muted-foreground" />
+                                            <Input id="avatar-ring-color-picker" type="color" value={avatarRingColor} onChange={e => setAvatarRingColor(e.target.value)} className="sr-only" />
+                                        </Label>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2 pt-2">
+                                    <Switch
+                                        id="avatar-ring-switch"
+                                        checked={showAvatarRing}
+                                        onCheckedChange={setShowAvatarRing}
+                                    />
+                                    <Label htmlFor="avatar-ring-switch">Tampilkan Bingkai Avatar</Label>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -626,6 +675,8 @@ export default function AppearancePage() {
                                     profileBackgroundImagePreview={profileBackgroundImagePreview}
                                     profileTitleFontColor={profileTitleFontColor}
                                     profileBodyFontColor={profileBodyFontColor}
+                                    avatarRingColor={avatarRingColor}
+                                    showAvatarRing={showAvatarRing}
                                 />
                             </div>
                         </div>

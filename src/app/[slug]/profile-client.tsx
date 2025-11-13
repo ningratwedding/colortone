@@ -223,6 +223,7 @@ export function ProfileContent({ slug }: { slug: string }) {
     : {};
 
   const showGradient = profileUser.showHeaderGradient ?? true;
+  const showRing = profileUser.showAvatarRing ?? true;
 
   return (
     <div className="pb-6">
@@ -259,10 +260,10 @@ export function ProfileContent({ slug }: { slug: string }) {
         <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
           <Avatar 
             className={cn(
-                "h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2",
-                !profileUser.headerColor && "ring-primary"
+                "h-24 w-24 md:h-32 md:w-32 border-4 border-background",
+                showRing && "ring-2"
             )}
-            style={{ borderColor: profileUser.profileBackgroundColor || undefined, ringColor: profileUser.headerColor || undefined }}
+            style={{ borderColor: profileUser.profileBackgroundColor || undefined, ringColor: profileUser.avatarRingColor || undefined }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
