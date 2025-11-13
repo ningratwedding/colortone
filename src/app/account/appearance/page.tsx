@@ -147,10 +147,22 @@ function ProfilePreview({
     }
   };
 
-  const socialLinkClasses = (size: string | undefined) => cn(
+  const socialLinkClasses = (size: string | undefined, layout: string | undefined) => cn(
     "transition-transform hover:scale-110 flex items-center gap-2",
     socialsSettings?.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
+    layout === 'vertical' && socialsSettings?.style === 'pill' ? 'w-full justify-center' : ''
   );
+  
+   const getSocialLink = (platform: string, username: string) => {
+    switch (platform) {
+      case 'website':
+        return username;
+      case 'whatsapp':
+        return `https://wa.me/${username}`;
+      default:
+        return `https://www.${platform}.com/${username}`;
+    }
+  };
 
   return (
     <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
@@ -205,10 +217,10 @@ function ProfilePreview({
                   return (
                     <Link 
                       key={platform} 
-                      href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
+                      href={getSocialLink(platform, username as string)} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className={socialLinkClasses(socialsSettings?.pillSize)}
+                      className={socialLinkClasses(socialsSettings?.pillSize, socialsSettings?.layout)}
                       style={{
                         backgroundColor: rgbaBg,
                         color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),

@@ -248,9 +248,10 @@ export function ProfileContent({ slug }: { slug: string }) {
     }
   };
 
-  const socialLinkClasses = (size: string | undefined) => cn(
+  const socialLinkClasses = (size: string | undefined, layout: string | undefined) => cn(
     "transition-transform hover:scale-110 flex items-center gap-2",
     socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
+    layout === 'vertical' && socialsSettings.style === 'pill' ? 'w-full justify-center' : ''
   );
   
    const getSocialLink = (platform: string, username: string) => {
@@ -321,7 +322,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                     href={getSocialLink(platform, username as string)} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className={socialLinkClasses(socialsSettings.pillSize)}
+                    className={socialLinkClasses(socialsSettings.pillSize, socialsSettings.layout)}
                     style={{
                       backgroundColor: rgbaBg,
                       color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
