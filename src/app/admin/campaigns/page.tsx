@@ -281,10 +281,6 @@ export default function AdminCampaignsPage() {
               <Input id="campaign-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="misal: Diskon Kemerdekaan" autoFocus />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="campaign-desc">Deskripsi (Opsional)</Label>
-              <Textarea id="campaign-desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Deskripsi singkat tentang promosi ini." />
-            </div>
-            <div className="grid gap-2">
               <Label htmlFor="campaign-link">URL Tautan</Label>
               <Input id="campaign-link" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://domain.com/halaman-promo" />
             </div>
