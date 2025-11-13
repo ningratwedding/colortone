@@ -114,6 +114,10 @@
                 "layout": {
                     "type": "string",
                     "enum": ["horizontal", "vertical"]
+                },
+                "pillSize": {
+                  "type": "string",
+                  "enum": ["sm", "md", "lg"]
                 }
             }
         },
@@ -437,3 +441,4 @@
     }
   }
 }
+

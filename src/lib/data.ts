@@ -34,6 +34,7 @@ export type UserProfile = {
     backgroundOpacity?: number;
     borderRadius?: number;
     fontColor?: string;
+    pillSize?: 'sm' | 'md' | 'lg';
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];

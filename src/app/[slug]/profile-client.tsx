@@ -225,11 +225,23 @@ export function ProfileContent({ slug }: { slug: string }) {
     : {};
 
   const showGradient = profileUser.showHeaderGradient ?? true;
-  const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly', layout: 'horizontal' };
+  const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly', layout: 'horizontal', pillSize: 'md' };
   
-  const socialLinkClasses = cn(
-    "transition-transform hover:scale-110",
-    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-10 px-4 flex items-center gap-2 text-sm',
+  const getPillSizeClasses = (size: string | undefined) => {
+    switch (size) {
+      case 'sm':
+        return 'h-8 px-3 text-xs';
+      case 'lg':
+        return 'h-11 px-6 text-base';
+      case 'md':
+      default:
+        return 'h-10 px-4 text-sm';
+    }
+  };
+
+  const socialLinkClasses = (size: string | undefined) => cn(
+    "transition-transform hover:scale-110 flex items-center gap-2",
+    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
   );
 
   return (
@@ -289,7 +301,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                     href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className={socialLinkClasses}
+                    className={socialLinkClasses(socialsSettings.pillSize)}
                     style={{
                       backgroundColor: rgbaBg,
                       color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),

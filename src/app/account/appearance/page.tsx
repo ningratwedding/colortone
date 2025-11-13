@@ -126,9 +126,21 @@ function ProfilePreview({
     ? { backgroundImage: `url(${profileBackgroundImagePreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: profileBackgroundColor || undefined };
 
-  const socialLinkClasses = cn(
-    "transition-transform hover:scale-110",
-    socialsSettings?.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-10 px-4 flex items-center gap-2 text-sm',
+  const getPillSizeClasses = (size: string | undefined) => {
+    switch (size) {
+      case 'sm':
+        return 'h-8 px-3 text-xs';
+      case 'lg':
+        return 'h-11 px-6 text-base';
+      case 'md':
+      default:
+        return 'h-10 px-4 text-sm';
+    }
+  };
+
+  const socialLinkClasses = (size: string | undefined) => cn(
+    "transition-transform hover:scale-110 flex items-center gap-2",
+    socialsSettings?.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
   );
 
   return (
@@ -187,7 +199,7 @@ function ProfilePreview({
                       href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className={socialLinkClasses}
+                      className={socialLinkClasses(socialsSettings?.pillSize)}
                       style={{
                         backgroundColor: rgbaBg,
                         color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),
@@ -237,7 +249,7 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1, borderRadius: 9999 });
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -262,6 +274,7 @@ export default function AppearancePage() {
                 layout: 'horizontal',
                 backgroundOpacity: 1,
                 borderRadius: 9999,
+                pillSize: 'md',
                 ...userProfile.socialsSettings
             });
         }
@@ -670,6 +683,17 @@ export default function AppearancePage() {
                                 </div>
                                 {socialsSettings?.style === 'pill' && (
                                     <div className="space-y-4 pl-6 border-l ml-2 pt-4">
+                                        <div>
+                                            <Label className="text-xs font-normal text-muted-foreground mb-2 block">Ukuran Pil</Label>
+                                            <RadioGroup 
+                                                value={socialsSettings?.pillSize}
+                                                onValueChange={(value) => setSocialsSettings(prev => ({...prev, pillSize: value as 'sm' | 'md' | 'lg'}))}
+                                            >
+                                                <div className="flex items-center space-x-2"><RadioGroupItem value="sm" id="sm" /><Label htmlFor="sm">Kecil</Label></div>
+                                                <div className="flex items-center space-x-2"><RadioGroupItem value="md" id="md" /><Label htmlFor="md">Sedang</Label></div>
+                                                <div className="flex items-center space-x-2"><RadioGroupItem value="lg" id="lg" /><Label htmlFor="lg">Besar</Label></div>
+                                            </RadioGroup>
+                                        </div>
                                         <div>
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tingkat Bulat (Border Radius)</Label>
                                             <div className="flex items-center gap-4">
