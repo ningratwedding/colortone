@@ -1,6 +1,5 @@
 import { SiteFooter } from '@/components/site-footer';
 import * as React from 'react';
-import { SiteHeader } from '@/components/site-header';
 import { ProfileContent } from './profile-client';
 import { doc, getDoc, query, collection, where, getDocs, limit } from 'firebase/firestore';
 import { initializeServerSideFirebase } from '@/firebase/server-init';
@@ -58,7 +57,6 @@ export default function ProfileRootPage({ params }: { params: { slug: string } }
     
     return (
         <>
-            <SiteHeader />
             <ProfileContent slug={params.slug} />
             <SiteFooter />
         </>
