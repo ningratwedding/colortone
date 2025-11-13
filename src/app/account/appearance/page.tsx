@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -104,58 +105,56 @@ function ProfilePreview({
     : {};
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm lg:h-[75vh] overflow-hidden">
-        <div className="h-full overflow-y-auto" style={{ backgroundColor: profileBackgroundColor || undefined }}>
-             <div
-                className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
-                style={{ backgroundColor: headerColor }}
-                >
-                    {profile.headerImageUrl ? (
-                        <Image
-                            src={profile.headerImageUrl}
-                            alt="Header background"
-                            fill
-                            className="object-cover"
-                            data-ai-hint={profile.headerImageHint}
-                        />
-                    ) : !headerColor && (
-                        <Image
-                            src={`https://picsum.photos/seed/${profile.id}/1200/400`}
-                            alt="Header background"
-                            fill
-                            className="object-cover"
-                            data-ai-hint="header background"
-                        />
-                    )}
-                    <div 
-                        className={cn("absolute inset-0", !profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
-                        style={headerGradientStyle}
-                    />
-                </div>
-              <div className="px-4">
-                <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
-                <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2 ring-primary">
-                    <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
-                    <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                    <h1 className="text-xl font-bold font-headline">{displayName}</h1>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{bio || "Bio Anda akan muncul di sini."}</p>
-                    {socials && Object.keys(socials).length > 0 && (
-                    <div className="flex justify-center items-center gap-4 mt-3">
-                        {Object.entries(socials).map(([platform, username]) => (
-                        <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
-                            {socialIcons[platform as SocialPlatform]}
-                            <span className="sr-only">{platform}</span>
-                        </Link>
-                        ))}
-                    </div>
-                    )}
-                </div>
-                </header>
-                 <p className="text-xs text-center text-muted-foreground">(Ini adalah pratinjau)</p>
-            </div>
+    <div className="w-full h-full overflow-y-auto" style={{ backgroundColor: profileBackgroundColor || undefined }}>
+        <div
+        className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
+        style={{ backgroundColor: headerColor }}
+        >
+            {profile.headerImageUrl ? (
+                <Image
+                    src={profile.headerImageUrl}
+                    alt="Header background"
+                    fill
+                    className="object-cover"
+                    data-ai-hint={profile.headerImageHint}
+                />
+            ) : !headerColor && (
+                <Image
+                    src={`https://picsum.photos/seed/${profile.id}/1200/400`}
+                    alt="Header background"
+                    fill
+                    className="object-cover"
+                    data-ai-hint="header background"
+                />
+            )}
+            <div 
+                className={cn("absolute inset-0", !profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+                style={headerGradientStyle}
+            />
         </div>
+        <div className="px-4">
+        <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
+        <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2 ring-primary">
+            <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
+            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+            <h1 className="text-xl font-bold font-headline">{displayName}</h1>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{bio || "Bio Anda akan muncul di sini."}</p>
+            {socials && Object.keys(socials).length > 0 && (
+            <div className="flex justify-center items-center gap-4 mt-3">
+                {Object.entries(socials).map(([platform, username]) => (
+                <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                    {socialIcons[platform as SocialPlatform]}
+                    <span className="sr-only">{platform}</span>
+                </Link>
+                ))}
+            </div>
+            )}
+        </div>
+        </header>
+            <p className="text-xs text-center text-muted-foreground">(Ini adalah pratinjau)</p>
+    </div>
     </div>
   )
 }
@@ -395,14 +394,22 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="lg:col-span-2">
-                <ProfilePreview 
-                    profile={userProfile} 
-                    bio={bio}
-                    socials={socials}
-                    headerColor={headerColor}
-                    profileBackgroundColor={profileBackgroundColor}
-                />
+            <div className="lg:col-span-2 hidden lg:flex items-center justify-center p-4">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px]">
+                    <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
+                    <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
+                    <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
+                    <div className="h-[64px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
+                    <div className="rounded-[2rem] overflow-hidden w-full h-full bg-background">
+                         <ProfilePreview 
+                            profile={userProfile} 
+                            bio={bio}
+                            socials={socials}
+                            headerColor={headerColor}
+                            profileBackgroundColor={profileBackgroundColor}
+                        />
+                    </div>
+                </div>
             </div>
 
             <Dialog open={isColorDialogOpen} onOpenChange={setIsColorDialogOpen}>
@@ -445,3 +452,4 @@ export default function AppearancePage() {
         </div>
     )
 }
+
