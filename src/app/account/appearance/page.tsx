@@ -403,20 +403,24 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="hidden lg:flex items-center justify-center">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px] shadow-2xl">
-                    <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
-                    <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
-                    <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
-                    <div className="h-[64px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
-                    <div className="rounded-[2rem] overflow-hidden w-full h-full bg-background">
-                         <ProfilePreview 
-                            profile={userProfile} 
-                            bio={bio}
-                            socials={socials}
-                            headerColor={headerColor}
-                            profileBackgroundColor={profileBackgroundColor}
-                        />
+            <div className="hidden lg:block">
+                <div className="sticky top-20">
+                    <div className="flex items-center justify-center">
+                        <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px] shadow-2xl">
+                            <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
+                            <div className="h-[64px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
+                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-background">
+                                <ProfilePreview 
+                                    profile={userProfile} 
+                                    bio={bio}
+                                    socials={socials}
+                                    headerColor={headerColor}
+                                    profileBackgroundColor={profileBackgroundColor}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
