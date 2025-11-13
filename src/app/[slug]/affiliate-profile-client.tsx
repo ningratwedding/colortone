@@ -66,12 +66,12 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
         } else {
           const user = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
           
-          if (user.role === 'kreator') {
-            redirect(`/kreator/${user.slug}`);
-          } else if (user.role === 'affiliator') {
+          // This route is only for affiliates. If a user with this slug exists but is not
+          // an affiliate (e.g., they are a creator or buyer), we treat it as not found.
+          // The creator profile will be at /kreator/[slug].
+          if (user.role === 'affiliator') {
             setProfileUser(user);
           } else {
-            // Not a public profile
             setProfileUser(null);
           }
         }
@@ -116,11 +116,6 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
     notFound();
   }
   
-  // This check is now redundant because of the user fetch logic, but good for safety
-  if (profileUser.role !== 'affiliator') {
-      notFound();
-  }
-
   const hasFeaturedProducts = profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0;
   const displayName = profileUser.fullName || profileUser.name;
 
