@@ -16,12 +16,12 @@ import { Label } from '@/components/ui/label';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
+import { useFirestore, useStorage } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useMemo } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,6 +30,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { uploadFile } from '@/firebase/storage/actions';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -91,6 +92,7 @@ function ProfilePreview({
   bio,
   socials,
   headerColor,
+  headerImagePreview,
   profileBackgroundColor,
   profileTitleFontColor,
   profileBodyFontColor,
@@ -99,6 +101,7 @@ function ProfilePreview({
   bio: string;
   socials: UserProfile['socials'];
   headerColor: string | undefined;
+  headerImagePreview: string | null;
   profileBackgroundColor: string | undefined;
   profileTitleFontColor: string | undefined;
   profileBodyFontColor: string | undefined;
@@ -115,13 +118,12 @@ function ProfilePreview({
         className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
         style={{ backgroundColor: headerColor }}
         >
-            {profile.headerImageUrl ? (
+            {headerImagePreview ? (
                 <Image
-                    src={profile.headerImageUrl}
+                    src={headerImagePreview}
                     alt="Header background"
                     fill
                     className="object-cover"
-                    data-ai-hint={profile.headerImageHint}
                 />
             ) : !headerColor && (
                 <Image
@@ -174,7 +176,9 @@ function ProfilePreview({
 export default function AppearancePage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
+    const storage = useStorage();
     const { toast } = useToast();
+    const headerImageInputRef = useRef<HTMLInputElement>(null);
 
     const userProfileRef = useMemo(() => {
         if (!firestore || !user) return null;
@@ -186,6 +190,8 @@ export default function AppearancePage() {
     const [bio, setBio] = useState('');
     const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [headerColor, setHeaderColor] = useState<string | undefined>('');
+    const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
+    const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
     const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
     const [profileTitleFontColor, setProfileTitleFontColor] = useState<string | undefined>('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState<string | undefined>('');
@@ -203,20 +209,37 @@ export default function AppearancePage() {
             setBio(userProfile.bio || '');
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
+            setHeaderImagePreview(userProfile.headerImageUrl || null);
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
         }
     }, [userProfile]);
+    
+    const handleHeaderImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setHeaderImageFile(file);
+            setHeaderImagePreview(URL.createObjectURL(file));
+        }
+    };
+
 
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !user) return;
+        if (!userProfileRef || !user || !storage) return;
         setIsSaving(true);
         try {
+            let newHeaderImageUrl = userProfile?.headerImageUrl;
+            if (headerImageFile) {
+                toast({ title: 'Mengunggah gambar header...' });
+                newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
+            }
+
             const updatedData: Partial<UserProfile> = {
                 bio: bio,
                 socials: socials,
                 headerColor: headerColor,
+                headerImageUrl: newHeaderImageUrl,
                 profileBackgroundColor: profileBackgroundColor,
                 profileTitleFontColor: profileTitleFontColor,
                 profileBodyFontColor: profileBodyFontColor,
@@ -237,6 +260,7 @@ export default function AppearancePage() {
             });
         } finally {
             setIsSaving(false);
+            setHeaderImageFile(null);
         }
     };
     
@@ -386,6 +410,23 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="header-image">
+                            <AccordionTrigger className="text-sm font-medium">Gambar Latar Header</AccordionTrigger>
+                            <AccordionContent className="pt-4">
+                               <div className="grid gap-2">
+                                    <div className="flex items-center gap-4">
+                                        {headerImagePreview && <Image src={headerImagePreview} alt="Pratinjau Header" width={128} height={64} className="rounded-md object-cover aspect-[2/1] bg-muted" />}
+                                        <div className="flex-1">
+                                            <Input type="file" ref={headerImageInputRef} className="hidden" accept="image/*" onChange={handleHeaderImageChange} />
+                                            <Button type="button" variant="outline" onClick={() => headerImageInputRef.current?.click()}>
+                                            <ImageIcon className="mr-2 h-4 w-4" /> {headerImagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}
+                                            </Button>
+                                            <p className="text-xs text-muted-foreground mt-1">Rasio 3:1 atau 4:1 disarankan.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                         <AccordionItem value="header-color">
                             <AccordionTrigger className="text-sm font-medium">Warna Latar Header</AccordionTrigger>
                             <AccordionContent className="pt-4">
@@ -506,6 +547,7 @@ export default function AppearancePage() {
                                     bio={bio}
                                     socials={socials}
                                     headerColor={headerColor}
+                                    headerImagePreview={headerImagePreview}
                                     profileBackgroundColor={profileBackgroundColor}
                                     profileTitleFontColor={profileTitleFontColor}
                                     profileBodyFontColor={profileBodyFontColor}
