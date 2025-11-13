@@ -106,17 +106,19 @@ export function CreatorProfileContent({ slug }: { slug: string }) {
   if (!creator) {
     notFound();
   }
+  
+  const displayName = creator.fullName || creator.name;
 
   return (
     <>
     <div className="container mx-auto px-4 py-6">
       <header className="flex flex-col items-center gap-6 mb-8 text-center">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
-          <AvatarImage src={creator.avatarUrl || undefined} alt={creator.name} />
-          <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+          <AvatarImage src={creator.avatarUrl || undefined} alt={displayName} />
+          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-3xl font-bold font-headline">{creator.name}</h1>
+          <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
           <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{creator.bio}</p>
           {creator.socials && (
              <div className="flex justify-center items-center gap-4 mt-3">

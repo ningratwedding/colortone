@@ -36,7 +36,7 @@ async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 
 // Helper function to create a user document in Firestore
-async function createUserDocument(user: User, fullName?: string): Promise<UserProfile> {
+async function createUserDocument(user: User, profileName?: string): Promise<UserProfile> {
     const db = getDb();
     const auth = getAuth(initializeFirebase().app);
 
@@ -45,7 +45,7 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
         return existingProfile;
     }
 
-    const name = fullName || user.displayName || 'Pengguna Baru';
+    const name = profileName || user.displayName || 'Pengguna Baru';
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
     // Check if slug already exists
@@ -71,8 +71,8 @@ async function createUserDocument(user: User, fullName?: string): Promise<UserPr
     };
     await setDoc(doc(db, 'users', user.uid), newUserProfile);
     
-    if (fullName && auth.currentUser) {
-        await updateProfile(auth.currentUser, { displayName: fullName, photoURL: newUserProfile.avatarUrl });
+    if (profileName && auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: profileName, photoURL: newUserProfile.avatarUrl });
     } else if (auth.currentUser && !auth.currentUser.photoURL) {
          await updateProfile(auth.currentUser, { photoURL: newUserProfile.avatarUrl });
     }
@@ -107,11 +107,11 @@ export async function signInWithGoogle() {
 }
 
 // Sign up with email and password
-export async function signUpWithEmail(email: string, password: string, fullName: string) {
+export async function signUpWithEmail(email: string, password: string, profileName: string) {
     const auth = getAuth(initializeFirebase().app);
     try {
-        if (!fullName) {
-            return { success: false, error: 'Nama lengkap harus diisi.'};
+        if (!profileName) {
+            return { success: false, error: 'Nama profil harus diisi.'};
         }
         const result = await createUserWithEmailAndPassword(auth, email, password);
         const user = result.user;
@@ -119,7 +119,7 @@ export async function signUpWithEmail(email: string, password: string, fullName:
         await sendEmailVerification(user);
 
         // Now, we create the document, which includes the slug uniqueness check
-        const profile = await createUserDocument(user, fullName);
+        const profile = await createUserDocument(user, profileName);
 
         return { success: true, user, profile };
     } catch (error) {

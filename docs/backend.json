@@ -8,7 +8,11 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "The user's full display name."
+          "description": "The user's public profile display name."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "The user's full legal name."
         },
         "email": {
           "type": "string",

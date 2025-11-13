@@ -5,7 +5,8 @@ import type { Timestamp } from 'firebase/firestore';
 export type UserProfile = {
   id: string;
   slug: string;
-  name: string;
+  name: string; // This is the public profile name
+  fullName?: string; // This is the user's full legal name
   email: string;
   phoneNumber?: string;
   avatarUrl: string;

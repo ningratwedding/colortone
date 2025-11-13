@@ -75,6 +75,7 @@ export default function AccountSettingsPage() {
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
     
     const [name, setName] = useState('');
+    const [fullName, setFullName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [bio, setBio] = useState('');
     const [socials, setSocials] = useState<UserProfile['socials']>({});
@@ -92,6 +93,7 @@ export default function AccountSettingsPage() {
     useEffect(() => {
         if (userProfile) {
             setName(userProfile.name);
+            setFullName(userProfile.fullName || '');
             setPhoneNumber(userProfile.phoneNumber || '');
             setAvatarPreview(userProfile.avatarUrl);
             setBio(userProfile.bio || '');
@@ -120,6 +122,7 @@ export default function AccountSettingsPage() {
 
             const updatedData: Partial<UserProfile> = {
                 name: name,
+                fullName: fullName,
                 phoneNumber: phoneNumber,
                 avatarUrl: newAvatarUrl,
                 bio: bio,
@@ -266,8 +269,14 @@ export default function AccountSettingsPage() {
                         </div>
                     </div>
                     <div className="grid gap-2">
+                        <Label htmlFor="profilename">Nama Profil</Label>
+                        <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} />
+                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
+                    </div>
+                     <div className="grid gap-2">
                         <Label htmlFor="fullname">Nama Lengkap</Label>
-                        <Input id="fullname" value={name} onChange={(e) => setName(e.target.value)} />
+                        <Input id="fullname" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                         <p className="text-xs text-muted-foreground">Nama ini digunakan untuk keperluan administratif dan tidak akan ditampilkan secara publik.</p>
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">Alamat Email</Label>

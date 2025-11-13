@@ -36,7 +36,7 @@ import { Logo } from "@/components/logo";
 
 
 const formSchema = z.object({
-  fullName: z.string().min(3, "Nama lengkap harus terdiri dari minimal 3 karakter."),
+  profileName: z.string().min(3, "Nama profil harus terdiri dari minimal 3 karakter."),
   email: z.string().email("Format email tidak valid."),
   password: z.string().min(6, "Kata sandi minimal 6 karakter."),
 });
@@ -53,7 +53,7 @@ export default function SignupPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      profileName: "",
       email: "",
       password: "",
     },
@@ -124,7 +124,7 @@ export default function SignupPage() {
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const result = await signUpWithEmail(data.email, data.password, data.fullName);
+    const result = await signUpWithEmail(data.email, data.password, data.profileName);
     if (result.success && result.profile) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Di! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
@@ -158,12 +158,12 @@ export default function SignupPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="profileName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nama Lengkap</FormLabel>
+                    <FormLabel>Nama Profil</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nama Anda" {...field} disabled={form.formState.isSubmitting} />
+                      <Input placeholder="Nama publik Anda" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

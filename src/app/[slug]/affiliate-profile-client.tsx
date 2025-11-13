@@ -122,16 +122,17 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
   }
 
   const hasFeaturedProducts = profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0;
+  const displayName = profileUser.fullName || profileUser.name;
 
   return (
     <div className="container mx-auto px-4 py-6">
       <header className="flex flex-col items-center gap-6 mb-8 text-center">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
-          <AvatarImage src={profileUser.avatarUrl || undefined} alt={profileUser.name} />
-          <AvatarFallback>{profileUser.name.charAt(0)}</AvatarFallback>
+          <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
+          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-3xl font-bold font-headline">{profileUser.name}</h1>
+          <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
           <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{profileUser.bio || `Rekomendasi produk dari ${profileUser.name}`}</p>
           {profileUser.socials && (
              <div className="flex justify-center items-center gap-4 mt-3">
