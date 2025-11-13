@@ -4,7 +4,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Settings, ShoppingBag, PartyPopper, Star } from 'lucide-react';
+import { Settings, ShoppingBag, PartyPopper, Star, Palette } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { cn } from '@/lib/utils';
@@ -17,6 +17,7 @@ import type { UserProfile } from '@/lib/data';
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
   { href: '/account/settings', label: 'Pengaturan Akun', icon: Settings },
+  { href: '/account/appearance', label: 'Tampilan Profil', icon: Palette },
 ];
 
 const affiliateMenuItems = [
@@ -52,7 +53,7 @@ export default function AccountLayout({
     <>
       <SiteHeader />
       <div className="flex-1 w-full px-4 py-6">
-        <div className="container mx-auto">
+        <div className="mx-auto">
           <header className="mb-6 hidden md:block">
             <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
           </header>
@@ -76,7 +77,7 @@ export default function AccountLayout({
           </div>
         </div>
 
-        <div className="container mx-auto grid md:grid-cols-4 gap-8">
+        <div className="mx-auto grid md:grid-cols-4 gap-8">
           <aside className="hidden md:block md:col-span-1">
             <nav className="flex flex-col space-y-2">
               <h2 className="text-lg font-bold font-headline mb-2">Akun Saya</h2>
