@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Bell,
   Laptop,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +53,7 @@ import { Logo } from "@/components/logo";
 
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
+  { href: "/admin/campaigns", label: "Kampanye", icon: Megaphone },
   { href: "/admin/products", label: "Produk", icon: Package },
   { href: "/admin/categories", label: "Kategori", icon: LayoutGrid },
   { href: "/admin/software", label: "Software", icon: Laptop },

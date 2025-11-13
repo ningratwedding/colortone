@@ -10,14 +10,58 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
-import type { Product, Category, Software } from "@/lib/data";
+import type { Product, Category, Software, Campaign } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
 import { collection, query, where, QueryConstraint } from "firebase/firestore";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal } from "lucide-react";
+import { Terminal, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+
+function CampaignBanner() {
+    const firestore = useFirestore();
+
+    const campaignQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, "campaigns"), where('isActive', '==', true), where('imageUrl', '!=', null));
+    }, [firestore]);
+
+    const { data: campaigns, loading, error } = useCollection<Campaign>(campaignQuery);
+
+    if (loading || !campaigns || campaigns.length === 0 || error) {
+        return null; // Don't render anything if no active campaign or while loading/error
+    }
+
+    const campaign = campaigns[0]; // Display the first active campaign
+
+    return (
+        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden mb-6 group">
+            <Link href={campaign.linkUrl}>
+                <Image
+                    src={campaign.imageUrl}
+                    alt={campaign.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    data-ai-hint={campaign.imageHint}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-4 md:p-6 text-white">
+                    <h2 className="text-xl md:text-2xl font-bold font-headline">{campaign.title}</h2>
+                    {campaign.description && <p className="text-sm md:text-base mt-1 max-w-2xl">{campaign.description}</p>}
+                </div>
+                 <div className="absolute top-4 right-4">
+                     <Button size="sm">
+                         Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                     </Button>
+                </div>
+            </Link>
+        </div>
+    )
+}
 
 function ProductGrid({ filters }: { filters: { category: string; software: string; type: string } }) {
   const firestore = useFirestore();
@@ -124,6 +168,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <CampaignBanner />
       <div className="mb-4 flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
            <Select

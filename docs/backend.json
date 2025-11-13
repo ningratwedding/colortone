@@ -264,6 +264,38 @@
       },
       "required": ["name", "slug"]
     },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "Represents a promotional campaign banner.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "imageHint": {
+            "type": "string"
+        },
+        "linkUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["title", "imageUrl", "linkUrl", "isActive"]
+    },
     "PlatformSettings": {
       "title": "Platform Settings",
       "description": "Stores global settings for the application.",
@@ -323,6 +355,12 @@
         "$ref": "#/backend/entities/Software"
       },
       "description": "Stores all compatible software options."
+    },
+    "/campaigns/{campaignId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Campaign"
+      },
+      "description": "Stores promotional campaign data."
     },
     "/platform_settings/{settingsId}": {
         "schema": {

@@ -81,6 +81,18 @@ export type Software = {
   icon?: string;
 };
 
+export type Campaign = {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl: string;
+  imageHint: string;
+  linkUrl: string;
+  isActive: boolean;
+  createdAt?: { seconds: number; nanoseconds: number; };
+};
+
+
 export type PlatformSettings = {
     appName: string;
     supportEmail: string;
