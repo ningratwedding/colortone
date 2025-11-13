@@ -15,6 +15,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
+
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+    }).format(amount);
+};
 
 export default function FeaturedProductsPage() {
   const { user, loading: userLoading } = useUser();
@@ -91,15 +100,19 @@ export default function FeaturedProductsPage() {
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center space-x-3">
+              <div key={i} className="flex items-center space-x-3 rounded-md border p-3">
                 <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-10 w-16 rounded" />
+                <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                </div>
               </div>
             ))}
           </div>
         ) : (
           allProducts && allProducts.length > 0 ? (
-            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
               {allProducts.map((product) => (
                 <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
                   <Checkbox
@@ -107,8 +120,17 @@ export default function FeaturedProductsPage() {
                     checked={selectedProducts.has(product.id)}
                     onCheckedChange={() => handleProductToggle(product.id)}
                   />
+                   <Image 
+                     src={product.galleryImageUrls[0]}
+                     alt={product.name}
+                     width={64}
+                     height={42}
+                     className="rounded object-cover aspect-[3/2]"
+                     data-ai-hint={product.galleryImageHints[0]}
+                   />
                   <Label htmlFor={`product-${product.id}`} className="font-normal cursor-pointer flex-1">
-                    {product.name}
+                    <p>{product.name}</p>
+                    <p className="text-sm font-semibold text-primary">{formatCurrency(product.price)}</p>
                   </Label>
                 </div>
               ))}
@@ -128,4 +150,3 @@ export default function FeaturedProductsPage() {
     </Card>
   );
 }
-
