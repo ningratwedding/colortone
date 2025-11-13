@@ -228,7 +228,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   return (
     <div className="pb-6">
        <div
-        className="relative h-48 md:h-64 rounded-b-lg overflow-hidden"
+        className="relative h-48 md:h-64 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor }}
         >
             {profileUser.headerImageUrl ? (
@@ -263,7 +263,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 "h-24 w-24 md:h-32 md:w-32 border-4 border-background",
                 showRing && "ring-2"
             )}
-            style={{ borderColor: profileUser.profileBackgroundColor || undefined, ringColor: profileUser.avatarRingColor || undefined }}
+            style={{ borderColor: profileUser.profileBackgroundColor || undefined, ringColor: profileUser.headerColor || undefined }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>

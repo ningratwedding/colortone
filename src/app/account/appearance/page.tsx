@@ -128,7 +128,7 @@ function ProfilePreview({
   return (
     <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
         <div
-        className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
+        className="relative h-32 md:h-48 overflow-hidden"
         style={{ backgroundColor: headerColor }}
         >
             {headerImagePreview ? (
@@ -161,7 +161,7 @@ function ProfilePreview({
             "h-20 w-20 md:h-24 md:w-24 border-4 border-background",
             showAvatarRing && 'ring-2'
           )}
-          style={{ borderColor: profileBackgroundColor || undefined, ringColor: avatarRingColor || undefined }}
+          style={{ borderColor: profileBackgroundColor || undefined, ringColor: headerColor || undefined }}
         >
             <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
