@@ -388,7 +388,7 @@ export default function AppearancePage() {
                         <AccordionItem value="background">
                             <AccordionTrigger className="text-sm font-medium">Kustomisasi Latar</AccordionTrigger>
                             <AccordionContent>
-                                <div className="flex flex-wrap gap-2 pt-2">
+                                <div className="grid sm:grid-cols-2 gap-2 pt-2">
                                     <Button variant="outline" onClick={() => handleOpenColorDialog('header')}>Ubah Latar Header</Button>
                                     <Button variant="outline" onClick={() => handleOpenColorDialog('page')}>Ubah Latar Halaman</Button>
                                 </div>
