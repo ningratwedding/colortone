@@ -106,13 +106,13 @@ function ProfilePreview({
   bio: string;
   socials: UserProfile['socials'];
   socialsSettings: UserProfile['socialsSettings'];
-  headerColor: string | undefined;
+  headerColor: string;
   headerImagePreview: string | null;
   showHeaderGradient: boolean;
-  profileBackgroundColor: string | undefined;
+  profileBackgroundColor: string;
   profileBackgroundImagePreview: string | null;
-  profileTitleFontColor: string | undefined;
-  profileBodyFontColor: string | undefined;
+  profileTitleFontColor: string;
+  profileBodyFontColor: string;
 }) {
   const displayName = profile.fullName || profile.name;
   
@@ -217,16 +217,16 @@ export default function AppearancePage() {
     
     const [bio, setBio] = useState('');
     const [socials, setSocials] = useState<UserProfile['socials']>({});
-    const [headerColor, setHeaderColor] = useState<string | undefined>('');
+    const [headerColor, setHeaderColor] = useState('');
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
     const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
     const [showHeaderGradient, setShowHeaderGradient] = useState(true);
-    const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
+    const [profileBackgroundColor, setProfileBackgroundColor] = useState('');
     const [profileBackgroundImageFile, setProfileBackgroundImageFile] = useState<File | null>(null);
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
-    const [profileTitleFontColor, setProfileTitleFontColor] = useState<string | undefined>('');
-    const [profileBodyFontColor, setProfileBodyFontColor] = useState<string | undefined>('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly' });
+    const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
+    const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -246,7 +246,7 @@ export default function AppearancePage() {
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
-            setSocialsSettings(userProfile.socialsSettings || { style: 'iconOnly' });
+            setSocialsSettings(userProfile.socialsSettings || { style: 'iconOnly', backgroundColor: '', fontColor: '' });
         }
     }, [userProfile]);
     
@@ -642,7 +642,7 @@ export default function AppearancePage() {
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings?.backgroundColor} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings.backgroundColor} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                          <div>
@@ -654,7 +654,7 @@ export default function AppearancePage() {
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings?.fontColor} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                     </div>
