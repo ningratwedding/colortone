@@ -258,7 +258,7 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'horizontal', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md' });
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -280,7 +280,7 @@ export default function AppearancePage() {
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
             setSocialsSettings({
                 style: 'iconOnly',
-                layout: 'horizontal',
+                layout: 'vertical',
                 backgroundOpacity: 1,
                 borderRadius: 9999,
                 pillSize: 'md',
