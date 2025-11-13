@@ -22,7 +22,7 @@ import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useState, useEffect, useMemo } from 'react';
 import { collectionGroup, query, where, getDocs, doc } from 'firebase/firestore';
-import type { Order, PlatformSettings } from '@/lib/data';
+import type { Order, PlatformSettings, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -46,6 +46,12 @@ export default function AffiliatePage() {
     return doc(firestore, 'platform_settings', 'main');
   }, [firestore]);
   const { data: settings, loading: settingsLoading } = useDoc<PlatformSettings>(settingsRef);
+
+  const userProfileRef = useMemo(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
   
   const commissionRate = useMemo(() => {
     return settings?.affiliateCommissionRate ?? DEFAULT_COMMISSION_RATE;
@@ -91,15 +97,19 @@ export default function AffiliatePage() {
     });
   }
 
-  const pageLoading = userLoading || loading || settingsLoading;
+  const pageLoading = userLoading || loading || settingsLoading || profileLoading;
 
   return (
     <div className="space-y-4">
         <div className="flex justify-between items-center">
             <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
-            <Button asChild variant="outline">
-                <Link href="/account/settings">Atur Profil Publik</Link>
-            </Button>
+            {pageLoading ? (
+                <Skeleton className="h-9 w-36" />
+            ) : userProfile?.slug && (
+                 <Button asChild variant="outline">
+                    <Link href={`/affiliate/${userProfile.slug}`}>Lihat Profil Publik</Link>
+                </Button>
+            )}
         </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
