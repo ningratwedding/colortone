@@ -52,7 +52,7 @@ export default function AccountLayout({
     <>
       <SiteHeader />
       <div className="container mx-auto px-4 py-6">
-        <header className="mb-6 md:hidden">
+        <header className="mb-6 hidden md:block">
           <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
         </header>
 
