@@ -14,6 +14,7 @@ import { collection, query, where, limit, getDocs, documentId } from 'firebase/f
 import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
+import { Separator } from '@/components/ui/separator';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -219,6 +220,8 @@ export function ProfileContent({ slug }: { slug: string }) {
           )}
         </div>
       </header>
+
+      <Separator className="mb-8" />
 
       <main>
         {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
