@@ -25,9 +25,10 @@ interface ProductCardProps {
   product: Product;
   className?: string;
   hideCreator?: boolean;
+  affiliateId?: string;
 }
 
-export function ProductCard({ product, className, hideCreator = false }: ProductCardProps) {
+export function ProductCard({ product, className, hideCreator = false, affiliateId }: ProductCardProps) {
   const [formattedPrice, setFormattedPrice] = useState<string>('');
   const firestore = useFirestore();
 
@@ -53,6 +54,8 @@ export function ProductCard({ product, className, hideCreator = false }: Product
   const mainImage = product.galleryImageUrls?.[0];
   const mainImageHint = product.galleryImageHints?.[0];
 
+  const productUrl = `/product/${product.id}${affiliateId ? `?ref=${affiliateId}`: ''}`;
+  const checkoutUrl = `/checkout?productId=${product.id}${affiliateId ? `&ref=${affiliateId}`: ''}`;
 
   return (
     <Card
@@ -62,7 +65,7 @@ export function ProductCard({ product, className, hideCreator = false }: Product
       )}
     >
       <CardHeader className="p-0 relative">
-         <Link href={`/product/${product.id}`} className="block aspect-[3/2] w-full">
+         <Link href={productUrl} className="block aspect-[3/2] w-full">
           {mainImage ? (
             <Image
               src={mainImage}
@@ -78,7 +81,7 @@ export function ProductCard({ product, className, hideCreator = false }: Product
          </Link>
       </CardHeader>
       <CardContent className="p-3 pb-2 flex-grow flex flex-col">
-        <Link href={`/product/${product.id}`} className="space-y-1">
+        <Link href={productUrl} className="space-y-1">
           <CardTitle className="text-base leading-tight hover:text-primary transition-colors">
             {product.name}
           </CardTitle>
@@ -107,7 +110,7 @@ export function ProductCard({ product, className, hideCreator = false }: Product
           {formattedPrice}
         </div>
         <Button size="sm" asChild className="w-full">
-          <Link href={`/checkout?productId=${product.id}`}>
+          <Link href={checkoutUrl}>
             <CreditCard className="mr-1.5 h-4 w-4" />
             Beli
           </Link>

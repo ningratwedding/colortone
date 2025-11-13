@@ -1,14 +1,14 @@
 import { SiteFooter } from '@/components/site-footer';
 import * as React from 'react';
-import { CreatorProfileContent } from './creator-profile-client';
+import { AffiliateProfileContent } from './affiliate-profile-client';
 import { SiteHeader } from '@/components/site-header';
 
-export default function CreatorProfilePage({ params }: { params: { slug: string } }) {
+export default function AffiliateProfilePage({ params }: { params: { slug: string } }) {
     
     return (
         <>
             <SiteHeader />
-            <CreatorProfileContent slug={params.slug} />
+            <AffiliateProfileContent slug={params.slug} />
             <SiteFooter />
         </>
     )
