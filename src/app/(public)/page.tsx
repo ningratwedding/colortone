@@ -167,7 +167,7 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto px-2 py-4 md:px-4 md:py-6 space-y-4">
+    <div className="container mx-auto px-4 py-6 space-y-4">
       <CampaignBanner />
       <div className="flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
