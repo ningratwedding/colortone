@@ -26,28 +26,26 @@ function CampaignBanner() {
     const firestore = useFirestore();
 
     const campaignQuery = useMemo(() => {
-        if (!firestore) return null;
+        if (!firestore) return undefined;
         return query(collection(firestore, "campaigns"), where('isActive', '==', true));
     }, [firestore]);
 
     const { data: campaigns, loading, error } = useCollection<Campaign>(campaignQuery);
 
     if (error) {
-        // Log the error for debugging but don't render a broken component
         console.error("Failed to load campaign banner:", error);
         return null;
     }
 
     if (loading) {
-        // Optional: show a skeleton loader while the campaign is loading
         return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg mb-6" />;
     }
 
     if (!campaigns || campaigns.length === 0) {
-        return null; // Don't render anything if no active campaign
+        return null;
     }
 
-    const campaign = campaigns[0]; // Display the first active campaign
+    const campaign = campaigns[0];
 
     return (
         <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden mb-6 group">
@@ -60,7 +58,7 @@ function CampaignBanner() {
                     data-ai-hint={campaign.imageHint}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-4 md:p-6 text-white">
+                <div className="absolute bottom-0 left-0 p-3 md:p-6 text-white">
                     <h2 className="text-xl md:text-2xl font-bold font-headline group-hover/link:underline">{campaign.title}</h2>
                 </div>
             </Link>
@@ -172,7 +170,7 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-2 py-4 md:px-4 md:py-6">
       <CampaignBanner />
       <div className="mb-4 flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
