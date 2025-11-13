@@ -115,11 +115,13 @@ export default function AccountSettingsPage() {
         if (!userProfileRef) return;
         setIsJoiningAffiliate(true);
         try {
-            await updateDoc(userProfileRef, { isAffiliate: true });
+            await updateDoc(userProfileRef, { role: 'affiliator' });
             toast({
                 title: 'Selamat Bergabung!',
-                description: 'Anda sekarang adalah mitra afiliasi. Buat tautan afiliasi dari halaman produk.',
+                description: 'Anda sekarang adalah seorang afiliator. Anda akan diarahkan ke dasbor afiliasi.',
             });
+            // You might want to redirect or refresh the page to reflect the role change
+            // router.push('/account/affiliate');
         } catch (error) {
             toast({
                 variant: "destructive",
@@ -274,13 +276,13 @@ export default function AccountSettingsPage() {
                 <CardHeader>
                     <CardTitle>Program Afiliasi</CardTitle>
                     <CardDescription>
-                        {userProfile.isAffiliate 
+                        {userProfile.role === 'affiliator' 
                             ? 'Anda sekarang adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
                             : 'Dapatkan penghasilan dengan membagikan produk dari kreator favorit Anda.'}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {userProfile.isAffiliate ? (
+                    {userProfile.role === 'affiliator' ? (
                         <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-900/20">
                             <div className="flex items-center gap-3">
                                 <PartyPopper className="h-6 w-6 text-green-600" />

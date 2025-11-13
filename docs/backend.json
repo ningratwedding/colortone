@@ -51,10 +51,6 @@
           "enum": ["pembeli", "kreator", "admin", "affiliator"],
           "description": "Defines the user's role and permissions within the application."
         },
-        "isAffiliate": {
-          "type": "boolean",
-          "description": "Indicates if the user is an affiliate partner."
-        },
         "createdAt": {
             "type": "string",
             "format": "date-time"

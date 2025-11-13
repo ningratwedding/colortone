@@ -18,7 +18,6 @@ export type UserProfile = {
     website?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
-  isAffiliate?: boolean;
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
   bankName?: string;
   bankCode?: string;

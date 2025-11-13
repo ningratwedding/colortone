@@ -37,7 +37,7 @@ export default function AccountLayout({
 
   const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
 
-  const menuItems = userProfile?.isAffiliate ? [...baseMenuItems, affiliateMenuItem] : baseMenuItems;
+  const menuItems = userProfile?.role === 'affiliator' ? [...baseMenuItems, affiliateMenuItem] : baseMenuItems;
 
   const getPageTitle = () => {
     const currentItem = menuItems.find(item => pathname.startsWith(item.href));
