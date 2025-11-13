@@ -95,7 +95,7 @@ export default function DashboardPage() {
         const fetchedCreatorProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         setCreatorProducts(fetchedCreatorProducts);
 
-        const fetchedCreatorOrders = allOrdersSnapshot.docs.map(doc => doc.data() as Order);
+        const fetchedCreatorOrders = allOrdersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
         setAllCreatorOrders(fetchedCreatorOrders);
 
         // Calculate stats
@@ -417,7 +417,7 @@ export default function DashboardPage() {
                 </TableBody>
                 </Table>
             </CardContent>
-            </Card>>
+            </Card>
             <Card>
             <CardHeader>
                 <CardTitle>Komposisi Penjualan</CardTitle>
@@ -463,4 +463,3 @@ export default function DashboardPage() {
   );
 }
 
-    
