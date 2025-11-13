@@ -51,25 +51,26 @@ function CampaignBanner() {
 
     return (
         <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden mb-6 group">
-            <Link href={campaign.linkUrl}>
-                <Image
-                    src={campaign.imageUrl}
-                    alt={campaign.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    data-ai-hint={campaign.imageHint}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-4 md:p-6 text-white">
-                    <h2 className="text-xl md:text-2xl font-bold font-headline">{campaign.title}</h2>
-                    {campaign.description && <p className="text-sm md:text-base mt-1 max-w-2xl">{campaign.description}</p>}
-                </div>
-                 <div className="absolute top-4 right-4">
-                     <Button size="sm">
-                         Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
-                     </Button>
-                </div>
-            </Link>
+            <Image
+                src={campaign.imageUrl}
+                alt={campaign.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                data-ai-hint={campaign.imageHint}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4 md:p-6 text-white">
+                <Link href={campaign.linkUrl} className="group/link">
+                    <h2 className="text-xl md:text-2xl font-bold font-headline group-hover/link:underline">{campaign.title}</h2>
+                </Link>
+            </div>
+            <div className="absolute top-4 right-4">
+                <Button size="sm" asChild>
+                    <Link href={campaign.linkUrl}>
+                        Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
+            </div>
         </div>
     )
 }
