@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Table,
@@ -34,7 +35,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MoreHorizontal, PlusCircle, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, Trash2, Image as ImageIcon, Loader2, Link as LinkIcon } from 'lucide-react';
 import { useState, useMemo, useRef } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore, useStorage } from '@/firebase/provider';
@@ -54,7 +55,6 @@ import type { Campaign } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
-import { Textarea } from '@/components/ui/textarea';
 import { useUser } from '@/firebase/auth/use-user';
 import { uploadFile } from '@/firebase/storage/actions';
 
@@ -71,7 +71,6 @@ export default function AdminCampaignsPage() {
   
   // Form states
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -91,7 +90,6 @@ export default function AdminCampaignsPage() {
   const handleOpenDialog = (campaign: Campaign | null = null) => {
     setEditingCampaign(campaign);
     setTitle(campaign?.title || '');
-    setDescription(campaign?.description || '');
     setLinkUrl(campaign?.linkUrl || '');
     setIsActive(campaign ? campaign.isActive : true);
     setImagePreview(campaign?.imageUrl || null);
@@ -132,7 +130,6 @@ export default function AdminCampaignsPage() {
 
       const dataToSave = {
         title,
-        description,
         linkUrl,
         isActive,
         imageUrl,
@@ -179,90 +176,143 @@ export default function AdminCampaignsPage() {
     setIsDeleteDialogOpen(true);
   }
 
+  const PageHeader = () => (
+     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-2xl font-bold font-headline">Manajemen Kampanye</h1>
+          <p className="text-muted-foreground">
+            Buat dan kelola spanduk promosi untuk halaman utama.
+          </p>
+        </div>
+        <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Tambah Kampanye
+        </Button>
+      </div>
+  )
+
+  const CampaignCard = ({ campaign }: { campaign: Campaign }) => (
+    <Card>
+        <CardContent className="p-4 flex items-start gap-4">
+            <Image src={campaign.imageUrl} alt={campaign.title} width={80} height={40} className="rounded-md object-cover aspect-[2/1] bg-muted" />
+            <div className="flex-grow">
+                <p className="font-semibold">{campaign.title}</p>
+                 <a href={campaign.linkUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate block">{campaign.linkUrl}</a>
+                <Badge variant={campaign.isActive ? 'default' : 'secondary'} className="mt-2">
+                    {campaign.isActive ? 'Aktif' : 'Nonaktif'}
+                </Badge>
+            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost" className="-mt-1 -mr-2">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Menu</span>
+                </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                <DropdownMenuItem onSelect={() => handleOpenDialog(campaign)}>Ubah</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onSelect={() => openDeleteDialog(campaign)}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <div>
-            <CardTitle>Manajemen Kampanye</CardTitle>
-            <CardDescription>
-              Buat dan kelola spanduk promosi untuk halaman utama.
-            </CardDescription>
-          </div>
-          <Button onClick={() => handleOpenDialog()}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Tambah Kampanye
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Gambar</TableHead>
-                <TableHead>Judul</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Tautan</TableHead>
-                <TableHead>
-                  <span className="sr-only">Tindakan</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                 Array.from({ length: 3 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-12 w-24 rounded-md" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-40" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-48" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
-                  </TableRow>
-                 ))
-              ) : campaigns && campaigns.length > 0 ? (
-                campaigns.map((campaign) => (
-                  <TableRow key={campaign.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image src={campaign.imageUrl} alt={campaign.title} width={96} height={48} className="rounded-md object-cover aspect-[2/1]" />
-                    </TableCell>
-                    <TableCell className="font-medium">{campaign.title}</TableCell>
-                    <TableCell>
-                      <Badge variant={campaign.isActive ? 'default' : 'secondary'}>
-                        {campaign.isActive ? 'Aktif' : 'Nonaktif'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                        <a href={campaign.linkUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate block max-w-xs">{campaign.linkUrl}</a>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                          <DropdownMenuItem onSelect={() => handleOpenDialog(campaign)}>Ubah</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onSelect={() => openDeleteDialog(campaign)}>
-                            <Trash2 className="mr-2 h-4 w-4" /> Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
+      <PageHeader />
+
+      {/* Mobile Card View */}
+      <div className="grid gap-4 md:hidden">
+         {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i}><CardContent className="p-4"><Skeleton className="h-20 w-full" /></CardContent></Card>
+            ))
+          ) : campaigns && campaigns.length > 0 ? (
+             campaigns.map((campaign) => <CampaignCard key={campaign.id} campaign={campaign} />)
+          ) : (
+            <Card>
+                <CardContent className="p-8 text-center text-muted-foreground">Belum ada kampanye.</CardContent>
+            </Card>
+          )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    Belum ada kampanye.
-                  </TableCell>
+                  <TableHead className="w-[120px]">Gambar</TableHead>
+                  <TableHead>Judul</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Tautan</TableHead>
+                  <TableHead className="w-[60px]">
+                    <span className="sr-only">Tindakan</span>
+                  </TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-12 w-24 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                      <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : campaigns && campaigns.length > 0 ? (
+                  campaigns.map((campaign) => (
+                    <TableRow key={campaign.id}>
+                      <TableCell>
+                        <Image src={campaign.imageUrl} alt={campaign.title} width={96} height={48} className="rounded-md object-cover aspect-[2/1]" />
+                      </TableCell>
+                      <TableCell className="font-medium">{campaign.title}</TableCell>
+                      <TableCell>
+                        <Badge variant={campaign.isActive ? 'default' : 'secondary'}>
+                          {campaign.isActive ? 'Aktif' : 'Nonaktif'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                          <a href={campaign.linkUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate block max-w-xs">{campaign.linkUrl}</a>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                            <DropdownMenuItem onSelect={() => handleOpenDialog(campaign)}>Ubah</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onSelect={() => openDeleteDialog(campaign)}>
+                              <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      Belum ada kampanye.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
       
       {/* Dialog for Add/Edit Campaign */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => !open && resetDialog()}>
@@ -331,3 +381,5 @@ export default function AdminCampaignsPage() {
     </div>
   );
 }
+
+    
