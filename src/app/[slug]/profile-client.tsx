@@ -208,6 +208,10 @@ export function ProfileContent({ slug }: { slug: string }) {
   }
   
   const displayName = profileUser.fullName || profileUser.name;
+  
+  const headerGradientStyle = profileUser.profileBackgroundColor
+    ? { backgroundImage: `linear-gradient(to top, ${profileUser.profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
+    : {};
 
   return (
     <div className="pb-6">
@@ -232,7 +236,10 @@ export function ProfileContent({ slug }: { slug: string }) {
                     data-ai-hint="header background"
                 />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            <div 
+              className={cn("absolute inset-0", !profileUser.profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+              style={headerGradientStyle}
+            />
         </div>
       
       <div className="container mx-auto px-4">
