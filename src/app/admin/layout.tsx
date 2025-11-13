@@ -140,7 +140,7 @@ export default function AdminDashboardLayout({
         </Sidebar>
 
         <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background px-2 sm:px-6">
              <SidebarTrigger className="flex" />
             <div className="flex-1">
               <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
@@ -190,7 +190,7 @@ export default function AdminDashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex-1 overflow-auto p-4">{children}</main>
+          <main className="flex-1 overflow-auto p-2 md:p-4">{children}</main>
         </SidebarInset>
     </SidebarProvider>
   );
