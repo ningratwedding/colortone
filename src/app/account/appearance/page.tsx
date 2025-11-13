@@ -369,52 +369,51 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
-                        <AccordionItem value="background">
-                            <AccordionTrigger className="text-sm font-medium">Kustomisasi Latar</AccordionTrigger>
-                            <AccordionContent className="pt-4 space-y-6">
-                                <div className="space-y-2">
-                                    <Label>Warna Latar Header</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {colorOptions.map((color) => (
-                                            <button 
-                                                key={`header-${color.value}`}
-                                                type="button"
-                                                onClick={() => setHeaderColor(color.value)}
-                                                className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
-                                                    color.value === '' && 'border-muted-foreground border-dashed'
-                                                )}
-                                                style={{ backgroundColor: color.value || 'transparent' }}
-                                                aria-label={`Pilih warna header ${color.name}`}
-                                            >
-                                                {headerColor === color.value && <Check className="h-4 w-4 text-white" />}
-                                                {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
-                                            </button>
-                                        ))}
-                                    </div>
+                        <AccordionItem value="header-color">
+                            <AccordionTrigger className="text-sm font-medium">Warna Latar Header</AccordionTrigger>
+                            <AccordionContent className="pt-4">
+                                <div className="flex flex-wrap gap-2">
+                                    {colorOptions.map((color) => (
+                                        <button 
+                                            key={`header-${color.value}`}
+                                            type="button"
+                                            onClick={() => setHeaderColor(color.value)}
+                                            className={cn(
+                                                "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
+                                                headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
+                                                color.value === '' && 'border-muted-foreground border-dashed'
+                                            )}
+                                            style={{ backgroundColor: color.value || 'transparent' }}
+                                            aria-label={`Pilih warna header ${color.name}`}
+                                        >
+                                            {headerColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                            {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Warna Latar Halaman</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {colorOptions.map((color) => (
-                                            <button 
-                                                key={`page-${color.value}`}
-                                                type="button"
-                                                onClick={() => setProfileBackgroundColor(color.value)}
-                                                className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
-                                                    color.value === '' && 'border-muted-foreground border-dashed'
-                                                )}
-                                                style={{ backgroundColor: color.value || 'transparent' }}
-                                                aria-label={`Pilih warna halaman ${color.name}`}
-                                            >
-                                                {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
-                                                {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
-                                            </button>
-                                        ))}
-                                    </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="page-background">
+                            <AccordionTrigger className="text-sm font-medium">Warna Latar Halaman</AccordionTrigger>
+                            <AccordionContent className="pt-4">
+                                <div className="flex flex-wrap gap-2">
+                                    {colorOptions.map((color) => (
+                                        <button 
+                                            key={`page-${color.value}`}
+                                            type="button"
+                                            onClick={() => setProfileBackgroundColor(color.value)}
+                                            className={cn(
+                                                "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
+                                                profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
+                                                color.value === '' && 'border-muted-foreground border-dashed'
+                                            )}
+                                            style={{ backgroundColor: color.value || 'transparent' }}
+                                            aria-label={`Pilih warna halaman ${color.name}`}
+                                        >
+                                            {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                            {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
+                                        </button>
+                                    ))}
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
