@@ -394,7 +394,7 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="lg:col-span-2 hidden lg:flex items-center justify-center p-4">
+            <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px]">
                     <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
                     <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
@@ -452,4 +452,3 @@ export default function AppearancePage() {
         </div>
     )
 }
-
