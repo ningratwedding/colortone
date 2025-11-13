@@ -476,10 +476,11 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
-                        <AccordionItem value="page-image">
-                            <AccordionTrigger className="text-sm font-medium">Gambar Latar Halaman</AccordionTrigger>
-                            <AccordionContent className="pt-4">
+                        <AccordionItem value="page-background">
+                            <AccordionTrigger className="text-sm font-medium">Latar Halaman</AccordionTrigger>
+                            <AccordionContent className="pt-4 space-y-4">
                                <div className="grid gap-2">
+                                    <Label>Gambar Latar Halaman</Label>
                                     <div className="flex items-center gap-4">
                                         {profileBackgroundImagePreview && <Image src={profileBackgroundImagePreview} alt="Pratinjau Latar Halaman" width={128} height={64} className="rounded-md object-cover aspect-[2/1] bg-muted" />}
                                         <div className="flex-1">
@@ -491,29 +492,27 @@ export default function AppearancePage() {
                                         </div>
                                     </div>
                                 </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="page-background">
-                            <AccordionTrigger className="text-sm font-medium">Warna Latar Halaman</AccordionTrigger>
-                            <AccordionContent className="pt-4">
-                                <div className="flex flex-wrap gap-2">
-                                    {colorOptions.map((color) => (
-                                        <button 
-                                            key={`page-${color.value}`}
-                                            type="button"
-                                            onClick={() => setProfileBackgroundColor(color.value)}
-                                            className={cn(
-                                                "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
-                                                color.value === '' && 'border-muted-foreground border-dashed'
-                                            )}
-                                            style={{ backgroundColor: color.value || 'transparent' }}
-                                            aria-label={`Pilih warna halaman ${color.name}`}
-                                        >
-                                            {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
-                                            {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
-                                        </button>
-                                    ))}
+                                <div className="grid gap-2">
+                                    <Label>Warna Latar Halaman (pengganti jika tidak ada gambar)</Label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {colorOptions.map((color) => (
+                                            <button 
+                                                key={`page-${color.value}`}
+                                                type="button"
+                                                onClick={() => setProfileBackgroundColor(color.value)}
+                                                className={cn(
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
+                                                    profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent',
+                                                    color.value === '' && 'border-muted-foreground border-dashed'
+                                                )}
+                                                style={{ backgroundColor: color.value || 'transparent' }}
+                                                aria-label={`Pilih warna halaman ${color.name}`}
+                                            >
+                                                {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
