@@ -3,7 +3,7 @@ import * as React from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { ProfileContent } from './profile-client';
 import { doc, getDoc, query, collection, where, getDocs, limit } from 'firebase/firestore';
-import { initializeFirebase } from '@/firebase';
+import { initializeServerSideFirebase } from '@/firebase/server-init';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
 import type { UserProfile } from '@/lib/data';
@@ -14,7 +14,7 @@ type Props = {
 
 // This function generates metadata on the server.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { firestore } = initializeFirebase();
+    const { firestore } = initializeServerSideFirebase();
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('slug', '==', params.slug), limit(1));
     
