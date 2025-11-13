@@ -183,104 +183,101 @@ export default function DashboardPage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-
-      {/* Left Column */}
-      <div className="lg:col-span-3 space-y-4">
-        <div>
-            <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
-                <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
-                <div className="relative z-10 flex flex-col">
-                <CardHeader>
-                    <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-primary-foreground/80">
-                        Total Saldo
-                    </CardTitle>
-                    <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+        <div className="lg:col-span-3 space-y-4">
+            <div>
+                <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
+                    <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
+                    <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
+                    <div className="relative z-10 flex flex-col">
+                    <CardHeader>
+                        <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-primary-foreground/80">
+                            Total Saldo
+                        </CardTitle>
+                        <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+                        </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
+                        <p className="text-xs text-primary-foreground/80">
+                        Saldo yang tersedia untuk ditarik.
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button 
+                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                            onClick={handleWithdraw}
+                            disabled={pageLoading}
+                        >
+                            Tarik Dana
+                        </Button>
+                    </CardFooter>
                     </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                    {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
-                    <p className="text-xs text-primary-foreground/80">
-                    Saldo yang tersedia untuk ditarik.
-                    </p>
-                </CardContent>
-                <CardFooter>
-                    <Button 
-                        className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                        onClick={handleWithdraw}
-                        disabled={pageLoading}
-                    >
-                        Tarik Dana
+                </Card>
+            </div>
+            <Card>
+                <CardHeader className="flex flex-row items-start justify-between">
+                    <div>
+                        <CardTitle>Pesanan Terbaru</CardTitle>
+                        <CardDescription>5 pesanan terakhir Anda.</CardDescription>
+                    </div>
+                    <Button asChild variant="link" className=" -mt-2 -mr-4">
+                        <Link href="/creator/orders">
+                            Lihat Semua
+                        </Link>
                     </Button>
-                </CardFooter>
-                </div>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Pelanggan</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Total</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {ordersLoading ? (
+                        Array.from({ length: 5 }).map((_, i) => (
+                            <TableRow key={i}>
+                            <TableCell>
+                                <div className="flex items-center gap-3">
+                                <Skeleton className="h-8 w-8 rounded-full" />
+                                <Skeleton className="h-4 w-24" />
+                                </div>
+                            </TableCell>
+                            <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                            <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
+                            </TableRow>
+                        ))
+                        ) : recentOrders.length > 0 ? (
+                        recentOrders.map((order) => (
+                            <TableRow key={order.id}>
+                            <TableCell>
+                                <div className="flex items-center gap-3">
+                                <Avatar className="hidden h-8 w-8 sm:flex">
+                                    <AvatarImage src={customers[order.userId]?.avatarUrl} alt="Avatar" />
+                                    <AvatarFallback>{customers[order.userId]?.name?.charAt(0) || 'P'}</AvatarFallback>
+                                </Avatar>
+                                <div className="font-medium truncate">{customers[order.userId]?.name || 'Pelanggan'}</div>
+                                </div>
+                            </TableCell>
+                            <TableCell>{getStatusBadge(order.status)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(order.amount)}</TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={3} className="h-24 text-center">
+                            Belum ada pesanan.
+                            </TableCell>
+                        </TableRow>
+                        )}
+                    </TableBody>
+                    </Table>
+                </CardContent>
             </Card>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Pesanan Terbaru</CardTitle>
-            <CardDescription>5 pesanan terakhir yang Anda terima.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Pelanggan</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ordersLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Skeleton className="h-8 w-8 rounded-full" />
-                          <Skeleton className="h-4 w-24" />
-                        </div>
-                      </TableCell>
-                      <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : recentOrders.length > 0 ? (
-                  recentOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="hidden h-8 w-8 sm:flex">
-                            <AvatarImage src={customers[order.userId]?.avatarUrl} alt="Avatar" />
-                            <AvatarFallback>{customers[order.userId]?.name?.charAt(0) || 'P'}</AvatarFallback>
-                          </Avatar>
-                          <div className="font-medium truncate">{customers[order.userId]?.name || 'Pelanggan'}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(order.status)}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(order.amount)}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center">
-                      Belum ada pesanan.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-           <CardFooter>
-            <Button className="w-full" asChild>
-                <Link href="/creator/orders">
-                    Lihat Semua Pesanan
-                    <ArrowUpRight className="h-4 w-4 ml-2" />
-                </Link>
-            </Button>
-           </CardFooter>
-        </Card>
-      </div>
 
       {/* Right Column */}
       <div className="lg:col-span-4">
@@ -290,23 +287,7 @@ export default function DashboardPage() {
             <CardDescription>
               Ringkasan penjualan dan produk Anda selama 6 bulan terakhir.
             </CardDescription>
-            {/* Pills for mobile */}
-            <div className="flex flex-wrap items-center gap-2 pt-4 md:hidden">
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{formatCurrency(stats.totalRevenue)}</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{stats.totalSales.toLocaleString('id-ID')} Penjualan</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{stats.totalProducts} Produk</span>
-              </div>
-            </div>
-
-             {/* Desktop View - Single Card with 3 stats */}
+            
              <div className="hidden md:grid md:grid-cols-3 pt-4">
                 <div className="p-4 space-y-1">
                   <div className="flex items-center gap-2">
@@ -355,8 +336,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
     </div>
   );
-
 }
