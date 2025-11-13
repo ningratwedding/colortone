@@ -53,6 +53,10 @@
             "type": "string",
             "description": "A solid hex color for the profile header background."
         },
+        "profileBackgroundColor": {
+            "type": "string",
+            "description": "A solid hex color for the entire profile page background."
+        },
         "socials": {
           "type": "object",
           "properties": {

@@ -15,6 +15,7 @@ export type UserProfile = {
   headerImageUrl?: string;
   headerImageHint?: string;
   headerColor?: string;
+  profileBackgroundColor?: string;
   socials?: {
     instagram?: string;
     facebook?: string;
@@ -104,4 +105,10 @@ export type PlatformSettings = {
         newCreator: boolean;
         newProduct: boolean;
     }
+}
+
+export type ImagePlaceholder = {
+    imageUrl: string;
+    imageHint: string;
+    description: string;
 }

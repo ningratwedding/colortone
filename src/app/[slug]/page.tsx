@@ -39,6 +39,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                     description: description,
                     images: user.avatarUrl ? [user.avatarUrl] : [siteConfig.ogImage],
                 },
+                ...(user.profileBackgroundColor && {
+                    themeColor: user.profileBackgroundColor
+                })
             };
         }
     } catch (error) {

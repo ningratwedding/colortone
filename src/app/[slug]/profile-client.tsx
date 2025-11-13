@@ -152,6 +152,16 @@ export function ProfileContent({ slug }: { slug: string }) {
     fetchUser();
   }, [userQuery]);
 
+  useEffect(() => {
+    if (profileUser?.profileBackgroundColor) {
+      document.body.style.backgroundColor = profileUser.profileBackgroundColor;
+    }
+    // Cleanup function to reset the background color when the component unmounts
+    return () => {
+      document.body.style.backgroundColor = '';
+    };
+  }, [profileUser]);
+
 
   const productsQuery = useMemo(() => {
     if (!firestore || !profileUser) return null;

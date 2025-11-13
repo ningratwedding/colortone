@@ -71,7 +71,7 @@ const socialIcons = {
 };
 type SocialPlatform = keyof typeof socialIcons;
 
-const headerColorOptions = [
+const colorOptions = [
     { name: 'Abu-abu', value: '#6B7280' },
     { name: 'Merah', value: '#EF4444' },
     { name: 'Oranye', value: '#F97316' },
@@ -82,6 +82,7 @@ const headerColorOptions = [
     { name: 'Indigo', value: '#6366F1' },
     { name: 'Ungu', value: '#8B5CF6' },
     { name: 'Pink', value: '#EC4899' },
+    { name: 'Default', value: '' },
 ];
 
 
@@ -107,6 +108,7 @@ export default function AccountSettingsPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [headerColor, setHeaderColor] = useState<string | undefined>('');
+    const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
 
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
@@ -116,6 +118,7 @@ export default function AccountSettingsPage() {
     const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
     const [newSocialUsername, setNewSocialUsername] = useState('');
     const [isColorDialogOpen, setIsColorDialogOpen] = useState(false);
+    const [colorDialogTarget, setColorDialogTarget] = useState<'header' | 'page' | null>(null);
     
     useEffect(() => {
         if (userProfile) {
@@ -126,6 +129,7 @@ export default function AccountSettingsPage() {
             setBio(userProfile.bio || '');
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
+            setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
         }
     }, [userProfile]);
 
@@ -148,6 +152,7 @@ export default function AccountSettingsPage() {
                 bio: bio,
                 socials: socials,
                 headerColor: headerColor,
+                profileBackgroundColor: profileBackgroundColor,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -223,6 +228,19 @@ export default function AccountSettingsPage() {
             return newSocials;
         });
     };
+    
+    const handleOpenColorDialog = (target: 'header' | 'page') => {
+        setColorDialogTarget(target);
+        setIsColorDialogOpen(true);
+    }
+    
+    const handleSelectColor = (color: string) => {
+        if (colorDialogTarget === 'header') {
+            setHeaderColor(color);
+        } else if (colorDialogTarget === 'page') {
+            setProfileBackgroundColor(color);
+        }
+    }
 
     const loading = userLoading || profileLoading;
 
@@ -401,38 +419,11 @@ export default function AccountSettingsPage() {
                             </Dialog>
                         </div>
                         <div className="grid gap-2">
-                            <Label>Latar Belakang Header</Label>
-                             <Dialog open={isColorDialogOpen} onOpenChange={setIsColorDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline">Ubah Latar Header</Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Pilih Warna Latar Header</DialogTitle>
-                                        <DialogDescription>Pilih warna solid untuk header profil Anda.</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid grid-cols-5 gap-3 py-4">
-                                        {headerColorOptions.map((color) => (
-                                            <button 
-                                                key={color.value}
-                                                type="button"
-                                                onClick={() => setHeaderColor(color.value)}
-                                                className={cn("h-12 w-12 rounded-full border-2 transition-transform hover:scale-110", headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')}
-                                                style={{ backgroundColor: color.value }}
-                                                aria-label={`Pilih warna ${color.name}`}
-                                            >
-                                                {headerColor === color.value && <Check className="h-6 w-6 text-white" />}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <DialogFooter>
-                                        <Button variant="outline" onClick={() => setIsColorDialogOpen(false)}>Batal</Button>
-                                        <Button onClick={handleSaveChanges} disabled={isSaving}>
-                                            {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Pilihan"}
-                                        </Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                            <Label>Kustomisasi Latar</Label>
+                            <div className="flex flex-wrap gap-2">
+                                <Button variant="outline" onClick={() => handleOpenColorDialog('header')}>Ubah Latar Header</Button>
+                                <Button variant="outline" onClick={() => handleOpenColorDialog('page')}>Ubah Latar Halaman</Button>
+                            </div>
                         </div>
                     </CardContent>
                     <CardFooter>
@@ -467,6 +458,44 @@ export default function AccountSettingsPage() {
                     )}
                 </CardContent>
             </Card>
+            
+            <Dialog open={isColorDialogOpen} onOpenChange={setIsColorDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Pilih Warna Latar {colorDialogTarget === 'header' ? 'Header' : 'Halaman'}</DialogTitle>
+                        <DialogDescription>Pilih warna solid untuk latar belakang Anda.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-5 gap-3 py-4">
+                        {colorOptions.map((color) => (
+                            <button 
+                                key={color.value}
+                                type="button"
+                                onClick={() => handleSelectColor(color.value)}
+                                className={cn(
+                                    "h-12 w-12 rounded-full border-2 transition-transform hover:scale-110",
+                                    (colorDialogTarget === 'header' && headerColor === color.value) || (colorDialogTarget === 'page' && profileBackgroundColor === color.value)
+                                      ? 'border-primary ring-2 ring-primary ring-offset-2'
+                                      : 'border-transparent',
+                                    color.value === '' && 'border-muted-foreground border-dashed'
+                                )}
+                                style={{ backgroundColor: color.value || 'transparent' }}
+                                aria-label={`Pilih warna ${color.name}`}
+                            >
+                                {((colorDialogTarget === 'header' && headerColor === color.value) ||
+                                (colorDialogTarget === 'page' && profileBackgroundColor === color.value)) &&
+                                <Check className="h-6 w-6 text-white" />}
+                                {color.value === '' && <span className="text-xs text-muted-foreground">Auto</span>}
+                            </button>
+                        ))}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsColorDialogOpen(false)}>Batal</Button>
+                        <Button onClick={handleSaveChanges} disabled={isSaving}>
+                            {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Pilihan"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
