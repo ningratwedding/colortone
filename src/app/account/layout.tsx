@@ -51,30 +51,32 @@ export default function AccountLayout({
   return (
     <>
       <SiteHeader />
-      <div className="container mx-auto px-4 py-6">
-        <header className="mb-6 hidden md:block">
-          <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
-        </header>
+      <div className="flex-1 w-full px-4 py-6">
+        <div className="container mx-auto">
+          <header className="mb-6 hidden md:block">
+            <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
+          </header>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden mb-6 border-b">
-          <nav className="flex -mb-px overflow-x-auto">
-            {menuItems.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'py-3 px-4 text-sm font-medium whitespace-nowrap text-muted-foreground border-b-2 border-transparent',
-                  pathname.startsWith(href) && 'text-primary border-primary'
-                )}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
+          {/* Mobile Navigation */}
+          <div className="md:hidden mb-6 border-b">
+            <nav className="flex -mb-px overflow-x-auto">
+              {menuItems.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    'py-3 px-4 text-sm font-medium whitespace-nowrap text-muted-foreground border-b-2 border-transparent',
+                    pathname.startsWith(href) && 'text-primary border-primary'
+                  )}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="container mx-auto grid md:grid-cols-4 gap-8">
           <aside className="hidden md:block md:col-span-1">
             <nav className="flex flex-col space-y-2">
               <h2 className="text-lg font-bold font-headline mb-2">Akun Saya</h2>
