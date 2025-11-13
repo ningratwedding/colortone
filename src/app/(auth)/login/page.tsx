@@ -70,6 +70,9 @@ export default function LoginPage() {
       case 'kreator':
         router.push('/creator/dashboard');
         break;
+      case 'affiliator':
+        router.push('/account/affiliate');
+        break;
       case 'pembeli':
       default:
         router.push('/account');

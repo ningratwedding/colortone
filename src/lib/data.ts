@@ -17,7 +17,7 @@ export type UserProfile = {
     tiktok?: string;
     website?: string;
   };
-  role: 'pembeli' | 'kreator' | 'admin';
+  role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   isAffiliate?: boolean;
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
   bankName?: string;

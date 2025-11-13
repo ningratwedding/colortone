@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   ShoppingBag,
   SlidersHorizontal,
+  PartyPopper,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
@@ -113,6 +114,14 @@ export function SiteHeader() {
                     <Link href="/creator/dashboard">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       <span>Dasbor Kreator</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                 {userProfile.role === 'affiliator' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/affiliate">
+                      <PartyPopper className="mr-2 h-4 w-4" />
+                      <span>Dasbor Afiliasi</span>
                     </Link>
                   </DropdownMenuItem>
                 )}

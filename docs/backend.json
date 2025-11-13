@@ -48,7 +48,7 @@
         },
         "role": {
           "type": "string",
-          "enum": ["pembeli", "kreator", "admin"],
+          "enum": ["pembeli", "kreator", "admin", "affiliator"],
           "description": "Defines the user's role and permissions within the application."
         },
         "isAffiliate": {

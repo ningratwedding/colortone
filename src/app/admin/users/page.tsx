@@ -1,7 +1,7 @@
 
 "use client";
 
-import { MoreHorizontal, UserPlus, UserMinus } from "lucide-react";
+import { MoreHorizontal, UserPlus, UserMinus, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
 
     const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
 
-    const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli') => {
+    const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli' | 'affiliator') => {
         if (!firestore) return;
         const userDocRef = doc(firestore, 'users', userId);
         try {
@@ -68,6 +68,8 @@ export default function AdminUsersPage() {
             return <Badge variant="outline">Pembeli</Badge>;
         case 'admin':
             return <Badge>Admin</Badge>;
+        case 'affiliator':
+            return <Badge variant="destructive">Affiliator</Badge>;
         default:
             return <Badge variant="outline">{String(role)}</Badge>;
         }
@@ -97,7 +99,7 @@ export default function AdminUsersPage() {
         <CardHeader>
           <CardTitle>Manajemen Pengguna</CardTitle>
           <CardDescription>
-            Lihat dan kelola semua pengguna di platform. Anda dapat mengubah peran antara 'Pembeli' dan 'Kreator'.
+            Lihat dan kelola semua pengguna di platform. Anda dapat mengubah peran antara 'Pembeli', 'Kreator', dan 'Affiliator'.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,20 +159,27 @@ export default function AdminUsersPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Tindakan Pengguna</DropdownMenuLabel>
+                        <DropdownMenuLabel>Ubah Peran</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        {user.role === 'kreator' && (
+                        {user.role !== 'pembeli' && (
                             <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'pembeli')}>
                                 <UserMinus className="mr-2 h-4 w-4" />
                                 Jadikan Pembeli
                             </DropdownMenuItem>
                         )}
-                        {user.role === 'pembeli' && (
+                        {user.role !== 'kreator' && (
                             <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'kreator')}>
                                 <UserPlus className="mr-2 h-4 w-4" />
                                 Jadikan Kreator
                             </DropdownMenuItem>
                         )}
+                        {user.role !== 'affiliator' && (
+                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'affiliator')}>
+                                <UserCheck className="mr-2 h-4 w-4" />
+                                Jadikan Affiliator
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
                         {user.role === 'kreator' && (
                             <DropdownMenuItem asChild>
                                 <Link href={`/creator/${user.slug}`}>Lihat Profil Kreator</Link>
