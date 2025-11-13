@@ -53,7 +53,7 @@ export default function AccountLayout({
     <>
       <SiteHeader />
       <div className="flex-1 w-full px-4 py-6">
-        <div className="mx-auto">
+        <div className="w-full">
           <header className="mb-6 hidden md:block">
             <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
           </header>
@@ -77,8 +77,8 @@ export default function AccountLayout({
           </div>
         </div>
 
-        <div className="mx-auto grid md:grid-cols-4 gap-8">
-          <aside className="hidden md:block md:col-span-1">
+        <div className="w-full grid md:grid-cols-4 gap-8">
+          <aside className="hidden md:block md:col-span-1 self-start sticky top-20">
             <nav className="flex flex-col space-y-2">
               <h2 className="text-lg font-bold font-headline mb-2">Akun Saya</h2>
               {menuItems.map(({ href, label, icon: Icon, exact }) => (
