@@ -1,335 +1,176 @@
-
 'use client';
 
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  Home,
+  Package,
+  Settings,
+  ShoppingCart,
+  Search,
+} from 'lucide-react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+  SidebarFooter,
+  SidebarSeparator
+} from "@/components/ui/sidebar";
+import { Button } from '@/components/ui/button';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
-import { DollarSign, ShoppingCart } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
-import { useUser } from '@/firebase/auth/use-user';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
-import type { Product, Order } from '@/lib/data';
-import { Skeleton } from '@/components/ui/skeleton';
-import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-import { id as fnsIdLocale } from 'date-fns/locale';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { useUser } from "@/firebase/auth/use-user";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase/provider";
+import type { UserProfile } from "@/lib/data";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Logo } from "@/components/logo";
 
-export default function AnalyticsPage() {
+
+const menuItems = [
+  { href: '/creator/dashboard', label: 'Ringkasan', icon: Home },
+  { href: '/creator/products', label: 'Produk', icon: Package },
+  { href: '/creator/orders', label: 'Pesanan', icon: ShoppingCart },
+];
+
+const settingsItem = { href: '/creator/settings', label: 'Pengaturan', icon: Settings };
+
+export default function CreatorDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
 
-  const productsQuery = useMemo(() => {
+  const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
-    return query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+    return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+
+  const allMenuItems = [...menuItems, settingsItem];
+  const pageTitle = allMenuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/creator/dashboard' || pathname === '/creator/dashboard'))?.label || "Dasbor Kreator";
   
-  const { data: creatorProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'K';
+    return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-        if (!user || !firestore || !creatorProducts) return;
-        setOrdersLoading(true);
-        try {
-            const creatorProductIds = new Set(creatorProducts.map(p => p.id));
-            if (creatorProductIds.size === 0) {
-                setOrders([]);
-                setOrdersLoading(false);
-                return;
-            }
-
-            const usersSnapshot = await getDocs(collection(firestore, 'users'));
-            const allCreatorOrders: Order[] = [];
-
-            for (const userDoc of usersSnapshot.docs) {
-                const ordersSnapshot = await getDocs(collection(firestore, `users/${userDoc.id}/orders`));
-                ordersSnapshot.forEach(orderDoc => {
-                    const orderData = orderDoc.data() as Order;
-                    if (creatorProductIds.has(orderData.productId)) {
-                        allCreatorOrders.push(orderData);
-                    }
-                });
-            }
-
-            setOrders(allCreatorOrders);
-
-        } catch (error) {
-            console.error("Failed to fetch orders:", error);
-        } finally {
-            setOrdersLoading(false);
-        }
-    };
-    if (creatorProducts) {
-        fetchOrders();
-    }
-  }, [user, firestore, creatorProducts]);
-
-  const [formattedStats, setFormattedStats] = useState({
-    totalRevenue: '',
-    totalSales: '0',
-  });
-  
-  const topProducts = useMemo(() => {
-    if (!creatorProducts) return [];
-    const sortedProducts = [...creatorProducts].sort((a, b) => b.sales - a.sales);
-    return sortedProducts.slice(0, 5).map(p => ({
-      ...p,
-      revenue: p.price * p.sales,
-    }));
-  }, [creatorProducts]);
-  
-  const salesCompositionData = useMemo(() => {
-    if (!creatorProducts || creatorProducts.length === 0) return [];
-    const sortedBySales = [...creatorProducts].sort((a, b) => b.sales - a.sales);
-    const top4 = sortedBySales.slice(0, 4);
-    const otherSales = sortedBySales.slice(4).reduce((acc, p) => acc + p.sales, 0);
-
-    const data = top4.map(p => ({ name: p.name, value: p.sales }));
-    if (otherSales > 0) {
-      data.push({ name: 'Lainnya', value: otherSales });
-    }
-    return data;
-
-  }, [creatorProducts]);
-
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
-
-  const monthlyRevenueData = useMemo(() => {
-    const last6Months = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i));
-    
-    return last6Months.map(monthDate => {
-        const monthStart = startOfMonth(monthDate);
-        const monthEnd = endOfMonth(monthDate);
-        
-        const monthlyRevenue = orders.reduce((acc, order) => {
-            const purchaseDate = new Date(order.purchaseDate.seconds * 1000);
-            if (isWithinInterval(purchaseDate, { start: monthStart, end: monthEnd })) {
-                return acc + order.amount;
-            }
-            return acc;
-        }, 0);
-
-        return {
-            month: format(monthDate, 'MMM', { locale: fnsIdLocale }),
-            revenue: monthlyRevenue,
-        };
-    });
-  }, [orders]);
-
-
-  useEffect(() => {
-     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-
-    if (creatorProducts) {
-        const totalRevenue = creatorProducts.reduce((acc, p) => acc + (p.price * p.sales), 0);
-        const totalSales = creatorProducts.reduce((acc, p) => acc + p.sales, 0);
-
-        setFormattedStats(prev => ({ 
-            ...prev, 
-            totalRevenue: formatCurrency(totalRevenue),
-            totalSales: totalSales.toLocaleString('id-ID'),
-        }));
-    } else {
-        setFormattedStats(prev => ({
-            ...prev,
-            totalRevenue: formatCurrency(0),
-            totalSales: '0',
-        }))
-    }
-  }, [creatorProducts]);
-
-  const formatCompact = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(amount);
-  }
-
-  const formatTooltip = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  }
-  
-  const loading = userLoading || productsLoading || ordersLoading;
+  const loading = userLoading || (user && profileLoading);
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Pendapatan (All-Time)
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-2xl font-bold">{formattedStats.totalRevenue}</div>}
-            <p className="text-xs text-muted-foreground">
-              Berdasarkan semua penjualan Anda.
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Penjualan</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">+{formattedStats.totalSales}</div>}
-             <p className="text-xs text-muted-foreground">
-              Total unit terjual dari semua produk.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Grafik Pendapatan</CardTitle>
-          <CardDescription>
-            Pendapatan Anda selama 6 bulan terakhir.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            {loading ? (
-                <Skeleton className="h-full w-full" />
-            ) : (
-                 <LineChart data={monthlyRevenueData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis tickFormatter={(value) => formatCompact(value as number)} />
-                    <Tooltip
-                        contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        borderColor: 'hsl(var(--border))',
-                        }}
-                        formatter={(value) => formatTooltip(value as number)}
-                    />
-                    <Legend />
-                    <Line
-                        type="monotone"
-                        dataKey="revenue"
-                        name="Pendapatan"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={2}
-                        dot={{ r: 4, fill: 'hsl(var(--primary))' }}
-                        activeDot={{ r: 6 }}
-                    />
-                    </LineChart>
-            )}
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Produk Terlaris</CardTitle>
-            <CardDescription>
-              Produk dengan pendapatan tertinggi.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Produk</TableHead>
-                  <TableHead className="text-right">Penjualan</TableHead>
-                  <TableHead className="text-right">Pendapatan</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading && Array.from({length:3}).map((_, i) => (
-                    <TableRow key={i}>
-                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-12 ml-auto" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
-                    </TableRow>
-                ))}
-                {!loading && topProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell className="text-right">{product.sales}</TableCell>
-                    <TableCell className="text-right">{formatTooltip(product.revenue)}</TableCell>
-                  </TableRow>
-                ))}
-                 {!loading && topProducts.length === 0 && (
-                    <TableRow>
-                        <TableCell colSpan={3} className="text-center h-24">Anda belum memiliki penjualan.</TableCell>
-                    </TableRow>
-                 )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Komposisi Penjualan</CardTitle>
-             <CardDescription>
-              Distribusi penjualan di antara produk Anda.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex items-center justify-center">
-            {loading ? <Skeleton className="h-[250px] w-full" /> : 
-             salesCompositionData.length > 0 ? (
-             <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={salesCompositionData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+    <SidebarProvider>
+        <Sidebar collapsible="icon" variant="inset" side="left">
+          <SidebarHeader>
+            <Link href="/" className="flex items-center space-x-2 px-2">
+              <Logo className="h-5 w-5" />
+              <span className="text-base font-bold font-headline group-data-[collapsible=icon]:hidden">
+                Di
+              </span>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent className="p-2">
+            <SidebarMenu>
+              {menuItems.map(({ href, label, icon: Icon }) => (
+                <SidebarMenuItem key={href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(href)}
+                    tooltip={label}
                   >
-                    {salesCompositionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value, name) => [`${value} penjualan`, name]}/>
-                  <Legend iconSize={10} />
-                </PieChart>
-              </ResponsiveContainer>
-              ) : (
-                <div className="h-[250px] flex items-center justify-center text-muted-foreground text-sm">
-                    Data tidak tersedia.
-                </div>
-              )
-            }
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+                    <Link href={href}>
+                      <Icon />
+                      <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+              <SidebarSeparator />
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                         <SidebarMenuButton
+                            asChild
+                            isActive={pathname.startsWith(settingsItem.href)}
+                            tooltip={settingsItem.label}
+                        >
+                            <Link href={settingsItem.href}>
+                                <Settings />
+                                <span className="group-data-[collapsible=icon]:hidden">{settingsItem.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+
+        <SidebarInset>
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+             <SidebarTrigger className="flex" />
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
+            </div>
+            <div className="relative ml-auto flex-initial md:grow-0">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Cari..."
+                className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
+              />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="overflow-hidden rounded-full"
+                >
+                   {loading ? (
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  ) : (
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Creator Avatar'} />
+                      <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                    </Avatar>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{userProfile?.name || 'Akun Saya'}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/creator/settings">Pengaturan</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/">Lihat Situs</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Keluar</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
+          <main className="flex-1 overflow-auto p-4">{children}</main>
+        </SidebarInset>
+    </SidebarProvider>
   );
 }
-
-    

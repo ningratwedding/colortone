@@ -6,13 +6,11 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  BarChart,
   Home,
   Package,
   Settings,
   ShoppingCart,
   Search,
-  SlidersHorizontal
 } from 'lucide-react';
 import {
   Sidebar,
@@ -51,7 +49,6 @@ const menuItems = [
   { href: '/creator/dashboard', label: 'Ringkasan', icon: Home },
   { href: '/creator/products', label: 'Produk', icon: Package },
   { href: '/creator/orders', label: 'Pesanan', icon: ShoppingCart },
-  { href: '/creator/analytics', label: 'Analitik', icon: BarChart },
 ];
 
 const settingsItem = { href: '/creator/settings', label: 'Pengaturan', icon: Settings };
