@@ -60,7 +60,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
   return (
     <Card
       className={cn(
-        'overflow-hidden group flex flex-col rounded-lg',
+        'overflow-hidden group flex flex-col rounded-none',
         className
       )}
     >
@@ -94,7 +94,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
                         <Skeleton className="h-4 w-20" />
                     </div>
                 ) : creator ? (
-                    <Link href={`/kreator/${creator.slug}`} className="flex items-center gap-2 group/creator">
+                    <Link href={`/${creator.slug}`} className="flex items-center gap-2 group/creator">
                         <Avatar className="h-6 w-6">
                             <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
                             <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>

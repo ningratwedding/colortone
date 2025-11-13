@@ -38,7 +38,7 @@ function CampaignBanner() {
     }
 
     if (loading) {
-        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg" />;
+        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full" />;
     }
 
     if (!campaigns || campaigns.length === 0) {
@@ -48,7 +48,7 @@ function CampaignBanner() {
     const campaign = campaigns[0];
 
     return (
-        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden group">
+        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full group">
             <Link href={campaign.linkUrl} className="group/link block absolute inset-0">
                 <Image
                     src={campaign.imageUrl}
@@ -58,11 +58,6 @@ function CampaignBanner() {
                     data-ai-hint={campaign.imageHint}
                 />
             </Link>
-            <div className="absolute inset-0 flex flex-col items-start justify-end p-6 md:p-8 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
-                 <Link href={campaign.linkUrl} className="text-primary-foreground text-lg md:text-xl font-bold line-clamp-2 pointer-events-auto hover:underline">
-                    {campaign.title}
-                </Link>
-            </div>
         </div>
     )
 }
@@ -91,7 +86,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 p-1">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-48 w-full" />
@@ -124,7 +119,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 p-1">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -171,9 +166,9 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="container mx-auto">
       <CampaignBanner />
-      <div className="flex flex-col md:flex-row gap-2 justify-end">
+      <div className="flex flex-col md:flex-row gap-2 justify-end p-2">
         <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
