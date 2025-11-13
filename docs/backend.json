@@ -1,4 +1,5 @@
 
+
 {
   "entities": {
     "UserProfile": {
@@ -87,6 +88,22 @@
             "website": { "type": "string", "format": "uri" }
           },
           "description": "An object containing the user's social media usernames and website."
+        },
+        "socialsSettings": {
+            "type": "object",
+            "description": "Settings for social media link appearance.",
+            "properties": {
+                "style": {
+                    "type": "string",
+                    "enum": ["iconOnly", "pill"]
+                },
+                "backgroundColor": {
+                    "type": "string"
+                },
+                "fontColor": {
+                    "type": "string"
+                }
+            }
         },
         "role": {
           "type": "string",

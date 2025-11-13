@@ -223,6 +223,12 @@ export function ProfileContent({ slug }: { slug: string }) {
     : {};
 
   const showGradient = profileUser.showHeaderGradient ?? true;
+  const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly' };
+  
+  const socialLinkClasses = cn(
+    "transition-transform hover:scale-110",
+    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : 'h-8 px-3 rounded-full flex items-center gap-2 text-sm',
+  );
 
   return (
     <div className="pb-6">
@@ -258,8 +264,8 @@ export function ProfileContent({ slug }: { slug: string }) {
       <div className="container mx-auto px-4">
         <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
           <Avatar 
-            className="h-24 w-24 md:h-32 md:w-32 border-4 border-background"
-            style={{ borderColor: profileUser.profileBackgroundColor || undefined }}
+            className="h-24 w-24 md:h-32 md:w-32 border-4"
+            style={{ borderColor: profileUser.profileBackgroundColor || 'hsl(var(--background))' }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
@@ -268,17 +274,21 @@ export function ProfileContent({ slug }: { slug: string }) {
             <h1 className="text-3xl font-bold font-headline" style={{ color: profileUser.profileTitleFontColor || undefined }}>{displayName}</h1>
             <p className="text-muted-foreground mt-1 max-w-2xl mx-auto" style={{ color: profileUser.profileBodyFontColor || undefined }}>{profileUser.bio}</p>
             {profileUser.socials && (
-              <div className="flex justify-center items-center gap-4 mt-3">
+              <div className="flex justify-center items-center gap-2 mt-3 flex-wrap">
                 {Object.entries(profileUser.socials).map(([platform, username]) => (
                   <Link 
                     key={platform} 
                     href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-muted-foreground hover:text-primary"
-                    style={{ color: profileUser.profileBodyFontColor || undefined }}
+                    className={socialLinkClasses}
+                    style={{
+                      backgroundColor: socialsSettings.style === 'pill' ? socialsSettings.backgroundColor : 'transparent',
+                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : profileUser.profileBodyFontColor || undefined
+                    }}
                   >
                     {socialIcons[platform as SocialPlatform]}
+                     {socialsSettings.style === 'pill' && <span className="font-medium capitalize">{platform}</span>}
                     <span className="sr-only">{platform}</span>
                   </Link>
                 ))}

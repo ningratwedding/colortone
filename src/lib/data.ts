@@ -27,6 +27,11 @@ export type UserProfile = {
     tiktok?: string;
     website?: string;
   };
+  socialsSettings?: {
+    style: 'iconOnly' | 'pill';
+    backgroundColor?: string;
+    fontColor?: string;
+  };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
