@@ -23,18 +23,28 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
-import { PartyPopper, Copy, Loader2, PlusCircle, Trash2, Instagram, Facebook, Globe } from 'lucide-react';
+import { PartyPopper, Copy, Loader2, PlusCircle, Trash2, Globe } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
 
+function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+    )
+}
+
+function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    )
+}
+
 function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
@@ -43,17 +53,17 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M12.528 8.001v5.25c-1.423.115-2.585.83-3.415 1.942C8.253 16.34 7.6 17.34 6.75 17.34c-1.84 0-2.5-1.72-2.5-1.72" />
-      <path d="M12.528 8.001c.883-2.48 3.02-3.514 5.31-2.07C20.137 7.37 20.08 11.2 17 11.2v5.123c-1.872 0-3.352-1.33-4.472-2.37" />
-      <path d="M12.528 8.001q.44-1.47.79-2.515" />
-      <path d="M17.5 4.5c.31.02.62.06.94.13" />
+        <path d="M16.5 6.5a4.5 4.5 0 1 0 5.5 5.5" />
+        <path d="M12 12V2" />
+        <path d="M12 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
     </svg>
   );
 }
 
+
 const socialIcons = {
-  instagram: <Instagram className="h-5 w-5" />,
-  facebook: <Facebook className="h-5 w-5" />,
+  instagram: <InstagramIcon className="h-5 w-5" />,
+  facebook: <FacebookIcon className="h-5 w-5" />,
   tiktok: <TikTokIcon className="h-5 w-5" />,
   website: <Globe className="h-5 w-5" />
 };
@@ -271,7 +281,7 @@ export default function AccountSettingsPage() {
                     <div className="grid gap-2">
                         <Label htmlFor="profilename">Nama Profil</Label>
                         <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} />
-                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
+                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda dan digunakan untuk slug URL Anda.</p>
                     </div>
                      <div className="grid gap-2">
                         <Label htmlFor="fullname">Nama Lengkap</Label>
