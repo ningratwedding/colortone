@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -59,7 +60,6 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
   const displayName = user.fullName || user.name;
   return (
     <>
-        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Produk dari {user.name}</h2>
         {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -89,7 +89,6 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
   return (
      <>
-        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk Unggulan</h2>
         {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 8 }).map((_, i) => (
