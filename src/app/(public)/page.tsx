@@ -166,9 +166,9 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto p-1">
       <CampaignBanner />
-      <div className="flex flex-col md:flex-row gap-2 justify-end p-2">
+      <div className="flex flex-col md:flex-row gap-2 justify-end p-1">
         <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
