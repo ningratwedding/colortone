@@ -15,17 +15,19 @@ import { Label } from '@/components/ui/label';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useFirestore, useStorage } from '@/firebase/provider';
+import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Loader2, PlusCircle, Trash2, Globe, Check } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-
+import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -59,7 +61,6 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-
 const socialIcons = {
   instagram: <InstagramIcon className="h-5 w-5" />,
   facebook: <FacebookIcon className="h-5 w-5" />,
@@ -81,6 +82,83 @@ const colorOptions = [
     { name: 'Pink', value: '#EC4899' },
     { name: 'Default', value: '' },
 ];
+
+
+function ProfilePreview({
+  profile,
+  bio,
+  socials,
+  headerColor,
+  profileBackgroundColor
+}: {
+  profile: UserProfile;
+  bio: string;
+  socials: UserProfile['socials'];
+  headerColor: string | undefined;
+  profileBackgroundColor: string | undefined;
+}) {
+  const displayName = profile.fullName || profile.name;
+  
+  const headerGradientStyle = profileBackgroundColor
+    ? { backgroundImage: `linear-gradient(to top, ${profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
+    : {};
+
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm lg:h-[75vh] overflow-hidden">
+        <div className="h-full overflow-y-auto" style={{ backgroundColor: profileBackgroundColor || undefined }}>
+             <div
+                className="relative h-32 md:h-48 rounded-b-lg overflow-hidden"
+                style={{ backgroundColor: headerColor }}
+                >
+                    {profile.headerImageUrl ? (
+                        <Image
+                            src={profile.headerImageUrl}
+                            alt="Header background"
+                            fill
+                            className="object-cover"
+                            data-ai-hint={profile.headerImageHint}
+                        />
+                    ) : !headerColor && (
+                        <Image
+                            src={`https://picsum.photos/seed/${profile.id}/1200/400`}
+                            alt="Header background"
+                            fill
+                            className="object-cover"
+                            data-ai-hint="header background"
+                        />
+                    )}
+                    <div 
+                        className={cn("absolute inset-0", !profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+                        style={headerGradientStyle}
+                    />
+                </div>
+              <div className="px-4">
+                <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
+                <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-background ring-2 ring-primary">
+                    <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
+                    <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                    <h1 className="text-xl font-bold font-headline">{displayName}</h1>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{bio || "Bio Anda akan muncul di sini."}</p>
+                    {socials && Object.keys(socials).length > 0 && (
+                    <div className="flex justify-center items-center gap-4 mt-3">
+                        {Object.entries(socials).map(([platform, username]) => (
+                        <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                            {socialIcons[platform as SocialPlatform]}
+                            <span className="sr-only">{platform}</span>
+                        </Link>
+                        ))}
+                    </div>
+                    )}
+                </div>
+                </header>
+                 <p className="text-xs text-center text-muted-foreground">(Ini adalah pratinjau)</p>
+            </div>
+        </div>
+    </div>
+  )
+}
 
 
 export default function AppearancePage() {
@@ -184,29 +262,25 @@ export default function AppearancePage() {
 
     if (loading) {
         return (
-             <Card>
-                <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-64 mt-2" />
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-24 w-full" />
-                    </div>
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-9 w-full" />
-                    </div>
-                     <div className="space-y-2">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-9 w-40" />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Skeleton className="h-10 w-36" />
-                </CardFooter>
-            </Card>
+            <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-1">
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-64 mt-2" />
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-24 w-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                 <div className="lg:col-span-2">
+                    <Skeleton className="h-full w-full min-h-[50vh]" />
+                </div>
+            </div>
         )
     }
 
@@ -230,8 +304,8 @@ export default function AppearancePage() {
     }
 
     return (
-        <div className="space-y-6">
-             <Card>
+        <div className="grid lg:grid-cols-3 gap-6">
+             <Card className="lg:col-span-1">
                 <CardHeader>
                     <CardTitle>Tampilan Profil Publik</CardTitle>
                     <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
@@ -321,6 +395,16 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
+            <div className="lg:col-span-2">
+                <ProfilePreview 
+                    profile={userProfile} 
+                    bio={bio}
+                    socials={socials}
+                    headerColor={headerColor}
+                    profileBackgroundColor={profileBackgroundColor}
+                />
+            </div>
+
             <Dialog open={isColorDialogOpen} onOpenChange={setIsColorDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
