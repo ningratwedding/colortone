@@ -40,14 +40,6 @@
           "type": "string",
           "description": "AI hint for the user's avatar image."
         },
-        "avatarRingColor": {
-            "type": "string",
-            "description": "A solid hex color for the avatar's ring."
-        },
-        "showAvatarRing": {
-            "type": "boolean",
-            "description": "Whether to show the ring around the avatar."
-        },
         "headerImageUrl": {
           "type": "string",
           "format": "uri",

@@ -11,8 +11,6 @@ export type UserProfile = {
   phoneNumber?: string;
   avatarUrl: string;
   avatarHint: string;
-  avatarRingColor?: string;
-  showAvatarRing?: boolean;
   bio?: string;
   headerImageUrl?: string;
   headerImageHint?: string;
