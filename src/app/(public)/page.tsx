@@ -38,7 +38,7 @@ function CampaignBanner() {
     }
 
     if (loading) {
-        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg mb-6" />;
+        return <Skeleton className="aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg" />;
     }
 
     if (!campaigns || campaigns.length === 0) {
@@ -48,8 +48,8 @@ function CampaignBanner() {
     const campaign = campaigns[0];
 
     return (
-        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden mb-6 group">
-             <Link href={campaign.linkUrl} className="group/link">
+        <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden group">
+             <Link href={campaign.linkUrl} className="group/link block absolute inset-0">
                 <Image
                     src={campaign.imageUrl}
                     alt={campaign.title}
@@ -58,9 +58,6 @@ function CampaignBanner() {
                     data-ai-hint={campaign.imageHint}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-3 md:p-6 text-white">
-                    <h2 className="text-xl md:text-2xl font-bold font-headline group-hover/link:underline">{campaign.title}</h2>
-                </div>
             </Link>
         </div>
     )
@@ -170,9 +167,9 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto px-2 py-4 md:px-4 md:py-6">
+    <div className="container mx-auto px-2 py-4 md:px-4 md:py-6 space-y-4">
       <CampaignBanner />
-      <div className="mb-4 flex flex-col md:flex-row gap-2 justify-end">
+      <div className="flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
@@ -230,7 +227,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator className="mb-4" />
+      <Separator />
 
       <section>
         <ProductGrid filters={filters} />
