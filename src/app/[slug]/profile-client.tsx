@@ -38,9 +38,10 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-        <path d="M16.5 6.5a4.5 4.5 0 1 0 5.5 5.5" />
-        <path d="M12 12V2" />
-        <path d="M12 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
+      <path d="M16.5 6.5a4.5 4.5 0 1 0 5.5 5.5v.05" />
+      <path d="M12 12V2" />
+      <path d="M12 18.5a6.5 6.5 0 1 0 0-13V2" />
+      <path d="M12 12a6.5 6.5 0 1 0 6.5 6.5" />
     </svg>
   );
 }
@@ -227,3 +228,5 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
+
+    
