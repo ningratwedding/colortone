@@ -11,7 +11,6 @@ import {
   Package,
   Settings,
   ShoppingCart,
-  Upload,
   Search,
   SlidersHorizontal
 } from 'lucide-react';
@@ -52,7 +51,6 @@ const menuItems = [
   { href: '/creator/dashboard', label: 'Ringkasan', icon: Home },
   { href: '/creator/products', label: 'Produk', icon: Package },
   { href: '/creator/orders', label: 'Pesanan', icon: ShoppingCart },
-  { href: '/creator/upload', label: 'Unggah', icon: Upload },
   { href: '/creator/analytics', label: 'Analitik', icon: BarChart },
 ];
 
