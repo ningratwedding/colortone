@@ -14,7 +14,7 @@ import type { Product, Category, Software, Campaign } from "@/lib/data";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirestore } from "@/firebase/provider";
 import { collection, query, where, QueryConstraint } from "firebase/firestore";
-import { useMemo, useState } from "react";
+import { useMemo, useState }from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal, ArrowRight } from "lucide-react";
@@ -27,13 +27,24 @@ function CampaignBanner() {
 
     const campaignQuery = useMemo(() => {
         if (!firestore) return null;
-        return query(collection(firestore, "campaigns"), where('isActive', '==', true), where('imageUrl', '!=', null));
+        return query(collection(firestore, "campaigns"), where('isActive', '==', true));
     }, [firestore]);
 
     const { data: campaigns, loading, error } = useCollection<Campaign>(campaignQuery);
 
-    if (loading || !campaigns || campaigns.length === 0 || error) {
-        return null; // Don't render anything if no active campaign or while loading/error
+    if (error) {
+        // Log the error for debugging but don't render a broken component
+        console.error("Failed to load campaign banner:", error);
+        return null;
+    }
+
+    if (loading) {
+        // Optional: show a skeleton loader while the campaign is loading
+        return <Skeleton className="aspect-[3/1] w-full rounded-lg mb-6" />;
+    }
+
+    if (!campaigns || campaigns.length === 0) {
+        return null; // Don't render anything if no active campaign
     }
 
     const campaign = campaigns[0]; // Display the first active campaign
