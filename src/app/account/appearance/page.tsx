@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -309,83 +310,91 @@ export default function AppearancePage() {
                     <CardTitle>Tampilan Profil Publik</CardTitle>
                     <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 pt-6">
+                <CardContent className="space-y-4 pt-6">
                     <div className="grid gap-2">
                         <Label htmlFor="bio">Bio Profil Publik</Label>
                         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
                     </div>
-                    <div className="grid gap-4">
-                        <Label>Tautan Sosial & Situs Web</Label>
-                        <div className="space-y-3">
-                        {socials && Object.entries(socials).map(([platform, username]) => (
-                            <div key={platform} className="flex items-center gap-3">
-                            <div className="relative flex-grow">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                {socialIcons[platform as keyof typeof socialIcons]}
-                                </span>
-                                <Input
-                                value={username as string}
-                                className="pl-10"
-                                readOnly
-                                />
-                            </div>
-                            <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(platform as SocialPlatform)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                            </div>
-                        ))}
-                        </div>
 
-                        <Dialog open={isSocialDialogOpen} onOpenChange={setIsSocialDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button
-                            variant="outline"
-                            className="mt-2 w-full sm:w-auto"
-                            >
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Tambah Tautan
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                            <DialogTitle>Tambah Tautan Sosial atau Situs Web</DialogTitle>
-                            <DialogDescription>
-                                Pilih platform dan masukkan nama pengguna atau URL.
-                            </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="platform">Platform</Label>
-                                <Select onValueChange={(value) => setNewSocialPlatform(value as SocialPlatform)}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Pilih platform" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="instagram">Instagram</SelectItem>
-                                    <SelectItem value="facebook">Facebook</SelectItem>
-                                    <SelectItem value="tiktok">TikTok</SelectItem>
-                                    <SelectItem value="website">Situs Web</SelectItem>
-                                </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="username">Nama Pengguna atau URL</Label>
-                                <Input id="username" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'misal: kartikasari'} value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
-                            </div>
-                            </div>
-                            <DialogFooter>
-                            <Button onClick={handleAddSocial}>Simpan</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                        </Dialog>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label>Kustomisasi Latar</Label>
-                        <div className="flex flex-wrap gap-2">
-                            <Button variant="outline" onClick={() => handleOpenColorDialog('header')}>Ubah Latar Header</Button>
-                            <Button variant="outline" onClick={() => handleOpenColorDialog('page')}>Ubah Latar Halaman</Button>
-                        </div>
-                    </div>
+                    <Accordion type="multiple" className="w-full">
+                        <AccordionItem value="socials">
+                            <AccordionTrigger className="text-sm font-medium">Tautan Sosial & Situs Web</AccordionTrigger>
+                            <AccordionContent>
+                                <div className="grid gap-4 pt-2">
+                                    <div className="space-y-3">
+                                    {socials && Object.entries(socials).map(([platform, username]) => (
+                                        <div key={platform} className="flex items-center gap-3">
+                                        <div className="relative flex-grow">
+                                            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                            {socialIcons[platform as keyof typeof socialIcons]}
+                                            </span>
+                                            <Input
+                                            value={username as string}
+                                            className="pl-10"
+                                            readOnly
+                                            />
+                                        </div>
+                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(platform as SocialPlatform)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                        </div>
+                                    ))}
+                                    </div>
+                                    <Dialog open={isSocialDialogOpen} onOpenChange={setIsSocialDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button
+                                        variant="outline"
+                                        className="mt-2 w-full sm:w-auto"
+                                        >
+                                        <PlusCircle className="mr-2 h-4 w-4" />
+                                        Tambah Tautan
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                        <DialogTitle>Tambah Tautan Sosial atau Situs Web</DialogTitle>
+                                        <DialogDescription>
+                                            Pilih platform dan masukkan nama pengguna atau URL.
+                                        </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="platform">Platform</Label>
+                                            <Select onValueChange={(value) => setNewSocialPlatform(value as SocialPlatform)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih platform" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="instagram">Instagram</SelectItem>
+                                                <SelectItem value="facebook">Facebook</SelectItem>
+                                                <SelectItem value="tiktok">TikTok</SelectItem>
+                                                <SelectItem value="website">Situs Web</SelectItem>
+                                            </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="username">Nama Pengguna atau URL</Label>
+                                            <Input id="username" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'misal: kartikasari'} value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
+                                        </div>
+                                        </div>
+                                        <DialogFooter>
+                                        <Button onClick={handleAddSocial}>Simpan</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="background">
+                            <AccordionTrigger className="text-sm font-medium">Kustomisasi Latar</AccordionTrigger>
+                            <AccordionContent>
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    <Button variant="outline" onClick={() => handleOpenColorDialog('header')}>Ubah Latar Header</Button>
+                                    <Button variant="outline" onClick={() => handleOpenColorDialog('page')}>Ubah Latar Halaman</Button>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </CardContent>
                 <CardFooter>
                      <Button onClick={handleSaveChanges} disabled={isSaving}>
@@ -395,7 +404,7 @@ export default function AppearancePage() {
             </Card>
             
             <div className="hidden lg:flex items-center justify-center">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px]">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px] shadow-2xl">
                     <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
                     <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
                     <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
