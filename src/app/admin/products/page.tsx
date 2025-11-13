@@ -147,67 +147,74 @@ export default function AdminProductsPage() {
                   </TableRow>
                 ))}
               {!loading && allProducts && allProducts.length > 0 ? (
-                allProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image
-                        alt={product.name}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={product.imageAfterUrl}
-                        width="64"
-                        data-ai-hint={product.imageAfterHint}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>
-                      {/* TODO: Fetch creator name from creatorId */}
-                      <span className="text-muted-foreground">{product.creatorId}</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">Aktif</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium text-primary">
-                      {formattedPrices[product.id]}
-                    </TableCell>
-                    <TableCell>
-                      {product.sales.toLocaleString('id-ID')}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Alihkan menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/product/${product.id}`}>
-                              Lihat Produk
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={() => handleActionClick(product, 'deactivate')}
-                          >
-                            Nonaktifkan
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onSelect={() => handleActionClick(product, 'delete')}
-                          >
-                            Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
+                allProducts.map((product) => {
+                  const imageUrl = product.imageAfterUrl || product.galleryImageUrls?.[0];
+                  return (
+                    <TableRow key={product.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        {imageUrl ? (
+                          <Image
+                            alt={product.name}
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src={imageUrl}
+                            width="64"
+                            data-ai-hint={product.imageAfterHint || product.galleryImageHints?.[0]}
+                          />
+                        ) : (
+                          <div className="h-16 w-16 bg-muted rounded-md" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>
+                        {/* TODO: Fetch creator name from creatorId */}
+                        <span className="text-muted-foreground">{product.creatorId}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">Aktif</Badge>
+                      </TableCell>
+                      <TableCell className="font-medium text-primary">
+                        {formattedPrices[product.id]}
+                      </TableCell>
+                      <TableCell>
+                        {product.sales.toLocaleString('id-ID')}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Alihkan menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/product/${product.id}`}>
+                                Lihat Produk
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => handleActionClick(product, 'deactivate')}
+                            >
+                              Nonaktifkan
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onSelect={() => handleActionClick(product, 'delete')}
+                            >
+                              Hapus
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 !loading && (
                     <TableRow>
