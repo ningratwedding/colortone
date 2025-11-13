@@ -51,6 +51,11 @@
           "enum": ["pembeli", "kreator", "admin", "affiliator"],
           "description": "Defines the user's role and permissions within the application."
         },
+        "featuredProductIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "An array of product IDs that the affiliate chooses to feature on their public profile."
+        },
         "createdAt": {
             "type": "string",
             "format": "date-time"

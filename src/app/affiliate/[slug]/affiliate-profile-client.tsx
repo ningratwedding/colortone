@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, limit, getDocs } from 'firebase/firestore';
+import { collection, query, where, limit, getDocs, documentId } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
@@ -52,7 +52,7 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
 
   const affiliateQuery = useMemo(() => {
     if (!firestore || !slug) return null;
-    return query(collection(firestore, 'users'), where('slug', '==', slug), where('isAffiliate', '==', true), limit(1));
+    return query(collection(firestore, 'users'), where('slug', '==', slug), where('role', '==', 'affiliator'), limit(1));
   }, [firestore, slug]);
 
   useEffect(() => {
@@ -77,9 +77,14 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
 
 
   const productsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "products"));
-  }, [firestore]);
+    if (!firestore || !affiliate || !affiliate.featuredProductIds || affiliate.featuredProductIds.length === 0) {
+        return null;
+    }
+    // Firestore 'in' queries are limited to 30 items.
+    // For this app, we'll assume the affiliate features less than 30.
+    // For a production app, you'd need to batch these queries.
+    return query(collection(firestore, "products"), where(documentId(), 'in', affiliate.featuredProductIds.slice(0, 30)));
+  }, [firestore, affiliate]);
 
   const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
 
@@ -103,6 +108,8 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
   if (!affiliate) {
     notFound();
   }
+
+  const hasFeaturedProducts = affiliate.featuredProductIds && affiliate.featuredProductIds.length > 0;
 
   return (
     <>
@@ -129,7 +136,7 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
       </header>
 
       <main>
-        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk</h2>
+        <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk Unggulan</h2>
         {productsLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -140,7 +147,7 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
               </div>
             ))}
           </div>
-        ) : products && products.length > 0 ? (
+        ) : hasFeaturedProducts && products && products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} affiliateId={affiliate.id} />
@@ -148,7 +155,7 @@ export function AffiliateProfileContent({ slug }: { slug: string }) {
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">
-            <p>Belum ada produk untuk ditampilkan.</p>
+            <p>Afiliator ini belum memilih produk unggulan.</p>
           </div>
         )}
       </main>

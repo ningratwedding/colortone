@@ -18,6 +18,7 @@ export type UserProfile = {
     website?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
+  featuredProductIds?: string[];
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
   bankName?: string;
   bankCode?: string;

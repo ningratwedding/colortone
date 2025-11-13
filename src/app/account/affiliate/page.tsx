@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, Link as LinkIcon, ShoppingCart, Users, Copy } from 'lucide-react';
+import { DollarSign, Link as LinkIcon, ShoppingCart, Users, Copy, Settings } from 'lucide-react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useState, useEffect, useMemo } from 'react';
@@ -101,15 +101,23 @@ export default function AffiliatePage() {
 
   return (
     <div className="space-y-4">
-        <div className="flex justify-between items-center">
-            <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
-            {pageLoading ? (
-                <Skeleton className="h-9 w-36" />
-            ) : userProfile?.slug && (
-                 <Button asChild variant="outline">
-                    <Link href={`/affiliate/${userProfile.slug}`}>Lihat Profil Publik</Link>
+        <div className="flex justify-between items-start">
+            <div>
+                <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
+                <p className="text-muted-foreground text-sm">Kelola komisi dan produk unggulan Anda.</p>
+            </div>
+            <div className="flex gap-2">
+                {pageLoading ? (
+                    <Skeleton className="h-9 w-36" />
+                ) : userProfile?.slug && (
+                    <Button asChild variant="outline">
+                        <Link href={`/affiliate/${userProfile.slug}`}>Lihat Profil Publik</Link>
+                    </Button>
+                )}
+                 <Button asChild>
+                    <Link href="/account/affiliate/products"><Settings className="mr-2 h-4 w-4" /> Atur Produk</Link>
                 </Button>
-            )}
+            </div>
         </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
