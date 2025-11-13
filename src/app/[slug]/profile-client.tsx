@@ -61,7 +61,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
     <>
         <h2 className="text-2xl font-bold font-headline mb-4 text-center">Produk dari {user.name}</h2>
         {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -71,7 +71,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
             ))}
           </div>
         ) : products && products.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} hideCreator={true} />
             ))}
@@ -91,7 +91,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
      <>
         <h2 className="text-2xl font-bold font-headline mb-4 text-center">Rekomendasi Produk Unggulan</h2>
         {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -101,7 +101,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
             ))}
           </div>
         ) : hasFeaturedProducts && products && products.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} affiliateId={user.id} />
             ))}
@@ -179,7 +179,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 <Skeleton className="h-5 w-64" />
             </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-48 w-full" />
@@ -228,5 +228,3 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
-
-    
