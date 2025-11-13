@@ -49,7 +49,7 @@ function CampaignBanner() {
 
     return (
         <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] w-full rounded-lg overflow-hidden group">
-             <Link href={campaign.linkUrl} className="group/link block absolute inset-0">
+            <Link href={campaign.linkUrl} className="group/link block absolute inset-0">
                 <Image
                     src={campaign.imageUrl}
                     alt={campaign.title}
@@ -58,6 +58,11 @@ function CampaignBanner() {
                     data-ai-hint={campaign.imageHint}
                 />
             </Link>
+            <div className="absolute inset-0 flex flex-col items-start justify-end p-6 md:p-8 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
+                 <Link href={campaign.linkUrl} className="text-primary-foreground text-lg md:text-xl font-bold line-clamp-2 pointer-events-auto hover:underline">
+                    {campaign.title}
+                </Link>
+            </div>
         </div>
     )
 }
@@ -166,7 +171,7 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto p-2 space-y-4">
+    <div className="container mx-auto p-4 space-y-4">
       <CampaignBanner />
       <div className="flex flex-col md:flex-row gap-2 justify-end">
         <div className="flex gap-2 w-full md:w-auto">
@@ -215,7 +220,7 @@ export default function Home() {
                     softwareList?.map((s) => (
                     <SelectItem key={s.id} value={s.slug}>
                     <div className="flex items-center gap-2">
-                        {s.icon && <div className="h-4 w-4" dangerouslySetInnerHTML={{ __html: s.icon }} />}
+                        {s.icon && <img src={s.icon} alt={s.name} className="h-4 w-4 object-contain" />}
                         <span>{s.name}</span>
                     </div>
                     </SelectItem>
