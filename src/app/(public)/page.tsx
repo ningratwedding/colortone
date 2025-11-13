@@ -84,7 +84,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-48 w-full" />
@@ -117,7 +117,7 @@ function ProductGrid({ filters }: { filters: { category: string; software: strin
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -164,9 +164,11 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto px-4 py-4">
-      <CampaignBanner />
-      <div className="flex flex-col md:flex-row gap-2 justify-end py-4">
+    <div className="container mx-auto px-2 py-2">
+      <div className="p-2">
+        <CampaignBanner />
+      </div>
+      <div className="flex flex-col md:flex-row gap-2 justify-end p-2">
         <div className="flex gap-2 w-full md:w-auto">
            <Select
             value={filters.type}
@@ -212,10 +214,10 @@ export default function Home() {
                 {softwareLoading ? <SelectItem value="loading" disabled>Memuat...</SelectItem> :
                     softwareList?.map((s) => (
                     <SelectItem key={s.id} value={s.slug}>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         {s.icon && <img src={s.icon} alt={s.name} className="h-4 w-4 object-contain" />}
                         <span>{s.name}</span>
-                    </div>
+                      </div>
                     </SelectItem>
                 ))}
                 </SelectContent>
@@ -224,7 +226,7 @@ export default function Home() {
         </div>
       </div>
 
-      <section>
+      <section className="p-2">
         <ProductGrid filters={filters} />
       </section>
     </div>
