@@ -15,6 +15,7 @@ export type UserProfile = {
   headerImageUrl?: string;
   headerImageHint?: string;
   headerColor?: string;
+  showHeaderGradient?: boolean;
   profileBackgroundColor?: string;
   profileBackgroundImageUrl?: string;
   profileBackgroundImageHint?: string;

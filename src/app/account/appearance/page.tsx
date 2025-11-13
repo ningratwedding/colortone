@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { uploadFile } from '@/firebase/storage/actions';
+import { Switch } from '@/components/ui/switch';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -93,6 +94,7 @@ function ProfilePreview({
   socials,
   headerColor,
   headerImagePreview,
+  showHeaderGradient,
   profileBackgroundColor,
   profileBackgroundImagePreview,
   profileTitleFontColor,
@@ -103,6 +105,7 @@ function ProfilePreview({
   socials: UserProfile['socials'];
   headerColor: string | undefined;
   headerImagePreview: string | null;
+  showHeaderGradient: boolean;
   profileBackgroundColor: string | undefined;
   profileBackgroundImagePreview: string | null;
   profileTitleFontColor: string | undefined;
@@ -140,10 +143,12 @@ function ProfilePreview({
                     data-ai-hint="header background"
                 />
             )}
-            <div 
-                className={cn("absolute inset-0", !profileBackgroundColor && !profileBackgroundImagePreview && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
-                style={headerGradientStyle}
-            />
+            {showHeaderGradient && (
+              <div 
+                  className={cn("absolute inset-0", !profileBackgroundColor && !profileBackgroundImagePreview && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+                  style={headerGradientStyle}
+              />
+            )}
         </div>
         <div className="px-4">
         <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
@@ -199,6 +204,7 @@ export default function AppearancePage() {
     const [headerColor, setHeaderColor] = useState<string | undefined>('');
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
     const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
+    const [showHeaderGradient, setShowHeaderGradient] = useState(true);
     const [profileBackgroundColor, setProfileBackgroundColor] = useState<string | undefined>('');
     const [profileBackgroundImageFile, setProfileBackgroundImageFile] = useState<File | null>(null);
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
@@ -219,6 +225,7 @@ export default function AppearancePage() {
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
+            setShowHeaderGradient(userProfile.showHeaderGradient ?? true);
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
@@ -264,6 +271,7 @@ export default function AppearancePage() {
                 socials: socials,
                 headerColor: headerColor,
                 headerImageUrl: newHeaderImageUrl,
+                showHeaderGradient: showHeaderGradient,
                 profileBackgroundColor: profileBackgroundColor,
                 profileBackgroundImageUrl: newProfileBackgroundImageUrl,
                 profileTitleFontColor: profileTitleFontColor,
@@ -436,7 +444,7 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
-                        <AccordionItem value="header-background">
+                         <AccordionItem value="header-background">
                             <AccordionTrigger className="text-sm font-medium">Latar Header</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
                                 <div className="grid gap-2">
@@ -477,6 +485,14 @@ export default function AppearancePage() {
                                             <Input id="header-color-picker" type="color" value={headerColor} onChange={e => setHeaderColor(e.target.value)} className="sr-only" />
                                         </Label>
                                     </div>
+                                </div>
+                                <div className="flex items-center space-x-2 pt-2">
+                                    <Switch
+                                        id="header-gradient"
+                                        checked={showHeaderGradient}
+                                        onCheckedChange={setShowHeaderGradient}
+                                    />
+                                    <Label htmlFor="header-gradient">Tampilkan Gradasi Header</Label>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -605,6 +621,7 @@ export default function AppearancePage() {
                                     socials={socials}
                                     headerColor={headerColor}
                                     headerImagePreview={headerImagePreview}
+                                    showHeaderGradient={showHeaderGradient}
                                     profileBackgroundColor={profileBackgroundColor}
                                     profileBackgroundImagePreview={profileBackgroundImagePreview}
                                     profileTitleFontColor={profileTitleFontColor}

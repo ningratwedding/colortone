@@ -53,6 +53,10 @@
             "type": "string",
             "description": "A solid hex color for the profile header background."
         },
+        "showHeaderGradient": {
+            "type": "boolean",
+            "description": "Whether to show the gradient overlay on the profile header."
+        },
         "profileBackgroundColor": {
             "type": "string",
             "description": "A solid hex color for the entire profile page background."
