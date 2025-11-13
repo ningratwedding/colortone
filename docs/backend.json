@@ -40,6 +40,19 @@
           "type": "string",
           "description": "AI hint for the user's avatar image."
         },
+        "headerImageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the user's custom profile header image."
+        },
+        "headerImageHint": {
+          "type": "string",
+          "description": "AI hint for the user's header image."
+        },
+        "headerColor": {
+            "type": "string",
+            "description": "A solid hex color for the profile header background."
+        },
         "socials": {
           "type": "object",
           "properties": {

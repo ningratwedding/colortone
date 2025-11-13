@@ -15,6 +15,7 @@ import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -62,7 +63,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
   return (
     <>
         {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -72,7 +73,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
             ))}
           </div>
         ) : products && products.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} hideCreator={true} />
             ))}
@@ -91,7 +92,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
   return (
      <>
         {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -101,7 +102,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
             ))}
           </div>
         ) : hasFeaturedProducts && products && products.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} affiliateId={user.id} />
             ))}
@@ -179,7 +180,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 <Skeleton className="h-5 w-64" />
             </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-48 w-full" />
@@ -200,14 +201,27 @@ export function ProfileContent({ slug }: { slug: string }) {
 
   return (
     <div className="container mx-auto px-4 pb-6">
-       <div className="relative h-48 md:h-64 rounded-b-lg overflow-hidden -mx-4">
-            <Image
-                src={`https://picsum.photos/seed/${profileUser.id}/1200/400`}
-                alt="Header background"
-                fill
-                className="object-cover"
-                data-ai-hint="header background"
-            />
+       <div
+        className="relative h-48 md:h-64 rounded-b-lg overflow-hidden -mx-4"
+        style={{ backgroundColor: profileUser.headerColor }}
+        >
+            {profileUser.headerImageUrl ? (
+                <Image
+                    src={profileUser.headerImageUrl}
+                    alt="Header background"
+                    fill
+                    className="object-cover"
+                    data-ai-hint={profileUser.headerImageHint}
+                />
+            ) : !profileUser.headerColor && (
+                 <Image
+                    src={`https://picsum.photos/seed/${profileUser.id}/1200/400`}
+                    alt="Header background"
+                    fill
+                    className="object-cover"
+                    data-ai-hint="header background"
+                />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
       <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">

@@ -12,6 +12,9 @@ export type UserProfile = {
   avatarUrl: string;
   avatarHint: string;
   bio?: string;
+  headerImageUrl?: string;
+  headerImageHint?: string;
+  headerColor?: string;
   socials?: {
     instagram?: string;
     facebook?: string;

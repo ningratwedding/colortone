@@ -8,11 +8,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -23,11 +23,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
-import { PartyPopper, Copy, Loader2, PlusCircle, Trash2, Globe } from 'lucide-react';
+import { PartyPopper, Loader2, PlusCircle, Trash2, Globe, Check } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -70,6 +71,19 @@ const socialIcons = {
 };
 type SocialPlatform = keyof typeof socialIcons;
 
+const headerColorOptions = [
+    { name: 'Abu-abu', value: '#6B7280' },
+    { name: 'Merah', value: '#EF4444' },
+    { name: 'Oranye', value: '#F97316' },
+    { name: 'Kuning', value: '#EAB308' },
+    { name: 'Hijau', value: '#22C55E' },
+    { name: 'Teal', value: '#14B8A6' },
+    { name: 'Biru', value: '#3B82F6' },
+    { name: 'Indigo', value: '#6366F1' },
+    { name: 'Ungu', value: '#8B5CF6' },
+    { name: 'Pink', value: '#EC4899' },
+];
+
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -92,14 +106,16 @@ export default function AccountSettingsPage() {
     const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [headerColor, setHeaderColor] = useState<string | undefined>('');
 
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
 
     // Dialog States
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSocialDialogOpen, setIsSocialDialogOpen] = useState(false);
     const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
     const [newSocialUsername, setNewSocialUsername] = useState('');
+    const [isColorDialogOpen, setIsColorDialogOpen] = useState(false);
     
     useEffect(() => {
         if (userProfile) {
@@ -109,16 +125,9 @@ export default function AccountSettingsPage() {
             setAvatarPreview(userProfile.avatarUrl);
             setBio(userProfile.bio || '');
             setSocials(userProfile.socials || {});
+            setHeaderColor(userProfile.headerColor || '');
         }
     }, [userProfile]);
-
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setAvatarFile(file);
-            setAvatarPreview(URL.createObjectURL(file));
-        }
-    };
 
     const handleSaveChanges = async () => {
         if (!userProfileRef || !userProfile || !user || !storage) return;
@@ -138,6 +147,7 @@ export default function AccountSettingsPage() {
                 avatarUrl: newAvatarUrl,
                 bio: bio,
                 socials: socials,
+                headerColor: headerColor,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -163,6 +173,15 @@ export default function AccountSettingsPage() {
         } finally {
             setIsSaving(false);
             setAvatarFile(null); // Clear the file state after saving
+            setIsColorDialogOpen(false); // Close color dialog on save
+        }
+    };
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
         }
     };
     
@@ -189,7 +208,7 @@ export default function AccountSettingsPage() {
     const handleAddSocial = () => {
         if (newSocialPlatform && newSocialUsername) {
         setSocials(prev => ({...prev, [newSocialPlatform]: newSocialUsername}));
-        setIsDialogOpen(false);
+        setIsSocialDialogOpen(false);
         setNewSocialPlatform('');
         setNewSocialUsername('');
         }
@@ -282,7 +301,7 @@ export default function AccountSettingsPage() {
                     <div className="grid gap-2">
                         <Label htmlFor="profilename">Nama Profil</Label>
                         <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} />
-                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda dan digunakan untuk slug URL Anda.</p>
+                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
                     </div>
                      <div className="grid gap-2">
                         <Label htmlFor="fullname">Nama Lengkap</Label>
@@ -297,9 +316,21 @@ export default function AccountSettingsPage() {
                         <Label htmlFor="phone">Nomor Telepon</Label>
                         <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="misal: 081234567890" />
                     </div>
-                    
-                    {showPublicProfileSettings && (
-                        <>
+                </CardContent>
+                <CardFooter>
+                     <Button onClick={handleSaveChanges} disabled={isSaving}>
+                        {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan Profil"}
+                    </Button>
+                </CardFooter>
+            </Card>
+
+             {showPublicProfileSettings && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Tampilan Profil Publik</CardTitle>
+                        <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-6">
                         <div className="grid gap-2">
                             <Label htmlFor="bio">Bio Profil Publik</Label>
                             <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
@@ -326,7 +357,7 @@ export default function AccountSettingsPage() {
                             ))}
                             </div>
 
-                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <Dialog open={isSocialDialogOpen} onOpenChange={setIsSocialDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button
                                 variant="outline"
@@ -369,15 +400,49 @@ export default function AccountSettingsPage() {
                             </DialogContent>
                             </Dialog>
                         </div>
-                        </>
-                    )}
-                </CardContent>
-                <CardHeader>
-                     <Button onClick={handleSaveChanges} disabled={isSaving}>
-                        {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan"}
-                    </Button>
-                </CardHeader>
-            </Card>
+                        <div className="grid gap-2">
+                            <Label>Latar Belakang Header</Label>
+                             <Dialog open={isColorDialogOpen} onOpenChange={setIsColorDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline">Ubah Latar Header</Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Pilih Warna Latar Header</DialogTitle>
+                                        <DialogDescription>Pilih warna solid untuk header profil Anda.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid grid-cols-5 gap-3 py-4">
+                                        {headerColorOptions.map((color) => (
+                                            <button 
+                                                key={color.value}
+                                                type="button"
+                                                onClick={() => setHeaderColor(color.value)}
+                                                className={cn("h-12 w-12 rounded-full border-2 transition-transform hover:scale-110", headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')}
+                                                style={{ backgroundColor: color.value }}
+                                                aria-label={`Pilih warna ${color.name}`}
+                                            >
+                                                {headerColor === color.value && <Check className="h-6 w-6 text-white" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <DialogFooter>
+                                        <Button variant="outline" onClick={() => setIsColorDialogOpen(false)}>Batal</Button>
+                                        <Button onClick={handleSaveChanges} disabled={isSaving}>
+                                            {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Pilihan"}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                         <Button onClick={handleSaveChanges} disabled={isSaving}>
+                            {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Tampilan Profil"}
+                        </Button>
+                    </CardFooter>
+                </Card>
+             )}
+
              <Card>
                 <CardHeader>
                     <CardTitle>Program Afiliasi</CardTitle>
@@ -405,5 +470,3 @@ export default function AccountSettingsPage() {
         </div>
     )
 }
-
-    
