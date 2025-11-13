@@ -63,7 +63,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
   return (
     <>
         {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -73,7 +73,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
             ))}
           </div>
         ) : products && products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} hideCreator={true} />
             ))}
@@ -92,7 +92,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
   return (
      <>
         {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -102,7 +102,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
             ))}
           </div>
         ) : hasFeaturedProducts && products && products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} affiliateId={user.id} />
             ))}
@@ -190,7 +190,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 <Skeleton className="h-5 w-64" />
             </div>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-48 w-full" />
@@ -210,9 +210,9 @@ export function ProfileContent({ slug }: { slug: string }) {
   const displayName = profileUser.fullName || profileUser.name;
 
   return (
-    <div className="container mx-auto px-4 pb-6">
+    <div className="pb-6">
        <div
-        className="relative h-48 md:h-64 rounded-b-lg overflow-hidden -mx-4"
+        className="relative h-48 md:h-64 rounded-b-lg overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor }}
         >
             {profileUser.headerImageUrl ? (
@@ -234,33 +234,36 @@ export function ProfileContent({ slug }: { slug: string }) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
-      <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
-        <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
-          <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
-          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
-          <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{profileUser.bio}</p>
-          {profileUser.socials && (
-             <div className="flex justify-center items-center gap-4 mt-3">
-              {Object.entries(profileUser.socials).map(([platform, username]) => (
-                <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
-                  {socialIcons[platform as SocialPlatform]}
-                  <span className="sr-only">{platform}</span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </header>
+      
+      <div className="container mx-auto px-4">
+        <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
+          <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background ring-2 ring-primary">
+            <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
+            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
+            <p className="text-muted-foreground mt-1 max-w-2xl mx-auto">{profileUser.bio}</p>
+            {profileUser.socials && (
+              <div className="flex justify-center items-center gap-4 mt-3">
+                {Object.entries(profileUser.socials).map(([platform, username]) => (
+                  <Link key={platform} href={platform === 'website' ? username as string : `https://www.${platform}.com/${username}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                    {socialIcons[platform as SocialPlatform]}
+                    <span className="sr-only">{platform}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </header>
 
-      <Separator className="mb-8" />
+        <Separator className="mb-8" />
 
-      <main>
-        {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
-        {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
-      </main>
+        <main>
+          {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
+          {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
+        </main>
+      </div>
     </div>
   );
 }
