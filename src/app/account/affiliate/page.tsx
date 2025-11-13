@@ -101,12 +101,12 @@ export default function AffiliatePage() {
 
   return (
     <div className="space-y-4">
-        <div className="flex justify-between items-start">
-            <div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex-shrink-0">
                 <h1 className="font-headline text-2xl font-bold">Dasbor Afiliasi</h1>
                 <p className="text-muted-foreground text-sm">Kelola komisi dan produk unggulan Anda.</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 {pageLoading ? (
                     <Skeleton className="h-9 w-36" />
                 ) : userProfile?.slug && (
