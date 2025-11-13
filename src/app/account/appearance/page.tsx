@@ -21,7 +21,7 @@ import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -141,7 +141,7 @@ function ProfilePreview({
                 />
             )}
             <div 
-                className={cn("absolute inset-0", !profileBackgroundColor && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
+                className={cn("absolute inset-0", !profileBackgroundColor && !profileBackgroundImagePreview && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
                 style={headerGradientStyle}
             />
         </div>
@@ -454,7 +454,7 @@ export default function AppearancePage() {
                                 </div>
                                  <div className="grid gap-2">
                                     <Label>Warna Latar (pengganti jika tidak ada gambar)</Label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {colorOptions.map((color) => (
                                             <button 
                                                 key={`header-${color.value}`}
@@ -472,6 +472,10 @@ export default function AppearancePage() {
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
+                                        <Label htmlFor="header-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: headerColor && !colorOptions.some(c => c.value === headerColor) ? headerColor : 'transparent' }}>
+                                            <Palette className="h-4 w-4 text-muted-foreground" />
+                                            <Input id="header-color-picker" type="color" value={headerColor} onChange={e => setHeaderColor(e.target.value)} className="sr-only" />
+                                        </Label>
                                     </div>
                                 </div>
                             </AccordionContent>
@@ -494,7 +498,7 @@ export default function AppearancePage() {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label>Warna Latar Halaman (pengganti jika tidak ada gambar)</Label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {colorOptions.map((color) => (
                                             <button 
                                                 key={`page-${color.value}`}
@@ -512,6 +516,10 @@ export default function AppearancePage() {
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
+                                        <Label htmlFor="page-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBackgroundColor && !colorOptions.some(c => c.value === profileBackgroundColor) ? profileBackgroundColor : 'transparent' }}>
+                                            <Palette className="h-4 w-4 text-muted-foreground" />
+                                            <Input id="page-color-picker" type="color" value={profileBackgroundColor} onChange={e => setProfileBackgroundColor(e.target.value)} className="sr-only" />
+                                        </Label>
                                     </div>
                                 </div>
                             </AccordionContent>
@@ -521,7 +529,7 @@ export default function AppearancePage() {
                             <AccordionContent className="pt-4 space-y-4">
                                 <div>
                                     <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Font Nama</Label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {colorOptions.map((color) => (
                                             <button 
                                                 key={`title-font-${color.value}`}
@@ -539,11 +547,15 @@ export default function AppearancePage() {
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
+                                        <Label htmlFor="title-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileTitleFontColor && !colorOptions.some(c => c.value === profileTitleFontColor) ? profileTitleFontColor : 'transparent' }}>
+                                            <Palette className="h-4 w-4 text-muted-foreground" />
+                                            <Input id="title-font-color-picker" type="color" value={profileTitleFontColor} onChange={e => setProfileTitleFontColor(e.target.value)} className="sr-only" />
+                                        </Label>
                                     </div>
                                 </div>
                                 <div>
                                     <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Font Bio</Label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {colorOptions.map((color) => (
                                             <button 
                                                 key={`body-font-${color.value}`}
@@ -561,6 +573,10 @@ export default function AppearancePage() {
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
+                                         <Label htmlFor="body-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBodyFontColor && !colorOptions.some(c => c.value === profileBodyFontColor) ? profileBodyFontColor : 'transparent' }}>
+                                            <Palette className="h-4 w-4 text-muted-foreground" />
+                                            <Input id="body-font-color-picker" type="color" value={profileBodyFontColor} onChange={e => setProfileBodyFontColor(e.target.value)} className="sr-only" />
+                                        </Label>
                                     </div>
                                 </div>
                             </AccordionContent>
