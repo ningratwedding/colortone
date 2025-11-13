@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -25,7 +26,7 @@ import {
 import { useEffect, useState, useMemo } from 'react';
 import { useFirestore } from '@/firebase/provider';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, where, getDocs, collectionGroup, limit as firestoreLimit } from 'firebase/firestore';
+import { collection, query, where, getDocs, collectionGroup, documentId } from 'firebase/firestore';
 import type { Order, Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
@@ -131,7 +132,7 @@ export default function DashboardPage() {
         if (fetchedRecentOrders.length > 0) {
           const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))];
           if(customerIds.length > 0) {
-            const customersQuery = query(collection(firestore, 'users'), where('__name__', 'in', customerIds.map(id => `users/${id}`)));
+            const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', customerIds));
             const customersSnapshot = await getDocs(customersQuery);
             const customersData: Record<string, UserProfile> = {};
             customersSnapshot.forEach(doc => {
@@ -229,28 +230,26 @@ export default function DashboardPage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-      <div className="lg:col-span-3 space-y-4">
-        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary text-primary-foreground">
-            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary-foreground/10" />
-            <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-primary-foreground/5" />
+      <div className="lg:col-span-3 space-y-4 order-last lg:order-first">
+        <Card>
             <div className="relative z-10 flex flex-col">
             <CardHeader>
                 <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-primary-foreground/80">
+                <CardTitle className="text-sm font-medium">
                     Total Saldo
                 </CardTitle>
-                <DollarSign className="h-4 w-4 text-primary-foreground/80" />
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </div>
             </CardHeader>
             <CardContent className="flex-grow">
-                {pageLoading ? <Skeleton className="h-7 w-32 bg-white/20" /> : <div className="text-xl font-bold">{formattedBalance}</div>}
-                <p className="text-xs text-primary-foreground/80">
+                {pageLoading ? <Skeleton className="h-7 w-32" /> : <div className="text-2xl font-bold">{formattedBalance}</div>}
+                <p className="text-xs text-muted-foreground">
                 Saldo yang tersedia untuk ditarik.
                 </p>
             </CardContent>
             <CardFooter>
                 <Button 
-                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                    className="w-full"
                     onClick={handleWithdraw}
                     disabled={pageLoading}
                 >
@@ -463,3 +462,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
