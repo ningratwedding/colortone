@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function Home() {
   const vision =
-    "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan—sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
+    "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan, sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
 
   const missions = [
     'Membantu kreator menemukan berbagai cara untuk mengembangkan nilai dan pendapatan dari karya mereka.',
@@ -19,7 +19,7 @@ export default function Home() {
   ];
 
   const commitment =
-    'Kami berkomitmen hadir sebagai mitra perjalanan kreator—menyediakan dukungan, teknologi, dan ruang yang memastikan setiap langkah mereka selalu memiliki arah, makna, dan harapan untuk terus maju.';
+    'Kami berkomitmen hadir sebagai mitra perjalanan kreator, menyediakan dukungan, teknologi, dan ruang yang memastikan setiap langkah mereka selalu memiliki arah, makna, dan harapan untuk terus maju.';
 
   return (
     <div className="bg-background">
