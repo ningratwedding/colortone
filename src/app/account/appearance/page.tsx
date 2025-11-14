@@ -3,6 +3,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -588,21 +589,6 @@ export default function AppearancePage() {
     if (!userProfile) {
         return <div>Profil tidak ditemukan.</div>
     }
-    
-    const showPublicProfileSettings = userProfile.role === 'kreator' || userProfile.role === 'affiliator';
-
-    if (!showPublicProfileSettings) {
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Tampilan Profil Publik</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">Pengaturan ini hanya tersedia untuk Kreator dan Afiliator.</p>
-                </CardContent>
-            </Card>
-        )
-    }
 
     return (
         <div className="grid lg:grid-cols-2 gap-6">
@@ -1000,7 +986,7 @@ export default function AppearancePage() {
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Pil</Label>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
-                                                    <button key={`social-bg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, backgroundColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.backgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{ backgroundColor: color.value || 'transparent' }}>
+                                                    <button key={`social-bg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, backgroundColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.backgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: color.value || 'transparent'}}>
                                                         {socialsSettings?.backgroundColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
@@ -1024,6 +1010,7 @@ export default function AppearancePage() {
                                 )}
                             </AccordionContent>
                         </AccordionItem>
+                        { userProfile.role === 'affiliator' && (
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
@@ -1058,6 +1045,8 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        )}
+                        { userProfile.role === 'affiliator' && (
                         <AccordionItem value="category-buttons">
                              <AccordionTrigger className="text-sm font-medium">Pengaturan Tombol Kategori</AccordionTrigger>
                              <AccordionContent className="pt-4 space-y-4">
@@ -1115,6 +1104,7 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        )}
                     </Accordion>
                 </CardContent>
                 <CardFooter>

@@ -3,6 +3,7 @@
 
 
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -201,11 +202,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           setProfileUser(null);
         } else {
           const user = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
-          if (user.role === 'kreator' || user.role === 'affiliator') {
-            setProfileUser(user);
-          } else {
-             setProfileUser(null);
-          }
+          setProfileUser(user);
         }
       } catch (e) {
         console.error("Error fetching user profile:", e);
@@ -448,12 +445,18 @@ export function ProfileContent({ slug }: { slug: string }) {
             )}
           </div>
         </header>
+        
+        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-8" /> }
 
-        <Separator className="mb-8" />
 
         <main>
           {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
           {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
+          {profileUser.role === 'pembeli' && (!profileUser.bio && !profileUser.socials) && (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Pengguna ini belum menambahkan bio atau tautan sosial.</p>
+            </div>
+          )}
         </main>
       </div>
     </div>
