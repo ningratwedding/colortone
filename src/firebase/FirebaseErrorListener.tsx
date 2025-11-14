@@ -16,9 +16,10 @@ export function FirebaseErrorListener() {
 
   useEffect(() => {
     const handlePermissionError = (error: FirestorePermissionError) => {
+      // Use a simpler console.error message to avoid issues in certain environments.
       console.error(
         'Firestore Security Rules Error:',
-        JSON.stringify(error.context, null, 2)
+        error.message
       );
 
       // In a real app, you might want to use a more user-friendly
