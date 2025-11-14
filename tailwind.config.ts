@@ -21,8 +21,8 @@ export default {
         '5xl': '3rem',
       },
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Jost', 'sans-serif'],
+        headline: ['Jost', 'sans-serif'],
         code: ['monospace'],
         poppins: ['Poppins', 'sans-serif'],
         lora: ['Lora', 'serif'],
