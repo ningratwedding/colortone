@@ -29,6 +29,10 @@ export default {
         oswald: ['Oswald', 'sans-serif'],
         raleway: ['Raleway', 'sans-serif'],
         playfair: ['"Playfair Display"', 'serif'],
+        roboto: ['Roboto', 'sans-serif'],
+        lato: ['Lato', 'sans-serif'],
+        merriweather: ['Merriweather', 'serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

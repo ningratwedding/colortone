@@ -97,6 +97,10 @@ const fontOptions = [
     { name: 'Oswald', value: 'oswald' },
     { name: 'Raleway', value: 'raleway' },
     { name: 'Playfair Display', value: 'playfair' },
+    { name: 'Roboto', value: 'roboto' },
+    { name: 'Lato', value: 'lato' },
+    { name: 'Merriweather', value: 'merriweather' },
+    { name: 'Montserrat', value: 'montserrat' },
 ]
 
 
@@ -214,7 +218,11 @@ function ProfilePreview({
                 profileTitleFont === 'lora' && 'font-lora',
                 profileTitleFont === 'oswald' && 'font-oswald',
                 profileTitleFont === 'raleway' && 'font-raleway',
-                profileTitleFont === 'playfair' && 'font-playfair'
+                profileTitleFont === 'playfair' && 'font-playfair',
+                profileTitleFont === 'roboto' && 'font-roboto',
+                profileTitleFont === 'lato' && 'font-lato',
+                profileTitleFont === 'merriweather' && 'font-merriweather',
+                profileTitleFont === 'montserrat' && 'font-montserrat'
               )} 
               style={{ color: profileTitleFontColor || undefined }}
             >
@@ -227,7 +235,11 @@ function ProfilePreview({
                 profileBodyFont === 'lora' && 'font-lora',
                 profileBodyFont === 'oswald' && 'font-oswald',
                 profileBodyFont === 'raleway' && 'font-raleway',
-                profileBodyFont === 'playfair' && 'font-playfair'
+                profileBodyFont === 'playfair' && 'font-playfair',
+                profileBodyFont === 'roboto' && 'font-roboto',
+                profileBodyFont === 'lato' && 'font-lato',
+                profileBodyFont === 'merriweather' && 'font-merriweather',
+                profileBodyFont === 'montserrat' && 'font-montserrat'
               )} 
               style={{ color: profileBodyFontColor || undefined }}
             >
@@ -239,6 +251,7 @@ function ProfilePreview({
                 socialsSettings?.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
                 {Object.entries(socials).map(([platform, username]) => {
+                  if (!username) return null;
                   const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings?.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
@@ -357,13 +370,13 @@ export default function AppearancePage() {
         if (!userProfileRef || !user || !storage) return;
         setIsSaving(true);
         try {
-            let newHeaderImageUrl: string | null = userProfile?.headerImageUrl || null;
+            let newHeaderImageUrl = userProfile?.headerImageUrl || null;
             if (headerImageFile) {
                 toast({ title: 'Mengunggah gambar header...' });
                 newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
             }
             
-            let newProfileBackgroundImageUrl: string | null = userProfile?.profileBackgroundImageUrl || null;
+            let newProfileBackgroundImageUrl = userProfile?.profileBackgroundImageUrl || null;
             if (profileBackgroundImageFile) {
                 toast({ title: 'Mengunggah gambar latar...' });
                 newProfileBackgroundImageUrl = await uploadFile(storage, profileBackgroundImageFile, user.uid, 'profile_backgrounds');
@@ -662,7 +675,11 @@ export default function AppearancePage() {
                                                   font.value === 'lora' && 'font-lora',
                                                   font.value === 'oswald' && 'font-oswald',
                                                   font.value === 'raleway' && 'font-raleway',
-                                                  font.value === 'playfair' && 'font-playfair'
+                                                  font.value === 'playfair' && 'font-playfair',
+                                                  font.value === 'roboto' && 'font-roboto',
+                                                  font.value === 'lato' && 'font-lato',
+                                                  font.value === 'merriweather' && 'font-merriweather',
+                                                  font.value === 'montserrat' && 'font-montserrat'
                                                 )}>{font.name}</SelectItem>
                                             ))}
                                         </SelectContent>
@@ -679,7 +696,11 @@ export default function AppearancePage() {
                                                   font.value === 'lora' && 'font-lora',
                                                   font.value === 'oswald' && 'font-oswald',
                                                   font.value === 'raleway' && 'font-raleway',
-                                                  font.value === 'playfair' && 'font-playfair'
+                                                  font.value === 'playfair' && 'font-playfair',
+                                                  font.value === 'roboto' && 'font-roboto',
+                                                  font.value === 'lato' && 'font-lato',
+                                                  font.value === 'merriweather' && 'font-merriweather',
+                                                  font.value === 'montserrat' && 'font-montserrat'
                                                 )}>{font.name}</SelectItem>
                                             ))}
                                         </SelectContent>

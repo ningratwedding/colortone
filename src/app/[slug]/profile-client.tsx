@@ -310,7 +310,11 @@ export function ProfileContent({ slug }: { slug: string }) {
                 profileUser.profileTitleFont === 'lora' && 'font-lora',
                 profileUser.profileTitleFont === 'oswald' && 'font-oswald',
                 profileUser.profileTitleFont === 'raleway' && 'font-raleway',
-                profileUser.profileTitleFont === 'playfair' && 'font-playfair'
+                profileUser.profileTitleFont === 'playfair' && 'font-playfair',
+                profileUser.profileTitleFont === 'roboto' && 'font-roboto',
+                profileUser.profileTitleFont === 'lato' && 'font-lato',
+                profileUser.profileTitleFont === 'merriweather' && 'font-merriweather',
+                profileUser.profileTitleFont === 'montserrat' && 'font-montserrat'
               )} 
               style={{ color: profileUser.profileTitleFontColor || undefined }}
             >
@@ -323,7 +327,11 @@ export function ProfileContent({ slug }: { slug: string }) {
                 profileUser.profileBodyFont === 'lora' && 'font-lora',
                 profileUser.profileBodyFont === 'oswald' && 'font-oswald',
                 profileUser.profileBodyFont === 'raleway' && 'font-raleway',
-                profileUser.profileBodyFont === 'playfair' && 'font-playfair'
+                profileUser.profileBodyFont === 'playfair' && 'font-playfair',
+                profileUser.profileBodyFont === 'roboto' && 'font-roboto',
+                profileUser.profileBodyFont === 'lato' && 'font-lato',
+                profileUser.profileBodyFont === 'merriweather' && 'font-merriweather',
+                profileUser.profileBodyFont === 'montserrat' && 'font-montserrat'
               )} 
               style={{ color: profileUser.profileBodyFontColor || undefined }}
             >
