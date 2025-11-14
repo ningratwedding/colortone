@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   SlidersHorizontal,
   PartyPopper,
+  User,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
@@ -101,6 +102,12 @@ export function SiteHeader() {
           {user && userProfile ? (
             <>
               <DropdownMenuGroup>
+                 <DropdownMenuItem asChild>
+                    <Link href={`/${userProfile.slug}`}>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Lihat Profil</span>
+                    </Link>
+                </DropdownMenuItem>
                 {userProfile.role === 'admin' && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">
