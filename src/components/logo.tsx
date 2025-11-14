@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="500" zoomAndPan="magnify" viewBox="0 0 375 112.499997" height="150" preserveAspectRatio="xMidYMid meet" version="1.0" className={cn('h-6 w-auto', className)} {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="95" zoomAndPan="magnify" viewBox="0 0 95 112.499997" height="150" preserveAspectRatio="xMidYMid meet" version="1.0" className={cn('h-6 w-auto', className)} {...props}>
         <defs>
             <g/>
             <clipPath id="cf31d39e23">
@@ -11,12 +11,6 @@ export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
             </clipPath>
             <clipPath id="54bc66cc24">
             <path d="M 3.027344 28 L 88 28 L 88 110.585938 L 3.027344 110.585938 Z M 3.027344 28 " clipRule="nonzero"/>
-            </clipPath>
-            <clipPath id="dc561d5843">
-            <path d="M 94 20 L 374.167969 20 L 374.167969 112.003906 L 94 112.003906 Z M 94 20 " clipRule="nonzero"/>
-            </clipPath>
-            <clipPath id="869fbab185">
-            <rect x="0" width="281" y="0" height="93"/>
             </clipPath>
         </defs>
         <g clipPath="url(#cf31d39e23)">
@@ -26,19 +20,6 @@ export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
             <path fill="currentColor" d="M 87.714844 102.328125 L 87.714844 110.378906 L 2.976562 110.378906 L 2.976562 28.21875 L 22.328125 28.21875 L 22.328125 36.269531 L 11.027344 36.269531 L 11.027344 102.328125 Z M 87.714844 102.328125 " fillOpacity="1" fillRule="nonzero"/>
         </g>
         <path fill="currentColor" d="M 87.714844 28.21875 L 87.714844 87.429688 L 57.488281 87.429688 L 38.511719 69.714844 L 38.511719 85.066406 L 30.460938 85.066406 L 30.460938 56.429688 L 59.074219 56.429688 L 59.074219 64.480469 L 44.6875 64.480469 L 60.65625 79.378906 L 79.660156 79.378906 L 79.660156 36.269531 L 37.707031 36.269531 L 37.707031 28.21875 Z M 87.714844 28.21875 " fillOpacity="1" fillRule="nonzero"/>
-        <g clipPath="url(#dc561d5843)">
-            <g transform="matrix(1, 0, 0, 1, 94, 20)">
-            <g clipPath="url(#869fbab185)">
-                <g fill="currentColor" fillOpacity="1">
-                <g transform="translate(0.890415, 74.704572)">
-                    <g>
-                    <text x="5" y="0" fontFamily="Poppins" fontWeight="bold" fontSize="30" fill="currentColor">LinkPro</text>
-                    </g>
-                </g>
-                </g>
-            </g>
-            </g>
-        </g>
     </svg>
   );
 }
