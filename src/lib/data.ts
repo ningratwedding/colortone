@@ -12,12 +12,12 @@ export type UserProfile = {
   avatarUrl: string;
   avatarHint: string;
   bio?: string;
-  headerImageUrl?: string;
+  headerImageUrl?: string | null;
   headerImageHint?: string;
   headerColor?: string;
   showHeaderGradient?: boolean;
   profileBackgroundColor?: string;
-  profileBackgroundImageUrl?: string;
+  profileBackgroundImageUrl?: string | null;
   profileBackgroundImageHint?: string;
   profileTitleFontColor?: string;
   profileBodyFontColor?: string;
@@ -37,6 +37,7 @@ export type UserProfile = {
     borderRadius?: number;
     fontColor?: string;
     pillSize?: 'sm' | 'md' | 'lg';
+    pillWidth?: number;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];
@@ -128,3 +129,4 @@ export type ImagePlaceholder = {
     imageHint: string;
     description: string;
 }
+

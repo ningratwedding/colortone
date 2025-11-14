@@ -204,6 +204,7 @@ function ProfilePreview({
                 {Object.entries(socials).map(([platform, username]) => {
                   const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
+                  const pillWidth = socialsSettings?.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
 
                   return (
                     <Link 
@@ -216,6 +217,7 @@ function ProfilePreview({
                         backgroundColor: rgbaBg,
                         color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),
                         borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
+                        minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                       }}
                     >
                       {socialIcons[platform as SocialPlatform]}
@@ -261,7 +263,7 @@ export default function AppearancePage() {
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
-    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md' });
+    const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -287,6 +289,7 @@ export default function AppearancePage() {
                 backgroundOpacity: 1,
                 borderRadius: 9999,
                 pillSize: 'md',
+                pillWidth: 140,
                 ...userProfile.socialsSettings
             });
         }
@@ -708,6 +711,21 @@ export default function AppearancePage() {
                                                 <div className="flex items-center space-x-2"><RadioGroupItem value="lg" id="lg" /><Label htmlFor="lg">Besar</Label></div>
                                             </RadioGroup>
                                         </div>
+                                         {socialsSettings.layout === 'horizontal' && (
+                                            <div>
+                                                <Label className="text-xs font-normal text-muted-foreground mb-2 block">Lebar Minimum Pil</Label>
+                                                <div className="flex items-center gap-4">
+                                                    <Slider
+                                                        value={[ socialsSettings.pillWidth ?? 140 ]}
+                                                        onValueChange={(value) => setSocialsSettings(prev => ({...prev, pillWidth: value[0]}))}
+                                                        min={80}
+                                                        max={300}
+                                                        step={10}
+                                                    />
+                                                    <span className="text-xs w-12 text-right">{socialsSettings.pillWidth ?? 140}px</span>
+                                                </div>
+                                            </div>
+                                        )}
                                         <div>
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tingkat Bulat (Border Radius)</Label>
                                             <div className="flex items-center gap-4">
@@ -799,3 +817,4 @@ export default function AppearancePage() {
         </div>
     )
 }
+

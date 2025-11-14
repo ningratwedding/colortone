@@ -313,6 +313,8 @@ export function ProfileContent({ slug }: { slug: string }) {
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
                   const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings.style === 'pill' ? socialsSettings.borderRadius : undefined;
+                  const pillWidth = socialsSettings.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
+
                   return (
                   <Link 
                     key={platform} 
@@ -324,6 +326,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                       backgroundColor: rgbaBg,
                       color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
                       borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
+                      minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                     }}
                   >
                     {socialIcons[platform as SocialPlatform]}
@@ -347,3 +350,4 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
+

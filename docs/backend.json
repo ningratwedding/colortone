@@ -120,6 +120,10 @@
                 "pillSize": {
                   "type": "string",
                   "enum": ["sm", "md", "lg"]
+                },
+                "pillWidth": {
+                  "type": "number",
+                  "description": "Minimum width of the pill in pixels (for horizontal layout)."
                 }
             }
         },
@@ -443,3 +447,4 @@
     }
   }
 }
+
