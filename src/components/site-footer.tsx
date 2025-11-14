@@ -18,7 +18,7 @@ export function SiteFooter() {
                 </div>
                 <div className="text-center text-sm text-muted-foreground mt-2">
                     <p>
-                        &copy; {new Date().getFullYear()} {siteConfig.name}. Semua hak dilindungi undang-undang.
+                        &copy; {new Date().getFullYear()} {siteConfig.name}.
                     </p>
                 </div>
             </div>
