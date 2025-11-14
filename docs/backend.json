@@ -145,6 +145,22 @@
             "items": { "type": "string" },
             "description": "An array of product IDs that the affiliate chooses to feature on their public profile."
         },
+        "affiliateProductCategories": {
+            "type": "array",
+            "description": "An array of custom categories created by the affiliate to group their featured products.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "productIds": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    }
+                },
+                "required": ["id", "name", "productIds"]
+            }
+        },
         "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -455,6 +471,3 @@
     }
   }
 }
-
-
-    

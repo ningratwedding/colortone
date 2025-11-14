@@ -17,6 +17,7 @@ import { ProductCard } from '@/components/product-card';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { hexToRgba } from '@/lib/hex-to-rgba';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -97,30 +98,59 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
 
 function AffiliateProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
+  const categories = user.affiliateProductCategories || [];
+
+  if (loading) {
+    return (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!hasFeaturedProducts || !products || products.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <p>Afiliator ini belum memilih produk unggulan.</p>
+      </div>
+    );
+  }
+
+  const allCategory: (typeof categories)[0] = { id: 'all', name: 'Semua Produk', productIds: user.featuredProductIds || [] };
+  const displayCategories = [allCategory, ...categories];
+
   return (
-     <>
-        {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : hasFeaturedProducts && products && products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} affiliateId={user.id} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Afiliator ini belum memilih produk unggulan.</p>
-          </div>
-        )}
-      </>
+    <Tabs defaultValue="all" className="w-full">
+      <TabsList>
+        {displayCategories.map(cat => (
+          <TabsTrigger key={cat.id} value={cat.id}>{cat.name}</TabsTrigger>
+        ))}
+      </TabsList>
+      {displayCategories.map(cat => {
+        const categoryProducts = products.filter(p => cat.productIds.includes(p.id));
+        return (
+          <TabsContent key={cat.id} value={cat.id}>
+             {categoryProducts.length > 0 ? (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
+                  {categoryProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} affiliateId={user.id} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p>Tidak ada produk dalam kategori ini.</p>
+                </div>
+              )}
+          </TabsContent>
+        )
+      })}
+    </Tabs>
   );
 }
 
@@ -383,6 +413,3 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
-
-
-    

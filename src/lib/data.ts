@@ -1,6 +1,11 @@
 
-
 import type { Timestamp } from 'firebase/firestore';
+
+export type AffiliateProductCategory = {
+  id: string;
+  name: string;
+  productIds: string[];
+};
 
 export type UserProfile = {
   id: string;
@@ -43,6 +48,7 @@ export type UserProfile = {
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];
+  affiliateProductCategories?: AffiliateProductCategory[];
   createdAt: Timestamp | { seconds: number, nanoseconds: number };
   bankName?: string;
   bankCode?: string;
@@ -131,5 +137,3 @@ export type ImagePlaceholder = {
     imageHint: string;
     description: string;
 }
-
-    
