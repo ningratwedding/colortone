@@ -13,6 +13,8 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Button } from '@/components/ui/button';
 
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
@@ -73,21 +75,18 @@ export default function AccountLayout({
       <div className="container mx-auto px-4 py-6">
         <div className="w-full">
           {/* Mobile Navigation */}
-          <div className="md:hidden mb-6 border-b">
-            <nav className="flex -mb-px overflow-x-auto">
-              {menuItems.map(({ href, label, exact }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    'py-3 px-4 text-sm font-medium whitespace-nowrap text-muted-foreground border-b-2 border-transparent',
-                    isLinkActive(href, exact) && 'text-primary border-primary'
-                  )}
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
+          <div className="md:hidden mb-6">
+            <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
+                <CarouselContent className="-ml-2">
+                    {menuItems.map(({ href, label, exact }) => (
+                        <CarouselItem key={href} className="basis-auto pl-2">
+                            <Button asChild variant={isLinkActive(href, exact) ? 'default' : 'outline'} className="rounded-full">
+                                <Link href={href}>{label}</Link>
+                            </Button>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
           </div>
         </div>
 
