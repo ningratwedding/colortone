@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -20,6 +21,10 @@ const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
   { href: '/account/settings', label: 'Pengaturan Akun', icon: Settings },
   { href: '/account/appearance', label: 'Tampilan Profil', icon: Palette },
+];
+
+const creatorMenuItems = [
+    { href: '/creator/dashboard', label: 'Dasbor Kreator', icon: LayoutGrid },
 ];
 
 const affiliateMenuItems = [
@@ -44,7 +49,14 @@ export default function AccountLayout({
 
   const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
 
-  const menuItems = userProfile?.role === 'affiliator' ? [...baseMenuItems, ...affiliateMenuItems] : baseMenuItems;
+  let menuItems = [...baseMenuItems];
+  if (userProfile?.role === 'kreator') {
+    menuItems.push(...creatorMenuItems);
+  }
+  if (userProfile?.role === 'affiliator') {
+    menuItems.push(...affiliateMenuItems);
+  }
+
 
   const getPageTitle = () => {
     // Iterate in reverse to match more specific paths first, e.g., /account/affiliate/products before /account/affiliate
@@ -108,6 +120,25 @@ export default function AccountLayout({
                 </Link>
               ))}
 
+              {userProfile?.role === 'kreator' && (
+                <>
+                    <h2 className="text-lg font-bold font-headline mt-4 mb-2 px-3">Kreator</h2>
+                    {creatorMenuItems.map(({ href, label, icon: Icon, exact }) => (
+                         <Link
+                            key={href}
+                            href={href}
+                            className={cn(
+                                'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+                                isLinkActive(href, exact) && 'bg-muted text-primary font-semibold'
+                            )}
+                            >
+                            <Icon className="h-4 w-4" />
+                            {label}
+                        </Link>
+                    ))}
+                </>
+              )}
+
               {userProfile?.role === 'affiliator' && (
                 <>
                     <h2 className="text-lg font-bold font-headline mt-4 mb-2 px-3">Afiliasi</h2>
@@ -135,3 +166,5 @@ export default function AccountLayout({
     </>
   );
 }
+
+    

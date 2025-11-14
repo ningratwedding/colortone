@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, updateDoc, collection, query, where, documentId } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, documentId, limit } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -200,7 +200,10 @@ function ProfilePreview({
     const allCategory = { id: 'all', name: 'Semua Produk', productIds: profile.featuredProductIds || [] };
     const displayCategories = [allCategory, ...categories];
     
-    const activeProducts = products?.filter(p => displayCategories.find(c => c.id === activeCategory)?.productIds.includes(p.id));
+    let activeProducts = products;
+    if (profile.role === 'affiliator') {
+        activeProducts = products?.filter(p => displayCategories.find(c => c.id === activeCategory)?.productIds.includes(p.id));
+    }
 
 
   return (
@@ -335,6 +338,22 @@ function ProfilePreview({
             
             { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-4" /> }
 
+            {profile.role === 'kreator' && (
+                <div className="grid grid-cols-2 gap-2">
+                    {activeProducts ? activeProducts.map(product => (
+                      <ProductCard key={product.id} product={product} settings={productCardSettings} />
+                    )) : (
+                        Array.from({ length: 2 }).map((_, i) => (
+                        <div key={i} className="space-y-2">
+                            <Skeleton className="h-24 w-full" />
+                            <Skeleton className="h-3 w-3/4" />
+                            <Skeleton className="h-3 w-1/2" />
+                        </div>
+                        ))
+                    )}
+                </div>
+            )}
+
             {profile.role === 'affiliator' && profile.featuredProductIds && profile.featuredProductIds.length > 0 && (
               <div className="w-full space-y-4">
                 <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
@@ -370,7 +389,7 @@ function ProfilePreview({
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
-                    {Array.from({ length: 4 }).map((_, i) => (
+                    {Array.from({ length: 2 }).map((_, i) => (
                       <div key={i} className="space-y-2">
                         <Skeleton className="h-24 w-full" />
                         <Skeleton className="h-3 w-3/4" />
@@ -405,9 +424,18 @@ export default function AppearancePage() {
 
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
-     const productsQuery = useMemo(() => {
-        if (!firestore || !userProfile || userProfile.role !== 'affiliator' || !userProfile.featuredProductIds || userProfile.featuredProductIds.length === 0) return null;
-        return query(collection(firestore, "products"), where(documentId(), 'in', userProfile.featuredProductIds.slice(0, 30)));
+    const productsQuery = useMemo(() => {
+        if (!firestore || !userProfile) return null;
+
+        if (userProfile.role === 'kreator') {
+            return query(collection(firestore, "products"), where('creatorId', '==', userProfile.id), limit(4));
+        }
+
+        if (userProfile.role === 'affiliator' && userProfile.featuredProductIds && userProfile.featuredProductIds.length > 0) {
+            return query(collection(firestore, "products"), where(documentId(), 'in', userProfile.featuredProductIds.slice(0, 30)));
+        }
+
+        return null;
     }, [firestore, userProfile]);
 
     const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
@@ -1065,7 +1093,7 @@ export default function AppearancePage() {
                                 )}
                             </AccordionContent>
                         </AccordionItem>
-                        { userProfile.role === 'affiliator' && (
+                        { (userProfile.role === 'affiliator' || userProfile.role === 'kreator') && (
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
@@ -1205,3 +1233,5 @@ export default function AppearancePage() {
         </div>
     )
 }
+
+    
