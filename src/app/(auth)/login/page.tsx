@@ -160,14 +160,15 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Link href="/">
+           <div className="flex justify-center items-center space-x-2 mb-4">
+            <Link href="/" className="flex items-center space-x-2">
               <Logo />
+              <span className="font-bold text-lg">LinkPro</span>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Lanjutkan Kisah Anda</CardTitle>
+          <CardTitle className="text-2xl">Selamat Datang Kembali</CardTitle>
           <CardDescription>
-            Selamat datang kembali. Dunia menanti karya visual Anda berikutnya.
+            Masukkan email dan kata sandi Anda untuk mengakses akun Anda.
           </CardDescription>
         </CardHeader>
         <CardContent>
