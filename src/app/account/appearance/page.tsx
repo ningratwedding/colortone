@@ -8,6 +8,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -174,7 +175,7 @@ function ProfilePreview({
     
   const pageBackgroundStyle = profileBackgroundImagePreview 
     ? { backgroundImage: `url(${profileBackgroundImagePreview})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-    : { backgroundColor: profileBackgroundColor || undefined };
+    : { backgroundColor: profileBackgroundColor || '#FFFFFF' };
 
   const getPillSizeClasses = (size: string | undefined) => {
     switch (size) {
@@ -216,7 +217,7 @@ function ProfilePreview({
     <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
         <div
         className="relative h-32 md:h-48 overflow-hidden"
-        style={{ backgroundColor: headerColor }}
+        style={{ backgroundColor: headerColor || '#FFFFFF' }}
         >
             {headerVideoPreview ? (
                 <video
@@ -227,20 +228,12 @@ function ProfilePreview({
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                 />
-            ) : headerImagePreview ? (
+            ) : headerImagePreview && (
                 <Image
                     src={headerImagePreview}
                     alt="Header background"
                     fill
                     className="object-cover"
-                />
-            ) : !headerColor && (
-                <Image
-                    src={`https://picsum.photos/seed/${profile.id}/1200/400`}
-                    alt="Header background"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="header background"
                 />
             )}
             {showHeaderGradient && (

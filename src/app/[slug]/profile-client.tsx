@@ -212,13 +212,20 @@ export function ProfileContent({ slug }: { slug: string }) {
   }, [userQuery]);
 
   useEffect(() => {
-    if (profileUser?.profileBackgroundColor && !profileUser.profileBackgroundImageUrl) {
-      document.body.style.backgroundColor = profileUser.profileBackgroundColor;
-    } else if (profileUser?.profileBackgroundImageUrl) {
-      document.body.style.backgroundImage = `url(${profileUser.profileBackgroundImageUrl})`;
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center';
-      document.body.style.backgroundAttachment = 'fixed';
+    if (profileUser) {
+        if (profileUser.profileBackgroundImageUrl) {
+            document.body.style.backgroundImage = `url(${profileUser.profileBackgroundImageUrl})`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+            document.body.style.backgroundColor = ''; // clear solid color
+        } else if (profileUser.profileBackgroundColor) {
+            document.body.style.backgroundColor = profileUser.profileBackgroundColor;
+            document.body.style.backgroundImage = ''; // clear image
+        } else {
+            document.body.style.backgroundColor = '#FFFFFF'; // Default to white
+            document.body.style.backgroundImage = '';
+        }
     }
     // Cleanup function to reset the background style when the component unmounts
     return () => {
@@ -251,10 +258,10 @@ export function ProfileContent({ slug }: { slug: string }) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-6 space-y-6">
-        <div className="flex flex-col items-center gap-6 text-center">
-            <Skeleton className="h-32 w-32 rounded-full" />
+        <div className="flex flex-col items-center gap-4 text-center">
+            <Skeleton className="h-24 w-24 rounded-full" />
             <div className="space-y-2">
-                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-7 w-48" />
                 <Skeleton className="h-5 w-64" />
             </div>
         </div>
@@ -340,7 +347,7 @@ export function ProfileContent({ slug }: { slug: string }) {
     <div className="pb-4">
        <div
         className="relative h-32 md:h-48 overflow-hidden"
-        style={{ backgroundColor: profileUser.headerColor }}
+        style={{ backgroundColor: profileUser.headerColor || '#FFFFFF' }}
         >
             <Button
                 variant="secondary"
@@ -360,21 +367,13 @@ export function ProfileContent({ slug }: { slug: string }) {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                 />
-            ) : profileUser.headerImageUrl ? (
+            ) : profileUser.headerImageUrl && (
                 <Image
                     src={profileUser.headerImageUrl}
                     alt="Header background"
                     fill
                     className="object-cover"
                     data-ai-hint={profileUser.headerImageHint}
-                />
-            ) : !profileUser.headerColor && (
-                 <Image
-                    src={`https://picsum.photos/seed/${profileUser.id}/1200/400`}
-                    alt="Header background"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="header background"
                 />
             )}
             {showGradient && (
@@ -501,5 +500,3 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
-
-    
