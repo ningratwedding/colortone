@@ -26,7 +26,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Copy } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Share2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -589,10 +589,31 @@ export default function AppearancePage() {
         document.body.removeChild(textArea);
     };
 
-    const handleCopyLink = () => {
+    const handleShareLink = async () => {
         if (!userProfile) return;
         const url = `${siteConfig.url}/${userProfile.slug}`;
-        copyToClipboard(url);
+        const shareData = {
+            title: `Lihat profil ${userProfile.name} di ${siteConfig.name}`,
+            text: `Lihat semua produk dan tautan dari ${userProfile.name} di sini!`,
+            url: url,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                toast({
+                    title: "Profil Dibagikan!",
+                    description: "Tautan profil Anda telah berhasil dibagikan.",
+                });
+            } catch (error) {
+                console.error('Error sharing:', error);
+                // Fallback to copy if user cancels share dialog etc.
+                copyToClipboard(url);
+            }
+        } else {
+            // Fallback for browsers that do not support the Web Share API
+            copyToClipboard(url);
+        }
     };
 
     const loading = userLoading || profileLoading || productsLoading;
@@ -637,9 +658,9 @@ export default function AppearancePage() {
                         <Label htmlFor="profile-url">URL Profil Publik Anda</Label>
                         <div className="flex w-full items-center space-x-2">
                             <Input id="profile-url" value={`${siteConfig.url}/${userProfile.slug}`} readOnly />
-                            <Button type="button" variant="secondary" onClick={handleCopyLink}>
-                                <Copy className="mr-2 h-4 w-4" />
-                                Salin
+                            <Button type="button" variant="secondary" onClick={handleShareLink}>
+                                <Share2 className="mr-2 h-4 w-4" />
+                                Bagikan
                             </Button>
                         </div>
                     </div>
