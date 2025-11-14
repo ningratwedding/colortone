@@ -15,7 +15,7 @@ import {
   PartyPopper,
   User,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -54,6 +54,7 @@ export function SiteHeader() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
 
   const userProfileRef = useMemo(() => {
@@ -220,21 +221,23 @@ export function SiteHeader() {
         )}
 
         {/* Center Section (Search) */}
-        <div className="flex-1 flex justify-center px-4">
-          <div className="w-full max-w-sm">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari produk..."
-                className="w-full bg-background/90 text-foreground pl-10 rounded-full"
-              />
+        {pathname !== '/' && (
+          <div className="flex-1 flex justify-center px-4">
+            <div className="w-full max-w-sm">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Cari produk..."
+                  className="w-full bg-background/90 text-foreground pl-10 rounded-full"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Right Section (Actions) */}
-        <div className="flex items-center justify-end space-x-2">
+        <div className="flex items-center justify-end space-x-2 ml-auto">
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
               <Link href="/creator/dashboard">Menjadi Kreator</Link>
