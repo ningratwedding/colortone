@@ -7,6 +7,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Share2 } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -135,6 +136,7 @@ function ProfilePreview({
   socialsSettings,
   headerColor,
   headerImagePreview,
+  headerVideoPreview,
   showHeaderGradient,
   profileBackgroundColor,
   profileBackgroundImagePreview,
@@ -152,6 +154,7 @@ function ProfilePreview({
   socialsSettings: UserProfile['socialsSettings'];
   headerColor: string;
   headerImagePreview: string | null;
+  headerVideoPreview: string | null;
   showHeaderGradient: boolean;
   profileBackgroundColor: string;
   profileBackgroundImagePreview: string | null;
@@ -215,7 +218,16 @@ function ProfilePreview({
         className="relative h-32 md:h-48 overflow-hidden"
         style={{ backgroundColor: headerColor }}
         >
-            {headerImagePreview ? (
+            {headerVideoPreview ? (
+                <video
+                    src={headerVideoPreview}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+            ) : headerImagePreview ? (
                 <Image
                     src={headerImagePreview}
                     alt="Header background"
@@ -239,7 +251,7 @@ function ProfilePreview({
             )}
         </div>
         <div className="px-4">
-        <header className="flex flex-col items-center gap-4 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
+        <header className="flex flex-col items-center gap-2 mb-4 text-center -mt-10 md:-mt-12 relative z-10">
         <Avatar 
           className="h-20 w-20 md:h-24 md:w-24 border-4"
           style={{ borderColor: profileBackgroundColor || 'hsl(var(--background))' }}
@@ -338,7 +350,7 @@ function ProfilePreview({
         </div>
         </header>
             
-            { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-6" /> }
+            { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-4" /> }
 
             {profile.role === 'affiliator' && profile.featuredProductIds && profile.featuredProductIds.length > 0 && (
               <div className="w-full space-y-4">
@@ -400,6 +412,7 @@ export default function AppearancePage() {
     const storage = useStorage();
     const { toast } = useToast();
     const headerImageInputRef = useRef<HTMLInputElement>(null);
+    const headerVideoInputRef = useRef<HTMLInputElement>(null);
     const pageImageInputRef = useRef<HTMLInputElement>(null);
 
     const userProfileRef = useMemo(() => {
@@ -420,7 +433,9 @@ export default function AppearancePage() {
     const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [headerColor, setHeaderColor] = useState('');
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
+    const [headerVideoFile, setHeaderVideoFile] = useState<File | null>(null);
     const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
+    const [headerVideoPreview, setHeaderVideoPreview] = useState<string | null>(null);
     const [showHeaderGradient, setShowHeaderGradient] = useState(true);
     const [profileBackgroundColor, setProfileBackgroundColor] = useState('');
     const [profileBackgroundImageFile, setProfileBackgroundImageFile] = useState<File | null>(null);
@@ -446,6 +461,7 @@ export default function AppearancePage() {
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
+            setHeaderVideoPreview(userProfile.headerVideoUrl || null);
             setShowHeaderGradient(userProfile.showHeaderGradient ?? true);
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
@@ -487,9 +503,29 @@ export default function AppearancePage() {
             const file = e.target.files[0];
             setHeaderImageFile(file);
             setHeaderImagePreview(URL.createObjectURL(file));
+            setHeaderVideoFile(null);
+            setHeaderVideoPreview(null);
+        }
+    };
+
+    const handleHeaderVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setHeaderVideoFile(file);
+            setHeaderVideoPreview(URL.createObjectURL(file));
+            setHeaderImageFile(null);
+            setHeaderImagePreview(null);
         }
     };
     
+    const handleRemoveHeaderBackground = () => {
+        setHeaderImageFile(null);
+        setHeaderImagePreview(null);
+        setHeaderVideoFile(null);
+        setHeaderVideoPreview(null);
+        toast({ title: 'Latar Dihapus', description: 'Latar header akan dihapus saat Anda menyimpan.'});
+    }
+
     const handlePageImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -504,10 +540,21 @@ export default function AppearancePage() {
         setIsSaving(true);
         try {
             let newHeaderImageUrl = userProfile?.headerImageUrl || null;
+            let newHeaderVideoUrl = userProfile?.headerVideoUrl || null;
+
             if (headerImageFile) {
                 toast({ title: 'Mengunggah gambar header...' });
                 newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
+                newHeaderVideoUrl = null;
+            } else if (headerVideoFile) {
+                 toast({ title: 'Mengunggah video header...' });
+                 newHeaderVideoUrl = await uploadFile(storage, headerVideoFile, user.uid, 'profile_headers');
+                 newHeaderImageUrl = null;
+            } else if (!headerImagePreview && !headerVideoPreview) {
+                newHeaderImageUrl = null;
+                newHeaderVideoUrl = null;
             }
+
             
             let newProfileBackgroundImageUrl = userProfile?.profileBackgroundImageUrl || null;
             if (profileBackgroundImageFile) {
@@ -520,6 +567,7 @@ export default function AppearancePage() {
                 socials: socials,
                 headerColor: headerColor,
                 headerImageUrl: newHeaderImageUrl,
+                headerVideoUrl: newHeaderVideoUrl,
                 showHeaderGradient: showHeaderGradient,
                 profileBackgroundColor: profileBackgroundColor,
                 profileBackgroundImageUrl: newProfileBackgroundImageUrl,
@@ -548,6 +596,7 @@ export default function AppearancePage() {
         } finally {
             setIsSaving(false);
             setHeaderImageFile(null);
+            setHeaderVideoFile(null);
             setProfileBackgroundImageFile(null);
         }
     };
@@ -689,21 +738,42 @@ export default function AppearancePage() {
                          <AccordionItem value="header-background">
                             <AccordionTrigger className="text-sm font-medium">Latar Header</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
-                                <div className="grid gap-2">
-                                    <Label>Gambar Latar</Label>
+                               <div className="grid gap-2">
+                                    <Label>Media Latar</Label>
                                     <div className="flex items-center gap-4">
-                                        {headerImagePreview && <Image src={headerImagePreview} alt="Pratinjau Header" width={128} height={64} className="rounded-md object-cover aspect-[2/1] bg-muted" />}
-                                        <div className="flex-1">
+                                        <div className="relative w-32 h-16 rounded-md bg-muted overflow-hidden">
+                                            {headerVideoPreview ? (
+                                                <video src={headerVideoPreview} muted className="w-full h-full object-cover" />
+                                            ) : headerImagePreview ? (
+                                                <Image src={headerImagePreview} alt="Pratinjau Header" layout="fill" className="object-cover" />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                    <ImageIcon size={24} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 space-y-2">
                                             <Input type="file" ref={headerImageInputRef} className="hidden" accept="image/*" onChange={handleHeaderImageChange} />
-                                            <Button type="button" variant="outline" onClick={() => headerImageInputRef.current?.click()}>
-                                            <ImageIcon className="mr-2 h-4 w-4" /> {headerImagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}
-                                            </Button>
-                                            <p className="text-xs text-muted-foreground mt-1">Rasio 3:1 atau 4:1 disarankan.</p>
+                                            <Input type="file" ref={headerVideoInputRef} className="hidden" accept="video/*" onChange={handleHeaderVideoChange} />
+                                            <div className="flex flex-wrap gap-2">
+                                                <Button type="button" variant="outline" size="sm" onClick={() => headerImageInputRef.current?.click()}>
+                                                    <Replace className="mr-2 h-4 w-4" /> Ganti Gambar
+                                                </Button>
+                                                 <Button type="button" variant="outline" size="sm" onClick={() => headerVideoInputRef.current?.click()}>
+                                                    <Video className="mr-2 h-4 w-4" /> Ganti Video
+                                                </Button>
+                                                {(headerImagePreview || headerVideoPreview) && (
+                                                    <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleRemoveHeaderBackground}>
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">Unggah gambar atau video untuk latar header.</p>
                                         </div>
                                     </div>
                                 </div>
                                  <div className="grid gap-2">
-                                    <Label>Warna Latar (pengganti jika tidak ada gambar)</Label>
+                                    <Label>Warna Latar (pengganti jika tidak ada media)</Label>
                                     <div className="flex flex-wrap items-center gap-2">
                                         {colorOptions.map((color) => (
                                             <button 
@@ -1143,6 +1213,7 @@ export default function AppearancePage() {
                                     socialsSettings={socialsSettings}
                                     headerColor={headerColor}
                                     headerImagePreview={headerImagePreview}
+                                    headerVideoPreview={headerVideoPreview}
                                     showHeaderGradient={showHeaderGradient}
                                     profileBackgroundColor={profileBackgroundColor}
                                     profileBackgroundImagePreview={profileBackgroundImagePreview}
