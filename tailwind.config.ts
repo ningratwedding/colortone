@@ -24,6 +24,11 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
         code: ['monospace'],
+        poppins: ['Poppins', 'sans-serif'],
+        lora: ['Lora', 'serif'],
+        oswald: ['Oswald', 'sans-serif'],
+        raleway: ['Raleway', 'sans-serif'],
+        playfair: ['"Playfair Display"', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -108,3 +113,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    

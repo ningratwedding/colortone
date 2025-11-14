@@ -303,8 +303,32 @@ export function ProfileContent({ slug }: { slug: string }) {
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-3xl font-bold font-headline" style={{ color: profileUser.profileTitleFontColor || undefined }}>{displayName}</h1>
-            <p className="text-muted-foreground mt-1 max-w-2xl mx-auto" style={{ color: profileUser.profileBodyFontColor || undefined }}>{profileUser.bio}</p>
+            <h1 
+              className={cn(
+                "text-3xl font-bold font-headline",
+                profileUser.profileTitleFont === 'poppins' && 'font-poppins',
+                profileUser.profileTitleFont === 'lora' && 'font-lora',
+                profileUser.profileTitleFont === 'oswald' && 'font-oswald',
+                profileUser.profileTitleFont === 'raleway' && 'font-raleway',
+                profileUser.profileTitleFont === 'playfair' && 'font-playfair'
+              )} 
+              style={{ color: profileUser.profileTitleFontColor || undefined }}
+            >
+              {displayName}
+            </h1>
+            <p 
+              className={cn(
+                "text-muted-foreground mt-1 max-w-2xl mx-auto",
+                profileUser.profileBodyFont === 'poppins' && 'font-poppins',
+                profileUser.profileBodyFont === 'lora' && 'font-lora',
+                profileUser.profileBodyFont === 'oswald' && 'font-oswald',
+                profileUser.profileBodyFont === 'raleway' && 'font-raleway',
+                profileUser.profileBodyFont === 'playfair' && 'font-playfair'
+              )} 
+              style={{ color: profileUser.profileBodyFontColor || undefined }}
+            >
+              {profileUser.bio}
+            </p>
             {profileUser.socials && (
               <div className={cn(
                 "flex justify-center items-center gap-2 mt-3 flex-wrap",
@@ -351,3 +375,5 @@ export function ProfileContent({ slug }: { slug: string }) {
   );
 }
 
+
+    

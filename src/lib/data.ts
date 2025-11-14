@@ -19,7 +19,9 @@ export type UserProfile = {
   profileBackgroundColor?: string;
   profileBackgroundImageUrl?: string | null;
   profileBackgroundImageHint?: string;
+  profileTitleFont?: string;
   profileTitleFontColor?: string;
+  profileBodyFont?: string;
   profileBodyFontColor?: string;
   socials?: {
     instagram?: string;
@@ -130,3 +132,4 @@ export type ImagePlaceholder = {
     description: string;
 }
 
+    

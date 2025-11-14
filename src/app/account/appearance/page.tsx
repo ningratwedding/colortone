@@ -90,6 +90,15 @@ const colorOptions = [
     { name: 'Merah', value: '#EF4444' },
 ];
 
+const fontOptions = [
+    { name: 'Default (Inter)', value: 'inter' },
+    { name: 'Poppins', value: 'poppins' },
+    { name: 'Lora', value: 'lora' },
+    { name: 'Oswald', value: 'oswald' },
+    { name: 'Raleway', value: 'raleway' },
+    { name: 'Playfair Display', value: 'playfair' },
+]
+
 
 function ProfilePreview({
   profile,
@@ -101,7 +110,9 @@ function ProfilePreview({
   showHeaderGradient,
   profileBackgroundColor,
   profileBackgroundImagePreview,
+  profileTitleFont,
   profileTitleFontColor,
+  profileBodyFont,
   profileBodyFontColor,
 }: {
   profile: UserProfile;
@@ -113,7 +124,9 @@ function ProfilePreview({
   showHeaderGradient: boolean;
   profileBackgroundColor: string;
   profileBackgroundImagePreview: string | null;
+  profileTitleFont?: string;
   profileTitleFontColor: string;
+  profileBodyFont?: string;
   profileBodyFontColor: string;
 }) {
   const displayName = profile.fullName || profile.name;
@@ -194,8 +207,32 @@ function ProfilePreview({
             <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-            <h1 className="text-xl font-bold font-headline" style={{ color: profileTitleFontColor || undefined }}>{displayName}</h1>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto" style={{ color: profileBodyFontColor || undefined }}>{bio || "Bio Anda akan muncul di sini."}</p>
+            <h1 
+              className={cn(
+                "text-xl font-bold font-headline",
+                profileTitleFont === 'poppins' && 'font-poppins',
+                profileTitleFont === 'lora' && 'font-lora',
+                profileTitleFont === 'oswald' && 'font-oswald',
+                profileTitleFont === 'raleway' && 'font-raleway',
+                profileTitleFont === 'playfair' && 'font-playfair'
+              )} 
+              style={{ color: profileTitleFontColor || undefined }}
+            >
+              {displayName}
+            </h1>
+            <p 
+               className={cn(
+                "text-sm text-muted-foreground mt-1 max-w-md mx-auto",
+                profileBodyFont === 'poppins' && 'font-poppins',
+                profileBodyFont === 'lora' && 'font-lora',
+                profileBodyFont === 'oswald' && 'font-oswald',
+                profileBodyFont === 'raleway' && 'font-raleway',
+                profileBodyFont === 'playfair' && 'font-playfair'
+              )} 
+              style={{ color: profileBodyFontColor || undefined }}
+            >
+              {bio || "Bio Anda akan muncul di sini."}
+            </p>
             {socials && Object.keys(socials).length > 0 && (
               <div className={cn(
                 "flex justify-center items-center gap-2 mt-3 flex-wrap",
@@ -261,7 +298,9 @@ export default function AppearancePage() {
     const [profileBackgroundColor, setProfileBackgroundColor] = useState('');
     const [profileBackgroundImageFile, setProfileBackgroundImageFile] = useState<File | null>(null);
     const [profileBackgroundImagePreview, setProfileBackgroundImagePreview] = useState<string | null>(null);
+    const [profileTitleFont, setProfileTitleFont] = useState<string>('inter');
     const [profileTitleFontColor, setProfileTitleFontColor] = useState('');
+    const [profileBodyFont, setProfileBodyFont] = useState<string>('inter');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
 
@@ -281,7 +320,9 @@ export default function AppearancePage() {
             setShowHeaderGradient(userProfile.showHeaderGradient ?? true);
             setProfileBackgroundColor(userProfile.profileBackgroundColor || '');
             setProfileBackgroundImagePreview(userProfile.profileBackgroundImageUrl || null);
+            setProfileTitleFont(userProfile.profileTitleFont || 'inter');
             setProfileTitleFontColor(userProfile.profileTitleFontColor || '');
+            setProfileBodyFont(userProfile.profileBodyFont || 'inter');
             setProfileBodyFontColor(userProfile.profileBodyFontColor || '');
             setSocialsSettings({
                 style: 'iconOnly',
@@ -316,13 +357,13 @@ export default function AppearancePage() {
         if (!userProfileRef || !user || !storage) return;
         setIsSaving(true);
         try {
-            let newHeaderImageUrl = userProfile?.headerImageUrl;
+            let newHeaderImageUrl: string | null = userProfile?.headerImageUrl || null;
             if (headerImageFile) {
                 toast({ title: 'Mengunggah gambar header...' });
                 newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
             }
             
-            let newProfileBackgroundImageUrl = userProfile?.profileBackgroundImageUrl;
+            let newProfileBackgroundImageUrl: string | null = userProfile?.profileBackgroundImageUrl || null;
             if (profileBackgroundImageFile) {
                 toast({ title: 'Mengunggah gambar latar...' });
                 newProfileBackgroundImageUrl = await uploadFile(storage, profileBackgroundImageFile, user.uid, 'profile_backgrounds');
@@ -332,12 +373,14 @@ export default function AppearancePage() {
                 bio: bio,
                 socials: socials,
                 headerColor: headerColor,
-                headerImageUrl: newHeaderImageUrl || null,
+                headerImageUrl: newHeaderImageUrl,
                 showHeaderGradient: showHeaderGradient,
                 profileBackgroundColor: profileBackgroundColor,
-                profileBackgroundImageUrl: newProfileBackgroundImageUrl || null,
-                profileTitleFontColor: profileTitleFontColor,
-                profileBodyFontColor: profileBodyFontColor,
+                profileBackgroundImageUrl: newProfileBackgroundImageUrl,
+                profileTitleFont,
+                profileTitleFontColor,
+                profileBodyFont,
+                profileBodyFontColor,
                 socialsSettings: socialsSettings,
             };
 
@@ -605,6 +648,45 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="fonts">
+                            <AccordionTrigger className="text-sm font-medium">Font Halaman</AccordionTrigger>
+                             <AccordionContent className="pt-4 space-y-4">
+                                 <div className="grid gap-2">
+                                    <Label>Font Judul (Nama)</Label>
+                                     <Select value={profileTitleFont} onValueChange={setProfileTitleFont}>
+                                        <SelectTrigger><SelectValue placeholder="Pilih font judul" /></SelectTrigger>
+                                        <SelectContent>
+                                            {fontOptions.map(font => (
+                                                <SelectItem key={`title-${font.value}`} value={font.value} className={cn(
+                                                  font.value === 'poppins' && 'font-poppins',
+                                                  font.value === 'lora' && 'font-lora',
+                                                  font.value === 'oswald' && 'font-oswald',
+                                                  font.value === 'raleway' && 'font-raleway',
+                                                  font.value === 'playfair' && 'font-playfair'
+                                                )}>{font.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                 </div>
+                                 <div className="grid gap-2">
+                                    <Label>Font Isi (Bio)</Label>
+                                     <Select value={profileBodyFont} onValueChange={setProfileBodyFont}>
+                                        <SelectTrigger><SelectValue placeholder="Pilih font isi" /></SelectTrigger>
+                                        <SelectContent>
+                                            {fontOptions.map(font => (
+                                                <SelectItem key={`body-${font.value}`} value={font.value} className={cn(
+                                                  font.value === 'poppins' && 'font-poppins',
+                                                  font.value === 'lora' && 'font-lora',
+                                                  font.value === 'oswald' && 'font-oswald',
+                                                  font.value === 'raleway' && 'font-raleway',
+                                                  font.value === 'playfair' && 'font-playfair'
+                                                )}>{font.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                 </div>
+                            </AccordionContent>
+                        </AccordionItem>
                         <AccordionItem value="font-color">
                             <AccordionTrigger className="text-sm font-medium">Warna Font</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
@@ -806,7 +888,9 @@ export default function AppearancePage() {
                                     showHeaderGradient={showHeaderGradient}
                                     profileBackgroundColor={profileBackgroundColor}
                                     profileBackgroundImagePreview={profileBackgroundImagePreview}
+                                    profileTitleFont={profileTitleFont}
                                     profileTitleFontColor={profileTitleFontColor}
+                                    profileBodyFont={profileBodyFont}
                                     profileBodyFontColor={profileBodyFontColor}
                                 />
                             </div>
@@ -818,3 +902,4 @@ export default function AppearancePage() {
     )
 }
 
+    

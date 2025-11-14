@@ -71,9 +71,17 @@
           "type": "string",
           "description": "AI hint for the user's page background image."
         },
+        "profileTitleFont": {
+            "type": "string",
+            "description": "The font family for the name/title text on the profile page."
+        },
         "profileTitleFontColor": {
             "type": "string",
             "description": "A solid hex color for the name/title text on the profile page."
+        },
+        "profileBodyFont": {
+            "type": "string",
+            "description": "The font family for the bio/paragraph text on the profile page."
         },
         "profileBodyFontColor": {
             "type": "string",
@@ -448,3 +456,5 @@
   }
 }
 
+
+    
