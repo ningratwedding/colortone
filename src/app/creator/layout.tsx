@@ -95,7 +95,7 @@ export default function CreatorDashboardLayout({
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(href)}
+                    isActive={pathname === href || (href !== '/creator/dashboard' && pathname.startsWith(href))}
                     tooltip={label}
                   >
                     <Link href={href}>
