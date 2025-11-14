@@ -425,7 +425,7 @@ export default function AppearancePage() {
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
     const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill' });
-    const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default' });
+    const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default', color: '', backgroundColor: '', activeColor: '', activeBackgroundColor: '' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -467,6 +467,10 @@ export default function AppearancePage() {
                 style: 'default',
                 size: 'default',
                 shape: 'default',
+                color: '',
+                backgroundColor: '',
+                activeColor: '',
+                activeBackgroundColor: '',
                 ...userProfile.categorySettings,
             });
         }
@@ -561,14 +565,33 @@ export default function AppearancePage() {
         });
     };
     
+    const copyToClipboard = (text: string) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            toast({
+                title: "Tautan Profil Disalin",
+                description: "URL profil publik Anda telah disalin ke clipboard.",
+            });
+        } catch (err) {
+            console.error('Gagal menyalin teks: ', err);
+             toast({
+                variant: "destructive",
+                title: "Gagal Menyalin",
+                description: "Browser Anda mungkin tidak mendukung fitur ini.",
+            });
+        }
+        document.body.removeChild(textArea);
+    };
+
     const handleCopyLink = () => {
         if (!userProfile) return;
         const url = `${siteConfig.url}/${userProfile.slug}`;
-        navigator.clipboard.writeText(url);
-        toast({
-            title: "Tautan Profil Disalin",
-            description: "URL profil publik Anda telah disalin ke clipboard.",
-        });
+        copyToClipboard(url);
     };
 
     const loading = userLoading || profileLoading || productsLoading;
