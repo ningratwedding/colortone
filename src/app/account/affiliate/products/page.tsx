@@ -8,18 +8,19 @@ import { useFirestore } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { collection, doc, query, updateDoc } from 'firebase/firestore';
-import type { Product, UserProfile, AffiliateProductCategory } from '@/lib/data';
+import type { Product, UserProfile, AffiliateProductCategory, Category } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Edit, Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { v4 as uuidv4 } from 'uuid';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -37,6 +38,9 @@ export default function FeaturedProductsPage() {
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<AffiliateProductCategory[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
 
   // Dialog states for category management
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -56,8 +60,23 @@ export default function FeaturedProductsPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'products'));
   }, [firestore]);
-  const { data: allProducts, loading: productsLoading } = useCollection<Product>(productsQuery as any); // useDoc is a mistake in original code
+  const { data: allProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
   
+  const platformCategoriesQuery = useMemo(() => {
+      if (!firestore) return null;
+      return query(collection(firestore, 'categories'));
+  }, [firestore]);
+  const { data: platformCategories, loading: platformCategoriesLoading } = useCollection<Category>(platformCategoriesQuery);
+  
+  const filteredProducts = useMemo(() => {
+      if (!allProducts) return [];
+      return allProducts.filter(product => {
+          const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+          const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
+          return matchesSearch && matchesCategory;
+      });
+  }, [allProducts, searchTerm, filterCategory]);
+
   useEffect(() => {
     if (userProfile) {
       setSelectedProducts(new Set(userProfile.featuredProductIds || []));
@@ -81,9 +100,15 @@ export default function FeaturedProductsPage() {
     if (!userProfileRef) return;
     setIsSaving(true);
     try {
+      // Clean up categories: remove any productIds that are no longer in the main selectedProducts list
+      const cleanedCategories = categories.map(cat => ({
+        ...cat,
+        productIds: cat.productIds.filter(pid => selectedProducts.has(pid))
+      }));
+
       await updateDoc(userProfileRef, {
         featuredProductIds: Array.from(selectedProducts),
-        affiliateProductCategories: categories
+        affiliateProductCategories: cleanedCategories
       });
       toast({
         title: "Pembaruan Disimpan",
@@ -166,13 +191,38 @@ export default function FeaturedProductsPage() {
               Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-96 pr-4">
+          <CardContent className="flex flex-col gap-4">
+             <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Cari produk..."
+                    className="pl-8"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+             <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Filter berdasarkan kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Semua Kategori</SelectItem>
+                    {platformCategoriesLoading ? (
+                        <SelectItem value="loading" disabled>Memuat...</SelectItem>
+                    ) : (
+                        platformCategories?.map(cat => (
+                            <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
+                        ))
+                    )}
+                </SelectContent>
+            </Select>
+            <ScrollArea className="h-96 pr-4 border-t pt-4">
               <div className="space-y-3">
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
-                ) : allProducts && allProducts.length > 0 ? (
-                  allProducts.map((product) => (
+                ) : filteredProducts && filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
                     <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
                       <Checkbox
                         id={`product-${product.id}`}
@@ -193,7 +243,7 @@ export default function FeaturedProductsPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-muted-foreground py-8">Tidak ada produk tersedia.</p>
+                  <p className="text-center text-muted-foreground py-8">Tidak ada produk ditemukan.</p>
                 )}
               </div>
             </ScrollArea>
