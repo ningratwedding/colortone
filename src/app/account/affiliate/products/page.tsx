@@ -15,13 +15,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, PlusCircle, Trash2, Edit, Search } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Edit, Search, MoreHorizontal } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -269,18 +270,27 @@ export default function FeaturedProductsPage() {
                   <div className="flex items-center gap-2">
                     <TabsList className="relative flex-1 justify-start h-auto flex-wrap">
                         {categories.map((cat) => (
-                          <div key={cat.id} className="flex items-center rounded-md data-[state=active]:bg-muted">
-                            <TabsTrigger value={cat.id}>
+                          <div key={cat.id} className="flex items-center group rounded-md data-[state=active]:bg-muted">
+                            <TabsTrigger value={cat.id} className="pr-2 group-hover:pr-0">
                               {cat.name}
                             </TabsTrigger>
-                            <div className="flex items-center pr-2">
-                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); handleOpenCategoryDialog(cat); }}>
-                                    <Edit className="h-3 w-3" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); openDeleteDialog(cat); }}>
-                                    <Trash2 className="h-3 w-3 text-destructive" />
-                                </Button>
-                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-50 group-hover:opacity-100">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onSelect={() => handleOpenCategoryDialog(cat)}>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Ubah
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => openDeleteDialog(cat)} className="text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Hapus
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                            </div>
                         ))}
                     </TabsList>
