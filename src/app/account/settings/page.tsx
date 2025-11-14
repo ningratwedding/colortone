@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, type Timestamp } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,7 +24,8 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
 import { PartyPopper, Loader2 } from 'lucide-react';
-
+import { addDays, format, differenceInDays } from 'date-fns';
+import { id as fnsIdLocale } from 'date-fns/locale';
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -49,6 +50,11 @@ export default function AccountSettingsPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
 
+    // Name change cooldown logic
+    const [canChangeName, setCanChangeName] = useState(true);
+    const [nextChangeDate, setNextChangeDate] = useState('');
+    const NAME_CHANGE_COOLDOWN_DAYS = 14;
+
     
     useEffect(() => {
         if (userProfile) {
@@ -56,6 +62,22 @@ export default function AccountSettingsPage() {
             setFullName(userProfile.fullName || '');
             setPhoneNumber(userProfile.phoneNumber || '');
             setAvatarPreview(userProfile.avatarUrl);
+
+            // Check name change cooldown
+            if (userProfile.nameLastUpdatedAt) {
+                const lastUpdate = (userProfile.nameLastUpdatedAt as Timestamp).toDate();
+                const nextAvailableDate = addDays(lastUpdate, NAME_CHANGE_COOLDOWN_DAYS);
+                const daysRemaining = differenceInDays(nextAvailableDate, new Date());
+
+                if (daysRemaining > 0) {
+                    setCanChangeName(false);
+                    setNextChangeDate(format(nextAvailableDate, "d MMMM yyyy", { locale: fnsIdLocale }));
+                } else {
+                    setCanChangeName(true);
+                }
+            } else {
+                setCanChangeName(true);
+            }
         }
     }, [userProfile]);
 
@@ -70,19 +92,33 @@ export default function AccountSettingsPage() {
                 newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
             }
 
-            const updatedData: Partial<UserProfile> = {
-                name: name,
+            const updatedData: Partial<UserProfile> & { nameLastUpdatedAt?: any } = {
                 fullName: fullName,
                 phoneNumber: phoneNumber,
                 avatarUrl: newAvatarUrl,
             };
 
+            // Only update name and timestamp if the name has changed and is allowed
+            if (name !== userProfile.name) {
+                if (!canChangeName) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Perubahan Nama Tidak Diizinkan',
+                        description: `Anda baru dapat mengubah nama lagi pada ${nextChangeDate}.`,
+                    });
+                    setIsSaving(false);
+                    return;
+                }
+                updatedData.name = name;
+                updatedData.nameLastUpdatedAt = serverTimestamp();
+            }
+
             await updateDoc(userProfileRef, updatedData);
 
-            if (user && (name !== user.displayName || newAvatarUrl !== user.photoURL)) {
+            if (user && (updatedData.name || newAvatarUrl)) {
                  await updateAuthProfile(user, {
-                    displayName: name,
-                    photoURL: newAvatarUrl,
+                    displayName: updatedData.name || user.displayName,
+                    photoURL: newAvatarUrl || user.photoURL,
                 });
             }
 
@@ -202,8 +238,14 @@ export default function AccountSettingsPage() {
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="profilename">Nama Profil</Label>
-                        <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} />
-                        <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
+                        <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} disabled={!canChangeName} />
+                        {!canChangeName ? (
+                            <p className="text-xs text-destructive">
+                                Anda baru dapat mengubah nama profil lagi pada {nextChangeDate}.
+                            </p>
+                        ) : (
+                             <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
+                        )}
                     </div>
                      <div className="grid gap-2">
                         <Label htmlFor="fullname">Nama Lengkap</Label>
@@ -220,7 +262,7 @@ export default function AccountSettingsPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                     <Button onClick={handleSaveChanges} disabled={isSaving}>
+                     <Button onClick={handleSaveChanges} disabled={isSaving || !canChangeName}>
                         {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan Profil"}
                     </Button>
                 </CardFooter>

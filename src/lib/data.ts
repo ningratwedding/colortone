@@ -11,6 +11,7 @@ export type UserProfile = {
   id: string;
   slug: string;
   name: string; // This is the public profile name
+  nameLastUpdatedAt?: Timestamp | { seconds: number; nanoseconds: number };
   fullName?: string; // This is the user's full legal name
   email: string;
   phoneNumber?: string;

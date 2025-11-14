@@ -11,6 +11,11 @@
           "type": "string",
           "description": "The user's public profile display name."
         },
+        "nameLastUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the user last changed their profile name."
+        },
         "fullName": {
           "type": "string",
           "description": "The user's full legal name."
