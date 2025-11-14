@@ -177,38 +177,6 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 md:py-16 space-y-12 md:space-y-16">
-        {/* Visi Section */}
-        <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-background">
-          <CardHeader className="text-center items-center">
-            <CardTitle className="text-2xl font-headline">Visi Kami</CardTitle>
-            <Separator className="my-3 w-1/4" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-center text-lg text-muted-foreground max-w-3xl mx-auto">
-              {vision}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Misi Section */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold font-headline">
-            Misi Kami
-          </h2>
-          <Separator className="my-4 mx-auto w-1/4" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left mt-8">
-            {missions.map((mission, index) => (
-              <Card key={index} className="flex bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <CardContent className="p-4 flex items-start space-x-2">
-                  <div className="flex-shrink-0 pt-1">
-                    <CheckCircle className="h-6 w-6 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground">{mission}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
         
         {/* Features Section */}
         <div className="text-center">
@@ -271,6 +239,39 @@ export default function Home() {
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 {commitment}
             </p>
+        </div>
+
+        {/* Visi Section */}
+        <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-background">
+          <CardHeader className="text-center items-center">
+            <CardTitle className="text-2xl font-headline">Visi Kami</CardTitle>
+            <Separator className="my-3 w-1/4" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <p className="text-center text-lg text-muted-foreground max-w-3xl mx-auto">
+              {vision}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Misi Section */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold font-headline">
+            Misi Kami
+          </h2>
+          <Separator className="my-4 mx-auto w-1/4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left mt-8">
+            {missions.map((mission, index) => (
+              <Card key={index} className="flex bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <CardContent className="p-4 flex items-start space-x-2">
+                  <div className="flex-shrink-0 pt-1">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground">{mission}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </div>
