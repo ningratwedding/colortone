@@ -169,7 +169,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground shadow-sm">
       <div className="container flex h-16 items-center px-4 md:px-6">
         {/* Left Section (Logo and Mobile Menu) */}
-        <div className="flex items-center">
+        <div className="flex items-center md:w-1/3">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden mr-2 hover:bg-primary-foreground/10 data-[state=open]:bg-primary-foreground/10" aria-label="Alihkan Menu">
@@ -181,7 +181,7 @@ export function SiteHeader() {
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2 text-foreground">
                     <Logo />
-                    <span className="font-bold text-base">LinkStore</span>
+                    <span className="font-bold">LinkStore</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -200,44 +200,37 @@ export function SiteHeader() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
-            <Logo />
-            <span className="font-bold text-base">LinkStore</span>
-          </Link>
+          {pathname !== '/' && (
+            <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
+              <Logo />
+              <span className="font-bold">LinkStore</span>
+            </Link>
+          )}
         </div>
 
-        {navLinks.length > 0 && (
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="transition-colors hover:text-primary-foreground/80 text-primary-foreground/60"
-              >
-                {label}
+        {/* Center Section (Logo or Search) */}
+        <div className="flex-1 flex justify-center w-1/3">
+          {pathname === '/' ? (
+              <Link href="/" className="flex items-center space-x-2">
+                <Logo />
+                <span className="font-bold">LinkStore</span>
               </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* Center Section (Search) */}
-        {pathname !== '/' && (
-          <div className="flex-1 flex justify-center px-4">
+          ) : (
             <div className="w-full max-w-sm">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Cari produk..."
-                  className="w-full bg-background/90 text-foreground pl-10 rounded-full"
-                />
-              </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Cari produk..."
+                    className="w-full bg-background/90 text-foreground pl-10 rounded-full"
+                  />
+                </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Right Section (Actions) */}
-        <div className="flex items-center justify-end space-x-2 ml-auto">
+        <div className="flex items-center justify-end space-x-2 w-1/3">
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
               <Link href="/creator/dashboard">Menjadi Kreator</Link>
