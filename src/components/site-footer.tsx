@@ -13,9 +13,14 @@ export function SiteFooter() {
                 <div className="flex justify-center">
                     <Logo className="h-7 text-primary" />
                 </div>
-                <p className="text-center text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} {siteConfig.name}. Semua hak dilindungi undang-undang.
-                </p>
+                <div className="text-center text-sm text-muted-foreground">
+                    <p>
+                        &copy; {new Date().getFullYear()} {siteConfig.name}. Semua hak dilindungi undang-undang.
+                    </p>
+                    <p>
+                        Dibuat dengan <Link href="/" className="font-semibold text-primary hover:underline">LinkPro</Link>
+                    </p>
+                </div>
             </div>
         </footer>
     );
