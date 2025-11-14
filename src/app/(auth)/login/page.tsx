@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -160,9 +161,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
            <div className="flex justify-center items-center space-x-2 mb-4">
-            <Link href="/" className="flex items-end space-x-2">
-              <div className="flex items-end text-primary">
-                  <Logo className="h-8 w-auto mb-0.5" />
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="flex items-center text-primary">
+                  <Logo className="h-8 w-auto" />
                   <span className="font-bold text-2xl ml-2">LinkPro</span>
               </div>
             </Link>
