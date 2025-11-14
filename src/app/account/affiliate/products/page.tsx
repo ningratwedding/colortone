@@ -268,15 +268,15 @@ export default function FeaturedProductsPage() {
               ) : (
                 <Tabs defaultValue={categories[0]?.id || 'new'}>
                   <div className="flex items-center gap-2">
-                    <TabsList className="relative flex-1 justify-start h-auto flex-wrap">
+                    <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-transparent p-0">
                         {categories.map((cat) => (
-                          <div key={cat.id} className="flex items-center group rounded-md data-[state=active]:bg-muted">
-                            <TabsTrigger value={cat.id} className="pr-2 group-hover:pr-0">
+                          <div key={cat.id} className="flex items-center group" onClick={(e) => e.stopPropagation()}>
+                            <TabsTrigger value={cat.id} className="pr-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                               {cat.name}
                             </TabsTrigger>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-50 group-hover:opacity-100">
+                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-50 hover:opacity-100 data-[state=active]:text-primary-foreground">
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
