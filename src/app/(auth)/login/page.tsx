@@ -160,9 +160,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-           <div className="flex justify-center items-center space-x-2 mb-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="flex items-center text-primary">
+           <div className="flex justify-center items-end space-x-2 mb-4">
+            <Link href="/" className="flex items-end space-x-2">
+              <div className="flex items-end text-primary">
                   <Logo className="h-8 w-auto" />
                   <span className="font-bold text-2xl ml-2">LinkPro</span>
               </div>
