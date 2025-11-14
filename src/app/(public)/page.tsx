@@ -179,7 +179,7 @@ export default function Home() {
         {/* Visi Section */}
         <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-background">
           <CardHeader className="text-center">
-            <Target className="mx-auto h-12 w-12 text-primary mb-2" />
+            
             <CardTitle className="text-2xl font-headline">Visi Kami</CardTitle>
           </CardHeader>
           <CardContent>
