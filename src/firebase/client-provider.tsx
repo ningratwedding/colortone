@@ -1,5 +1,5 @@
-// src/firebase/client-provider.tsx
 'use client';
+// src/firebase/client-provider.tsx
 
 import { ReactNode, useState, useEffect } from 'react';
 import { FirebaseProvider } from './provider';
