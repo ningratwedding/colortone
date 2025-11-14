@@ -52,6 +52,11 @@ export type UserProfile = {
     imageAspectRatio?: '3/2' | '4/3' | '1/1';
     buttonStyle?: 'fill' | 'outline';
   };
+  categorySettings?: {
+    style?: 'default' | 'outline';
+    size?: 'sm' | 'md' | 'lg';
+    shape?: 'default' | 'pill';
+  };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];
   affiliateProductCategories?: AffiliateProductCategory[];

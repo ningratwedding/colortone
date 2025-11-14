@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -135,6 +136,7 @@ function ProfilePreview({
   profileBodyFont,
   profileBodyFontColor,
   productCardSettings,
+  categorySettings,
 }: {
   profile: UserProfile;
   products?: Product[] | null;
@@ -151,6 +153,7 @@ function ProfilePreview({
   profileBodyFont?: string;
   profileBodyFontColor: string;
   productCardSettings?: UserProfile['productCardSettings'];
+  categorySettings?: UserProfile['categorySettings'];
 }) {
   const displayName = profile.fullName || profile.name;
   const [activeCategory, setActiveCategory] = useState('all');
@@ -335,9 +338,10 @@ function ProfilePreview({
                     {displayCategories.map((cat) => (
                       <CarouselItem key={cat.id} className="basis-auto pl-2">
                         <Button
-                          size="sm"
-                          variant={activeCategory === cat.id ? "default" : "outline"}
+                          size={categorySettings?.size}
+                          variant={activeCategory === cat.id ? categorySettings?.style || 'default' : 'outline'}
                           onClick={() => setActiveCategory(cat.id)}
+                          className={cn(categorySettings?.shape === 'pill' && 'rounded-full')}
                         >
                           {cat.name}
                         </Button>
@@ -409,6 +413,7 @@ export default function AppearancePage() {
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
     const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill' });
+    const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -445,7 +450,13 @@ export default function AppearancePage() {
                 imageAspectRatio: '3/2',
                 buttonStyle: 'fill',
                 ...userProfile.productCardSettings,
-            })
+            });
+            setCategorySettings({
+                style: 'default',
+                size: 'default',
+                shape: 'default',
+                ...userProfile.categorySettings,
+            });
         }
     }, [userProfile]);
     
@@ -496,6 +507,7 @@ export default function AppearancePage() {
                 profileBodyFontColor,
                 socialsSettings: socialsSettings,
                 productCardSettings: productCardSettings,
+                categorySettings: categorySettings,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -1036,6 +1048,33 @@ export default function AppearancePage() {
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="category-buttons">
+                             <AccordionTrigger className="text-sm font-medium">Pengaturan Tombol Kategori</AccordionTrigger>
+                             <AccordionContent className="pt-4 space-y-4">
+                                <div className="grid gap-2">
+                                    <Label>Gaya Tombol</Label>
+                                    <RadioGroup value={categorySettings?.style} onValueChange={(value) => setCategorySettings(prev => ({...prev, style: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="default" id="cat-style-default" /><Label htmlFor="cat-style-default">Isi (Default)</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="outline" id="cat-style-outline" /><Label htmlFor="cat-style-outline">Garis (Outline)</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                 <div className="grid gap-2">
+                                    <Label>Ukuran Tombol</Label>
+                                    <RadioGroup value={categorySettings?.size} onValueChange={(value) => setCategorySettings(prev => ({...prev, size: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="sm" id="cat-size-sm" /><Label htmlFor="cat-size-sm">Kecil</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="default" id="cat-size-md" /><Label htmlFor="cat-size-md">Sedang</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="lg" id="cat-size-lg" /><Label htmlFor="cat-size-lg">Besar</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>Bentuk Tombol</Label>
+                                    <RadioGroup value={categorySettings?.shape} onValueChange={(value) => setCategorySettings(prev => ({...prev, shape: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="default" id="cat-shape-default" /><Label htmlFor="cat-shape-default">Standar</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="pill" id="cat-shape-pill" /><Label htmlFor="cat-shape-pill">Pil</Label></div>
+                                    </RadioGroup>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                     </Accordion>
                 </CardContent>
                 <CardFooter>
@@ -1070,6 +1109,7 @@ export default function AppearancePage() {
                                     profileBodyFont={profileBodyFont}
                                     profileBodyFontColor={profileBodyFontColor}
                                     productCardSettings={productCardSettings}
+                                    categorySettings={categorySettings}
                                 />
                             </div>
                         </div>

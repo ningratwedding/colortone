@@ -145,6 +145,15 @@
                 "buttonStyle": { "type": "string", "enum": ["fill", "outline"] }
             }
         },
+        "categorySettings": {
+          "type": "object",
+          "description": "Settings for category filter button appearance.",
+          "properties": {
+            "style": { "type": "string", "enum": ["default", "outline"] },
+            "size": { "type": "string", "enum": ["sm", "md", "lg"] },
+            "shape": { "type": "string", "enum": ["default", "pill"] }
+          }
+        },
         "role": {
           "type": "string",
           "enum": ["pembeli", "kreator", "admin", "affiliator"],

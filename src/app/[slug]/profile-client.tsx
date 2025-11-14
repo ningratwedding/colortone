@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -102,6 +103,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
   const [activeCategory, setActiveCategory] = useState('all');
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
   const categories = user.affiliateProductCategories || [];
+  const categorySettings = user.categorySettings || { style: 'default', size: 'default', shape: 'default' };
 
   if (loading) {
     return (
@@ -142,8 +144,10 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
           {displayCategories.map((cat) => (
             <CarouselItem key={cat.id} className="basis-auto pl-2">
               <Button
-                variant={activeCategory === cat.id ? "default" : "outline"}
+                variant={activeCategory === cat.id ? categorySettings.style : "outline"}
+                size={categorySettings.size}
                 onClick={() => setActiveCategory(cat.id)}
+                className={cn(categorySettings.shape === 'pill' && 'rounded-full')}
               >
                 {cat.name}
               </Button>
