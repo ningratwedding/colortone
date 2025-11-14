@@ -341,13 +341,13 @@ export default function FeaturedProductsPage() {
                   <div className="flex items-center gap-2">
                     <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-muted p-1">
                         {categories.map((cat) => (
-                          <div key={cat.id} className="relative group/tab">
-                            <TabsTrigger value={cat.id} className="pr-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                          <div key={cat.id} className="relative group/tab flex items-center pr-1 data-[state=active]:bg-primary rounded-md">
+                            <TabsTrigger value={cat.id} className="pr-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                               {cat.name}
                             </TabsTrigger>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="absolute top-1/2 -translate-y-1/2 right-0.5 h-6 w-6 text-muted-foreground group-data-[state=active]/tab:text-primary-foreground hover:bg-black/10">
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground group-data-[state=active]/tab:text-primary-foreground hover:bg-black/10">
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -472,6 +472,27 @@ export default function FeaturedProductsPage() {
                                 onCheckedChange={() => handleToggleProductInCategorizeDialog(cat.id)}
                             />
                             <Label htmlFor={`cat-dialog-${cat.id}`} className="font-normal cursor-pointer flex-1">{cat.name}</Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                                    <DropdownMenuItem onSelect={() => {
+                                        setIsCategorizeDialogOpen(false);
+                                        handleOpenCategoryDialog(cat);
+                                    }}>
+                                        <Edit className="mr-2 h-4 w-4" /> Ubah
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => {
+                                        setIsCategorizeDialogOpen(false);
+                                        openDeleteDialog(cat);
+                                    }} className="text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     ))}
                     </div>
