@@ -27,6 +27,7 @@ export type UserProfile = {
     tiktok?: string;
     website?: string;
     whatsapp?: string;
+    linkedin?: string;
   };
   socialsSettings?: {
     style: 'iconOnly' | 'pill';

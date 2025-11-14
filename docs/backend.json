@@ -86,7 +86,8 @@
             "facebook": { "type": "string" },
             "tiktok": { "type": "string" },
             "website": { "type": "string", "format": "uri" },
-            "whatsapp": { "type": "string" }
+            "whatsapp": { "type": "string" },
+            "linkedin": { "type": "string" }
           },
           "description": "An object containing the user's social media usernames and website."
         },
