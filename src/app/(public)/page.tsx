@@ -48,7 +48,7 @@ export default function Home() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 md:py-16 space-y-12 md:space-y-16">
         {/* Visi Section */}
-        <Card className="shadow-lg border-2 border-primary/20">
+        <Card className="border-2 border-primary/20">
           <CardHeader className="text-center">
             <Target className="mx-auto h-12 w-12 text-primary mb-2" />
             <CardTitle className="text-2xl font-headline">Visi Kami</CardTitle>
