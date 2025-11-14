@@ -181,7 +181,7 @@ export default function FeaturedProductsPage() {
   
   return (
     <>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
       {/* Product Selection */}
       <div className="lg:col-span-1">
         <Card>
@@ -252,7 +252,7 @@ export default function FeaturedProductsPage() {
       </div>
 
       {/* Category Management */}
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-1">
         <Card>
             <CardHeader className="flex-row items-center justify-between">
                 <div>
