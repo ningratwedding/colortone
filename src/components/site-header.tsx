@@ -178,8 +178,9 @@ export function SiteHeader() {
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/">
+                  <Link href="/" className="flex items-center space-x-2 text-foreground">
                     <Logo />
+                    <span className="font-bold text-lg">LinkPro</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
