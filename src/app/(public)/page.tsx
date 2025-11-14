@@ -28,8 +28,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
-          <div className="flex justify-center mb-6">
+          <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto" />
+            <span className="text-4xl font-bold mt-2">LinkStore</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-bold font-headline">
             Ruang Anda untuk Berkarya dan Bertumbuh
