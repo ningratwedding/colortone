@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -285,16 +286,16 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
        {/* Sticky bottom bar for mobile */}
        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
-        <div className="container flex items-center justify-between h-20 px-4">
+        <div className="container flex items-center justify-between h-16 px-4">
             <div className="flex-grow flex items-center gap-2">
-                <Button size="lg" className="flex-grow" asChild disabled={buttonLoading}>
+                <Button size="default" className="flex-grow" asChild disabled={buttonLoading}>
                     <Link href={getCheckoutUrl()}>
                         <ShoppingCart className="mr-2 h-4 w-4" /> 
                         {buttonLoading ? "Memuat..." : "Beli Sekarang"}
                     </Link>
                 </Button>
                 {userProfile?.role === 'affiliator' && (
-                    <Button size="icon" variant="outline" className="w-12 h-12 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                    <Button size="icon" variant="outline" className="w-10 h-10 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
                         <Share2 className="h-5 w-5" />
                     </Button>
                 )}
@@ -304,4 +305,5 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
+
 

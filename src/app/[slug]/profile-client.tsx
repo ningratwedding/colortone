@@ -346,7 +346,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   return (
     <div className="pb-4">
        <div
-        className="relative h-32 md:h-48 overflow-hidden"
+        className="relative h-24 md:h-48 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor || '#FFFFFF' }}
         >
             <Button
@@ -385,9 +385,9 @@ export function ProfileContent({ slug }: { slug: string }) {
         </div>
       
       <div className="container mx-auto px-4">
-        <header className="flex flex-col items-center gap-2 mb-4 text-center -mt-10 md:-mt-12 relative z-10">
+        <header className="flex flex-col items-center gap-1.5 mb-3 text-center -mt-8 md:-mt-12 relative z-10">
           <Avatar 
-            className="h-20 w-20 md:h-24 md:w-24 border-4"
+            className="h-16 w-16 md:h-24 md:w-24 border-4"
             style={{ borderColor: profileUser.profileBackgroundColor || 'hsl(var(--background))' }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
@@ -396,7 +396,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           <div>
             <h1 
               className={cn(
-                "text-xl font-bold font-headline",
+                "text-lg font-bold font-headline",
                 profileUser.profileTitleFont === 'poppins' && 'font-poppins',
                 profileUser.profileTitleFont === 'lora' && 'font-lora',
                 profileUser.profileTitleFont === 'oswald' && 'font-oswald',
@@ -450,7 +450,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             </p>
             {profileUser.socials && (
               <div className={cn(
-                "flex justify-center items-center gap-2 mt-2 flex-wrap",
+                "flex justify-center items-center gap-1.5 mt-2 flex-wrap",
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
@@ -484,7 +484,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           </div>
         </header>
         
-        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-4" /> }
+        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-3" /> }
 
 
         <main>
