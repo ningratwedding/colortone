@@ -35,6 +35,7 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { hexToRgba } from '@/lib/hex-to-rgba';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -144,7 +145,8 @@ function ProfilePreview({
   profileBodyFontColor: string;
 }) {
   const displayName = profile.fullName || profile.name;
-  
+  const [activeCategory, setActiveCategory] = useState('all');
+
   const headerGradientStyle = profileBackgroundColor
     ? { backgroundImage: `linear-gradient(to top, ${profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
     : {};
@@ -181,6 +183,11 @@ function ProfilePreview({
         return `https://www.${platform}.com/${username}`;
     }
   };
+  
+    const categories = profile.affiliateProductCategories || [];
+    const allCategory = { id: 'all', name: 'Semua Produk', productIds: profile.featuredProductIds || [] };
+    const displayCategories = [allCategory, ...categories];
+
 
   return (
     <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
@@ -310,6 +317,36 @@ function ProfilePreview({
             )}
         </div>
         </header>
+            
+            {profile.role === 'affiliator' && profile.featuredProductIds && profile.featuredProductIds.length > 0 && (
+              <div className="w-full space-y-4 my-8">
+                <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
+                  <CarouselContent className="-ml-2">
+                    {displayCategories.map((cat) => (
+                      <CarouselItem key={cat.id} className="basis-auto pl-2">
+                        <Button
+                          size="sm"
+                          variant={activeCategory === cat.id ? "default" : "outline"}
+                          onClick={() => setActiveCategory(cat.id)}
+                        >
+                          {cat.name}
+                        </Button>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+                <div className="grid grid-cols-2 gap-2">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-24 w-full" />
+                      <Skeleton className="h-3 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <p className="text-xs text-center text-muted-foreground">(Ini adalah pratinjau)</p>
     </div>
     </div>
