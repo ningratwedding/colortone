@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -85,7 +86,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
         ) : products && products.length > 0 ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} hideCreator={true} />
+              <ProductCard key={product.id} product={product} hideCreator={true} settings={user.productCardSettings} />
             ))}
           </div>
         ) : (
@@ -154,7 +155,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
       {activeProducts.length > 0 ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
           {activeProducts.map((product) => (
-            <ProductCard key={product.id} product={product} affiliateId={user.id} />
+            <ProductCard key={product.id} product={product} affiliateId={user.id} settings={user.productCardSettings} />
           ))}
         </div>
       ) : (

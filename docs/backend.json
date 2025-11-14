@@ -135,6 +135,16 @@
                 }
             }
         },
+        "productCardSettings": {
+            "type": "object",
+            "description": "Settings for product card appearance.",
+            "properties": {
+                "style": { "type": "string", "enum": ["simple", "standard"] },
+                "textAlign": { "type": "string", "enum": ["left", "center"] },
+                "imageAspectRatio": { "type": "string", "enum": ["3/2", "4/3", "1/1"] },
+                "buttonStyle": { "type": "string", "enum": ["fill", "outline"] }
+            }
+        },
         "role": {
           "type": "string",
           "enum": ["pembeli", "kreator", "admin", "affiliator"],

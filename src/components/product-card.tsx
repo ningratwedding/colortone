@@ -26,9 +26,10 @@ interface ProductCardProps {
   className?: string;
   hideCreator?: boolean;
   affiliateId?: string;
+  settings?: UserProfile['productCardSettings'];
 }
 
-export function ProductCard({ product, className, hideCreator = false, affiliateId }: ProductCardProps) {
+export function ProductCard({ product, className, hideCreator = false, affiliateId, settings }: ProductCardProps) {
   const [formattedPrice, setFormattedPrice] = useState<string>('');
   const firestore = useFirestore();
 
@@ -56,16 +57,25 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
 
   const productUrl = `/product/${product.id}${affiliateId ? `?ref=${affiliateId}`: ''}`;
   const checkoutUrl = `/checkout?productId=${product.id}${affiliateId ? `&ref=${affiliateId}`: ''}`;
+  
+  const cardStyle = settings?.style || 'standard';
+  const textAlign = settings?.textAlign || 'left';
+  const aspectRatio = settings?.imageAspectRatio === '1/1' ? 'aspect-square' 
+                    : settings?.imageAspectRatio === '4/3' ? 'aspect-[4/3]' 
+                    : 'aspect-[3/2]';
+  const buttonStyle = settings?.buttonStyle || 'fill';
+
 
   return (
     <Card
       className={cn(
         'overflow-hidden group flex flex-col rounded-lg',
+        textAlign === 'center' && 'text-center',
         className
       )}
     >
       <CardHeader className="p-0 relative">
-         <Link href={productUrl} className="block aspect-[3/2] w-full">
+         <Link href={productUrl} className={cn("block w-full", aspectRatio)}>
           {mainImage ? (
             <Image
               src={mainImage}
@@ -80,13 +90,13 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
           )}
          </Link>
       </CardHeader>
-      <CardContent className="p-3 pb-2 flex-grow flex flex-col">
+      <CardContent className={cn("p-3 pb-2 flex-grow flex flex-col", textAlign === 'center' && 'items-center')}>
         <Link href={productUrl} className="space-y-1">
           <CardTitle className="text-base leading-tight hover:text-primary transition-colors">
             {product.name}
           </CardTitle>
         </Link>
-        {!hideCreator && (
+        {cardStyle === 'standard' && !hideCreator && (
             <div className="mt-2">
                 {creatorLoading ? (
                     <div className="flex items-center gap-2">
@@ -94,7 +104,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
                         <Skeleton className="h-4 w-20" />
                     </div>
                 ) : creator ? (
-                    <Link href={`/${creator.slug}`} className="flex items-center gap-2 group/creator">
+                    <Link href={`/${creator.slug}`} className={cn("flex items-center gap-2 group/creator", textAlign === 'center' && 'justify-center')}>
                         <Avatar className="h-6 w-6">
                             <AvatarImage src={creator.avatarUrl} alt={creator.name} data-ai-hint={creator.avatarHint} />
                             <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
@@ -105,11 +115,11 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
             </div>
         )}
       </CardContent>
-      <CardFooter className="p-3 pt-0 mt-auto flex flex-col items-start gap-2">
+      <CardFooter className={cn("p-3 pt-0 mt-auto flex flex-col items-start gap-2", textAlign === 'center' && 'items-center')}>
         <div className="font-semibold text-base text-primary truncate">
           {formattedPrice}
         </div>
-        <Button size="sm" asChild className="w-full">
+        <Button size="sm" asChild className="w-full" variant={buttonStyle === 'outline' ? 'outline' : 'default'}>
           <Link href={checkoutUrl}>
             <CreditCard className="mr-1.5 h-4 w-4" />
             Beli

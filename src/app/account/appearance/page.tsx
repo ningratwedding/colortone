@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -133,6 +134,7 @@ function ProfilePreview({
   profileTitleFontColor,
   profileBodyFont,
   profileBodyFontColor,
+  productCardSettings,
 }: {
   profile: UserProfile;
   products?: Product[] | null;
@@ -148,6 +150,7 @@ function ProfilePreview({
   profileTitleFontColor: string;
   profileBodyFont?: string;
   profileBodyFontColor: string;
+  productCardSettings?: UserProfile['productCardSettings'];
 }) {
   const displayName = profile.fullName || profile.name;
   const [activeCategory, setActiveCategory] = useState('all');
@@ -345,7 +348,7 @@ function ProfilePreview({
                 {activeProducts ? (
                   <div className="grid grid-cols-2 gap-2">
                     {activeProducts.map(product => (
-                      <ProductCard key={product.id} product={product} affiliateId={profile.id} />
+                      <ProductCard key={product.id} product={product} affiliateId={profile.id} settings={productCardSettings} />
                     ))}
                   </div>
                 ) : (
@@ -405,6 +408,7 @@ export default function AppearancePage() {
     const [profileBodyFont, setProfileBodyFont] = useState<string>('inter');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
+    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill' });
 
     const [isSaving, setIsSaving] = useState(false);
 
@@ -435,6 +439,13 @@ export default function AppearancePage() {
                 pillWidth: 140,
                 ...userProfile.socialsSettings
             });
+            setProductCardSettings({
+                style: 'standard',
+                textAlign: 'left',
+                imageAspectRatio: '3/2',
+                buttonStyle: 'fill',
+                ...userProfile.productCardSettings,
+            })
         }
     }, [userProfile]);
     
@@ -484,6 +495,7 @@ export default function AppearancePage() {
                 profileBodyFont,
                 profileBodyFontColor,
                 socialsSettings: socialsSettings,
+                productCardSettings: productCardSettings,
             };
 
             await updateDoc(userProfileRef, updatedData);
@@ -990,6 +1002,40 @@ export default function AppearancePage() {
                                 )}
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="product-card">
+                            <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
+                            <AccordionContent className="pt-4 space-y-4">
+                                <div className="grid gap-2">
+                                    <Label>Gaya Kartu</Label>
+                                    <RadioGroup value={productCardSettings?.style} onValueChange={(value) => setProductCardSettings(prev => ({...prev, style: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="standard" id="card-standard" /><Label htmlFor="card-standard">Standar (dengan kreator)</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="simple" id="card-simple" /><Label htmlFor="card-simple">Sederhana</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>Perataan Teks</Label>
+                                    <RadioGroup value={productCardSettings?.textAlign} onValueChange={(value) => setProductCardSettings(prev => ({...prev, textAlign: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="left" id="text-left" /><Label htmlFor="text-left">Kiri</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="center" id="text-center" /><Label htmlFor="text-center">Tengah</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                 <div className="grid gap-2">
+                                    <Label>Rasio Aspek Gambar</Label>
+                                    <RadioGroup value={productCardSettings?.imageAspectRatio} onValueChange={(value) => setProductCardSettings(prev => ({...prev, imageAspectRatio: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="3/2" id="aspect-3-2" /><Label htmlFor="aspect-3-2">3:2 (Lanskap)</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="4/3" id="aspect-4-3" /><Label htmlFor="aspect-4-3">4:3 (Lanskap)</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="1/1" id="aspect-1-1" /><Label htmlFor="aspect-1-1">1:1 (Persegi)</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                 <div className="grid gap-2">
+                                    <Label>Gaya Tombol Beli</Label>
+                                    <RadioGroup value={productCardSettings?.buttonStyle} onValueChange={(value) => setProductCardSettings(prev => ({...prev, buttonStyle: value as any}))}>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="fill" id="button-fill" /><Label htmlFor="button-fill">Isi (Fill)</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="outline" id="button-outline" /><Label htmlFor="button-outline">Garis (Outline)</Label></div>
+                                    </RadioGroup>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                     </Accordion>
                 </CardContent>
                 <CardFooter>
@@ -1023,6 +1069,7 @@ export default function AppearancePage() {
                                     profileTitleFontColor={profileTitleFontColor}
                                     profileBodyFont={profileBodyFont}
                                     profileBodyFontColor={profileBodyFontColor}
+                                    productCardSettings={productCardSettings}
                                 />
                             </div>
                         </div>

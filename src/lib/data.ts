@@ -46,6 +46,12 @@ export type UserProfile = {
     pillSize?: 'sm' | 'md' | 'lg';
     pillWidth?: number;
   };
+  productCardSettings?: {
+    style?: 'simple' | 'standard';
+    textAlign?: 'left' | 'center';
+    imageAspectRatio?: '3/2' | '4/3' | '1/1';
+    buttonStyle?: 'fill' | 'outline';
+  };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];
   affiliateProductCategories?: AffiliateProductCategory[];
