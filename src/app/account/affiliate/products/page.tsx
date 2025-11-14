@@ -243,16 +243,21 @@ export default function FeaturedProductsPage() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-              <div>
+              <div className='flex-grow'>
                 <CardTitle>Pilih Produk Unggulan</CardTitle>
                 <CardDescription>
                   Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm" onClick={() => setIsAllCategoriesDialogOpen(true)}>
-                <ListTree className="mr-2 h-4 w-4" />
-                Kategori saya
-              </Button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Button variant="outline" size="sm" onClick={() => setIsAllCategoriesDialogOpen(true)}>
+                  <ListTree className="mr-2 h-4 w-4" />
+                  Kategori saya
+                </Button>
+                <Button onClick={handleSave} disabled={loading || isSaving} size="sm">
+                  {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan'}
+                </Button>
+              </div>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -312,11 +317,6 @@ export default function FeaturedProductsPage() {
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter>
-            <Button onClick={handleSave} disabled={loading || isSaving}>
-              {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan Semua Perubahan'}
-            </Button>
-        </CardFooter>
       </Card>
     </div>
     
