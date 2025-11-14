@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   const [slug, setSlug] = useState('');
@@ -178,11 +179,11 @@ export default function Home() {
       <div className="container mx-auto px-4 py-12 md:py-16 space-y-12 md:space-y-16">
         {/* Visi Section */}
         <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-background">
-          <CardHeader className="text-center">
-            
+          <CardHeader className="text-center items-center">
             <CardTitle className="text-2xl font-headline">Visi Kami</CardTitle>
+            <Separator className="my-3 w-1/4" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <p className="text-center text-lg text-muted-foreground max-w-3xl mx-auto">
               {vision}
             </p>
@@ -191,10 +192,11 @@ export default function Home() {
 
         {/* Misi Section */}
         <div className="text-center">
-          <h2 className="text-3xl font-bold font-headline mb-8">
+          <h2 className="text-3xl font-bold font-headline">
             Misi Kami
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+          <Separator className="my-4 mx-auto w-1/4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left mt-8">
             {missions.map((mission, index) => (
               <Card key={index} className="flex bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <CardContent className="p-4 flex items-start space-x-2">
