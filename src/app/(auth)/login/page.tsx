@@ -163,7 +163,6 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
               <Logo className="h-8 w-8" />
-              <span className="text-2xl font-bold font-headline">Di</span>
             </Link>
           </div>
           <CardTitle className="text-2xl">Lanjutkan Kisah Anda</CardTitle>
