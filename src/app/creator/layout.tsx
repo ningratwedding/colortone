@@ -83,10 +83,7 @@ export default function CreatorDashboardLayout({
         <Sidebar collapsible="icon" variant="inset" side="left">
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2">
-              <Logo className="h-5 w-5" />
-              <span className="text-base font-bold font-headline group-data-[collapsible=icon]:hidden">
-                Di
-              </span>
+              <Logo />
             </Link>
           </SidebarHeader>
           <SidebarContent className="p-2">

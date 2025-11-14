@@ -178,8 +178,8 @@ export function SiteHeader() {
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/" className="flex items-center space-x-2">
-                    <Logo className="h-6 w-6" />
+                  <Link href="/">
+                    <Logo />
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -199,7 +199,7 @@ export function SiteHeader() {
           </Sheet>
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
-            <Logo className="h-6 w-6" />
+            <Logo />
           </Link>
         </div>
 

@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Link href="/" className="flex items-center space-x-2">
-              <Logo className="h-8 w-8" />
+              <Logo />
             </Link>
           </div>
           <CardTitle className="text-2xl">Lupa Kata Sandi?</CardTitle>

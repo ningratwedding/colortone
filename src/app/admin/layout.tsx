@@ -96,7 +96,7 @@ export default function AdminDashboardLayout({
         <Sidebar collapsible="icon" variant="inset" side="left">
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2">
-              <Logo className="h-5 w-5" />
+              <Logo />
             </Link>
           </SidebarHeader>
           <SidebarContent className="p-2">
