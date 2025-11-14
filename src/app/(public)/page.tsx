@@ -73,7 +73,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
             {missions.map((mission, index) => (
-              <Card key={index} className="flex bg-white">
+              <Card key={index} className="flex bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <CardContent className="p-4 flex items-start space-x-4">
                   <div className="flex-shrink-0 pt-1">
                     <CheckCircle className="h-6 w-6 text-primary" />
