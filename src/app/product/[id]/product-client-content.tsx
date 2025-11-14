@@ -134,7 +134,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   if (productLoading || creatorLoading || softwareLoading) {
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-2 py-6">
             <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
                 <div>
                     <Skeleton className="aspect-[3/2] w-full rounded-lg" />
@@ -168,7 +168,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
   const comparisonImage = product.imageAfterUrl;
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-28 md:pb-6">
+    <div className="container mx-auto px-2 py-6 pb-28 md:pb-6">
        <div className="grid md:grid-cols-2 gap-2 md:gap-4 lg:gap-6">
         <div>
            {activeTab === 'gallery' && (
@@ -286,7 +286,7 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
        {/* Sticky bottom bar for mobile */}
        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
-        <div className="container flex items-center justify-between h-16 px-4">
+        <div className="container flex items-center justify-between h-16 px-2">
             <div className="flex-grow flex items-center gap-2">
                 <Button size="default" className="flex-grow" asChild disabled={buttonLoading}>
                     <Link href={getCheckoutUrl()}>

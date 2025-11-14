@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -90,7 +91,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
           )}
          </Link>
       </CardHeader>
-      <CardContent className={cn("p-3 pb-2 flex-grow flex flex-col", textAlign === 'center' && 'items-center')}>
+      <CardContent className={cn("p-2 pb-1 flex-grow flex flex-col", textAlign === 'center' && 'items-center')}>
         <Link href={productUrl} className="space-y-1">
           <CardTitle className="text-base leading-tight hover:text-primary transition-colors">
             {product.name}
@@ -115,7 +116,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
             </div>
         )}
       </CardContent>
-      <CardFooter className={cn("p-3 pt-0 mt-auto flex flex-col items-start gap-2", textAlign === 'center' && 'items-center')}>
+      <CardFooter className={cn("p-2 pt-0 mt-auto flex flex-col items-start gap-1", textAlign === 'center' && 'items-center')}>
         <div className="font-semibold text-base text-primary truncate">
           {formattedPrice}
         </div>

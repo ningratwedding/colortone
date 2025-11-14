@@ -257,7 +257,7 @@ export function ProfileContent({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="container mx-auto px-2 py-6 space-y-6">
         <div className="flex flex-col items-center gap-4 text-center">
             <Skeleton className="h-24 w-24 rounded-full" />
             <div className="space-y-2">
@@ -384,7 +384,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             )}
         </div>
       
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2">
         <header className="flex flex-col items-center gap-1.5 mb-3 text-center -mt-8 md:-mt-12 relative z-10">
           <Avatar 
             className="h-16 w-16 md:h-24 md:w-24 border-4"
