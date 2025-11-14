@@ -5,6 +5,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -566,56 +567,6 @@ export default function AppearancePage() {
         });
     };
     
-    const copyToClipboard = (text: string) => {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            toast({
-                title: "Tautan Profil Disalin",
-                description: "URL profil publik Anda telah disalin ke clipboard.",
-            });
-        } catch (err) {
-            console.error('Gagal menyalin teks: ', err);
-             toast({
-                variant: "destructive",
-                title: "Gagal Menyalin",
-                description: "Browser Anda mungkin tidak mendukung fitur ini.",
-            });
-        }
-        document.body.removeChild(textArea);
-    };
-
-    const handleShareLink = async () => {
-        if (!userProfile) return;
-        const url = `${siteConfig.url}/${userProfile.slug}`;
-        const shareData = {
-            title: `Lihat profil ${userProfile.name} di ${siteConfig.name}`,
-            text: `Lihat semua produk dan tautan dari ${userProfile.name} di sini!`,
-            url: url,
-        };
-
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-                toast({
-                    title: "Profil Dibagikan!",
-                    description: "Tautan profil Anda telah berhasil dibagikan.",
-                });
-            } catch (error) {
-                console.error('Error sharing:', error);
-                // Fallback to copy if user cancels share dialog etc.
-                copyToClipboard(url);
-            }
-        } else {
-            // Fallback for browsers that do not support the Web Share API
-            copyToClipboard(url);
-        }
-    };
-
     const loading = userLoading || profileLoading || productsLoading;
 
     if (loading) {
@@ -654,16 +605,7 @@ export default function AppearancePage() {
                     <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="profile-url">URL Profil Publik Anda</Label>
-                        <div className="flex w-full items-center space-x-2">
-                            <Input id="profile-url" value={`${siteConfig.url}/${userProfile.slug}`} readOnly />
-                            <Button type="button" variant="secondary" onClick={handleShareLink}>
-                                <Share2 className="mr-2 h-4 w-4" />
-                                Bagikan
-                            </Button>
-                        </div>
-                    </div>
+                    
                     <div className="grid gap-2">
                         <Label htmlFor="bio">Bio Profil Publik</Label>
                         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
