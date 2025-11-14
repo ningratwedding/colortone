@@ -287,7 +287,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   const handleShareProfile = async () => {
     const shareData = {
         title: `Lihat profil ${displayName}`,
-        text: `Lihat profil dan produk dari ${displayName} di LinkPro.`,
+        text: `Lihat profil dan produk dari ${displayName} di LinkStore.`,
         url: window.location.href,
     };
     if (navigator.share) {

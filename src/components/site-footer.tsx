@@ -18,7 +18,7 @@ export function SiteFooter() {
                         &copy; {new Date().getFullYear()} {siteConfig.name}. Semua hak dilindungi undang-undang.
                     </p>
                     <p>
-                        Dibuat dengan <Link href="/" className="font-semibold text-primary hover:underline">LinkPro</Link>
+                        Dibuat dengan <Link href="/" className="font-semibold text-primary hover:underline">LinkStore</Link>
                     </p>
                 </div>
             </div>

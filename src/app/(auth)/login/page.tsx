@@ -164,7 +164,7 @@ export default function LoginPage() {
             <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center text-primary">
                   <Logo className="h-8 w-auto" />
-                  <span className="font-bold text-2xl ml-2">LinkPro</span>
+                  <span className="font-bold text-2xl ml-2">LinkStore</span>
               </div>
             </Link>
           </div>

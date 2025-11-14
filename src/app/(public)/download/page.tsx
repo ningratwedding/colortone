@@ -26,7 +26,7 @@ export default function DownloadPage() {
         <div className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
             <div className="container mx-auto px-4 py-12 md:py-20 text-center relative z-10">
                 <h1 className="text-3xl md:text-4xl font-bold font-headline">
-                    Unduh Aplikasi LinkPro
+                    Unduh Aplikasi LinkStore
                 </h1>
                 <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
                     Akses semua fitur, kelola produk, dan berinteraksi dengan komunitas langsung dari perangkat seluler Anda.
