@@ -339,10 +339,10 @@ export default function FeaturedProductsPage() {
               ) : (
                 <Tabs defaultValue={categories[0]?.id || 'new'}>
                   <div className="flex items-center gap-2">
-                    <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-transparent p-0">
+                    <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-background p-0 data-[state=active]:shadow-none">
                         {categories.map((cat) => (
                           <div key={cat.id} className="flex items-center group">
-                            <TabsTrigger value={cat.id} className="pr-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                            <TabsTrigger value={cat.id} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                               {cat.name}
                             </TabsTrigger>
                              <DropdownMenu>
@@ -365,7 +365,7 @@ export default function FeaturedProductsPage() {
                            </div>
                         ))}
                     </TabsList>
-                    <Button onClick={() => handleOpenCategoryDialog()} size="sm">
+                    <Button onClick={() => handleOpenCategoryDialog()} size="sm" variant="outline">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Baru
                     </Button>
@@ -479,9 +479,12 @@ export default function FeaturedProductsPage() {
                 ) : (
                     <div className="text-center text-muted-foreground p-4 border rounded-md">
                         <p>Anda belum membuat kategori kustom.</p>
-                        <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => { closeCategorizeDialog(); handleOpenCategoryDialog(); }}>Buat Kategori Baru</Button>
                     </div>
                 )}
+                 <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => { closeCategorizeDialog(); handleOpenCategoryDialog(); }}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Buat Kategori Baru
+                </Button>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={closeCategorizeDialog}>Lewati</Button>
@@ -492,4 +495,3 @@ export default function FeaturedProductsPage() {
     </>
   );
 }
-
