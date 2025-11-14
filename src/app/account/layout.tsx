@@ -22,7 +22,7 @@ const baseMenuItems = [
 
 const affiliateMenuItems = [
     { href: '/account/affiliate', label: 'Dasbor Afiliasi', icon: PartyPopper, exact: true },
-    { href: '/account/affiliate/products', label: 'Atur Produk & Kategori', icon: Star },
+    { href: '/account/affiliate/products', label: 'Atur Produk Unggulan', icon: Star },
 ];
 
 
@@ -72,10 +72,6 @@ export default function AccountLayout({
       <SiteHeader />
       <div className="container mx-auto px-4 py-6">
         <div className="w-full">
-          <header className="mb-6 hidden md:block">
-            <h1 className="text-2xl font-bold font-headline">{getPageTitle()}</h1>
-          </header>
-
           {/* Mobile Navigation */}
           <div className="md:hidden mb-6 border-b">
             <nav className="flex -mb-px overflow-x-auto">
