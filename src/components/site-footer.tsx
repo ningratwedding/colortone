@@ -10,7 +10,9 @@ export function SiteFooter() {
     return (
         <footer className="border-t bg-background">
             <div className="container mx-auto flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-                <Logo className="h-7 text-primary" />
+                <div className="flex justify-center">
+                    <Logo className="h-7 text-primary" />
+                </div>
                 <p className="text-center text-sm text-muted-foreground">
                     &copy; {new Date().getFullYear()} {siteConfig.name}. Semua hak dilindungi undang-undang.
                 </p>
