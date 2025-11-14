@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,45 @@ import { Input } from '@/components/ui/input';
 export default function Home() {
   const [slug, setSlug] = useState('');
   const router = useRouter();
+  
+  const placeholderTexts = useMemo(() => ['nama-kreator', 'seniman-hebat', 'fotografer-pro'], []);
+  const [placeholder, setPlaceholder] = useState(placeholderTexts[0]);
+  
+  useEffect(() => {
+    let currentTextIndex = 0;
+    let currentText = '';
+    let isDeleting = false;
+    let typeSpeed = 150;
+
+    const type = () => {
+      const fullText = placeholderTexts[currentTextIndex];
+      
+      if (isDeleting) {
+        currentText = fullText.substring(0, currentText.length - 1);
+      } else {
+        currentText = fullText.substring(0, currentText.length + 1);
+      }
+
+      setPlaceholder(currentText);
+
+      if (!isDeleting && currentText === fullText) {
+        // Pause at end
+        isDeleting = true;
+        typeSpeed = 2000; // Pause duration
+      } else if (isDeleting && currentText === '') {
+        isDeleting = false;
+        currentTextIndex = (currentTextIndex + 1) % placeholderTexts.length;
+        typeSpeed = 500; // Pause before typing new word
+      } else {
+        typeSpeed = isDeleting ? 100 : 150;
+      }
+      
+      setTimeout(type, typeSpeed);
+    };
+
+    const typingTimeout = setTimeout(type, typeSpeed);
+    return () => clearTimeout(typingTimeout);
+  }, [placeholderTexts]);
 
   const handleClaimUsername = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,7 +155,7 @@ export default function Home() {
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
               <Input
                 type="text"
-                placeholder="nama-anda"
+                placeholder={placeholder}
                 className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[120px] pr-[100px] text-base"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
