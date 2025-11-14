@@ -162,11 +162,9 @@ export default function LoginPage() {
         <CardHeader className="text-center">
            <div className="flex justify-center items-center space-x-2 mb-4">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] bg-clip-text text-transparent">
-                <div className="flex items-center">
+              <div className="flex items-center text-primary">
                   <Logo className="h-8 w-auto" />
                   <span className="font-bold text-2xl ml-2">LinkPro</span>
-                </div>
               </div>
             </Link>
           </div>
