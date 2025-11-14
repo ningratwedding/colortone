@@ -16,7 +16,7 @@ const AppleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 // Inline SVG for Android Icon
 const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path d="M17.329 10.205c-.328 1.546-1.58 2.8-3.131 3.129v3.457h-3.999v-3.457C8.653 13.005 7.4 11.75 7.07 10.205H4v5.039c0 1.94 1.252 3.585 3.033 4.053v2.802h2.001v-2.735h4.331v2.735h2.001v-2.802c1.78-.468 3.033-2.113 3.033-4.053v-5.039h-3.094zM8.535 5.253l-1.3 1.3c-.563.562-.563 1.472 0 2.034l1.3 1.3c.563.563 1.473.563 2.035 0l1.3-1.3c.562-.563.562-1.472 0-2.034l-1.3-1.3c-.562-.562-1.472-.562-2.035 0zm7.331 0c-.563-.562-1.472-.562-2.035 0l-1.3 1.3c-.562.562-.562 1.472 0 2.034l1.3 1.3c.563.563 1.473.563 2.035 0l1.3-1.3c.562-.563.562-1.472 0-2.034l-1.3-1.3z" />
+    <path d="M17.329 10.205c-.328 1.546-1.58 2.8-3.131 3.129v3.457h-3.999v-3.457C8.653 13.005 7.4 11.75 7.07 10.205H4v5.039c0 1.94 1.252 3.585 3.033 4.053v2.802h2.001v-2.735h4.331v2.735h2.001v-2.802c1.78-.468 3.033-2.113 3.033-4.053v-5.039h-3.094zM8.535 5.253l-1.3 1.3c-.563.562-.563 1.472 0 2.034l1.3 1.3c.563.563 1.473.563 2.035 0l1.3-1.3c.562-.563.562-1.472 0-2.034l-1.3-1.3c-.562-.562-1.472-.562-2.035 0zm7.331 0c-.563-.562-1.472-.562-2.035 0l-1.3 1.3c-.562-.562-.562 1.472 0 2.034l1.3 1.3c.563._563 1.473.563 2.035 0l1.3-1.3c.562-.563.562-1.472 0-2.034l-1.3-1.3z" />
   </svg>
 );
 
@@ -26,7 +26,7 @@ export default function DownloadPage() {
         <div className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
             <div className="container mx-auto px-4 py-12 md:py-20 text-center relative z-10">
                 <h1 className="text-3xl md:text-4xl font-bold font-headline">
-                    Unduh Aplikasi Di
+                    Unduh Aplikasi LinkPro
                 </h1>
                 <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
                     Akses semua fitur, kelola produk, dan berinteraksi dengan komunitas langsung dari perangkat seluler Anda.

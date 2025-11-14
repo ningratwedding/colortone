@@ -104,7 +104,7 @@ export default function SignupPage() {
     if (result.success && result.user) {
       try {
         const profile = await getOrCreateUserProfile(result.user);
-        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Di!" });
+        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkPro!" });
         handleRedirect(profile);
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : "Tidak dapat membuat profil pengguna baru.";
@@ -126,7 +126,7 @@ export default function SignupPage() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signUpWithEmail(data.email, data.password, data.profileName);
     if (result.success && result.profile) {
-      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di Di! Silakan periksa email Anda untuk verifikasi." });
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkPro! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
     } else {
       toast({
@@ -143,7 +143,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
            <div className="flex justify-center mb-4">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/">
               <Logo />
             </Link>
           </div>
