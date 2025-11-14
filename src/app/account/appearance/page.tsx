@@ -15,9 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, documentId } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase/provider';
-import type { UserProfile } from '@/lib/data';
+import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -36,6 +36,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { ProductCard } from '@/components/product-card';
+import { useCollection } from '@/firebase/firestore/use-collection';
+
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -117,6 +120,7 @@ const fontOptions = [
 
 function ProfilePreview({
   profile,
+  products,
   bio,
   socials,
   socialsSettings,
@@ -131,6 +135,7 @@ function ProfilePreview({
   profileBodyFontColor,
 }: {
   profile: UserProfile;
+  products?: Product[] | null;
   bio: string;
   socials: UserProfile['socials'];
   socialsSettings: UserProfile['socialsSettings'];
@@ -187,6 +192,8 @@ function ProfilePreview({
     const categories = profile.affiliateProductCategories || [];
     const allCategory = { id: 'all', name: 'Semua Produk', productIds: profile.featuredProductIds || [] };
     const displayCategories = [allCategory, ...categories];
+    
+    const activeProducts = products?.filter(p => displayCategories.find(c => c.id === activeCategory)?.productIds.includes(p.id));
 
 
   return (
@@ -335,15 +342,23 @@ function ProfilePreview({
                     ))}
                   </CarouselContent>
                 </Carousel>
-                <div className="grid grid-cols-2 gap-2">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="space-y-2">
-                      <Skeleton className="h-24 w-full" />
-                      <Skeleton className="h-3 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
-                  ))}
-                </div>
+                {activeProducts ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {activeProducts.map(product => (
+                      <ProductCard key={product.id} product={product} affiliateId={profile.id} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-3 w-3/4" />
+                        <Skeleton className="h-3 w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -368,6 +383,13 @@ export default function AppearancePage() {
     }, [firestore, user]);
 
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
+
+     const productsQuery = useMemo(() => {
+        if (!firestore || !userProfile || userProfile.role !== 'affiliator' || !userProfile.featuredProductIds || userProfile.featuredProductIds.length === 0) return null;
+        return query(collection(firestore, "products"), where(documentId(), 'in', userProfile.featuredProductIds.slice(0, 30)));
+    }, [firestore, userProfile]);
+
+    const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
     
     const [bio, setBio] = useState('');
     const [socials, setSocials] = useState<UserProfile['socials']>({});
@@ -503,7 +525,7 @@ export default function AppearancePage() {
         });
     };
 
-    const loading = userLoading || profileLoading;
+    const loading = userLoading || profileLoading || productsLoading;
 
     if (loading) {
         return (
@@ -987,7 +1009,8 @@ export default function AppearancePage() {
                             <div className="h-[64px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
                             <div className="rounded-[2rem] overflow-hidden w-full h-full bg-background">
                                 <ProfilePreview 
-                                    profile={userProfile} 
+                                    profile={userProfile}
+                                    products={products}
                                     bio={bio}
                                     socials={socials}
                                     socialsSettings={socialsSettings}
