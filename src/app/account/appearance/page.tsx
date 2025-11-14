@@ -6,6 +6,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,7 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import { ProductCard } from '@/components/product-card';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { siteConfig } from '@/lib/config';
+import { Separator } from '@/components/ui/separator';
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -336,8 +338,10 @@ function ProfilePreview({
         </div>
         </header>
             
+            { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-6" /> }
+
             {profile.role === 'affiliator' && profile.featuredProductIds && profile.featuredProductIds.length > 0 && (
-              <div className="w-full space-y-4 my-8">
+              <div className="w-full space-y-4">
                 <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
                   <CarouselContent className="-ml-2">
                     {displayCategories.map((cat) => {
@@ -383,7 +387,7 @@ function ProfilePreview({
               </div>
             )}
 
-            <p className="text-xs text-center text-muted-foreground">(Ini adalah pratinjau)</p>
+            <p className="text-xs text-center text-muted-foreground py-4">(Ini adalah pratinjau)</p>
     </div>
     </div>
   )
