@@ -339,19 +339,28 @@ export function ProfileContent({ slug }: { slug: string }) {
   return (
     <div className="pb-4">
        <div
-        className="relative h-40 md:h-56 overflow-hidden"
+        className="relative h-32 md:h-48 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor }}
         >
             <Button
                 variant="secondary"
                 size="icon"
-                className="absolute top-4 right-4 z-10 rounded-full h-10 w-10 bg-black/30 hover:bg-black/50 text-white"
+                className="absolute top-4 right-4 z-10 rounded-full h-8 w-8 bg-black/30 hover:bg-black/50 text-white"
                 onClick={handleShareProfile}
             >
-                <Share2 className="h-5 w-5" />
+                <Share2 className="h-4 w-4" />
                 <span className="sr-only">Bagikan Profil</span>
             </Button>
-            {profileUser.headerImageUrl ? (
+            {profileUser.headerVideoUrl ? (
+                 <video
+                    src={profileUser.headerVideoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+            ) : profileUser.headerImageUrl ? (
                 <Image
                     src={profileUser.headerImageUrl}
                     alt="Header background"
@@ -377,7 +386,7 @@ export function ProfileContent({ slug }: { slug: string }) {
         </div>
       
       <div className="container mx-auto px-4">
-        <header className="flex flex-col items-center gap-3 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
+        <header className="flex flex-col items-center gap-2 mb-4 text-center -mt-10 md:-mt-12 relative z-10">
           <Avatar 
             className="h-20 w-20 md:h-24 md:w-24 border-4"
             style={{ borderColor: profileUser.profileBackgroundColor || 'hsl(var(--background))' }}
@@ -388,7 +397,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           <div>
             <h1 
               className={cn(
-                "text-2xl font-bold font-headline",
+                "text-xl font-bold font-headline",
                 profileUser.profileTitleFont === 'poppins' && 'font-poppins',
                 profileUser.profileTitleFont === 'lora' && 'font-lora',
                 profileUser.profileTitleFont === 'oswald' && 'font-oswald',
@@ -476,7 +485,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           </div>
         </header>
         
-        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-6" /> }
+        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-4" /> }
 
 
         <main>

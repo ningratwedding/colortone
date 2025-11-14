@@ -19,6 +19,7 @@ export type UserProfile = {
   avatarHint: string;
   bio?: string;
   headerImageUrl?: string | null;
+  headerVideoUrl?: string | null;
   headerImageHint?: string;
   headerColor?: string;
   showHeaderGradient?: boolean;
@@ -153,3 +154,5 @@ export type ImagePlaceholder = {
     imageHint: string;
     description: string;
 }
+
+    

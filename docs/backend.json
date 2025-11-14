@@ -51,6 +51,11 @@
           "format": "uri",
           "description": "URL for the user's custom profile header image."
         },
+        "headerVideoUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL for the user's custom profile header video."
+        },
         "headerImageHint": {
           "type": "string",
           "description": "AI hint for the user's header image."
@@ -499,3 +504,5 @@
     }
   }
 }
+
+    
