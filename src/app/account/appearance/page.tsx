@@ -4,6 +4,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -1042,7 +1043,7 @@ export default function AppearancePage() {
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Ikon & Teks Pil</Label>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
-                                                    <button key={`social-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{ backgroundColor: color.value || 'transparent' }}>
+                                                    <button key={`social-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: color.value || 'transparent' }}>
                                                         {socialsSettings?.fontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
