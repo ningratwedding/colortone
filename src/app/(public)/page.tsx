@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Target, Flag, Handshake, CheckCircle } from 'lucide-react';
+import { Target, Flag, Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 
@@ -18,6 +18,39 @@ export default function Home() {
     'Membangun ruang komunitas yang memungkinkan kreator berinteraksi, bertumbuh, dan menginspirasi satu sama lain.',
     'Memberikan alat yang sederhana namun bertenaga, sehingga kreator dapat fokus berkarya tanpa terbebani teknis.',
     'Menyediakan insight yang jelas untuk membantu kreator memahami audiens, mengukur dampak, dan merancang langkah pertumbuhan berikutnya.',
+  ];
+
+    const features = [
+    {
+      icon: Package,
+      title: 'Jual Produk Digital & Fisik',
+      description: 'Satu tempat untuk semua karya Anda, mulai dari preset, e-book, hingga merchandise.',
+    },
+    {
+      icon: Link2,
+      title: 'Halaman Profil Profesional',
+      description: 'Gabungkan semua tautan sosial media, portofolio, dan kontak dalam satu profil yang menarik.',
+    },
+    {
+      icon: Users,
+      title: 'Program Afiliasi',
+      description: 'Perluas jangkauan penjualan Anda dengan memberdayakan audiens untuk menjadi mitra afiliasi.',
+    },
+    {
+      icon: Palette,
+      title: 'Kustomisasi Tampilan',
+      description: 'Sesuaikan warna, font, dan tata letak halaman agar benar-benar mencerminkan brand Anda.',
+    },
+     {
+      icon: BarChart,
+      title: 'Analitik & Insight',
+      description: 'Pahami audiens Anda lebih dalam dengan data kunjungan dan performa produk yang mudah dibaca.',
+    },
+    {
+      icon: Heart,
+      title: 'Terima Dukungan',
+      description: 'Aktifkan fitur donasi atau tip untuk memungkinkan penggemar memberikan dukungan finansial langsung.',
+    },
   ];
 
   const commitment =
@@ -84,6 +117,32 @@ export default function Home() {
             ))}
           </div>
         </div>
+        
+        {/* Features Section */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold font-headline mb-8">
+            Fitur Unggulan untuk Kreator
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={index} className="text-left bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-lg">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
 
         {/* Komitmen Section */}
         <div className="text-center bg-muted/50 rounded-lg p-8 md:p-12">
