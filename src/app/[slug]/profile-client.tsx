@@ -335,6 +335,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
+                  if (!username) return null;
                   const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
