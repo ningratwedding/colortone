@@ -270,8 +270,9 @@ export default function FeaturedProductsPage() {
                     <TabsList className="relative flex-1 justify-start">
                         {categories.map((cat) => (
                         <TabsTrigger key={cat.id} value={cat.id} className="relative pr-8">
-                            {cat.name}
-                            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                           <div className="flex items-center gap-2">
+                            <span>{cat.name}</span>
+                            <div className="flex items-center">
                                 <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); handleOpenCategoryDialog(cat); }}>
                                     <Edit className="h-3 w-3" />
                                 </Button>
@@ -279,6 +280,7 @@ export default function FeaturedProductsPage() {
                                     <Trash2 className="h-3 w-3 text-destructive" />
                                 </Button>
                             </div>
+                           </div>
                         </TabsTrigger>
                         ))}
                     </TabsList>
