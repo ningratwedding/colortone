@@ -194,21 +194,6 @@ export default function FeaturedProductsPage() {
       setIsSaving(false);
     }
   };
-
-  const handleToggleProductInCategory = (categoryId: string, productId: string) => {
-    setCategories(prev => prev.map(cat => {
-      if (cat.id === categoryId) {
-        const newProductIds = new Set(cat.productIds);
-        if (newProductIds.has(productId)) {
-          newProductIds.delete(productId);
-        } else {
-          newProductIds.add(productId);
-        }
-        return { ...cat, productIds: Array.from(newProductIds) };
-      }
-      return cat;
-    }));
-  };
   
   // Category Dialog Handlers
   const handleOpenCategoryDialog = (category: AffiliateProductCategory | null = null) => {
@@ -254,163 +239,77 @@ export default function FeaturedProductsPage() {
   
   return (
     <>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-      {/* Product Selection */}
-      <div className="lg:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Pilih Produk Unggulan</CardTitle>
-            <CardDescription>
-              Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-             <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Cari produk..."
-                    className="pl-8"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-             <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Filter berdasarkan kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Semua Kategori</SelectItem>
-                    {platformCategoriesLoading ? (
-                        <SelectItem value="loading" disabled>Memuat...</SelectItem>
-                    ) : (
-                        platformCategories?.map(cat => (
-                            <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
-                        ))
-                    )}
-                </SelectContent>
-            </Select>
-            <ScrollArea className="h-96 pr-4 border-t pt-4">
-              <div className="space-y-3">
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
-                ) : filteredProducts && filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
-                      <Checkbox
-                        id={`product-${product.id}`}
-                        checked={selectedProducts.has(product.id)}
-                        onCheckedChange={() => handleProductToggle(product)}
-                      />
-                      <Image 
-                        src={product.galleryImageUrls[0]}
-                        alt={product.name}
-                        width={48}
-                        height={32}
-                        className="rounded object-cover aspect-[3/2] bg-muted"
-                      />
-                      <Label htmlFor={`product-${product.id}`} className="font-normal cursor-pointer flex-1">
-                        <p className="truncate">{product.name}</p>
-                        <p className="text-xs font-semibold text-primary">{formatCurrency(product.price)}</p>
-                      </Label>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">Tidak ada produk ditemukan.</p>
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Category Management */}
-      <div className="lg:col-span-1">
-        <Card>
-            <CardHeader>
-                <CardTitle>Atur Kategori</CardTitle>
-                <CardDescription>
-                    Kelompokkan produk unggulan Anda ke dalam kategori kustom.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <Skeleton className="h-48 w-full" />
-              ) : (
-                <Tabs defaultValue={categories[0]?.id || 'new'}>
-                  <div className="flex items-center gap-2">
-                    <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-muted p-1">
-                        {categories.map((cat) => (
-                          <div key={cat.id} className="relative group/tab flex items-center pr-1 data-[state=active]:bg-primary rounded-md">
-                            <TabsTrigger value={cat.id} className="pr-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                              {cat.name}
-                            </TabsTrigger>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground group-data-[state=active]/tab:text-primary-foreground hover:bg-black/10">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onSelect={() => handleOpenCategoryDialog(cat)}>
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Ubah
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => openDeleteDialog(cat)} className="text-destructive">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                           </div>
-                        ))}
-                    </TabsList>
-                    <Button onClick={() => handleOpenCategoryDialog()} size="sm" variant="outline">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Baru
-                    </Button>
-                  </div>
-                  {categories.map((cat) => (
-                    <TabsContent key={cat.id} value={cat.id} className="mt-4">
-                        <p className="text-sm text-muted-foreground mb-3">Pilih produk unggulan untuk kategori "{cat.name}":</p>
-                        <ScrollArea className="h-80 pr-4">
-                            <div className="space-y-2">
-                            {Array.from(selectedProducts).length > 0 ? (
-                                Array.from(selectedProducts).map(productId => {
-                                    const product = allProducts?.find(p => p.id === productId);
-                                    if (!product) return null;
-                                    return (
-                                        <div key={`${cat.id}-${productId}`} className="flex items-center space-x-3 rounded-md border p-2">
-                                                <Checkbox
-                                                id={`${cat.id}-${productId}-check`}
-                                                checked={cat.productIds.includes(productId)}
-                                                onCheckedChange={() => handleToggleProductInCategory(cat.id, productId)}
-                                            />
-                                            <Image src={product.galleryImageUrls[0]} alt={product.name} width={40} height={26} className="rounded object-cover aspect-[3/2] bg-muted" />
-                                            <Label htmlFor={`${cat.id}-${productId}-check`} className="text-sm font-normal cursor-pointer flex-1 truncate">{product.name}</Label>
-                                        </div>
-                                    )
-                                })
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground pt-4">Pilih produk unggulan terlebih dahulu.</p>
-                            )}
-                            </div>
-                        </ScrollArea>
-                    </TabsContent>
-                  ))}
-                  {categories.length === 0 && (
-                      <div className="text-center text-muted-foreground py-12">Belum ada kategori. Buat satu untuk memulai!</div>
+    <div className="grid grid-cols-1 lg:max-w-2xl mx-auto gap-6 items-start">
+      <Card>
+        <CardHeader>
+          <CardTitle>Pilih Produk Unggulan</CardTitle>
+          <CardDescription>
+            Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                  type="search"
+                  placeholder="Cari produk..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+              />
+          </div>
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger>
+                  <SelectValue placeholder="Filter berdasarkan kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">Semua Kategori</SelectItem>
+                  {platformCategoriesLoading ? (
+                      <SelectItem value="loading" disabled>Memuat...</SelectItem>
+                  ) : (
+                      platformCategories?.map(cat => (
+                          <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
+                      ))
                   )}
-                </Tabs>
+              </SelectContent>
+          </Select>
+          <ScrollArea className="h-96 pr-4 border-t pt-4">
+            <div className="space-y-3">
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
+              ) : filteredProducts && filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
+                    <Checkbox
+                      id={`product-${product.id}`}
+                      checked={selectedProducts.has(product.id)}
+                      onCheckedChange={() => handleProductToggle(product)}
+                    />
+                    <Image 
+                      src={product.galleryImageUrls[0]}
+                      alt={product.name}
+                      width={48}
+                      height={32}
+                      className="rounded object-cover aspect-[3/2] bg-muted"
+                    />
+                    <Label htmlFor={`product-${product.id}`} className="font-normal cursor-pointer flex-1">
+                      <p className="truncate">{product.name}</p>
+                      <p className="text-xs font-semibold text-primary">{formatCurrency(product.price)}</p>
+                    </Label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground py-8">Tidak ada produk ditemukan.</p>
               )}
-            </CardContent>
-            <CardFooter>
-                 <Button onClick={handleSave} disabled={loading || isSaving}>
-                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan Semua Perubahan'}
-                </Button>
-            </CardFooter>
-        </Card>
-      </div>
+            </div>
+          </ScrollArea>
+        </CardContent>
+        <CardFooter>
+            <Button onClick={handleSave} disabled={loading || isSaving}>
+              {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan Semua Perubahan'}
+            </Button>
+        </CardFooter>
+      </Card>
     </div>
     
     {/* Category Add/Edit Dialog */}
