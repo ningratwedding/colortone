@@ -3,17 +3,22 @@ import { cn } from '@/lib/utils';
 
 export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="140" zoomAndPan="magnify" viewBox="0 -10 140 38" height="38" preserveAspectRatio="xMidYMid meet" version="1.0" className={cn('h-6 w-auto', className)} {...props}>
-        <g transform="scale(0.35) translate(0, 8)">
-            <g>
-                <path fill="currentColor" d="M 68.359375 24.621094 L 68.359375 28.21875 L 60.308594 28.21875 L 60.308594 24.621094 C 60.308594 16.382812 53.597656 9.671875 45.332031 9.671875 C 37.089844 9.671875 30.378906 16.382812 30.378906 24.621094 L 30.378906 43.332031 L 22.328125 43.332031 L 22.328125 24.621094 C 22.328125 11.925781 32.636719 1.617188 45.332031 1.617188 C 58.027344 1.617188 68.359375 11.925781 68.359375 24.621094 Z M 68.359375 24.621094 " fillOpacity="1" fillRule="nonzero"/>
-            </g>
-            <g>
-                <path fill="currentColor" d="M 87.714844 102.328125 L 87.714844 110.378906 L 2.976562 110.378906 L 2.976562 28.21875 L 22.328125 28.21875 L 22.328125 36.269531 L 11.027344 36.269531 L 11.027344 102.328125 Z M 87.714844 102.328125 " fillOpacity="1" fillRule="nonzero"/>
-            </g>
-            <path fill="currentColor" d="M 87.714844 28.21875 L 87.714844 87.429688 L 57.488281 87.429688 L 38.511719 69.714844 L 38.511719 85.066406 L 30.460938 85.066406 L 30.460938 56.429688 L 59.074219 56.429688 L 59.074219 64.480469 L 44.6875 64.480469 L 60.65625 79.378906 L 79.660156 79.378906 L 79.660156 36.269531 L 37.707031 36.269531 L 37.707031 28.21875 Z M 87.714844 28.21875 " fillOpacity="1" fillRule="nonzero"/>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="40" zoomAndPan="magnify" viewBox="80 -10 250 400" height="40" preserveAspectRatio="xMidYMid meet" version="1.0" className={cn('h-7 w-auto', className)} {...props}>
+        <defs>
+            <clipPath id="42eff0033b">
+                <path d="M 45 91 L 337.5 91 L 337.5 375 L 45 375 Z M 45 91 " clip-rule="nonzero"/>
+            </clipPath>
+            <clipPath id="6e9facdef5">
+                <path d="M 139 91 L 337.5 91 L 337.5 297 L 139 297 Z M 139 91 " clip-rule="nonzero"/>
+            </clipPath>
+        </defs>
+        <path fill="currentColor" d="M 270.300781 79.480469 L 270.300781 91.882812 L 242.53125 91.882812 L 242.53125 79.480469 C 242.53125 51.0625 219.390625 27.921875 190.878906 27.921875 C 162.460938 27.921875 139.320312 51.0625 139.320312 79.480469 L 139.320312 143.996094 L 111.554688 143.996094 L 111.554688 79.480469 C 111.554688 35.695312 147.097656 0.152344 190.878906 0.152344 C 234.664062 0.152344 270.300781 35.695312 270.300781 79.480469 Z M 270.300781 79.480469 " fill-opacity="1" fill-rule="nonzero"/>
+        <g clip-path="url(#42eff0033b)">
+            <path fill="currentColor" d="M 337.039062 347.449219 L 337.039062 375.21875 L 44.816406 375.21875 L 44.816406 91.882812 L 111.554688 91.882812 L 111.554688 119.652344 L 72.582031 119.652344 L 72.582031 347.449219 Z M 337.039062 347.449219 " fill-opacity="1" fill-rule="nonzero"/>
         </g>
-        <text x="35" y="15.5" fontFamily="Poppins, sans-serif" fontWeight="bold" fontSize="30" fill="currentColor">LinkPro</text>
+        <g clip-path="url(#6e9facdef5)">
+            <path fill="currentColor" d="M 337.039062 91.882812 L 337.039062 296.078125 L 232.8125 296.078125 L 167.367188 234.984375 L 167.367188 287.929688 L 139.601562 287.929688 L 139.601562 189.167969 L 238.273438 189.167969 L 238.273438 216.933594 L 188.660156 216.933594 L 243.734375 268.308594 L 309.269531 268.308594 L 309.269531 119.652344 L 164.59375 119.652344 L 164.59375 91.882812 Z M 337.039062 91.882812 " fill-opacity="1" fill-rule="nonzero"/>
+        </g>
     </svg>
   );
 }
