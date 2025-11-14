@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, PlusCircle, Trash2, Edit, Search, MoreHorizontal } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Edit, Search, MoreHorizontal, ListTree } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -52,6 +52,7 @@ export default function FeaturedProductsPage() {
   const [categoryName, setCategoryName] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<AffiliateProductCategory | null>(null);
+  const [isAllCategoriesDialogOpen, setIsAllCategoriesDialogOpen] = useState(false);
 
   // Dialog states for categorizing a product
   const [isCategorizeDialogOpen, setIsCategorizeDialogOpen] = useState(false);
@@ -242,10 +243,18 @@ export default function FeaturedProductsPage() {
     <div className="grid grid-cols-1 lg:max-w-2xl mx-auto gap-6 items-start">
       <Card>
         <CardHeader>
-          <CardTitle>Pilih Produk Unggulan</CardTitle>
-          <CardDescription>
-            Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
-          </CardDescription>
+          <div className="flex justify-between items-start gap-4">
+              <div>
+                <CardTitle>Pilih Produk Unggulan</CardTitle>
+                <CardDescription>
+                  Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
+                </CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setIsAllCategoriesDialogOpen(true)}>
+                <ListTree className="mr-2 h-4 w-4" />
+                Kategori
+              </Button>
+          </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
             <div className="relative">
@@ -333,6 +342,54 @@ export default function FeaturedProductsPage() {
       </DialogContent>
     </Dialog>
 
+    {/* All Categories Dialog */}
+    <Dialog open={isAllCategoriesDialogOpen} onOpenChange={setIsAllCategoriesDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Kelola Kategori Anda</DialogTitle>
+          <DialogDescription>Ubah, hapus, atau buat kategori baru di sini.</DialogDescription>
+        </DialogHeader>
+        <div className="py-4 space-y-4">
+            {categories.length > 0 ? (
+            <ScrollArea className="h-72">
+                <div className="space-y-2 pr-4">
+                {categories.map((cat) => (
+                    <div key={cat.id} className="flex items-center space-x-3 rounded-md border p-3">
+                        <Label className="font-normal flex-1">{cat.name}</Label>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                                <DropdownMenuItem onSelect={() => handleOpenCategoryDialog(cat)}>
+                                    <Edit className="mr-2 h-4 w-4" /> Ubah
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => openDeleteDialog(cat)} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                ))}
+                </div>
+            </ScrollArea>
+            ) : (
+                <div className="text-center text-muted-foreground p-4 border rounded-md">
+                    <p>Anda belum membuat kategori kustom.</p>
+                </div>
+            )}
+        </div>
+        <DialogFooter>
+            <Button variant="outline" onClick={() => handleOpenCategoryDialog()}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Buat Kategori Baru
+            </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     {/* Delete Confirmation Dialog */}
     <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
       <DialogContent>
@@ -415,3 +472,4 @@ export default function FeaturedProductsPage() {
     </>
   );
 }
+
