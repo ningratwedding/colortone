@@ -9,7 +9,7 @@ import { Logo } from '@/components/logo';
 
 export default function Home() {
   const vision =
-    "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan, sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
+    "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
 
   const missions = [
     'Membantu kreator menemukan lebih banyak peluang untuk mengembangkan nilai dan pendapatan dari karya mereka.',
@@ -21,7 +21,7 @@ export default function Home() {
   ];
 
   const commitment =
-    'Kami berkomitmen hadir sebagai mitra perjalanan kreator, menyediakan dukungan, teknologi, dan ruang yang memastikan setiap langkah mereka selalu memiliki arah, makna, dan harapan untuk terus maju.';
+    'Kami berkomitmen hadir sebagai mitra perjalanan kreator menyediakan dukungan, teknologi, dan ruang yang memastikan setiap langkah mereka selalu memiliki arah, makna, dan harapan untuk terus maju.';
 
   return (
     <div className="bg-background">
@@ -73,12 +73,14 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
             {missions.map((mission, index) => (
-              <div key={index} className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-primary" />
-                </div>
-                <p className="text-muted-foreground">{mission}</p>
-              </div>
+              <Card key={index} className="flex">
+                <CardContent className="p-4 flex items-start space-x-4">
+                  <div className="flex-shrink-0 pt-1">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground">{mission}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
