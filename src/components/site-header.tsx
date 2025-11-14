@@ -200,6 +200,7 @@ export function SiteHeader() {
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
             <Logo />
+            <span className="font-bold text-lg">LinkPro</span>
           </Link>
         </div>
 
