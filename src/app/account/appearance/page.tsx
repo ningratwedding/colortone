@@ -763,8 +763,8 @@ export default function AppearancePage() {
                                                 type="button"
                                                 onClick={() => setHeaderColor(color.value)}
                                                 className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent'
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center border-border",
+                                                    headerColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : ''
                                                 )}
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna header ${color.name}`}
@@ -772,7 +772,7 @@ export default function AppearancePage() {
                                                 {headerColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                             </button>
                                         ))}
-                                        <Label htmlFor="header-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: headerColor && !colorOptions.some(c => c.value === headerColor) ? headerColor : 'transparent' }}>
+                                        <Label htmlFor="header-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: headerColor && !colorOptions.some(c => c.value === headerColor) ? headerColor : 'transparent' }}>
                                             <Palette className="h-4 w-4 text-muted-foreground" />
                                             <Input id="header-color-picker" type="color" value={headerColor} onChange={e => setHeaderColor(e.target.value)} className="sr-only" />
                                         </Label>
@@ -813,8 +813,8 @@ export default function AppearancePage() {
                                                 type="button"
                                                 onClick={() => setProfileBackgroundColor(color.value)}
                                                 className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent'
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center border-border",
+                                                    profileBackgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : ''
                                                 )}
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna halaman ${color.name}`}
@@ -822,7 +822,7 @@ export default function AppearancePage() {
                                                 {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                             </button>
                                         ))}
-                                        <Label htmlFor="page-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBackgroundColor && !colorOptions.some(c => c.value === profileBackgroundColor) ? profileBackgroundColor : 'transparent' }}>
+                                        <Label htmlFor="page-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBackgroundColor && !colorOptions.some(c => c.value === profileBackgroundColor) ? profileBackgroundColor : 'transparent' }}>
                                             <Palette className="h-4 w-4 text-muted-foreground" />
                                             <Input id="page-color-picker" type="color" value={profileBackgroundColor} onChange={e => setProfileBackgroundColor(e.target.value)} className="sr-only" />
                                         </Label>
@@ -909,8 +909,8 @@ export default function AppearancePage() {
                                                 type="button"
                                                 onClick={() => setProfileTitleFontColor(color.value)}
                                                 className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    profileTitleFontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent'
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center border-border",
+                                                    profileTitleFontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : ''
                                                 )}
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna font nama ${color.name}`}
@@ -918,7 +918,7 @@ export default function AppearancePage() {
                                                 {profileTitleFontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                             </button>
                                         ))}
-                                        <Label htmlFor="title-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileTitleFontColor && !colorOptions.some(c => c.value === profileTitleFontColor) ? profileTitleFontColor : 'transparent' }}>
+                                        <Label htmlFor="title-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileTitleFontColor && !colorOptions.some(c => c.value === profileTitleFontColor) ? profileTitleFontColor : 'transparent' }}>
                                             <Palette className="h-4 w-4 text-muted-foreground" />
                                             <Input id="title-font-color-picker" type="color" value={profileTitleFontColor} onChange={e => setProfileTitleFontColor(e.target.value)} className="sr-only" />
                                         </Label>
@@ -933,8 +933,8 @@ export default function AppearancePage() {
                                                 type="button"
                                                 onClick={() => setProfileBodyFontColor(color.value)}
                                                 className={cn(
-                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center",
-                                                    profileBodyFontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent'
+                                                    "h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center border-border",
+                                                    profileBodyFontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : ''
                                                 )}
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna font bio ${color.name}`}
@@ -942,7 +942,7 @@ export default function AppearancePage() {
                                                 {profileBodyFontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                             </button>
                                         ))}
-                                         <Label htmlFor="body-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBodyFontColor && !colorOptions.some(c => c.value === profileBodyFontColor) ? profileBodyFontColor : 'transparent' }}>
+                                         <Label htmlFor="body-font-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer transition-transform hover:scale-110" style={{ backgroundColor: profileBodyFontColor && !colorOptions.some(c => c.value === profileBodyFontColor) ? profileBodyFontColor : 'transparent' }}>
                                             <Palette className="h-4 w-4 text-muted-foreground" />
                                             <Input id="body-font-color-picker" type="color" value={profileBodyFontColor} onChange={e => setProfileBodyFontColor(e.target.value)} className="sr-only" />
                                         </Label>
@@ -1042,22 +1042,22 @@ export default function AppearancePage() {
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Pil</Label>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
-                                                    <button key={`social-bg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, backgroundColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.backgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: color.value || 'transparent'}}>
+                                                    <button key={`social-bg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, backgroundColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", socialsSettings?.backgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: color.value || 'transparent'}}>
                                                         {socialsSettings?.backgroundColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings.backgroundColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-bg-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.backgroundColor && !colorOptions.some(c => c.value === socialsSettings?.backgroundColor) ? socialsSettings.backgroundColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-bg-picker" type="color" value={socialsSettings.backgroundColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, backgroundColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                          <div>
                                             <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Ikon & Teks Pil</Label>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
-                                                    <button key={`social-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: color.value || 'transparent' }}>
+                                                    <button key={`social-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: color.value || 'transparent' }}>
                                                         {socialsSettings?.fontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                     </button>
                                                 ))}
-                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
+                                                <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                     </div>
@@ -1130,29 +1130,29 @@ export default function AppearancePage() {
                                     <div>
                                         <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Teks Tombol</Label>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {colorOptions.map(c => <button key={`cat-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, color: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.color === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
-                                            <Label htmlFor="cat-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-color-picker" type="color" value={categorySettings?.color || '#000000'} onChange={e => setCategorySettings(p => ({...p, color: e.target.value}))} className="sr-only" /></Label>
+                                            {colorOptions.map(c => <button key={`cat-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, color: c.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", categorySettings?.color === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-color-picker" type="color" value={categorySettings?.color || '#000000'} onChange={e => setCategorySettings(p => ({...p, color: e.target.value}))} className="sr-only" /></Label>
                                         </div>
                                     </div>
                                     <div>
                                         <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Tombol</Label>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {colorOptions.map(c => <button key={`cat-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, backgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.backgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
-                                            <Label htmlFor="cat-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-bg-color-picker" type="color" value={categorySettings?.backgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, backgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                            {colorOptions.map(c => <button key={`cat-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, backgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", categorySettings?.backgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-bg-color-picker" type="color" value={categorySettings?.backgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, backgroundColor: e.target.value}))} className="sr-only" /></Label>
                                         </div>
                                     </div>
                                      <div>
                                         <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Teks Tombol Aktif</Label>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {colorOptions.map(c => <button key={`cat-active-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.activeColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
-                                            <Label htmlFor="cat-active-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-color-picker" type="color" value={categorySettings?.activeColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeColor: e.target.value}))} className="sr-only" /></Label>
+                                            {colorOptions.map(c => <button key={`cat-active-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", categorySettings?.activeColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-active-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-color-picker" type="color" value={categorySettings?.activeColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeColor: e.target.value}))} className="sr-only" /></Label>
                                         </div>
                                     </div>
                                      <div>
                                         <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Tombol Aktif</Label>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {colorOptions.map(c => <button key={`cat-active-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeBackgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.activeBackgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
-                                            <Label htmlFor="cat-active-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-bg-color-picker" type="color" value={categorySettings?.activeBackgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeBackgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                            {colorOptions.map(c => <button key={`cat-active-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeBackgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", categorySettings?.activeBackgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-active-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-bg-color-picker" type="color" value={categorySettings?.activeBackgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeBackgroundColor: e.target.value}))} className="sr-only" /></Label>
                                         </div>
                                     </div>
                                 </div>
