@@ -93,7 +93,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
       </CardHeader>
       <CardContent className={cn("p-2 pb-1 flex-grow flex flex-col", textAlign === 'center' && 'items-center')}>
         <Link href={productUrl} className="space-y-1">
-          <CardTitle className="text-base leading-tight hover:text-primary transition-colors">
+          <CardTitle className="text-sm leading-tight hover:text-primary transition-colors">
             {product.name}
           </CardTitle>
         </Link>
