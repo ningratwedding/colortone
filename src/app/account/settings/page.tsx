@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, updateDoc, serverTimestamp, type Timestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, type Timestamp, getDocs, query, collection, where, limit } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -82,7 +82,7 @@ export default function AccountSettingsPage() {
     }, [userProfile]);
 
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !userProfile || !user || !storage) return;
+        if (!userProfileRef || !userProfile || !user || !storage || !firestore) return;
         setIsSaving(true);
         try {
             let newAvatarUrl = userProfile.avatarUrl;
@@ -109,6 +109,21 @@ export default function AccountSettingsPage() {
                     setIsSaving(false);
                     return;
                 }
+                
+                // Check if new slug already exists
+                const newSlug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                if (newSlug !== userProfile.slug) {
+                    const usersRef = collection(firestore, 'users');
+                    const q = query(usersRef, where('slug', '==', newSlug), limit(1));
+                    const slugSnapshot = await getDocs(q);
+                    if (!slugSnapshot.empty) {
+                        toast({ variant: 'destructive', title: 'Nama Profil Sudah Ada', description: `Nama "${name}" sudah digunakan. Silakan pilih yang lain.`});
+                        setIsSaving(false);
+                        return;
+                    }
+                    updatedData.slug = newSlug;
+                }
+
                 updatedData.name = name;
                 updatedData.nameLastUpdatedAt = serverTimestamp();
             }

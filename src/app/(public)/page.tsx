@@ -1,14 +1,28 @@
 
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Flag, Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 
 export default function Home() {
+  const [slug, setSlug] = useState('');
+  const router = useRouter();
+
+  const handleClaimUsername = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (slug) {
+      router.push(`/signup?slug=${slug}`);
+    }
+  };
+
+
   const vision =
     "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
 
@@ -97,14 +111,26 @@ export default function Home() {
             Temukan potensi kreatif Anda. LinkStore adalah tempat para kreator
             menemukan, berbagi, dan menjual karya unik mereka.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <Button size="lg" asChild>
-              <Link href="/signup">Mulai Sekarang</Link>
-            </Button>
-            <Button size="lg" variant="secondary" asChild>
-              <Link href="/products">Temukan Kreator</Link>
-            </Button>
-          </div>
+          <form onSubmit={handleClaimUsername} className="mt-8 mx-auto max-w-md">
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
+              <Input
+                type="text"
+                placeholder="nama-anda"
+                className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[120px] pr-[100px] text-base"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                aria-label="Klaim nama pengguna Anda"
+              />
+              <Button
+                type="submit"
+                size="lg"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
+              >
+                Buat
+              </Button>
+            </div>
+          </form>
         </div>
         <div className="absolute -bottom-1 left-0 w-full h-16 bg-background" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }} />
       </section>
