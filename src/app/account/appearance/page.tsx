@@ -101,6 +101,16 @@ const fontOptions = [
     { name: 'Lato', value: 'lato' },
     { name: 'Merriweather', value: 'merriweather' },
     { name: 'Montserrat', value: 'montserrat' },
+    { name: 'Open Sans', value: 'open-sans' },
+    { name: 'Noto Sans', value: 'noto-sans' },
+    { name: 'Source Sans Pro', value: 'source-sans-pro' },
+    { name: 'Slabo 27px', value: 'slabo' },
+    { name: 'PT Serif', value: 'pt-serif' },
+    { name: 'Ubuntu', value: 'ubuntu' },
+    { name: 'Exo 2', value: 'exo2' },
+    { name: 'Zilla Slab', value: 'zilla-slab' },
+    { name: 'Cutive Mono (Typewriter)', value: 'cutive-mono' },
+    { name: 'Source Code Pro (Code)', value: 'source-code-pro' },
 ]
 
 
@@ -222,7 +232,17 @@ function ProfilePreview({
                 profileTitleFont === 'roboto' && 'font-roboto',
                 profileTitleFont === 'lato' && 'font-lato',
                 profileTitleFont === 'merriweather' && 'font-merriweather',
-                profileTitleFont === 'montserrat' && 'font-montserrat'
+                profileTitleFont === 'montserrat' && 'font-montserrat',
+                profileTitleFont === 'open-sans' && 'font-open-sans',
+                profileTitleFont === 'noto-sans' && 'font-noto-sans',
+                profileTitleFont === 'source-sans-pro' && 'font-source-sans-pro',
+                profileTitleFont === 'slabo' && 'font-slabo',
+                profileTitleFont === 'pt-serif' && 'font-pt-serif',
+                profileTitleFont === 'ubuntu' && 'font-ubuntu',
+                profileTitleFont === 'exo2' && 'font-exo2',
+                profileTitleFont === 'zilla-slab' && 'font-zilla-slab',
+                profileTitleFont === 'cutive-mono' && 'font-cutive-mono',
+                profileTitleFont === 'source-code-pro' && 'font-source-code-pro'
               )} 
               style={{ color: profileTitleFontColor || undefined }}
             >
@@ -239,7 +259,17 @@ function ProfilePreview({
                 profileBodyFont === 'roboto' && 'font-roboto',
                 profileBodyFont === 'lato' && 'font-lato',
                 profileBodyFont === 'merriweather' && 'font-merriweather',
-                profileBodyFont === 'montserrat' && 'font-montserrat'
+                profileBodyFont === 'montserrat' && 'font-montserrat',
+                profileBodyFont === 'open-sans' && 'font-open-sans',
+                profileBodyFont === 'noto-sans' && 'font-noto-sans',
+                profileBodyFont === 'source-sans-pro' && 'font-source-sans-pro',
+                profileBodyFont === 'slabo' && 'font-slabo',
+                profileBodyFont === 'pt-serif' && 'font-pt-serif',
+                profileBodyFont === 'ubuntu' && 'font-ubuntu',
+                profileBodyFont === 'exo2' && 'font-exo2',
+                profileBodyFont === 'zilla-slab' && 'font-zilla-slab',
+                profileBodyFont === 'cutive-mono' && 'font-cutive-mono',
+                profileBodyFont === 'source-code-pro' && 'font-source-code-pro'
               )} 
               style={{ color: profileBodyFontColor || undefined }}
             >
@@ -679,7 +709,17 @@ export default function AppearancePage() {
                                                   font.value === 'roboto' && 'font-roboto',
                                                   font.value === 'lato' && 'font-lato',
                                                   font.value === 'merriweather' && 'font-merriweather',
-                                                  font.value === 'montserrat' && 'font-montserrat'
+                                                  font.value === 'montserrat' && 'font-montserrat',
+                                                  font.value === 'open-sans' && 'font-open-sans',
+                                                  font.value === 'noto-sans' && 'font-noto-sans',
+                                                  font.value === 'source-sans-pro' && 'font-source-sans-pro',
+                                                  font.value === 'slabo' && 'font-slabo',
+                                                  font.value === 'pt-serif' && 'font-pt-serif',
+                                                  font.value === 'ubuntu' && 'font-ubuntu',
+                                                  font.value === 'exo2' && 'font-exo2',
+                                                  font.value === 'zilla-slab' && 'font-zilla-slab',
+                                                  font.value === 'cutive-mono' && 'font-cutive-mono',
+                                                  font.value === 'source-code-pro' && 'font-source-code-pro'
                                                 )}>{font.name}</SelectItem>
                                             ))}
                                         </SelectContent>
@@ -700,7 +740,17 @@ export default function AppearancePage() {
                                                   font.value === 'roboto' && 'font-roboto',
                                                   font.value === 'lato' && 'font-lato',
                                                   font.value === 'merriweather' && 'font-merriweather',
-                                                  font.value === 'montserrat' && 'font-montserrat'
+                                                  font.value === 'montserrat' && 'font-montserrat',
+                                                  font.value === 'open-sans' && 'font-open-sans',
+                                                  font.value === 'noto-sans' && 'font-noto-sans',
+                                                  font.value === 'source-sans-pro' && 'font-source-sans-pro',
+                                                  font.value === 'slabo' && 'font-slabo',
+                                                  font.value === 'pt-serif' && 'font-pt-serif',
+                                                  font.value === 'ubuntu' && 'font-ubuntu',
+                                                  font.value === 'exo2' && 'font-exo2',
+                                                  font.value === 'zilla-slab' && 'font-zilla-slab',
+                                                  font.value === 'cutive-mono' && 'font-cutive-mono',
+                                                  font.value === 'source-code-pro' && 'font-source-code-pro'
                                                 )}>{font.name}</SelectItem>
                                             ))}
                                         </SelectContent>
@@ -922,5 +972,3 @@ export default function AppearancePage() {
         </div>
     )
 }
-
-    

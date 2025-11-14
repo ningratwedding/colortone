@@ -33,6 +33,16 @@ export default {
         lato: ['Lato', 'sans-serif'],
         merriweather: ['Merriweather', 'serif'],
         montserrat: ['Montserrat', 'sans-serif'],
+        'open-sans': ['"Open Sans"', 'sans-serif'],
+        'noto-sans': ['"Noto Sans"', 'sans-serif'],
+        'source-sans-pro': ['"Source Sans Pro"', 'sans-serif'],
+        slabo: ['"Slabo 27px"', 'serif'],
+        'pt-serif': ['"PT Serif"', 'serif'],
+        ubuntu: ['Ubuntu', 'sans-serif'],
+        exo2: ['"Exo 2"', 'sans-serif'],
+        'zilla-slab': ['"Zilla Slab"', 'serif'],
+        'cutive-mono': ['"Cutive Mono"', 'monospace'],
+        'source-code-pro': ['"Source Code Pro"', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -117,5 +127,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    

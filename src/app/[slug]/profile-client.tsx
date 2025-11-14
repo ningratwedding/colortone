@@ -344,7 +344,17 @@ export function ProfileContent({ slug }: { slug: string }) {
                 profileUser.profileTitleFont === 'roboto' && 'font-roboto',
                 profileUser.profileTitleFont === 'lato' && 'font-lato',
                 profileUser.profileTitleFont === 'merriweather' && 'font-merriweather',
-                profileUser.profileTitleFont === 'montserrat' && 'font-montserrat'
+                profileUser.profileTitleFont === 'montserrat' && 'font-montserrat',
+                profileUser.profileTitleFont === 'open-sans' && 'font-open-sans',
+                profileUser.profileTitleFont === 'noto-sans' && 'font-noto-sans',
+                profileUser.profileTitleFont === 'source-sans-pro' && 'font-source-sans-pro',
+                profileUser.profileTitleFont === 'slabo' && 'font-slabo',
+                profileUser.profileTitleFont === 'pt-serif' && 'font-pt-serif',
+                profileUser.profileTitleFont === 'ubuntu' && 'font-ubuntu',
+                profileUser.profileTitleFont === 'exo2' && 'font-exo2',
+                profileUser.profileTitleFont === 'zilla-slab' && 'font-zilla-slab',
+                profileUser.profileTitleFont === 'cutive-mono' && 'font-cutive-mono',
+                profileUser.profileTitleFont === 'source-code-pro' && 'font-source-code-pro'
               )} 
               style={{ color: profileUser.profileTitleFontColor || undefined }}
             >
@@ -361,7 +371,17 @@ export function ProfileContent({ slug }: { slug: string }) {
                 profileUser.profileBodyFont === 'roboto' && 'font-roboto',
                 profileUser.profileBodyFont === 'lato' && 'font-lato',
                 profileUser.profileBodyFont === 'merriweather' && 'font-merriweather',
-                profileUser.profileBodyFont === 'montserrat' && 'font-montserrat'
+                profileUser.profileBodyFont === 'montserrat' && 'font-montserrat',
+                profileUser.profileBodyFont === 'open-sans' && 'font-open-sans',
+                profileUser.profileBodyFont === 'noto-sans' && 'font-noto-sans',
+                profileUser.profileBodyFont === 'source-sans-pro' && 'font-source-sans-pro',
+                profileUser.profileBodyFont === 'slabo' && 'font-slabo',
+                profileUser.profileBodyFont === 'pt-serif' && 'font-pt-serif',
+                profileUser.profileBodyFont === 'ubuntu' && 'font-ubuntu',
+                profileUser.profileBodyFont === 'exo2' && 'font-exo2',
+                profileUser.profileBodyFont === 'zilla-slab' && 'font-zilla-slab',
+                profileUser.profileBodyFont === 'cutive-mono' && 'font-cutive-mono',
+                profileUser.profileBodyFont === 'source-code-pro' && 'font-source-code-pro'
               )} 
               style={{ color: profileUser.profileBodyFontColor || undefined }}
             >
