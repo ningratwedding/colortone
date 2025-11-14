@@ -1,13 +1,8 @@
 
-
-
-
-
-
 'use client';
 
 import { notFound } from 'next/navigation';
-import { Globe } from 'lucide-react';
+import { Globe, Share2 } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -23,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useToast } from '@/hooks/use-toast';
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -186,6 +182,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   const firestore = useFirestore();
   const [profileUser, setProfileUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const userQuery = useMemo(() => {
     if (!firestore || !slug) return null;
@@ -278,6 +275,29 @@ export function ProfileContent({ slug }: { slug: string }) {
   }
   
   const displayName = profileUser.fullName || profileUser.name;
+
+  const handleShareProfile = async () => {
+    const shareData = {
+        title: `Lihat profil ${displayName}`,
+        text: `Lihat profil dan produk dari ${displayName} di Di.`,
+        url: window.location.href,
+    };
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            // User cancelled the share, so we do nothing.
+            console.log("Share was cancelled");
+        }
+    } else {
+        // Fallback for desktop
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+            title: 'Tautan Profil Disalin',
+            description: 'URL profil telah disalin ke clipboard Anda.',
+        });
+    }
+  };
   
   const headerGradientStyle = profileUser.profileBackgroundColor
     ? { backgroundImage: `linear-gradient(to top, ${profileUser.profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
@@ -321,6 +341,15 @@ export function ProfileContent({ slug }: { slug: string }) {
         className="relative h-48 md:h-64 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor }}
         >
+            <Button
+                variant="secondary"
+                size="icon"
+                className="absolute top-4 right-4 z-10 rounded-full h-10 w-10 bg-black/30 hover:bg-black/50 text-white"
+                onClick={handleShareProfile}
+            >
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">Bagikan Profil</span>
+            </Button>
             {profileUser.headerImageUrl ? (
                 <Image
                     src={profileUser.headerImageUrl}
