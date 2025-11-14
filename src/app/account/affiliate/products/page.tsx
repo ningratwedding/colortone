@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -254,67 +255,70 @@ export default function FeaturedProductsPage() {
       {/* Category Management */}
       <div className="lg:col-span-1">
         <Card>
-            <CardHeader className="flex-row items-center justify-between">
-                <div>
+            <CardHeader>
                 <CardTitle>Atur Kategori</CardTitle>
                 <CardDescription>
                     Kelompokkan produk unggulan Anda ke dalam kategori kustom.
                 </CardDescription>
-                </div>
-                <Button onClick={() => handleOpenCategoryDialog()}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Buat Kategori
-                </Button>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <Skeleton className="h-48 w-full" />
-              ) : categories.length > 0 ? (
-                <div className="space-y-4">
-                  {categories.map((cat) => (
-                    <Card key={cat.id}>
-                        <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
-                            <CardTitle className="text-lg">{cat.name}</CardTitle>
-                            <div>
-                                <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryDialog(cat)}>
-                                    <Edit className="h-4 w-4" />
+              ) : (
+                <Tabs defaultValue={categories[0]?.id || 'new'}>
+                  <div className="flex items-center gap-2">
+                    <TabsList className="relative flex-1 justify-start">
+                        {categories.map((cat) => (
+                        <TabsTrigger key={cat.id} value={cat.id} className="relative pr-8">
+                            {cat.name}
+                            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); handleOpenCategoryDialog(cat); }}>
+                                    <Edit className="h-3 w-3" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(cat)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); openDeleteDialog(cat); }}>
+                                    <Trash2 className="h-3 w-3 text-destructive" />
                                 </Button>
                             </div>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            <p className="text-sm text-muted-foreground mb-3">Pilih produk unggulan untuk kategori ini:</p>
-                            <ScrollArea className="h-48">
-                                <div className="space-y-2">
-                                {Array.from(selectedProducts).length > 0 ? (
-                                    Array.from(selectedProducts).map(productId => {
-                                        const product = allProducts?.find(p => p.id === productId);
-                                        if (!product) return null;
-                                        return (
-                                            <div key={`${cat.id}-${productId}`} className="flex items-center space-x-3 rounded-md border p-2">
-                                                 <Checkbox
-                                                    id={`${cat.id}-${productId}`}
-                                                    checked={cat.productIds.includes(productId)}
-                                                    onCheckedChange={() => handleToggleProductInCategory(cat.id, productId)}
-                                                />
-                                                <Image src={product.galleryImageUrls[0]} alt={product.name} width={40} height={26} className="rounded object-cover aspect-[3/2] bg-muted" />
-                                                <Label htmlFor={`${cat.id}-${productId}`} className="text-sm font-normal cursor-pointer flex-1 truncate">{product.name}</Label>
-                                            </div>
-                                        )
-                                    })
-                                ) : (
-                                    <p className="text-sm text-center text-muted-foreground pt-4">Pilih produk unggulan terlebih dahulu.</p>
-                                )}
-                                </div>
-                            </ScrollArea>
-                        </CardContent>
-                    </Card>
+                        </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    <Button onClick={() => handleOpenCategoryDialog()} size="sm">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Baru
+                    </Button>
+                  </div>
+                  {categories.map((cat) => (
+                    <TabsContent key={cat.id} value={cat.id} className="mt-4">
+                        <p className="text-sm text-muted-foreground mb-3">Pilih produk unggulan untuk kategori "{cat.name}":</p>
+                        <ScrollArea className="h-80 pr-4">
+                            <div className="space-y-2">
+                            {Array.from(selectedProducts).length > 0 ? (
+                                Array.from(selectedProducts).map(productId => {
+                                    const product = allProducts?.find(p => p.id === productId);
+                                    if (!product) return null;
+                                    return (
+                                        <div key={`${cat.id}-${productId}`} className="flex items-center space-x-3 rounded-md border p-2">
+                                                <Checkbox
+                                                id={`${cat.id}-${productId}-check`}
+                                                checked={cat.productIds.includes(productId)}
+                                                onCheckedChange={() => handleToggleProductInCategory(cat.id, productId)}
+                                            />
+                                            <Image src={product.galleryImageUrls[0]} alt={product.name} width={40} height={26} className="rounded object-cover aspect-[3/2] bg-muted" />
+                                            <Label htmlFor={`${cat.id}-${productId}-check`} className="text-sm font-normal cursor-pointer flex-1 truncate">{product.name}</Label>
+                                        </div>
+                                    )
+                                })
+                            ) : (
+                                <p className="text-sm text-center text-muted-foreground pt-4">Pilih produk unggulan terlebih dahulu.</p>
+                            )}
+                            </div>
+                        </ScrollArea>
+                    </TabsContent>
                   ))}
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground py-12">Belum ada kategori. Buat satu untuk memulai!</div>
+                  {categories.length === 0 && (
+                      <div className="text-center text-muted-foreground py-12">Belum ada kategori. Buat satu untuk memulai!</div>
+                  )}
+                </Tabs>
               )}
             </CardContent>
             <CardFooter>
