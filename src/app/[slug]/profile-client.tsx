@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -336,9 +337,9 @@ export function ProfileContent({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="pb-6">
+    <div className="pb-4">
        <div
-        className="relative h-48 md:h-64 overflow-hidden"
+        className="relative h-40 md:h-56 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor }}
         >
             <Button
@@ -376,9 +377,9 @@ export function ProfileContent({ slug }: { slug: string }) {
         </div>
       
       <div className="container mx-auto px-4">
-        <header className="flex flex-col items-center gap-4 mb-8 text-center -mt-16 md:-mt-24 relative z-10">
+        <header className="flex flex-col items-center gap-3 mb-6 text-center -mt-12 md:-mt-16 relative z-10">
           <Avatar 
-            className="h-24 w-24 md:h-32 md:w-32 border-4"
+            className="h-20 w-20 md:h-24 md:w-24 border-4"
             style={{ borderColor: profileUser.profileBackgroundColor || 'hsl(var(--background))' }}
           >
             <AvatarImage src={profileUser.avatarUrl || undefined} alt={displayName} />
@@ -387,7 +388,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           <div>
             <h1 
               className={cn(
-                "text-3xl font-bold font-headline",
+                "text-2xl font-bold font-headline",
                 profileUser.profileTitleFont === 'poppins' && 'font-poppins',
                 profileUser.profileTitleFont === 'lora' && 'font-lora',
                 profileUser.profileTitleFont === 'oswald' && 'font-oswald',
@@ -414,7 +415,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             </h1>
             <p 
               className={cn(
-                "text-muted-foreground mt-1 max-w-2xl mx-auto",
+                "text-muted-foreground text-sm mt-1 max-w-2xl mx-auto",
                 profileUser.profileBodyFont === 'poppins' && 'font-poppins',
                 profileUser.profileBodyFont === 'lora' && 'font-lora',
                 profileUser.profileBodyFont === 'oswald' && 'font-oswald',
@@ -441,7 +442,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             </p>
             {profileUser.socials && (
               <div className={cn(
-                "flex justify-center items-center gap-2 mt-3 flex-wrap",
+                "flex justify-center items-center gap-2 mt-2 flex-wrap",
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
@@ -475,7 +476,7 @@ export function ProfileContent({ slug }: { slug: string }) {
           </div>
         </header>
         
-        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-8" /> }
+        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-6" /> }
 
 
         <main>
@@ -491,3 +492,5 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
+
+    
