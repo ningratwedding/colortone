@@ -75,16 +75,10 @@ type SocialPlatform = keyof typeof socialIcons;
 
 const colorOptions = [
     { name: 'Default', value: '' },
-    { name: 'Abu-abu', value: '#6B7280' },
-    { name: 'Merah', value: '#EF4444' },
-    { name: 'Oranye', value: '#F97316' },
-    { name: 'Kuning', value: '#EAB308' },
-    { name: 'Hijau', value: '#22C55E' },
-    { name: 'Teal', value: '#14B8A6' },
+    { name: 'Putih', value: '#FFFFFF' },
+    { name: 'Abu-abu Gelap', value: '#4B5563' },
     { name: 'Biru', value: '#3B82F6' },
-    { name: 'Indigo', value: '#6366F1' },
-    { name: 'Ungu', value: '#8B5CF6' },
-    { name: 'Pink', value: '#EC4899' },
+    { name: 'Merah', value: '#EF4444' },
 ];
 
 
@@ -534,7 +528,7 @@ export default function AppearancePage() {
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna header ${color.name}`}
                                             >
-                                                {headerColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {headerColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
@@ -586,7 +580,7 @@ export default function AppearancePage() {
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna halaman ${color.name}`}
                                             >
-                                                {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {profileBackgroundColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
@@ -617,7 +611,7 @@ export default function AppearancePage() {
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna font nama ${color.name}`}
                                             >
-                                                {profileTitleFontColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {profileTitleFontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
@@ -643,7 +637,7 @@ export default function AppearancePage() {
                                                 style={{ backgroundColor: color.value || 'transparent' }}
                                                 aria-label={`Pilih warna font bio ${color.name}`}
                                             >
-                                                {profileBodyFontColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                {profileBodyFontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                 {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                             </button>
                                         ))}
@@ -733,7 +727,7 @@ export default function AppearancePage() {
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
                                                     <button key={`social-bg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, backgroundColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.backgroundColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{ backgroundColor: color.value || 'transparent' }}>
-                                                        {socialsSettings?.backgroundColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                        {socialsSettings?.backgroundColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
@@ -745,7 +739,7 @@ export default function AppearancePage() {
                                             <div className="flex flex-wrap items-center gap-2">
                                                 {colorOptions.map((color) => (
                                                     <button key={`social-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', color.value === '' && 'border-muted-foreground border-dashed')} style={{ backgroundColor: color.value || 'transparent' }}>
-                                                        {socialsSettings?.fontColor === color.value && <Check className="h-4 w-4 text-white" />}
+                                                        {socialsSettings?.fontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
                                                         {color.value === '' && <span className="text-xs text-muted-foreground">A</span>}
                                                     </button>
                                                 ))}
