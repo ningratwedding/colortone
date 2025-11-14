@@ -17,7 +17,8 @@ import { ProductCard } from '@/components/product-card';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { hexToRgba } from '@/lib/hex-to-rgba';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -97,6 +98,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
 }
 
 function AffiliateProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+  const [activeCategory, setActiveCategory] = useState('all');
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
   const categories = user.affiliateProductCategories || [];
 
@@ -124,33 +126,43 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
 
   const allCategory: (typeof categories)[0] = { id: 'all', name: 'Semua Produk', productIds: user.featuredProductIds || [] };
   const displayCategories = [allCategory, ...categories];
+  const activeProducts = products.filter(p => displayCategories.find(c => c.id === activeCategory)?.productIds.includes(p.id));
 
   return (
-    <Tabs defaultValue="all" className="w-full">
-      <TabsList>
-        {displayCategories.map(cat => (
-          <TabsTrigger key={cat.id} value={cat.id}>{cat.name}</TabsTrigger>
-        ))}
-      </TabsList>
-      {displayCategories.map(cat => {
-        const categoryProducts = products.filter(p => cat.productIds.includes(p.id));
-        return (
-          <TabsContent key={cat.id} value={cat.id}>
-             {categoryProducts.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
-                  {categoryProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} affiliateId={user.id} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p>Tidak ada produk dalam kategori ini.</p>
-                </div>
-              )}
-          </TabsContent>
-        )
-      })}
-    </Tabs>
+     <div className="w-full space-y-4">
+      <Carousel
+        opts={{
+          align: "start",
+          dragFree: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2">
+          {displayCategories.map((cat) => (
+            <CarouselItem key={cat.id} className="basis-auto pl-2">
+              <Button
+                variant={activeCategory === cat.id ? "default" : "outline"}
+                onClick={() => setActiveCategory(cat.id)}
+              >
+                {cat.name}
+              </Button>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+      
+      {activeProducts.length > 0 ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
+          {activeProducts.map((product) => (
+            <ProductCard key={product.id} product={product} affiliateId={user.id} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>Tidak ada produk dalam kategori ini.</p>
+        </div>
+      )}
+    </div>
   );
 }
 
