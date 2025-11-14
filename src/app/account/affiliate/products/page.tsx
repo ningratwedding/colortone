@@ -267,12 +267,13 @@ export default function FeaturedProductsPage() {
               ) : (
                 <Tabs defaultValue={categories[0]?.id || 'new'}>
                   <div className="flex items-center gap-2">
-                    <TabsList className="relative flex-1 justify-start">
+                    <TabsList className="relative flex-1 justify-start h-auto flex-wrap">
                         {categories.map((cat) => (
-                        <TabsTrigger key={cat.id} value={cat.id} className="relative pr-8">
-                           <div className="flex items-center gap-2">
-                            <span>{cat.name}</span>
-                            <div className="flex items-center">
+                          <div key={cat.id} className="flex items-center rounded-md data-[state=active]:bg-muted">
+                            <TabsTrigger value={cat.id}>
+                              {cat.name}
+                            </TabsTrigger>
+                            <div className="flex items-center pr-2">
                                 <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.stopPropagation(); handleOpenCategoryDialog(cat); }}>
                                     <Edit className="h-3 w-3" />
                                 </Button>
@@ -281,7 +282,6 @@ export default function FeaturedProductsPage() {
                                 </Button>
                             </div>
                            </div>
-                        </TabsTrigger>
                         ))}
                     </TabsList>
                     <Button onClick={() => handleOpenCategoryDialog()} size="sm">
