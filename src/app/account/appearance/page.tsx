@@ -2,6 +2,7 @@
 
 
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -335,18 +336,27 @@ function ProfilePreview({
               <div className="w-full space-y-4 my-8">
                 <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
                   <CarouselContent className="-ml-2">
-                    {displayCategories.map((cat) => (
+                    {displayCategories.map((cat) => {
+                      const isActive = activeCategory === cat.id;
+                      const style = {
+                        color: isActive ? categorySettings?.activeColor : categorySettings?.color,
+                        backgroundColor: isActive ? categorySettings?.activeBackgroundColor : categorySettings?.backgroundColor,
+                        borderColor: categorySettings?.style === 'outline' && (isActive ? categorySettings?.activeBackgroundColor : categorySettings?.backgroundColor) ? (isActive ? categorySettings?.activeBackgroundColor : categorySettings?.backgroundColor) : undefined
+                      }
+                      return (
                       <CarouselItem key={cat.id} className="basis-auto pl-2">
                         <Button
                           size={categorySettings?.size}
-                          variant={activeCategory === cat.id ? categorySettings?.style || 'default' : 'outline'}
+                          variant={isActive ? categorySettings?.style || 'default' : 'outline'}
                           onClick={() => setActiveCategory(cat.id)}
                           className={cn(categorySettings?.shape === 'pill' && 'rounded-full')}
+                          style={style}
                         >
                           {cat.name}
                         </Button>
                       </CarouselItem>
-                    ))}
+                      )
+                    })}
                   </CarouselContent>
                 </Carousel>
                 {activeProducts ? (
@@ -1072,6 +1082,36 @@ export default function AppearancePage() {
                                         <div className="flex items-center space-x-2"><RadioGroupItem value="default" id="cat-shape-default" /><Label htmlFor="cat-shape-default">Standar</Label></div>
                                         <div className="flex items-center space-x-2"><RadioGroupItem value="pill" id="cat-shape-pill" /><Label htmlFor="cat-shape-pill">Pil</Label></div>
                                     </RadioGroup>
+                                </div>
+                                <div className="grid gap-4 pt-2">
+                                    <div>
+                                        <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Teks Tombol</Label>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            {colorOptions.map(c => <button key={`cat-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, color: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.color === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', c.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-color-picker" type="color" value={categorySettings?.color || '#000000'} onChange={e => setCategorySettings(p => ({...p, color: e.target.value}))} className="sr-only" /></Label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Tombol</Label>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            {colorOptions.map(c => <button key={`cat-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, backgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.backgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', c.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-bg-color-picker" type="color" value={categorySettings?.backgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, backgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                        </div>
+                                    </div>
+                                     <div>
+                                        <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Teks Tombol Aktif</Label>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            {colorOptions.map(c => <button key={`cat-active-fg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.activeColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', c.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-active-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-color-picker" type="color" value={categorySettings?.activeColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeColor: e.target.value}))} className="sr-only" /></Label>
+                                        </div>
+                                    </div>
+                                     <div>
+                                        <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Latar Tombol Aktif</Label>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            {colorOptions.map(c => <button key={`cat-active-bg-${c.value}`} type="button" onClick={() => setCategorySettings(p => ({...p, activeBackgroundColor: c.value}))} className={cn("h-8 w-8 rounded-full border-2", categorySettings?.activeBackgroundColor === c.value ? 'border-primary ring-2 ring-primary ring-offset-2' : 'border-transparent', c.value === '' && 'border-muted-foreground border-dashed')} style={{backgroundColor: c.value||'transparent'}}><span className="sr-only">{c.name}</span></button>)}
+                                            <Label htmlFor="cat-active-bg-color-picker" className="h-8 w-8 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer"><Palette className="h-4 w-4 text-muted-foreground" /><Input id="cat-active-bg-color-picker" type="color" value={categorySettings?.activeBackgroundColor || '#000000'} onChange={e => setCategorySettings(p => ({...p, activeBackgroundColor: e.target.value}))} className="sr-only" /></Label>
+                                        </div>
+                                    </div>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>

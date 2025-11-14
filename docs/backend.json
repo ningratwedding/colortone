@@ -151,7 +151,11 @@
           "properties": {
             "style": { "type": "string", "enum": ["default", "outline"] },
             "size": { "type": "string", "enum": ["sm", "md", "lg"] },
-            "shape": { "type": "string", "enum": ["default", "pill"] }
+            "shape": { "type": "string", "enum": ["default", "pill"] },
+            "color": { "type": "string" },
+            "backgroundColor": { "type": "string" },
+            "activeColor": { "type": "string" },
+            "activeBackgroundColor": { "type": "string" }
           }
         },
         "role": {

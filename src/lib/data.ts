@@ -56,6 +56,10 @@ export type UserProfile = {
     style?: 'default' | 'outline';
     size?: 'sm' | 'md' | 'lg';
     shape?: 'default' | 'pill';
+    color?: string;
+    backgroundColor?: string;
+    activeColor?: string;
+    activeBackgroundColor?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   featuredProductIds?: string[];

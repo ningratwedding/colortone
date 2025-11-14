@@ -2,6 +2,7 @@
 
 
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -141,18 +142,26 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
         className="w-full"
       >
         <CarouselContent className="-ml-2">
-          {displayCategories.map((cat) => (
+          {displayCategories.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            const style = {
+                color: isActive ? categorySettings.activeColor : categorySettings.color,
+                backgroundColor: isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor,
+                borderColor: categorySettings.style === 'outline' && (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) ? (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) : undefined
+            }
+            return (
             <CarouselItem key={cat.id} className="basis-auto pl-2">
               <Button
-                variant={activeCategory === cat.id ? categorySettings.style : "outline"}
+                variant={isActive ? categorySettings.style : "outline"}
                 size={categorySettings.size}
                 onClick={() => setActiveCategory(cat.id)}
                 className={cn(categorySettings.shape === 'pill' && 'rounded-full')}
+                style={style}
               >
                 {cat.name}
               </Button>
             </CarouselItem>
-          ))}
+          )})}
         </CarouselContent>
       </Carousel>
       
