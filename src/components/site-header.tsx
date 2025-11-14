@@ -167,9 +167,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground shadow-sm">
-      <div className="container flex h-16 items-center px-4 md:px-6">
+      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         {/* Left Section (Logo and Mobile Menu) */}
-        <div className="flex items-center md:w-1/3">
+        <div className="flex items-center">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden mr-2 hover:bg-primary-foreground/10 data-[state=open]:bg-primary-foreground/10" aria-label="Alihkan Menu">
@@ -196,6 +196,9 @@ export function SiteHeader() {
                     {label}
                   </Link>
                 ))}
+                 <Button variant="secondary" asChild>
+                    <Link href="/products">Jelajahi Produk</Link>
+                 </Button>
               </nav>
             </SheetContent>
           </Sheet>
@@ -206,22 +209,11 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        {/* Center Section (Search) */}
-        <div className="flex-1 flex justify-center w-1/3">
-          <div className="w-full max-w-sm">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Cari produk..."
-                  className="w-full bg-background/90 text-foreground pl-10 rounded-full"
-                />
-              </div>
-          </div>
-        </div>
-
         {/* Right Section (Actions) */}
-        <div className="flex items-center justify-end space-x-2 w-1/3">
+        <div className="flex items-center justify-end space-x-2">
+           <Button variant="ghost" asChild className="hidden sm:inline-flex hover:bg-primary-foreground/10">
+              <Link href="/products">Jelajahi</Link>
+           </Button>
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
               <Link href="/creator/dashboard">Menjadi Kreator</Link>
