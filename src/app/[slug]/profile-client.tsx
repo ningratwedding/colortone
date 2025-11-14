@@ -367,7 +367,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                 />
-            ) : profileUser.headerImageUrl && (
+            ) : profileUser.headerImageUrl ? (
                 <Image
                     src={profileUser.headerImageUrl}
                     alt="Header background"
@@ -375,7 +375,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                     className="object-cover"
                     data-ai-hint={profileUser.headerImageHint}
                 />
-            )}
+            ) : null}
             {showGradient && (
               <div 
                 className={cn("absolute inset-0", !profileUser.profileBackgroundColor && !profileUser.profileBackgroundImageUrl && "bg-gradient-to-t from-background via-background/50 to-transparent")} 

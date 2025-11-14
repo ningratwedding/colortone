@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -217,14 +218,14 @@ function ProfilePreview({
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                 />
-            ) : headerImagePreview && (
+            ) : headerImagePreview ? (
                 <Image
                     src={headerImagePreview}
                     alt="Header background"
                     fill
                     className="object-cover"
                 />
-            )}
+            ) : null}
             {showHeaderGradient && (
               <div 
                   className={cn("absolute inset-0", !profileBackgroundColor && !profileBackgroundImagePreview && "bg-gradient-to-t from-background via-background/50 to-transparent")} 
