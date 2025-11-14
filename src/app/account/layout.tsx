@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Settings, ShoppingBag, PartyPopper, Star, Palette, LayoutGrid } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
-import { SiteHeader } from '@/components/site-header';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
@@ -71,7 +70,6 @@ export default function AccountLayout({
 
   return (
     <>
-      <SiteHeader />
       <div className="container mx-auto px-4 py-6">
         <div className="w-full">
           {/* Mobile Navigation */}
