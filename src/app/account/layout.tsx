@@ -22,8 +22,7 @@ const baseMenuItems = [
 
 const affiliateMenuItems = [
     { href: '/account/affiliate', label: 'Dasbor Afiliasi', icon: PartyPopper, exact: true },
-    { href: '/account/affiliate/products', label: 'Produk Unggulan', icon: Star },
-    { href: '/account/affiliate/categories', label: 'Kategori Saya', icon: LayoutGrid }
+    { href: '/account/affiliate/products', label: 'Atur Produk & Kategori', icon: Star },
 ];
 
 

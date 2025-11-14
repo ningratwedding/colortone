@@ -2,20 +2,23 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useCollection, useDoc } from '@/firebase/firestore/use-doc';
 import { collection, doc, query, updateDoc } from 'firebase/firestore';
-import type { Product, UserProfile } from '@/lib/data';
+import type { Product, UserProfile, AffiliateProductCategory } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
-import Image from 'next/image';
+import { Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { v4 as uuidv4 } from 'uuid';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -29,6 +32,18 @@ export default function FeaturedProductsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [categories, setCategories] = useState<AffiliateProductCategory[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Dialog states for category management
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<AffiliateProductCategory | null>(null);
+  const [categoryName, setCategoryName] = useState('');
+  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<AffiliateProductCategory | null>(null);
 
   const userProfileRef = useMemo(() => {
     if (!firestore || !user) return null;
@@ -40,14 +55,12 @@ export default function FeaturedProductsPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'products'));
   }, [firestore]);
-  const { data: allProducts, loading: productsLoading } = useCollection<Product>(productsQuery);
-
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
-  const [isSaving, setIsSaving] = useState(false);
+  const { data: allProducts, loading: productsLoading } = useCollection<Product>(productsQuery as any); // useDoc is a mistake in original code
   
   useEffect(() => {
-    if (userProfile?.featuredProductIds) {
-      setSelectedProducts(new Set(userProfile.featuredProductIds));
+    if (userProfile) {
+      setSelectedProducts(new Set(userProfile.featuredProductIds || []));
+      setCategories(userProfile.affiliateProductCategories || []);
     }
   }, [userProfile]);
 
@@ -68,85 +81,238 @@ export default function FeaturedProductsPage() {
     setIsSaving(true);
     try {
       await updateDoc(userProfileRef, {
-        featuredProductIds: Array.from(selectedProducts)
+        featuredProductIds: Array.from(selectedProducts),
+        affiliateProductCategories: categories
       });
       toast({
-        title: "Produk Unggulan Diperbarui",
-        description: "Halaman profil publik Anda telah diperbarui dengan produk pilihan Anda.",
+        title: "Pembaruan Disimpan",
+        description: "Produk unggulan dan kategori Anda telah disimpan.",
       });
     } catch (error) {
-      console.error("Error saving featured products:", error);
-      toast({
-        variant: "destructive",
-        title: "Gagal Menyimpan",
-        description: "Terjadi kesalahan saat menyimpan pilihan Anda.",
-      });
+      console.error("Error saving data:", error);
+      toast({ variant: "destructive", title: "Gagal Menyimpan" });
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleToggleProductInCategory = (categoryId: string, productId: string) => {
+    setCategories(prev => prev.map(cat => {
+      if (cat.id === categoryId) {
+        const newProductIds = new Set(cat.productIds);
+        if (newProductIds.has(productId)) {
+          newProductIds.delete(productId);
+        } else {
+          newProductIds.add(productId);
+        }
+        return { ...cat, productIds: Array.from(newProductIds) };
+      }
+      return cat;
+    }));
+  };
+  
+  // Category Dialog Handlers
+  const handleOpenCategoryDialog = (category: AffiliateProductCategory | null = null) => {
+    setEditingCategory(category);
+    setCategoryName(category?.name || '');
+    setIsCategoryDialogOpen(true);
+  };
+  
+  const resetCategoryDialog = () => {
+    setEditingCategory(null);
+    setCategoryName('');
+    setIsCategoryDialogOpen(false);
+  };
+  
+  const handleSaveCategory = () => {
+    if (!categoryName) return;
+    
+    if (editingCategory) {
+      setCategories(prev => prev.map(cat => cat.id === editingCategory.id ? { ...cat, name: categoryName } : cat));
+      toast({ title: 'Kategori Diperbarui' });
+    } else {
+      const newCategory: AffiliateProductCategory = { id: uuidv4(), name: categoryName, productIds: [] };
+      setCategories(prev => [...prev, newCategory]);
+      toast({ title: 'Kategori Dibuat' });
+    }
+    resetCategoryDialog();
+  };
+  
+  const openDeleteDialog = (category: AffiliateProductCategory) => {
+    setCategoryToDelete(category);
+    setIsDeleteDialogOpen(true);
+  };
+  
+  const handleDeleteCategory = () => {
+    if (!categoryToDelete) return;
+    setCategories(prev => prev.filter(c => c.id !== categoryToDelete.id));
+    toast({ title: 'Kategori Dihapus' });
+    setIsDeleteDialogOpen(false);
+    setCategoryToDelete(null);
+  };
+  
   const loading = userLoading || profileLoading || productsLoading;
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pilih Produk Unggulan</CardTitle>
-        <CardDescription>
-          Pilih produk mana yang ingin Anda tampilkan di halaman profil afiliasi publik Anda. Pengunjung akan melihat produk-produk ini terlebih dahulu.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {loading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center space-x-3 rounded-md border p-3">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-10 w-16 rounded" />
-                <div className="flex-1 space-y-1">
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/4" />
-                </div>
+    <>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      {/* Product Selection */}
+      <div className="lg:col-span-1">
+        <Card>
+          <CardHeader>
+            <CardTitle>Pilih Produk Unggulan</CardTitle>
+            <CardDescription>
+              Pilih produk yang ingin Anda tampilkan di halaman profil afiliasi Anda.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-96 pr-4">
+              <div className="space-y-3">
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
+                ) : allProducts && allProducts.length > 0 ? (
+                  allProducts.map((product) => (
+                    <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
+                      <Checkbox
+                        id={`product-${product.id}`}
+                        checked={selectedProducts.has(product.id)}
+                        onCheckedChange={() => handleProductToggle(product.id)}
+                      />
+                      <Image 
+                        src={product.galleryImageUrls[0]}
+                        alt={product.name}
+                        width={48}
+                        height={32}
+                        className="rounded object-cover aspect-[3/2] bg-muted"
+                      />
+                      <Label htmlFor={`product-${product.id}`} className="font-normal cursor-pointer flex-1">
+                        <p className="truncate">{product.name}</p>
+                        <p className="text-xs font-semibold text-primary">{formatCurrency(product.price)}</p>
+                      </Label>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">Tidak ada produk tersedia.</p>
+                )}
               </div>
-            ))}
-          </div>
-        ) : (
-          allProducts && allProducts.length > 0 ? (
-            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
-              {allProducts.map((product) => (
-                <div key={product.id} className="flex items-center space-x-3 rounded-md border p-3">
-                  <Checkbox
-                    id={`product-${product.id}`}
-                    checked={selectedProducts.has(product.id)}
-                    onCheckedChange={() => handleProductToggle(product.id)}
-                  />
-                   <Image 
-                     src={product.galleryImageUrls[0]}
-                     alt={product.name}
-                     width={64}
-                     height={42}
-                     className="rounded object-cover aspect-[3/2]"
-                     data-ai-hint={product.galleryImageHints[0]}
-                   />
-                  <Label htmlFor={`product-${product.id}`} className="font-normal cursor-pointer flex-1">
-                    <p>{product.name}</p>
-                    <p className="text-sm font-semibold text-primary">{formatCurrency(product.price)}</p>
-                  </Label>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Category Management */}
+      <div className="lg:col-span-2">
+        <Card>
+            <CardHeader className="flex-row items-center justify-between">
+                <div>
+                <CardTitle>Atur Kategori</CardTitle>
+                <CardDescription>
+                    Kelompokkan produk unggulan Anda ke dalam kategori kustom.
+                </CardDescription>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-muted-foreground py-8">
-              Tidak ada produk yang tersedia di platform saat ini.
-            </div>
-          )
-        )}
-      </CardContent>
-      <CardFooter>
-        <Button onClick={handleSave} disabled={loading || isSaving}>
-          {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan Pilihan'}
-        </Button>
-      </CardFooter>
-    </Card>
+                <Button onClick={() => handleOpenCategoryDialog()}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Buat Kategori
+                </Button>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-48 w-full" />
+              ) : categories.length > 0 ? (
+                <div className="space-y-4">
+                  {categories.map((cat) => (
+                    <Card key={cat.id}>
+                        <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
+                            <CardTitle className="text-lg">{cat.name}</CardTitle>
+                            <div>
+                                <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryDialog(cat)}>
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(cat)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0">
+                            <p className="text-sm text-muted-foreground mb-3">Pilih produk unggulan untuk kategori ini:</p>
+                            <ScrollArea className="h-48">
+                                <div className="space-y-2">
+                                {Array.from(selectedProducts).length > 0 ? (
+                                    Array.from(selectedProducts).map(productId => {
+                                        const product = allProducts?.find(p => p.id === productId);
+                                        if (!product) return null;
+                                        return (
+                                            <div key={`${cat.id}-${productId}`} className="flex items-center space-x-3 rounded-md border p-2">
+                                                 <Checkbox
+                                                    id={`${cat.id}-${productId}`}
+                                                    checked={cat.productIds.includes(productId)}
+                                                    onCheckedChange={() => handleToggleProductInCategory(cat.id, productId)}
+                                                />
+                                                <Image src={product.galleryImageUrls[0]} alt={product.name} width={40} height={26} className="rounded object-cover aspect-[3/2] bg-muted" />
+                                                <Label htmlFor={`${cat.id}-${productId}`} className="text-sm font-normal cursor-pointer flex-1 truncate">{product.name}</Label>
+                                            </div>
+                                        )
+                                    })
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground pt-4">Pilih produk unggulan terlebih dahulu.</p>
+                                )}
+                                </div>
+                            </ScrollArea>
+                        </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground py-12">Belum ada kategori. Buat satu untuk memulai!</div>
+              )}
+            </CardContent>
+            <CardFooter>
+                 <Button onClick={handleSave} disabled={loading || isSaving}>
+                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Menyimpan...</> : 'Simpan Semua Perubahan'}
+                </Button>
+            </CardFooter>
+        </Card>
+      </div>
+    </div>
+    
+    {/* Category Add/Edit Dialog */}
+    <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{editingCategory ? 'Ubah Kategori' : 'Buat Kategori Baru'}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="category-name">Nama Kategori</Label>
+            <Input id="category-name" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={resetCategoryDialog}>Batal</Button>
+          <Button onClick={handleSaveCategory} disabled={!categoryName}>
+            {editingCategory ? 'Simpan Perubahan' : 'Buat Kategori'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Hapus Kategori?</DialogTitle>
+          <DialogDescription>
+            Apakah Anda yakin ingin menghapus kategori "{categoryToDelete?.name}"? Tindakan ini tidak dapat dibatalkan.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Batal</Button>
+          <Button variant="destructive" onClick={handleDeleteCategory}>
+            Ya, Hapus
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
