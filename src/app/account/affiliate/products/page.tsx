@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -252,7 +251,7 @@ export default function FeaturedProductsPage() {
               </div>
               <Button variant="outline" size="sm" onClick={() => setIsAllCategoriesDialogOpen(true)}>
                 <ListTree className="mr-2 h-4 w-4" />
-                Kategori
+                Kategori saya
               </Button>
           </div>
         </CardHeader>
@@ -472,4 +471,3 @@ export default function FeaturedProductsPage() {
     </>
   );
 }
-
