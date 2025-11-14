@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Flag, Handshake, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { Logo } from '@/components/logo';
 
 export default function Home() {
   const vision =
@@ -27,6 +28,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
+          <div className="flex justify-center mb-6">
+            <Logo className="h-10 w-auto" />
+          </div>
           <h1 className="text-3xl md:text-5xl font-bold font-headline">
             Ruang Anda untuk Berkarya dan Bertumbuh
           </h1>

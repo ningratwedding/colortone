@@ -200,33 +200,24 @@ export function SiteHeader() {
             </SheetContent>
           </Sheet>
 
-          {pathname !== '/' && (
-            <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
-              <Logo />
-              <span className="font-bold">LinkStore</span>
-            </Link>
-          )}
+          <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
+            <Logo />
+            <span className="font-bold">LinkStore</span>
+          </Link>
         </div>
 
-        {/* Center Section (Logo or Search) */}
+        {/* Center Section (Search) */}
         <div className="flex-1 flex justify-center w-1/3">
-          {pathname === '/' ? (
-              <Link href="/" className="flex items-center space-x-2">
-                <Logo />
-                <span className="font-bold">LinkStore</span>
-              </Link>
-          ) : (
-            <div className="w-full max-w-sm">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Cari produk..."
-                    className="w-full bg-background/90 text-foreground pl-10 rounded-full"
-                  />
-                </div>
-            </div>
-          )}
+          <div className="w-full max-w-sm">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Cari produk..."
+                  className="w-full bg-background/90 text-foreground pl-10 rounded-full"
+                />
+              </div>
+          </div>
         </div>
 
         {/* Right Section (Actions) */}
