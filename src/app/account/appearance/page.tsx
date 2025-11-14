@@ -25,7 +25,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Copy } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -42,6 +42,7 @@ import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { ProductCard } from '@/components/product-card';
 import { useCollection } from '@/firebase/firestore/use-collection';
+import { siteConfig } from '@/lib/config';
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -559,6 +560,16 @@ export default function AppearancePage() {
             return newSocials;
         });
     };
+    
+    const handleCopyLink = () => {
+        if (!userProfile) return;
+        const url = `${siteConfig.url}/${userProfile.slug}`;
+        navigator.clipboard.writeText(url);
+        toast({
+            title: "Tautan Profil Disalin",
+            description: "URL profil publik Anda telah disalin ke clipboard.",
+        });
+    };
 
     const loading = userLoading || profileLoading || productsLoading;
 
@@ -598,6 +609,16 @@ export default function AppearancePage() {
                     <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="profile-url">URL Profil Publik Anda</Label>
+                        <div className="flex w-full items-center space-x-2">
+                            <Input id="profile-url" value={`${siteConfig.url}/${userProfile.slug}`} readOnly />
+                            <Button type="button" variant="secondary" onClick={handleCopyLink}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Salin
+                            </Button>
+                        </div>
+                    </div>
                     <div className="grid gap-2">
                         <Label htmlFor="bio">Bio Profil Publik</Label>
                         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
