@@ -11,11 +11,12 @@ export default function Home() {
     "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan, sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
 
   const missions = [
-    'Membantu kreator menemukan berbagai cara untuk mengembangkan nilai dan pendapatan dari karya mereka.',
-    'Menghadirkan satu pusat yang menyatukan identitas digital kreator agar mereka tampil lebih profesional dan mudah dijangkau.',
-    'Mendukung kreator dalam menjual karya, membagikan pengetahuan, dan membangun komunitas yang berkembang bersama.',
-    'Menyediakan alat sederhana namun kuat yang memungkinkan kreator fokus pada kreativitas mereka.',
-    'Memberikan insight yang membantu kreator memahami audiens dan mengambil langkah strategis untuk memperkuat pertumbuhan.',
+    'Membantu kreator menemukan lebih banyak peluang untuk mengembangkan nilai dan pendapatan dari karya mereka.',
+    'Menyediakan pusat yang menyatukan seluruh identitas digital kreator agar mereka tampil lebih rapi, profesional, dan mudah dikenal.',
+    'Mendukung kreator menjual karya digital maupun fisik, serta berbagi pengetahuan melalui berbagai format.',
+    'Membangun ruang komunitas yang memungkinkan kreator berinteraksi, bertumbuh, dan menginspirasi satu sama lain.',
+    'Memberikan alat yang sederhana namun bertenaga, sehingga kreator dapat fokus berkarya tanpa terbebani teknis.',
+    'Menyediakan insight yang jelas untuk membantu kreator memahami audiens, mengukur dampak, dan merancang langkah pertumbuhan berikutnya.',
   ];
 
   const commitment =
