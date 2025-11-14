@@ -44,7 +44,7 @@ export default function Home() {
               <Link href="/signup">Mulai Sekarang</Link>
             </Button>
             <Button size="lg" variant="secondary" asChild>
-              <Link href="/products">Jelajahi Produk</Link>
+              <Link href="/products">Temukan Kreator</Link>
             </Button>
           </div>
         </div>
