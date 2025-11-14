@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -23,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -48,9 +50,14 @@ export default function FeaturedProductsPage() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<AffiliateProductCategory | null>(null);
   const [categoryName, setCategoryName] = useState('');
-  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<AffiliateProductCategory | null>(null);
+
+  // Dialog states for categorizing a product
+  const [isCategorizeDialogOpen, setIsCategorizeDialogOpen] = useState(false);
+  const [productToCategorize, setProductToCategorize] = useState<Product | null>(null);
+  const [tempSelectedCategories, setTempSelectedCategories] = useState<Set<string>>(new Set());
+
 
   const userProfileRef = useMemo(() => {
     if (!firestore || !user) return null;
@@ -86,17 +93,81 @@ export default function FeaturedProductsPage() {
     }
   }, [userProfile]);
 
-  const handleProductToggle = (productId: string) => {
-    setSelectedProducts(prev => {
+  const handleProductToggle = (product: Product) => {
+    const productId = product.id;
+    const newSelectedProducts = new Set(selectedProducts);
+    
+    if (newSelectedProducts.has(productId)) {
+      // Un-featuring product
+      newSelectedProducts.delete(productId);
+      setSelectedProducts(newSelectedProducts);
+      // Also remove it from all custom categories
+      setCategories(prev => prev.map(cat => ({
+        ...cat,
+        productIds: cat.productIds.filter(pid => pid !== productId)
+      })));
+       toast({ title: "Produk Dihapus", description: `"${product.name}" dihapus dari produk unggulan Anda.` });
+
+    } else {
+      // Featuring product: add to main list and open categorization dialog
+      newSelectedProducts.add(productId);
+      setSelectedProducts(newSelectedProducts);
+      
+      setProductToCategorize(product);
+      
+      // Pre-select categories this product is already in
+      const existingCats = categories.filter(c => c.productIds.includes(productId)).map(c => c.id);
+      setTempSelectedCategories(new Set(existingCats));
+
+      setIsCategorizeDialogOpen(true);
+    }
+  };
+
+
+  const handleSaveCategorization = () => {
+    if (!productToCategorize) return;
+
+    const productId = productToCategorize.id;
+
+    setCategories(prev => {
+      return prev.map(cat => {
+        const hasProduct = cat.productIds.includes(productId);
+        const shouldHaveProduct = tempSelectedCategories.has(cat.id);
+
+        if (hasProduct && !shouldHaveProduct) {
+          // Remove product from category
+          return { ...cat, productIds: cat.productIds.filter(pid => pid !== productId) };
+        }
+        if (!hasProduct && shouldHaveProduct) {
+          // Add product to category
+          return { ...cat, productIds: [...cat.productIds, productId] };
+        }
+        return cat;
+      });
+    });
+
+    toast({ title: 'Kategori Diperbarui', description: `Kategori untuk "${productToCategorize.name}" telah disimpan.` });
+    closeCategorizeDialog();
+  };
+  
+  const closeCategorizeDialog = () => {
+      setIsCategorizeDialogOpen(false);
+      setProductToCategorize(null);
+      setTempSelectedCategories(new Set());
+  };
+
+  const handleToggleProductInCategorizeDialog = (categoryId: string) => {
+    setTempSelectedCategories(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
       } else {
-        newSet.add(productId);
+        newSet.add(categoryId);
       }
       return newSet;
     });
   };
+
 
   const handleSave = async () => {
     if (!userProfileRef) return;
@@ -229,7 +300,7 @@ export default function FeaturedProductsPage() {
                       <Checkbox
                         id={`product-${product.id}`}
                         checked={selectedProducts.has(product.id)}
-                        onCheckedChange={() => handleProductToggle(product.id)}
+                        onCheckedChange={() => handleProductToggle(product)}
                       />
                       <Image 
                         src={product.galleryImageUrls[0]}
@@ -270,13 +341,13 @@ export default function FeaturedProductsPage() {
                   <div className="flex items-center gap-2">
                     <TabsList className="relative h-auto flex-1 justify-start flex-wrap bg-transparent p-0">
                         {categories.map((cat) => (
-                          <div key={cat.id} className="flex items-center group" onClick={(e) => e.stopPropagation()}>
+                          <div key={cat.id} className="flex items-center group">
                             <TabsTrigger value={cat.id} className="pr-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                               {cat.name}
                             </TabsTrigger>
-                            <DropdownMenu>
+                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-50 hover:opacity-100 data-[state=active]:text-primary-foreground">
+                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-50 hover:opacity-100 data-[state=active]:text-primary-foreground" onClick={(e) => e.stopPropagation()}>
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -380,6 +451,45 @@ export default function FeaturedProductsPage() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Categorize Product Dialog */}
+    <Dialog open={isCategorizeDialogOpen} onOpenChange={closeCategorizeDialog}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Masukkan ke Kategori</DialogTitle>
+                <DialogDescription>Pilih kategori untuk produk "{productToCategorize?.name}".</DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+                <p className="text-sm font-medium">Kategori yang Tersedia:</p>
+                {categories.length > 0 ? (
+                <ScrollArea className="h-48">
+                    <div className="space-y-2 pr-4">
+                    {categories.map((cat) => (
+                        <div key={cat.id} className="flex items-center space-x-3 rounded-md border p-3">
+                            <Checkbox
+                                id={`cat-dialog-${cat.id}`}
+                                checked={tempSelectedCategories.has(cat.id)}
+                                onCheckedChange={() => handleToggleProductInCategorizeDialog(cat.id)}
+                            />
+                            <Label htmlFor={`cat-dialog-${cat.id}`} className="font-normal cursor-pointer flex-1">{cat.name}</Label>
+                        </div>
+                    ))}
+                    </div>
+                </ScrollArea>
+                ) : (
+                    <div className="text-center text-muted-foreground p-4 border rounded-md">
+                        <p>Anda belum membuat kategori kustom.</p>
+                        <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => { closeCategorizeDialog(); handleOpenCategoryDialog(); }}>Buat Kategori Baru</Button>
+                    </div>
+                )}
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={closeCategorizeDialog}>Lewati</Button>
+                <Button onClick={handleSaveCategorization}>Simpan Kategori</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
     </>
   );
 }
+
