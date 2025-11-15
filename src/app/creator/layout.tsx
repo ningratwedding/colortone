@@ -123,13 +123,18 @@ export default function CreatorDashboardLayout({
             </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
-            <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden px-2">
-                <Search className="absolute left-4 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Cari..."
-                    className="w-full rounded-lg bg-card pl-8 h-9"
-                />
+             <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden px-2">
+                <div className="relative flex-initial md:grow">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="w-full rounded-lg bg-card pl-8 h-9"
+                    />
+                </div>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-sidebar-foreground/70 hover:bg-white/10">
+                    <Bell className="h-4 w-4" />
+                </Button>
             </div>
             <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
                 <Search className="h-4 w-4" />
