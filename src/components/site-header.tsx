@@ -99,17 +99,8 @@ export function SiteHeader() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>
-            {user ? (
-              <div className="flex flex-col">
-                <span>{userProfile?.name || user.email}</span>
-                {userProfile && (
-                    <span className="text-xs font-normal text-muted-foreground capitalize">
-                        Paket {userProfile.plan}
-                    </span>
-                )}
-              </div>
-            ) : 'Akun Saya'}
-            </DropdownMenuLabel>
+            {user ? (userProfile?.name || user.email) : 'Akun Saya'}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {user && userProfile ? (
             <>
