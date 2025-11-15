@@ -3,7 +3,7 @@
 
 import { MoreHorizontal, UserPlus, UserMinus, UserCheck } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 export default function AdminUsersPage() {
     const firestore = useFirestore();
@@ -59,6 +60,20 @@ export default function AdminUsersPage() {
             toast({ variant: "destructive", title: "Gagal Memperbarui", description: "Tidak dapat mengubah peran pengguna." });
         }
     };
+    
+    const handlePlanChange = async (userId: string, currentPlan: 'free' | 'pro') => {
+        if (!firestore) return;
+        const newPlan = currentPlan === 'pro' ? 'free' : 'pro';
+        const userDocRef = doc(firestore, 'users', userId);
+        try {
+            await updateDoc(userDocRef, { plan: newPlan });
+            toast({ title: "Paket Diperbarui", description: `Pengguna sekarang berada di paket ${newPlan}.` });
+        } catch (error) {
+            console.error("Error updating plan:", error);
+            toast({ variant: "destructive", title: "Gagal Memperbarui", description: "Tidak dapat mengubah paket pengguna." });
+        }
+    };
+
 
     const getRoleBadge = (role: UserProfile['role']) => {
         switch (role) {
@@ -99,7 +114,7 @@ export default function AdminUsersPage() {
         <CardHeader>
           <CardTitle>Manajemen Pengguna</CardTitle>
           <CardDescription>
-            Lihat dan kelola semua pengguna di platform. Anda dapat mengubah peran antara 'Pembeli', 'Kreator', dan 'Affiliator'.
+            Lihat dan kelola semua pengguna di platform. Anda dapat mengubah peran dan paket langganan.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -112,6 +127,7 @@ export default function AdminUsersPage() {
                 <TableHead>Nama Pengguna</TableHead>
                 <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead>Peran</TableHead>
+                <TableHead>Paket</TableHead>
                 <TableHead className="hidden lg:table-cell">Tanggal Bergabung</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
@@ -125,6 +141,7 @@ export default function AdminUsersPage() {
                     <TableCell><Skeleton className="h-5 w-40" /></TableCell>
                     <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-48" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
                     <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                 </TableRow>
@@ -141,6 +158,19 @@ export default function AdminUsersPage() {
                   <TableCell className="hidden md:table-cell text-muted-foreground">{user.email}</TableCell>
                    <TableCell>
                     {getRoleBadge(user.role)}
+                   </TableCell>
+                    <TableCell>
+                        <div className="flex items-center gap-2">
+                             <Switch
+                                id={`plan-switch-${user.id}`}
+                                checked={user.plan === 'pro'}
+                                onCheckedChange={() => handlePlanChange(user.id, user.plan)}
+                                disabled={user.role === 'admin'}
+                            />
+                            <Badge variant={user.plan === 'pro' ? 'default' : 'outline'}>
+                                {user.plan === 'pro' ? 'Pro' : 'Free'}
+                            </Badge>
+                        </div>
                    </TableCell>
                    <TableCell className="hidden lg:table-cell text-muted-foreground">
                     {formatDate(user.createdAt)}
