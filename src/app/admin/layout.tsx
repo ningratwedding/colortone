@@ -18,6 +18,7 @@ import {
   Bell,
   Laptop,
   Megaphone,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +60,7 @@ const menuItems = [
   { href: "/admin/software", label: "Software", icon: Laptop },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/orders", label: "Pesanan", icon: ShoppingCart },
+  { href: "/admin/billing", label: "Penagihan", icon: CreditCard },
   { href: "/admin/analytics", label: "Analitik", icon: BarChart },
 ];
 
