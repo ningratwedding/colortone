@@ -1201,7 +1201,7 @@ export default function AppearancePage() {
                 <CardHeader>
                     <CardTitle>Pratinjau Profil</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-2">
                     <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
                         <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
                             <ProfilePreview 
@@ -1230,5 +1230,3 @@ export default function AppearancePage() {
         </div>
     )
 }
-
-    
