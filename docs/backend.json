@@ -178,6 +178,11 @@
           "enum": ["free", "pro"],
           "description": "The user's subscription plan."
         },
+        "planExpiryDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date when the user's 'pro' plan subscription expires."
+        },
         "featuredProductIds": {
             "type": "array",
             "items": { "type": "string" },

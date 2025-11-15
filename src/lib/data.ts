@@ -66,6 +66,7 @@ export type UserProfile = {
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
   plan: 'free' | 'pro';
+  planExpiryDate?: Timestamp | { seconds: number; nanoseconds: number; };
   featuredProductIds?: string[];
   affiliateProductCategories?: AffiliateProductCategory[];
   createdAt: Timestamp | { seconds: number, nanoseconds: number };

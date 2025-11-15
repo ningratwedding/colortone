@@ -1,7 +1,8 @@
 
+
 "use client";
 
-import { MoreHorizontal, UserPlus, UserMinus, UserCheck } from "lucide-react";
+import { MoreHorizontal, UserPlus, UserMinus, UserCheck, Calendar as CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,12 +32,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection, query, orderBy, doc, updateDoc, Timestamp } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, Timestamp, serverTimestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format, addMonths } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 export default function AdminUsersPage() {
     const firestore = useFirestore();
@@ -66,11 +72,29 @@ export default function AdminUsersPage() {
         const newPlan = currentPlan === 'pro' ? 'free' : 'pro';
         const userDocRef = doc(firestore, 'users', userId);
         try {
-            await updateDoc(userDocRef, { plan: newPlan });
+            const updateData: any = { plan: newPlan };
+            if (newPlan === 'pro') {
+                updateData.planExpiryDate = addMonths(new Date(), 1);
+            } else {
+                updateData.planExpiryDate = null;
+            }
+            await updateDoc(userDocRef, updateData);
             toast({ title: "Paket Diperbarui", description: `Pengguna sekarang berada di paket ${newPlan}.` });
         } catch (error) {
             console.error("Error updating plan:", error);
             toast({ variant: "destructive", title: "Gagal Memperbarui", description: "Tidak dapat mengubah paket pengguna." });
+        }
+    };
+    
+    const handleDateChange = async (userId: string, date: Date | undefined) => {
+        if (!firestore || !date) return;
+        const userDocRef = doc(firestore, 'users', userId);
+        try {
+            await updateDoc(userDocRef, { planExpiryDate: date });
+            toast({ title: "Tanggal Kedaluwarsa Diperbarui" });
+        } catch (error) {
+            console.error("Error updating expiry date:", error);
+            toast({ variant: "destructive", title: "Gagal Memperbarui Tanggal" });
         }
     };
 
@@ -128,7 +152,7 @@ export default function AdminUsersPage() {
                 <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead>Peran</TableHead>
                 <TableHead>Paket</TableHead>
-                <TableHead className="hidden lg:table-cell">Tanggal Bergabung</TableHead>
+                <TableHead className="hidden lg:table-cell">Kedaluwarsa Pro</TableHead>
                 <TableHead>
                   <span className="sr-only">Tindakan</span>
                 </TableHead>
@@ -173,7 +197,31 @@ export default function AdminUsersPage() {
                         </div>
                    </TableCell>
                    <TableCell className="hidden lg:table-cell text-muted-foreground">
-                    {formatDate(user.createdAt)}
+                    {user.plan === 'pro' ? (
+                       <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                size="sm"
+                                className={cn(
+                                    "w-[150px] justify-start text-left font-normal",
+                                    !user.planExpiryDate && "text-muted-foreground"
+                                )}
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {user.planExpiryDate ? formatDate(user.planExpiryDate) : 'Atur Tanggal'}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={user.planExpiryDate ? (user.planExpiryDate as Timestamp).toDate() : undefined}
+                                onSelect={(date) => handleDateChange(user.id, date)}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                       </Popover>
+                    ) : 'N/A'}
                    </TableCell>
                   <TableCell>
                     <DropdownMenu>
