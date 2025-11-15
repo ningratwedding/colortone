@@ -96,7 +96,6 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Pengaturan Platform</h1>
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
              <Skeleton className="lg:col-span-2 h-64" />
