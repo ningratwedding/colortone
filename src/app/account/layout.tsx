@@ -150,22 +150,6 @@ export default function AccountLayout({
            </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
-            <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden px-2">
-                <div className="relative flex-initial md:grow">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="w-full rounded-lg bg-card pl-8 h-9"
-                    />
-                </div>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-sidebar-foreground/70 hover:bg-white/10">
-                    <Bell className="h-4 w-4" />
-                </Button>
-            </div>
-            <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
-                <Search className="h-4 w-4" />
-            </Button>
             <SidebarSeparator className="my-2" />
           <SidebarMenu>
             <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
@@ -296,11 +280,24 @@ export default function AccountLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background px-2 sm:px-6">
-          <SidebarTrigger className="flex" />
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground px-2 sm:px-6">
+          <SidebarTrigger className="flex text-primary-foreground hover:bg-white/10" />
           <div className="flex-1">
             <h1 className="text-lg font-semibold hidden md:block">{getPageTitle()}</h1>
           </div>
+            <div className="flex items-center gap-2">
+                <div className="relative flex-initial md:grow">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="w-full rounded-lg bg-background/80 text-foreground pl-8 h-9"
+                    />
+                </div>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-primary-foreground hover:bg-white/10">
+                    <Bell className="h-4 w-4" />
+                </Button>
+            </div>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </SidebarInset>
