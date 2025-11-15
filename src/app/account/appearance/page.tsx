@@ -21,7 +21,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload, Rows, Columns } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload, Rows, Columns, UserCircle2, Text } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -987,19 +987,21 @@ export default function AppearancePage() {
                                   <div className="flex items-center gap-2">
                                     <Button
                                       variant={socialsSettings?.layout === 'horizontal' ? 'secondary' : 'outline'}
-                                      className="flex-1"
+                                      className="h-16 flex-1 flex flex-col items-center justify-center"
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, layout: 'horizontal' }))}
+                                      type="button"
                                     >
                                       <Columns className="mr-2 h-4 w-4" />
-                                      Horizontal
+                                      <span className="text-xs mt-1">Horizontal</span>
                                     </Button>
                                     <Button
                                       variant={socialsSettings?.layout === 'vertical' ? 'secondary' : 'outline'}
-                                      className="flex-1"
+                                      className="h-16 flex-1 flex flex-col items-center justify-center"
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, layout: 'vertical' }))}
+                                      type="button"
                                     >
                                       <Rows className="mr-2 h-4 w-4" />
-                                      Vertikal
+                                      <span className="text-xs mt-1">Vertikal</span>
                                     </Button>
                                   </div>
                                 </div>
@@ -1011,6 +1013,7 @@ export default function AppearancePage() {
                                       variant={socialsSettings?.style === 'iconOnly' ? 'secondary' : 'outline'}
                                       className="h-16 flex-1 flex flex-col items-center justify-center"
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'iconOnly' }))}
+                                      type="button"
                                     >
                                       <Globe className="h-5 w-5" />
                                       <span className="text-xs mt-1">Ikon</span>
@@ -1019,6 +1022,7 @@ export default function AppearancePage() {
                                       variant={socialsSettings?.style === 'pill' ? 'secondary' : 'outline'}
                                       className="h-16 flex-1 flex flex-col items-center justify-center"
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'pill' }))}
+                                      type="button"
                                     >
                                       <div className="w-10 h-5 rounded-full bg-foreground/20" />
                                       <span className="text-xs mt-1">Pil</span>
@@ -1112,34 +1116,106 @@ export default function AppearancePage() {
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
-                                <div className="grid gap-2">
-                                    <Label>Gaya Kartu</Label>
-                                    <RadioGroup value={productCardSettings?.style} onValueChange={(value) => setProductCardSettings(prev => ({...prev, style: value as any}))}>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="standard" id="card-standard" /><Label htmlFor="card-standard">Standar (dengan kreator)</Label></div>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="simple" id="card-simple" /><Label htmlFor="card-simple">Sederhana</Label></div>
-                                    </RadioGroup>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-normal text-muted-foreground">Gaya Kartu</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant={productCardSettings?.style === 'standard' ? 'secondary' : 'outline'}
+                                            className="h-20 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, style: 'standard' }))}
+                                            type="button"
+                                        >
+                                            <UserCircle2 className="h-5 w-5" />
+                                            <span className="text-xs mt-1">Standar</span>
+                                        </Button>
+                                        <Button
+                                            variant={productCardSettings?.style === 'simple' ? 'secondary' : 'outline'}
+                                            className="h-20 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, style: 'simple' }))}
+                                            type="button"
+                                        >
+                                            <Text className="h-5 w-5" />
+                                            <span className="text-xs mt-1">Sederhana</span>
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label>Perataan Teks</Label>
-                                    <RadioGroup value={productCardSettings?.textAlign} onValueChange={(value) => setProductCardSettings(prev => ({...prev, textAlign: value as any}))}>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="left" id="text-left" /><Label htmlFor="text-left">Kiri</Label></div>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="center" id="text-center" /><Label htmlFor="text-center">Tengah</Label></div>
-                                    </RadioGroup>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-normal text-muted-foreground">Perataan Teks</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant={productCardSettings?.textAlign === 'left' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, textAlign: 'left' }))}
+                                            type="button"
+                                        >
+                                            <AlignLeft className="h-5 w-5" />
+                                            <span className="text-xs mt-1">Kiri</span>
+                                        </Button>
+                                        <Button
+                                            variant={productCardSettings?.textAlign === 'center' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, textAlign: 'center' }))}
+                                            type="button"
+                                        >
+                                            <AlignCenter className="h-5 w-5" />
+                                            <span className="text-xs mt-1">Tengah</span>
+                                        </Button>
+                                    </div>
                                 </div>
-                                 <div className="grid gap-2">
-                                    <Label>Rasio Aspek Gambar</Label>
-                                    <RadioGroup value={productCardSettings?.imageAspectRatio} onValueChange={(value) => setProductCardSettings(prev => ({...prev, imageAspectRatio: value as any}))}>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="3/2" id="aspect-3-2" /><Label htmlFor="aspect-3-2">3:2 (Lanskap)</Label></div>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="4/3" id="aspect-4-3" /><Label htmlFor="aspect-4-3">4:3 (Lanskap)</Label></div>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="1/1" id="aspect-1-1" /><Label htmlFor="aspect-1-1">1:1 (Persegi)</Label></div>
-                                    </RadioGroup>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-normal text-muted-foreground">Rasio Aspek Gambar</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant={productCardSettings?.imageAspectRatio === '3/2' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '3/2' }))}
+                                            type="button"
+                                        >
+                                            <AspectRatio className="h-5 w-5" />
+                                            <span className="text-xs mt-1">3:2</span>
+                                        </Button>
+                                         <Button
+                                            variant={productCardSettings?.imageAspectRatio === '4/3' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '4/3' }))}
+                                            type="button"
+                                        >
+                                            <AspectRatio className="h-5 w-5" />
+                                            <span className="text-xs mt-1">4:3</span>
+                                        </Button>
+                                         <Button
+                                            variant={productCardSettings?.imageAspectRatio === '1/1' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '1/1' }))}
+                                            type="button"
+                                        >
+                                            <AspectRatio className="h-5 w-5" />
+                                            <span className="text-xs mt-1">1:1</span>
+                                        </Button>
+                                    </div>
                                 </div>
-                                 <div className="grid gap-2">
-                                    <Label>Gaya Tombol Beli</Label>
-                                    <RadioGroup value={productCardSettings?.buttonStyle} onValueChange={(value) => setProductCardSettings(prev => ({...prev, buttonStyle: value as any}))}>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="fill" id="button-fill" /><Label htmlFor="button-fill">Isi (Fill)</Label></div>
-                                        <div className="flex items-center space-x-2"><RadioGroupItem value="outline" id="button-outline" /><Label htmlFor="button-outline">Garis (Outline)</Label></div>
-                                    </RadioGroup>
+                                 <div className="space-y-2">
+                                    <Label className="text-xs font-normal text-muted-foreground">Gaya Tombol Beli</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant={productCardSettings?.buttonStyle === 'fill' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, buttonStyle: 'fill' }))}
+                                            type="button"
+                                        >
+                                            <div className="w-10 h-5 rounded bg-foreground" />
+                                            <span className="text-xs mt-1">Isi</span>
+                                        </Button>
+                                        <Button
+                                            variant={productCardSettings?.buttonStyle === 'outline' ? 'secondary' : 'outline'}
+                                            className="h-16 flex-1 flex flex-col items-center justify-center"
+                                            onClick={() => setProductCardSettings(prev => ({ ...prev, buttonStyle: 'outline' }))}
+                                            type="button"
+                                        >
+                                            <div className="w-10 h-5 rounded border border-foreground" />
+                                            <span className="text-xs mt-1">Garis</span>
+                                        </Button>
+                                    </div>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -1212,31 +1288,34 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-             <div className="lg:sticky lg:top-20">
+            <div className="lg:sticky lg:top-20">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
-                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
-                         <ProfilePreview 
-                            profile={userProfile}
-                            products={products}
-                            bio={bio}
-                            socials={socials}
-                            socialsSettings={socialsSettings}
-                            headerColor={headerColor}
-                            headerImagePreview={headerImagePreview}
-                            headerVideoPreview={headerVideoPreview}
-                            showHeaderGradient={showHeaderGradient}
-                            profileBackgroundColor={profileBackgroundColor}
-                            profileBackgroundImagePreview={profileBackgroundImagePreview}
-                            profileTitleFont={profileTitleFont}
-                            profileTitleFontColor={profileTitleFontColor}
-                            profileBodyFont={profileBodyFont}
-                            profileBodyFontColor={profileBodyFontColor}
-                            productCardSettings={productCardSettings}
-                            categorySettings={categorySettings}
-                        />
+                     <div className="p-2">
+                        <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                            <ProfilePreview 
+                                profile={userProfile}
+                                products={products}
+                                bio={bio}
+                                socials={socials}
+                                socialsSettings={socialsSettings}
+                                headerColor={headerColor}
+                                headerImagePreview={headerImagePreview}
+                                headerVideoPreview={headerVideoPreview}
+                                showHeaderGradient={showHeaderGradient}
+                                profileBackgroundColor={profileBackgroundColor}
+                                profileBackgroundImagePreview={profileBackgroundImagePreview}
+                                profileTitleFont={profileTitleFont}
+                                profileTitleFontColor={profileTitleFontColor}
+                                profileBodyFont={profileBodyFont}
+                                profileBodyFontColor={profileBodyFontColor}
+                                productCardSettings={productCardSettings}
+                                categorySettings={categorySettings}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+
