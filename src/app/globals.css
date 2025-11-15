@@ -29,8 +29,8 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.75rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 224 71.4% 4.1%;
+    --sidebar-background: linear-gradient(180deg, hsl(175, 70%, 40%), hsl(210, 90%, 55%));
+    --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 175 70% 40%;
     --sidebar-primary-foreground: 175 20% 98%;
     --sidebar-accent: 220 20% 96%;
@@ -83,5 +83,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-    

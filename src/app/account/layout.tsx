@@ -127,15 +127,15 @@ export default function AccountLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" variant="inset" side="left">
+      <Sidebar collapsible="icon" variant="sidebar" side="left" className="rounded-r-2xl">
         <SidebarHeader>
-          <Link href="/" className="flex items-center space-x-2 px-2">
+          <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
             <Logo />
           </Link>
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
-            <h2 className="px-2 py-1 text-xs font-semibold text-muted-foreground group-data-[collapsible=icon]:hidden">
+            <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
               Akun Saya
             </h2>
             {baseMenuItems.map(({ href, label, icon: Icon, exact }) => (
@@ -151,7 +151,7 @@ export default function AccountLayout({
             {userProfile?.role === 'kreator' && (
               <>
                 <SidebarSeparator className="my-2" />
-                <h2 className="px-2 py-1 text-xs font-semibold text-muted-foreground group-data-[collapsible=icon]:hidden">
+                <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
                   Kreator
                 </h2>
                 {creatorMenuItems.map(({ href, label, icon: Icon, exact }) => (
@@ -169,7 +169,7 @@ export default function AccountLayout({
             {userProfile?.role === 'affiliator' && (
                <>
                 <SidebarSeparator className="my-2" />
-                <h2 className="px-2 py-1 text-xs font-semibold text-muted-foreground group-data-[collapsible=icon]:hidden">
+                <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
                   Afiliasi
                 </h2>
                 {affiliateMenuItems.map(({ href, label, icon: Icon, exact }) => (
@@ -190,14 +190,14 @@ export default function AccountLayout({
            {profileLoading ? null : (
                   userProfile?.plan === 'free' && (
                     <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
-                        <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-gradient-to-br from-primary to-blue-500 text-primary-foreground">
+                        <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-white/10 text-primary-foreground backdrop-blur-lg border-white/20">
                         <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
                             <div className="mb-2 group-data-[collapsible=icon]:hidden">
                                 <h3 className="text-sm font-semibold">Upgrade ke Pro</h3>
                                 <p className="text-xs text-primary-foreground/80">Akses semua fitur premium.</p>
                             </div>
                             <Button
-                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border group-data-[collapsible=icon]:border-primary-foreground/50 group-data-[collapsible=icon]:hover:bg-primary-foreground/20"
+                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-white/20 group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:hover:bg-white/30"
                             size="sm"
                             onClick={handleRequestPro}
                             disabled={isRequestingPro}
