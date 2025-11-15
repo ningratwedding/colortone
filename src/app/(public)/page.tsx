@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -123,6 +124,11 @@ export default function Home() {
     <div className="bg-background">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
+        <div className="absolute top-4 right-4 z-20">
+            <Button variant="ghost" className="hover:bg-primary-foreground/10" asChild>
+                <Link href="/login">Masuk</Link>
+            </Button>
+        </div>
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto" />
