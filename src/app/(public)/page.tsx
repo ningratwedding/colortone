@@ -12,10 +12,13 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { useUser } from '@/firebase/auth/use-user';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const [slug, setSlug] = useState('');
   const router = useRouter();
+  const { user, loading: userLoading } = useUser();
   
   const placeholderTexts = useMemo(() => ['nama-kreator', 'seniman-hebat', 'fotografer-pro'], []);
   const [placeholder, setPlaceholder] = useState(placeholderTexts[0]);
@@ -125,9 +128,13 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground overflow-hidden">
         <div className="absolute top-4 right-4 z-20">
-            <Button variant="ghost" className="hover:bg-primary-foreground/10" asChild>
-                <Link href="/login">Masuk</Link>
-            </Button>
+             {userLoading ? (
+              <Skeleton className="h-9 w-20 rounded-md" />
+            ) : (
+              <Button variant="ghost" className="hover:bg-primary-foreground/10" asChild>
+                  <Link href={user ? '/account/settings' : '/login'}>{user ? 'Pengaturan' : 'Masuk'}</Link>
+              </Button>
+            )}
         </div>
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
           <div className="flex flex-col items-center justify-center mb-6">
