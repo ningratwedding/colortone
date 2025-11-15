@@ -251,7 +251,7 @@ export default function AccountLayout({
               <DropdownMenuLabel>{userProfile?.name || 'Akun Saya'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/creator/settings">Pengaturan</Link>
+                <Link href="/account/settings">Pengaturan</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/">Lihat Situs</Link>
