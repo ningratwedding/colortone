@@ -130,12 +130,55 @@ export default function AccountLayout({
     <SidebarProvider>
       <Sidebar collapsible="icon" variant="sidebar" side="left" className="rounded-r-2xl">
         <SidebarHeader>
-          <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
-            <Logo />
-             <span className="font-bold group-data-[collapsible=icon]:hidden">
-              {siteConfig.name}
-            </span>
-          </Link>
+           <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2 text-sidebar-foreground">
+                <Logo />
+                <span className="font-bold group-data-[collapsible=icon]:hidden">
+                  {siteConfig.name}
+                </span>
+              </Link>
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="overflow-hidden rounded-full h-8 w-8 group-data-[collapsible=icon]:hidden"
+                  >
+                    {loading ? (
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                    ) : (
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'User Avatar'} />
+                        <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                      </Avatar>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {user ? (
+                      <div className="flex flex-col">
+                        <span>{userProfile?.name || user.email}</span>
+                        {userProfile && (
+                            <span className="text-xs font-normal text-muted-foreground capitalize">
+                                Paket {userProfile.plan}
+                            </span>
+                        )}
+                      </div>
+                    ) : 'Akun Saya'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/settings">Pengaturan</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/">Lihat Situs</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Keluar</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+           </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
@@ -234,47 +277,6 @@ export default function AccountLayout({
               />
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                {loading ? (
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                ) : (
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'User Avatar'} />
-                    <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
-                  </Avatar>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                 {user ? (
-                  <div className="flex flex-col">
-                    <span>{userProfile?.name || user.email}</span>
-                    {userProfile && (
-                        <span className="text-xs font-normal text-muted-foreground capitalize">
-                            Paket {userProfile.plan}
-                        </span>
-                    )}
-                  </div>
-                ) : 'Akun Saya'}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/account/settings">Pengaturan</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/">Lihat Situs</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Keluar</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </SidebarInset>

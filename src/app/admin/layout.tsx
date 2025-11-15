@@ -52,6 +52,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { siteConfig } from "@/lib/config";
+import { Card } from "@/components/ui/card";
 
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
@@ -98,12 +99,44 @@ export default function AdminDashboardLayout({
     <SidebarProvider>
         <Sidebar collapsible="icon" variant="sidebar" side="left" className="rounded-r-2xl">
           <SidebarHeader>
-            <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
-              <Logo />
-               <span className="font-bold group-data-[collapsible=icon]:hidden">
-                {siteConfig.name}
-              </span>
-            </Link>
+             <div className="flex items-center justify-between">
+                <Link href="/" className="flex items-center space-x-2 text-sidebar-foreground">
+                  <Logo />
+                  <span className="font-bold group-data-[collapsible=icon]:hidden">
+                    {siteConfig.name}
+                  </span>
+                </Link>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                        variant="ghost"
+                        size="icon"
+                        className="overflow-hidden rounded-full h-8 w-8 group-data-[collapsible=icon]:hidden"
+                        >
+                        {loading ? (
+                            <Skeleton className="h-8 w-8 rounded-full" />
+                        ) : (
+                            <Avatar className="h-8 w-8">
+                            <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Admin Avatar'} />
+                            <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                            </Avatar>
+                        )}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin/settings">Pengaturan</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/">Lihat Situs</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Keluar</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+             </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
             <SidebarMenu>
@@ -162,36 +195,6 @@ export default function AdminDashboardLayout({
                   <span className="sr-only">Notifikasi</span>
               </Button>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="overflow-hidden rounded-full"
-                >
-                   {loading ? (
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                  ) : (
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Admin Avatar'} />
-                      <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
-                    </Avatar>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <Link href="/admin/settings">Pengaturan</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link href="/">Lihat Situs</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Keluar</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </header>
           <main className="flex-1 overflow-auto p-2 md:p-4">{children}</main>
         </SidebarInset>
