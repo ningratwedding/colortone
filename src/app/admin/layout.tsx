@@ -51,6 +51,7 @@ import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
+import { siteConfig } from "@/lib/config";
 
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home },
@@ -99,6 +100,9 @@ export default function AdminDashboardLayout({
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
               <Logo />
+               <span className="font-bold group-data-[collapsible=icon]:hidden">
+                {siteConfig.name}
+              </span>
             </Link>
           </SidebarHeader>
           <SidebarContent className="p-2">

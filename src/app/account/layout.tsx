@@ -48,6 +48,7 @@ import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
+import { siteConfig } from '@/lib/config';
 
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
@@ -131,6 +132,9 @@ export default function AccountLayout({
         <SidebarHeader>
           <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
             <Logo />
+             <span className="font-bold group-data-[collapsible=icon]:hidden">
+              {siteConfig.name}
+            </span>
           </Link>
         </SidebarHeader>
         <SidebarContent className="p-2">

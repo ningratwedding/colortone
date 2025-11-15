@@ -48,6 +48,7 @@ import { Logo } from "@/components/logo";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { siteConfig } from '@/lib/config';
 
 
 const menuItems = [
@@ -103,6 +104,9 @@ export default function CreatorDashboardLayout({
           <SidebarHeader>
             <Link href="/" className="flex items-center space-x-2 px-2 text-sidebar-foreground">
               <Logo />
+              <span className="font-bold group-data-[collapsible=icon]:hidden">
+                {siteConfig.name}
+              </span>
             </Link>
           </SidebarHeader>
           <SidebarContent className="p-2">
