@@ -1197,39 +1197,36 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="hidden lg:block">
-                <div className="sticky top-20">
-                    <div className="flex items-center justify-center">
-                        <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[712px] w-[352px] shadow-2xl">
-                            <div className="h-[32px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
-                            <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
-                            <div className="h-[46px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
-                            <div className="h-[64px] w-[3px] bg-zinc-800 dark:bg-zinc-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
-                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-background">
-                                <ProfilePreview 
-                                    profile={userProfile}
-                                    products={products}
-                                    bio={bio}
-                                    socials={socials}
-                                    socialsSettings={socialsSettings}
-                                    headerColor={headerColor}
-                                    headerImagePreview={headerImagePreview}
-                                    headerVideoPreview={headerVideoPreview}
-                                    showHeaderGradient={showHeaderGradient}
-                                    profileBackgroundColor={profileBackgroundColor}
-                                    profileBackgroundImagePreview={profileBackgroundImagePreview}
-                                    profileTitleFont={profileTitleFont}
-                                    profileTitleFontColor={profileTitleFontColor}
-                                    profileBodyFont={profileBodyFont}
-                                    profileBodyFontColor={profileBodyFontColor}
-                                    productCardSettings={productCardSettings}
-                                    categorySettings={categorySettings}
-                                />
-                            </div>
+            <Card className="lg:sticky lg:top-20">
+                <CardHeader>
+                    <CardTitle>Pratinjau Profil</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
+                        <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                            <ProfilePreview 
+                                profile={userProfile}
+                                products={products}
+                                bio={bio}
+                                socials={socials}
+                                socialsSettings={socialsSettings}
+                                headerColor={headerColor}
+                                headerImagePreview={headerImagePreview}
+                                headerVideoPreview={headerVideoPreview}
+                                showHeaderGradient={showHeaderGradient}
+                                profileBackgroundColor={profileBackgroundColor}
+                                profileBackgroundImagePreview={profileBackgroundImagePreview}
+                                profileTitleFont={profileTitleFont}
+                                profileTitleFontColor={profileTitleFontColor}
+                                profileBodyFont={profileBodyFont}
+                                profileBodyFontColor={profileBodyFontColor}
+                                productCardSettings={productCardSettings}
+                                categorySettings={categorySettings}
+                            />
                         </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }
