@@ -66,7 +66,7 @@ const menuItems = [
   { href: "/admin/analytics", label: "Analitik", icon: BarChart },
 ];
 
-const settingsItem = { href: "/admin/settings", label: "Pengaturan", icon: Settings };
+const settingsItem = { href: "/admin/settings", label: "Pengaturan Aplikasi", icon: Settings };
 
 export default function AdminDashboardLayout({
   children,
