@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import {
   Settings,
   ShoppingBag,
-  PartyPopper,
   Star,
   Palette,
   LayoutDashboard,
@@ -61,7 +60,7 @@ const creatorMenuItems = [
 ];
 
 const affiliateMenuItems = [
-  { href: '/account/affiliate', label: 'Dasbor Afiliasi', icon: PartyPopper, exact: true },
+  { href: '/account/affiliate', label: 'Dasbor Afiliasi', icon: LayoutDashboard, exact: true },
   { href: '/account/affiliate/products', label: 'Atur Produk Unggulan', icon: Star },
 ];
 
@@ -149,6 +148,21 @@ export default function AccountLayout({
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+             {userProfile?.plan === 'free' && (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleRequestPro}
+                  disabled={isRequestingPro}
+                  className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary mt-1"
+                  tooltip="Upgrade ke Pro"
+                >
+                  <Star />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {isRequestingPro ? "Memproses..." : "Upgrade ke Pro"}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
             {userProfile?.role === 'kreator' && (
               <>
                 <SidebarSeparator className="my-2" />
@@ -187,33 +201,6 @@ export default function AccountLayout({
             )}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
-          {profileLoading ? null : (
-            userProfile?.plan === 'free' && (
-              <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
-                <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-gradient-to-br from-primary to-blue-500 text-primary-foreground">
-                  <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
-                     <div className="mb-2 group-data-[collapsible=icon]:hidden">
-                        <h3 className="text-sm font-semibold">Upgrade ke Pro</h3>
-                        <p className="text-xs text-primary-foreground/80">Akses semua fitur premium.</p>
-                     </div>
-                    <Button
-                      className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border group-data-[collapsible=icon]:border-primary-foreground/50 group-data-[collapsible=icon]:hover:bg-primary-foreground/20"
-                      size="sm"
-                      onClick={handleRequestPro}
-                      disabled={isRequestingPro}
-                    >
-                      <span className="group-data-[collapsible=icon]:hidden">
-                        {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Meminta...</> : "Dapatkan Fitur Pro"}
-                      </span>
-                      <Star className="hidden group-data-[collapsible=icon]:block h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            )
-          )}
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background px-2 sm:px-6">
