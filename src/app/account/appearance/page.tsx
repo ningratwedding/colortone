@@ -21,7 +21,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload, Rows, Columns } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -662,7 +662,7 @@ export default function AppearancePage() {
     }
 
     return (
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
              <Card>
                 <CardHeader>
                     <CardTitle>Tampilan Profil Publik</CardTitle>
@@ -982,39 +982,50 @@ export default function AppearancePage() {
                         <AccordionItem value="socials-appearance">
                             <AccordionTrigger className="text-sm font-medium">Tampilan Tautan Sosial</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
-                                <div>
-                                <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tata Letak</Label>
-                                <RadioGroup 
-                                    value={socialsSettings?.layout}
-                                    onValueChange={(value) => setSocialsSettings(prev => ({...prev, layout: value as 'horizontal' | 'vertical'}))}
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="horizontal" id="horizontal" />
-                                        <Label htmlFor="horizontal">Horizontal</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="vertical" id="vertical" />
-                                        <Label htmlFor="vertical">Vertikal</Label>
-                                    </div>
-                                </RadioGroup>
+                                <div className="space-y-2">
+                                  <Label className="text-xs font-normal text-muted-foreground">Tata Letak</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant={socialsSettings?.layout === 'horizontal' ? 'secondary' : 'outline'}
+                                      className="flex-1"
+                                      onClick={() => setSocialsSettings(prev => ({ ...prev, layout: 'horizontal' }))}
+                                    >
+                                      <Columns className="mr-2 h-4 w-4" />
+                                      Horizontal
+                                    </Button>
+                                    <Button
+                                      variant={socialsSettings?.layout === 'vertical' ? 'secondary' : 'outline'}
+                                      className="flex-1"
+                                      onClick={() => setSocialsSettings(prev => ({ ...prev, layout: 'vertical' }))}
+                                    >
+                                      <Rows className="mr-2 h-4 w-4" />
+                                      Vertikal
+                                    </Button>
+                                  </div>
                                 </div>
 
-                                <div>
-                                <Label className="text-xs font-normal text-muted-foreground mb-2 block">Gaya Tombol</Label>
-                                <RadioGroup 
-                                    value={socialsSettings?.style}
-                                    onValueChange={(value) => setSocialsSettings(prev => ({...prev, style: value as 'iconOnly' | 'pill'}))}
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="iconOnly" id="iconOnly" />
-                                        <Label htmlFor="iconOnly">Hanya Ikon</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="pill" id="pill" />
-                                        <Label htmlFor="pill">Pil</Label>
-                                    </div>
-                                </RadioGroup>
+                                <div className="space-y-2">
+                                  <Label className="text-xs font-normal text-muted-foreground">Gaya Tombol</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant={socialsSettings?.style === 'iconOnly' ? 'secondary' : 'outline'}
+                                      className="h-16 flex-1 flex flex-col items-center justify-center"
+                                      onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'iconOnly' }))}
+                                    >
+                                      <Globe className="h-5 w-5" />
+                                      <span className="text-xs mt-1">Ikon</span>
+                                    </Button>
+                                    <Button
+                                      variant={socialsSettings?.style === 'pill' ? 'secondary' : 'outline'}
+                                      className="h-16 flex-1 flex flex-col items-center justify-center"
+                                      onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'pill' }))}
+                                    >
+                                      <div className="w-10 h-5 rounded-full bg-foreground/20" />
+                                      <span className="text-xs mt-1">Pil</span>
+                                    </Button>
+                                  </div>
                                 </div>
+
                                 {socialsSettings?.style === 'pill' && (
                                     <div className="space-y-4 pl-6 border-l ml-2 pt-4">
                                         <div>
@@ -1022,10 +1033,14 @@ export default function AppearancePage() {
                                             <RadioGroup 
                                                 value={socialsSettings?.pillSize}
                                                 onValueChange={(value) => setSocialsSettings(prev => ({...prev, pillSize: value as 'sm' | 'md' | 'lg'}))}
+                                                className="flex space-x-2"
                                             >
-                                                <div className="flex items-center space-x-2"><RadioGroupItem value="sm" id="sm" /><Label htmlFor="sm">Kecil</Label></div>
-                                                <div className="flex items-center space-x-2"><RadioGroupItem value="md" id="md" /><Label htmlFor="md">Sedang</Label></div>
-                                                <div className="flex items-center space-x-2"><RadioGroupItem value="lg" id="lg" /><Label htmlFor="lg">Besar</Label></div>
+                                                <Label htmlFor="sm" className={cn("border rounded-md px-3 py-1 text-xs cursor-pointer", socialsSettings.pillSize === 'sm' && "bg-primary text-primary-foreground border-primary")}>Kecil</Label>
+                                                <RadioGroupItem value="sm" id="sm" className="sr-only"/>
+                                                <Label htmlFor="md" className={cn("border rounded-md px-3 py-1 text-xs cursor-pointer", socialsSettings.pillSize === 'md' && "bg-primary text-primary-foreground border-primary")}>Sedang</Label>
+                                                <RadioGroupItem value="md" id="md" className="sr-only"/>
+                                                <Label htmlFor="lg" className={cn("border rounded-md px-3 py-1 text-xs cursor-pointer", socialsSettings.pillSize === 'lg' && "bg-primary text-primary-foreground border-primary")}>Besar</Label>
+                                                <RadioGroupItem value="lg" id="lg" className="sr-only"/>
                                             </RadioGroup>
                                         </div>
                                          {socialsSettings.layout === 'horizontal' && (
@@ -1197,10 +1212,10 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="lg:sticky lg:top-20">
+             <div className="lg:sticky lg:top-20">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
                     <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
-                        <ProfilePreview 
+                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
                             bio={bio}
