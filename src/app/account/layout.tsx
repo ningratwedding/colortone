@@ -5,7 +5,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Settings, ShoppingBag, PartyPopper, Star, Palette, LayoutGrid } from 'lucide-react';
+import { Settings, ShoppingBag, PartyPopper, Star, Palette, LayoutGrid, Loader2 } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,8 @@ import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
@@ -41,13 +43,15 @@ export default function AccountLayout({
   const pathname = usePathname();
   const { user } = useUser();
   const firestore = useFirestore();
-  
+  const { toast } = useToast();
+  const [isRequestingPro, setIsRequestingPro] = React.useState(false);
+
   const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
 
-  const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   let menuItems = [...baseMenuItems];
   if (userProfile?.role === 'kreator') {
@@ -80,6 +84,18 @@ export default function AccountLayout({
     }
     return pathname.startsWith(itemHref);
   }
+  
+  const handleRequestPro = () => {
+    setIsRequestingPro(true);
+    setTimeout(() => {
+        toast({
+            title: "Permintaan Terkirim!",
+            description: "Tim kami akan segera menghubungi Anda melalui email untuk proses selanjutnya. Terima kasih!",
+            duration: 8000,
+        });
+        setIsRequestingPro(false);
+    }, 1000);
+  };
 
   return (
     <>
@@ -103,7 +119,7 @@ export default function AccountLayout({
         </div>
 
         <div className="w-full grid md:grid-cols-[240px_1fr] gap-8">
-          <aside className="hidden md:block self-start sticky top-20">
+          <aside className="hidden md:flex flex-col self-start sticky top-20">
             <nav className="flex flex-col space-y-1">
               <h2 className="text-lg font-bold font-headline mb-2 px-3">Akun Saya</h2>
               {baseMenuItems.map(({ href, label, icon: Icon, exact }) => (
@@ -158,6 +174,22 @@ export default function AccountLayout({
                 </>
               )}
             </nav>
+            <div className="mt-8">
+                {profileLoading ? null : (
+                  userProfile?.plan === 'free' && (
+                    <Card>
+                      <CardHeader className="p-4">
+                        <CardTitle className="text-sm">Upgrade ke Pro</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0">
+                         <Button className="w-full" size="sm" onClick={handleRequestPro} disabled={isRequestingPro}>
+                           {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Dapatkan Fitur Pro"}
+                         </Button>
+                      </CardContent>
+                    </Card>
+                  )
+                )}
+            </div>
           </aside>
           <main>{children}</main>
         </div>
@@ -166,5 +198,3 @@ export default function AccountLayout({
     </>
   );
 }
-
-    

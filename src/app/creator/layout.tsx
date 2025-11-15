@@ -11,6 +11,7 @@ import {
   Settings,
   ShoppingCart,
   Search,
+  Loader2,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -43,6 +44,9 @@ import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 
 const menuItems = [
@@ -61,6 +65,8 @@ export default function CreatorDashboardLayout({
   const pathname = usePathname();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isRequestingPro, setIsRequestingPro] = React.useState(false);
 
   const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
@@ -74,6 +80,18 @@ export default function CreatorDashboardLayout({
   const getInitials = (name?: string | null) => {
     if (!name) return 'K';
     return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+  
+  const handleRequestPro = () => {
+    setIsRequestingPro(true);
+    setTimeout(() => {
+        toast({
+            title: "Permintaan Terkirim!",
+            description: "Tim kami akan segera menghubungi Anda melalui email untuk proses selanjutnya. Terima kasih!",
+            duration: 8000,
+        });
+        setIsRequestingPro(false);
+    }, 1000);
   };
 
   const loading = userLoading || (user && profileLoading);
@@ -105,6 +123,30 @@ export default function CreatorDashboardLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
+              {profileLoading ? null : (
+                  userProfile?.plan === 'free' && (
+                    <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
+                      <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
+                        <CardHeader className="p-2 group-data-[collapsible=icon]:hidden">
+                          <CardTitle className="text-sm">Upgrade ke Pro</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-2 pt-0">
+                          <Button 
+                              className="w-full" 
+                              size="sm" 
+                              onClick={handleRequestPro} 
+                              disabled={isRequestingPro}
+                          >
+                           <span className="group-data-[collapsible=icon]:hidden">
+                            {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>...</> : "Dapatkan Fitur Pro"}
+                            </span>
+                            <Star className="hidden group-data-[collapsible=icon]:block h-4 w-4" />
+                         </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )
+              )}
               <SidebarSeparator />
                 <SidebarMenu>
                     <SidebarMenuItem>
