@@ -132,7 +132,7 @@ export default function AccountSettingsPage() {
             await updateDoc(userProfileRef, updatedData);
 
             if (user && (updatedData.name || newAvatarUrl)) {
-                 await updateAuthProfile(user, {
+                 await updateProfile(user, {
                     displayName: updatedData.name || user.displayName,
                     photoURL: newAvatarUrl || user.photoURL,
                 });
@@ -275,7 +275,7 @@ export default function AccountSettingsPage() {
                         <Input id="profilename" value={name} onChange={(e) => setName(e.target.value)} disabled={!canChangeName} />
                         {!canChangeName ? (
                             <p className="text-xs text-destructive">
-                                Anda baru dapat mengubah nama profil lagi pada {nextChangeDate}.
+                                Anda baru dapat mengubah nama profil lagi pada ${nextChangeDate}.
                             </p>
                         ) : (
                              <p className="text-xs text-muted-foreground">Ini adalah nama yang akan muncul di profil publik Anda.</p>
@@ -320,11 +320,14 @@ export default function AccountSettingsPage() {
                         </ul>
                     )}
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex gap-2">
                     {userProfile.plan === 'free' && (
-                        <Button onClick={handleRequestPro} disabled={isRequestingPro}>
-                             {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Upgrade ke Pro"}
-                        </Button>
+                        <>
+                            <Button onClick={handleRequestPro} disabled={isRequestingPro}>
+                                 {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Upgrade ke Pro"}
+                            </Button>
+                            <Button variant="outline">Lihat Fitur Pro</Button>
+                        </>
                     )}
                 </CardFooter>
             </Card>
