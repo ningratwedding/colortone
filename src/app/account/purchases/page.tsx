@@ -4,16 +4,35 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Download, Package } from 'lucide-react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, where, doc } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, Product } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+
+const getStatusBadge = (status: Order['status']) => {
+    switch (status) {
+        case 'Selesai':
+            return <Badge variant="default" className="bg-green-600 hover:bg-green-500">Selesai</Badge>;
+        case 'Menunggu Pembayaran':
+             return <Badge variant="secondary">Menunggu</Badge>;
+        case 'Diproses':
+            return <Badge variant="secondary" className="bg-blue-500 text-white hover:bg-blue-400">Diproses</Badge>;
+        case 'Dibatalkan':
+            return <Badge variant="destructive">Dibatalkan</Badge>;
+        default:
+            return <Badge variant="outline">{status}</Badge>;
+    }
+};
+
 
 function PurchaseItem({ order }: { order: Order }) {
     const firestore = useFirestore();
@@ -27,51 +46,77 @@ function PurchaseItem({ order }: { order: Order }) {
     const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
     const handleDownload = () => {
-        if (!product) return;
+        if (!product || !product.downloadUrl) return;
         const link = document.createElement('a');
-        link.href = '/placeholder.zip'; // Placeholder, replace with actual download URL from product
+        link.href = product.downloadUrl;
         link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
+    
+    const isDigital = product?.type === 'digital';
 
     return (
         <div
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-3 gap-4"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-3 gap-3"
         >
             <div className="flex items-center gap-4 flex-1">
                 {productLoading ? (
-                     <Skeleton className="w-[84px] h-[56px] rounded-md" />
-                ) : product?.imageAfterUrl ? (
+                     <Skeleton className="w-[72px] h-[48px] rounded-md" />
+                ) : product?.galleryImageUrls?.[0] ? (
                     <Image
-                        src={product.imageAfterUrl}
-                        alt={product.productName}
-                        width={84}
-                        height={56}
-                        className="rounded-md object-cover"
-                        data-ai-hint={product.imageAfterHint}
+                        src={product.galleryImageUrls[0]}
+                        alt={order.productName}
+                        width={72}
+                        height={48}
+                        className="rounded-md object-cover bg-muted"
+                        data-ai-hint={product.galleryImageHints?.[0]}
                     />
                 ) : (
-                    <div className="w-[84px] h-[56px] bg-muted rounded-md flex items-center justify-center">
-                        <Download className="h-6 w-6 text-muted-foreground" />
+                    <div className="w-[72px] h-[48px] bg-muted rounded-md flex items-center justify-center">
+                        <Package className="h-6 w-6 text-muted-foreground" />
                     </div>
                 )}
                 <div className="flex-1">
                     <Link href={`/product/${order.productId}`} className="hover:underline">
-                        <p className="font-semibold">{order.productName}</p>
+                        <p className="font-semibold leading-tight">{order.productName}</p>
                     </Link>
-                    <p className="text-sm text-muted-foreground">
-                       ID Pesanan: {order.id}
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                       ID: {order.id}
                     </p>
                 </div>
             </div>
-            <Button onClick={handleDownload} className="w-full sm:w-auto">
-                <Download className="mr-2 h-4 w-4" />
-                Unduh
-            </Button>
+             <div className="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-2 self-stretch">
+                <div className="flex-grow flex items-center justify-end sm:justify-center">
+                     {getStatusBadge(order.status)}
+                </div>
+                {isDigital && order.status === 'Selesai' && (
+                    <Button onClick={handleDownload} size="sm" className="sm:w-auto">
+                        <Download className="mr-2 h-4 w-4" />
+                        Unduh
+                    </Button>
+                )}
+            </div>
         </div>
     );
+}
+
+function OrderList({ orders }: { orders: Order[] }) {
+    if (orders.length === 0) {
+        return (
+             <div className="text-center py-8">
+                <p className="text-muted-foreground">Tidak ada pesanan dengan status ini.</p>
+            </div>
+        )
+    }
+    return (
+        <div className="space-y-3">
+            {orders.map((order) => (
+                <PurchaseItem key={order.id} order={order} />
+            ))}
+        </div>
+    )
 }
 
 
@@ -88,44 +133,72 @@ export default function PurchasesPage() {
 
     const loading = userLoading || ordersLoading;
 
+    const filteredOrders = useMemo(() => {
+        if (!orders) return { semua: [], diproses: [], selesai: [], dibatalkan: [] };
+        return {
+            semua: orders,
+            diproses: orders.filter(o => o.status === 'Diproses' || o.status === 'Menunggu Pembayaran'),
+            selesai: orders.filter(o => o.status === 'Selesai'),
+            dibatalkan: orders.filter(o => o.status === 'Dibatalkan'),
+        }
+    }, [orders]);
+
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline text-2xl">Riwayat Pembelian</CardTitle>
+                <CardDescription>Lihat semua produk yang pernah Anda beli.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-                {loading && (
-                    <div className="space-y-4">
-                        {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="flex items-center justify-between rounded-lg border p-3 gap-4">
-                                <div className="flex items-center gap-4 flex-1">
-                                    <Skeleton className="h-[56px] w-[84px] rounded-md" />
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-4 w-48" />
-                                        <Skeleton className="h-4 w-32" />
+            <CardContent>
+                <Tabs defaultValue="semua" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4 h-auto">
+                        <TabsTrigger value="semua">Semua</TabsTrigger>
+                        <TabsTrigger value="diproses">Diproses</TabsTrigger>
+                        <TabsTrigger value="selesai">Selesai</TabsTrigger>
+                        <TabsTrigger value="dibatalkan">Dibatalkan</TabsTrigger>
+                    </TabsList>
+                    <div className="mt-4">
+                        {loading ? (
+                             <div className="space-y-3">
+                                {Array.from({ length: 3 }).map((_, i) => (
+                                    <div key={i} className="flex items-center justify-between rounded-lg border p-3 gap-4">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <Skeleton className="h-[48px] w-[72px] rounded-md" />
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-40" />
+                                                <Skeleton className="h-3 w-24" />
+                                            </div>
+                                        </div>
+                                        <Skeleton className="h-9 w-24" />
                                     </div>
-                                </div>
-                                <Skeleton className="h-10 w-28" />
+                                ))}
                             </div>
-                        ))}
+                        ) : (
+                           <>
+                            <TabsContent value="semua">
+                                <OrderList orders={filteredOrders.semua} />
+                            </TabsContent>
+                            <TabsContent value="diproses">
+                                <OrderList orders={filteredOrders.diproses} />
+                            </TabsContent>
+                            <TabsContent value="selesai">
+                               <OrderList orders={filteredOrders.selesai} />
+                            </TabsContent>
+                             <TabsContent value="dibatalkan">
+                               <OrderList orders={filteredOrders.dibatalkan} />
+                            </TabsContent>
+                           </>
+                        )}
+                        {!loading && (!orders || orders.length === 0) && (
+                            <div className="text-center py-12">
+                                <p className="text-muted-foreground">Anda belum melakukan pembelian.</p>
+                                <Button asChild variant="link" className="mt-2">
+                                    <Link href="/products">Mulai Belanja</Link>
+                                </Button>
+                            </div>
+                        )}
                     </div>
-                )}
-                {!loading && orders && orders.length > 0 ? (
-                    <div className="space-y-4">
-                        {orders.map((order) => (
-                           <PurchaseItem key={order.id} order={order} />
-                        ))}
-                    </div>
-                ) : (
-                    !loading && (
-                        <div className="text-center py-8">
-                            <p className="text-muted-foreground">Anda belum melakukan pembelian.</p>
-                            <Button asChild variant="link" className="mt-2">
-                                <Link href="/">Mulai Belanja</Link>
-                            </Button>
-                        </div>
-                    )
-                )}
+                </Tabs>
             </CardContent>
         </Card>
     );
