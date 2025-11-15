@@ -179,6 +179,14 @@ export default function AccountLayout({
                 </DropdownMenuContent>
               </DropdownMenu>
            </div>
+             <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Cari..."
+                    className="w-full rounded-lg bg-card pl-8"
+                />
+            </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
@@ -268,14 +276,7 @@ export default function AccountLayout({
             <h1 className="text-lg font-semibold hidden md:block">{getPageTitle()}</h1>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <div className="relative flex-initial md:grow-0">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari..."
-                className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
-              />
-            </div>
+            {/* Items moved to sidebar */}
           </div>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>
