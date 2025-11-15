@@ -150,6 +150,21 @@ export default function AccountLayout({
            </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
+            <div className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-grow">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Cari..."
+                            className="w-full rounded-lg bg-background/80 text-foreground pl-8 h-9"
+                        />
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-primary-foreground bg-white/10 hover:bg-white/20">
+                        <Bell className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
             <SidebarSeparator className="my-2" />
           <SidebarMenu>
             <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
@@ -285,19 +300,6 @@ export default function AccountLayout({
           <div className="flex-1">
             <h1 className="text-lg font-semibold hidden md:block">{getPageTitle()}</h1>
           </div>
-            <div className="flex items-center gap-2">
-                <div className="relative flex-initial md:grow">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="w-full rounded-lg bg-background/80 text-foreground pl-8 h-9"
-                    />
-                </div>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-primary-foreground hover:bg-white/10">
-                    <Bell className="h-4 w-4" />
-                </Button>
-            </div>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </SidebarInset>

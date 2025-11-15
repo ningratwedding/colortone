@@ -131,6 +131,21 @@ export default function CreatorDashboardLayout({
             </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
+             <div className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-grow">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Cari..."
+                            className="w-full rounded-lg bg-background/80 text-foreground pl-8 h-9"
+                        />
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-primary-foreground bg-white/10 hover:bg-white/20">
+                        <Bell className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
             <SidebarSeparator className="my-2" />
             <SidebarMenu>
               {menuItems.map(({ href, label, icon: Icon, exact }) => (
