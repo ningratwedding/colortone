@@ -148,26 +148,31 @@ export default function Home() {
             Temukan potensi kreatif Anda. LinkStore adalah tempat para kreator
             menemukan, berbagi, dan menjual karya unik mereka.
           </p>
-          <form onSubmit={handleClaimUsername} className="mt-8 mx-auto max-w-md">
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
-              <Input
-                type="text"
-                placeholder={placeholder}
-                className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[120px] pr-[100px] text-base"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                aria-label="Klaim nama pengguna Anda"
-              />
-              <Button
-                type="submit"
-                size="lg"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
-              >
-                Buat
-              </Button>
-            </div>
-          </form>
+          <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
+            <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
+                <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
+                <Input
+                    type="text"
+                    placeholder={placeholder}
+                    className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[120px] pr-[100px] text-base"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    aria-label="Klaim nama pengguna Anda"
+                />
+                <Button
+                    type="submit"
+                    size="lg"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
+                >
+                    Buat
+                </Button>
+                </div>
+            </form>
+            <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto h-12 rounded-full flex-shrink-0">
+                <Link href="/products">Lihat Produk</Link>
+            </Button>
+          </div>
         </div>
         <div className="absolute -bottom-1 left-0 w-full h-16 bg-background" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }} />
       </section>
