@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile as updateAuthProfile } from 'firebase/auth';
-import { PartyPopper, Loader2 } from 'lucide-react';
+import { PartyPopper, Loader2, Star } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
 
@@ -49,6 +49,7 @@ export default function AccountSettingsPage() {
 
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
+    const [isRequestingPro, setIsRequestingPro] = useState(false);
 
     // Name change cooldown logic
     const [canChangeName, setCanChangeName] = useState(true);
@@ -181,6 +182,20 @@ export default function AccountSettingsPage() {
             setIsJoiningAffiliate(false);
         }
     };
+    
+    const handleRequestPro = () => {
+        setIsRequestingPro(true);
+        // Simulate an API call
+        setTimeout(() => {
+            toast({
+                title: "Permintaan Terkirim!",
+                description: "Tim kami akan segera menghubungi Anda melalui email untuk proses selanjutnya. Terima kasih!",
+                duration: 8000,
+            });
+            setIsRequestingPro(false);
+        }, 1000);
+    };
+
 
     const loading = userLoading || profileLoading;
 
@@ -225,6 +240,10 @@ export default function AccountSettingsPage() {
     }
     
     const fallbackName = name || userProfile.name || user.displayName || 'U';
+    const planExpiryDateFormatted = userProfile.planExpiryDate 
+        ? format((userProfile.planExpiryDate as Timestamp).toDate(), "d MMMM yyyy", { locale: fnsIdLocale }) 
+        : '';
+
 
     return (
         <div className="space-y-6">
@@ -280,6 +299,33 @@ export default function AccountSettingsPage() {
                      <Button onClick={handleSaveChanges} disabled={isSaving || !canChangeName}>
                         {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Menyimpan...</> : "Simpan Perubahan Profil"}
                     </Button>
+                </CardFooter>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle>Paket Langganan</CardTitle>
+                    <CardDescription>
+                        {userProfile.plan === 'pro' 
+                            ? `Anda sedang berlangganan paket Pro. Langganan Anda akan berakhir pada ${planExpiryDateFormatted}.`
+                            : "Tingkatkan akun Anda ke Pro untuk membuka fitur eksklusif."}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {userProfile.plan === 'free' && (
+                        <ul className="text-sm text-muted-foreground space-y-2 mb-4">
+                            <li className="flex items-center"><Star className="h-4 w-4 mr-2 text-primary" />Kustomisasi tampilan profil tanpa batas.</li>
+                            <li className="flex items-center"><Star className="h-4 w-4 mr-2 text-primary" />Analitik pengunjung profil yang mendalam.</li>
+                            <li className="flex items-center"><Star className="h-4 w-4 mr-2 text-primary" />Prioritas dukungan pelanggan.</li>
+                        </ul>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    {userProfile.plan === 'free' && (
+                        <Button onClick={handleRequestPro} disabled={isRequestingPro}>
+                             {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Upgrade ke Pro"}
+                        </Button>
+                    )}
                 </CardFooter>
             </Card>
 
