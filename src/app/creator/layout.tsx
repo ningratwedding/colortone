@@ -173,13 +173,16 @@ export default function CreatorDashboardLayout({
             <div className="flex-1">
               <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
             </div>
-            <div className="relative ml-auto flex-initial md:grow-0">
+            <div className="relative ml-auto flex items-center gap-2">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Cari..."
                 className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[336px]"
               />
+              <Button variant="outline" asChild>
+                  <Link href="/account/appearance">Pengaturan Profil</Link>
+              </Button>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
