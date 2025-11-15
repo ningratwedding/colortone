@@ -149,7 +149,6 @@ export default function AdminUsersPage() {
                   <span className="sr-only">Avatar</span>
                 </TableHead>
                 <TableHead>Nama Pengguna</TableHead>
-                <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead>Peran</TableHead>
                 <TableHead>Paket</TableHead>
                 <TableHead className="hidden lg:table-cell">Kedaluwarsa Pro</TableHead>
@@ -162,8 +161,12 @@ export default function AdminUsersPage() {
               {loading && Array.from({length: 5}).map((_, i) => (
                 <TableRow key={i}>
                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-40" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-48" /></TableCell>
+                    <TableCell>
+                        <div className="space-y-1">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-3 w-32" />
+                        </div>
+                    </TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-24" /></TableCell>
                     <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
@@ -178,8 +181,10 @@ export default function AdminUsersPage() {
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">{user.email}</TableCell>
+                  <TableCell>
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                  </TableCell>
                    <TableCell>
                     {getRoleBadge(user.role)}
                    </TableCell>
