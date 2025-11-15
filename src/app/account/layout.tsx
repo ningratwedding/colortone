@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   Loader2,
   Search,
+  Bell,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -137,56 +138,7 @@ export default function AccountLayout({
                   {siteConfig.name}
                 </span>
               </Link>
-               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="overflow-hidden rounded-full h-8 w-8 group-data-[collapsible=icon]:hidden"
-                  >
-                    {loading ? (
-                      <Skeleton className="h-8 w-8 rounded-full" />
-                    ) : (
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'User Avatar'} />
-                        <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
-                      </Avatar>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    {user ? (
-                      <div className="flex flex-col">
-                        <span>{userProfile?.name || user.email}</span>
-                        {userProfile && (
-                            <span className="text-xs font-normal text-muted-foreground capitalize">
-                                Paket {userProfile.plan}
-                            </span>
-                        )}
-                      </div>
-                    ) : 'Akun Saya'}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/account/settings">Pengaturan</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/">Lihat Situs</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Keluar</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
            </div>
-             <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Cari..."
-                    className="w-full rounded-lg bg-card pl-8"
-                />
-            </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
@@ -239,6 +191,18 @@ export default function AccountLayout({
                 ))}
               </>
             )}
+            <SidebarSeparator/>
+             <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden px-2 mt-2">
+                <Search className="absolute left-4 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Cari..."
+                    className="w-full rounded-lg bg-card pl-8 h-9"
+                />
+            </div>
+             <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                <Search className="h-4 w-4" />
+            </Button>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -267,6 +231,53 @@ export default function AccountLayout({
                     </div>
                   )
               )}
+            <SidebarSeparator/>
+            <div className="p-2">
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                         <Button
+                            variant="ghost"
+                            className="w-full justify-start group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 hover:bg-white/10"
+                        >
+                            {loading ? (
+                            <Skeleton className="h-8 w-8 rounded-full" />
+                            ) : (
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'User Avatar'} />
+                                <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                            </Avatar>
+                            )}
+                             <div className="ml-2 text-left group-data-[collapsible=icon]:hidden">
+                                <p className="text-sm font-medium leading-none">{userProfile?.name || 'Pengguna'}</p>
+                                <p className="text-xs text-sidebar-foreground/70">{userProfile?.role}</p>
+                             </div>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="mb-2">
+                    <DropdownMenuLabel>
+                        {user ? (
+                        <div className="flex flex-col">
+                            <span>{userProfile?.name || user.email}</span>
+                            {userProfile && (
+                                <span className="text-xs font-normal text-muted-foreground capitalize">
+                                    Paket {userProfile.plan}
+                                </span>
+                            )}
+                        </div>
+                        ) : 'Akun Saya'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                        <Link href="/account/settings">Pengaturan</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/">Lihat Situs</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Keluar</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -276,7 +287,9 @@ export default function AccountLayout({
             <h1 className="text-lg font-semibold hidden md:block">{getPageTitle()}</h1>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            {/* Items moved to sidebar */}
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Bell className="h-4 w-4" />
+            </Button>
           </div>
         </header>
         <main className="flex-1 overflow-auto p-4">{children}</main>

@@ -55,7 +55,7 @@ import { siteConfig } from "@/lib/config";
 import { Card } from "@/components/ui/card";
 
 const menuItems = [
-  { href: "/admin", label: "Ringkasan", icon: Home },
+  { href: "/admin", label: "Ringkasan", icon: Home, exact: true },
   { href: "/admin/campaigns", label: "Kampanye", icon: Megaphone },
   { href: "/admin/products", label: "Produk", icon: Package },
   { href: "/admin/categories", label: "Kategori", icon: LayoutGrid },
@@ -85,8 +85,18 @@ export default function AdminDashboardLayout({
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   const allMenuItems = [...menuItems, settingsItem];
-  const pageTitle =
-    allMenuItems.find((item) => pathname.startsWith(item.href) && (item.href !== '/admin' || pathname === '/admin'))?.label || "Dasbor Admin";
+  
+  const getPageTitle = () => {
+    for (const item of [...allMenuItems].reverse()) {
+      if (item.exact) {
+        if (pathname === item.href) return item.label;
+      } else {
+        if (pathname.startsWith(item.href)) return item.label;
+      }
+    }
+    return "Dasbor Admin";
+  };
+  const pageTitle = getPageTitle();
 
   const getInitials = (name?: string | null) => {
     if (!name) return 'A';
@@ -106,53 +116,15 @@ export default function AdminDashboardLayout({
                     {siteConfig.name}
                   </span>
                 </Link>
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                        variant="ghost"
-                        size="icon"
-                        className="overflow-hidden rounded-full h-8 w-8 group-data-[collapsible=icon]:hidden"
-                        >
-                        {loading ? (
-                            <Skeleton className="h-8 w-8 rounded-full" />
-                        ) : (
-                            <Avatar className="h-8 w-8">
-                            <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Admin Avatar'} />
-                            <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
-                            </Avatar>
-                        )}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href="/admin/settings">Pengaturan</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/">Lihat Situs</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Keluar</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
              </div>
-             <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Cari..."
-                    className="w-full rounded-lg bg-card pl-8"
-                />
-            </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
             <SidebarMenu>
-              {menuItems.map(({ href, label, icon: Icon }) => (
+              {menuItems.map(({ href, label, icon: Icon, exact }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === href || (href !== "/admin" && pathname.startsWith(href))}
+                    isActive={exact ? pathname === href : pathname.startsWith(href)}
                     tooltip={label}
                   >
                     <Link href={href}>
@@ -162,6 +134,18 @@ export default function AdminDashboardLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+                <SidebarSeparator/>
+                <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden px-2 mt-2">
+                    <Search className="absolute left-4 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="w-full rounded-lg bg-card pl-8 h-9"
+                    />
+                </div>
+                <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                    <Search className="h-4 w-4" />
+                </Button>
             </SidebarMenu>
           </SidebarContent>
            <SidebarFooter>
@@ -180,6 +164,42 @@ export default function AdminDashboardLayout({
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+                 <SidebarSeparator />
+                <div className="p-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                             <Button
+                                variant="ghost"
+                                className="w-full justify-start group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 hover:bg-white/10"
+                            >
+                                {loading ? (
+                                <Skeleton className="h-8 w-8 rounded-full" />
+                                ) : (
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Admin Avatar'} />
+                                    <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                                </Avatar>
+                                )}
+                                 <div className="ml-2 text-left group-data-[collapsible=icon]:hidden">
+                                    <p className="text-sm font-medium leading-none">{userProfile?.name || 'Admin'}</p>
+                                    <p className="text-xs text-sidebar-foreground/70">{userProfile?.role}</p>
+                                 </div>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="mb-2">
+                            <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link href="/admin/settings">Pengaturan</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/">Lihat Situs</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Keluar</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
           </SidebarFooter>
         </Sidebar>
 
@@ -190,7 +210,9 @@ export default function AdminDashboardLayout({
               <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
             </div>
             <div className="flex items-center gap-2 ml-auto">
-              {/* Items moved to sidebar */}
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Bell className="h-4 w-4" />
+                </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto p-2 md:p-4">{children}</main>
