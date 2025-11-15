@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Search,
   Loader2,
+  Star
 } from 'lucide-react';
 import {
   Sidebar,
@@ -44,7 +45,7 @@ import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -126,24 +127,25 @@ export default function CreatorDashboardLayout({
               {profileLoading ? null : (
                   userProfile?.plan === 'free' && (
                     <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
-                      <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
-                        <CardHeader className="p-2 group-data-[collapsible=icon]:hidden">
-                          <CardTitle className="text-sm">Upgrade ke Pro</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-2 pt-0">
-                          <Button 
-                              className="w-full" 
-                              size="sm" 
-                              onClick={handleRequestPro} 
-                              disabled={isRequestingPro}
-                          >
-                           <span className="group-data-[collapsible=icon]:hidden">
-                            {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>...</> : "Dapatkan Fitur Pro"}
+                        <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-gradient-to-br from-primary to-blue-500 text-primary-foreground">
+                        <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                            <div className="mb-2 group-data-[collapsible=icon]:hidden">
+                                <h3 className="text-sm font-semibold">Upgrade ke Pro</h3>
+                                <p className="text-xs text-primary-foreground/80">Akses semua fitur premium.</p>
+                            </div>
+                            <Button
+                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border group-data-[collapsible=icon]:border-primary-foreground/50 group-data-[collapsible=icon]:hover:bg-primary-foreground/20"
+                            size="sm"
+                            onClick={handleRequestPro}
+                            disabled={isRequestingPro}
+                            >
+                            <span className="group-data-[collapsible=icon]:hidden">
+                                {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Meminta...</> : "Dapatkan Fitur Pro"}
                             </span>
                             <Star className="hidden group-data-[collapsible=icon]:block h-4 w-4" />
-                         </Button>
+                            </Button>
                         </CardContent>
-                      </Card>
+                        </Card>
                     </div>
                   )
               )}
