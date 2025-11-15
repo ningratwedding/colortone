@@ -173,6 +173,11 @@
           "enum": ["pembeli", "kreator", "admin", "affiliator"],
           "description": "Defines the user's role and permissions within the application."
         },
+        "plan": {
+          "type": "string",
+          "enum": ["free", "pro"],
+          "description": "The user's subscription plan."
+        },
         "featuredProductIds": {
             "type": "array",
             "items": { "type": "string" },
@@ -215,7 +220,7 @@
           "description": "The user's bank account number."
         }
       },
-      "required": ["name", "email", "slug", "role", "createdAt"]
+      "required": ["name", "email", "slug", "role", "plan", "createdAt"]
     },
     "Product": {
       "title": "Product",

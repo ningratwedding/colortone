@@ -1,4 +1,5 @@
 
+
 import type { Timestamp } from 'firebase/firestore';
 
 export type AffiliateProductCategory = {
@@ -64,6 +65,7 @@ export type UserProfile = {
     activeBackgroundColor?: string;
   };
   role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
+  plan: 'free' | 'pro';
   featuredProductIds?: string[];
   affiliateProductCategories?: AffiliateProductCategory[];
   createdAt: Timestamp | { seconds: number, nanoseconds: number };

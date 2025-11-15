@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -65,6 +66,7 @@ async function createUserDocument(user: User, profileName?: string): Promise<Use
         email: user.email!,
         slug: slug, 
         role: 'pembeli',
+        plan: 'free',
         createdAt: serverTimestamp(),
         avatarUrl: user.photoURL || randomAvatar.imageUrl,
         avatarHint: user.photoURL ? 'user avatar' : randomAvatar.imageHint,
@@ -191,3 +193,4 @@ export async function sendPasswordReset(email: string) {
     return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
   }
 }
+

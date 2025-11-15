@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from "next/link";
@@ -87,6 +88,7 @@ export default function SignupPage() {
         email: user.email!,
         slug: slug,
         role: 'pembeli' as const,
+        plan: 'free' as const,
         createdAt: serverTimestamp(),
         avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
         avatarHint: 'user avatar'
@@ -253,3 +255,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
