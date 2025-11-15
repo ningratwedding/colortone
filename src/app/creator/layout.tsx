@@ -123,6 +123,18 @@ export default function CreatorDashboardLayout({
             </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
+            <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden px-2">
+                <Search className="absolute left-4 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Cari..."
+                    className="w-full rounded-lg bg-card pl-8 h-9"
+                />
+            </div>
+            <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                <Search className="h-4 w-4" />
+            </Button>
+            <SidebarSeparator className="my-2" />
             <SidebarMenu>
               {menuItems.map(({ href, label, icon: Icon, exact }) => (
                 <SidebarMenuItem key={href}>
@@ -138,18 +150,6 @@ export default function CreatorDashboardLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-                <SidebarSeparator/>
-                 <div className="relative flex-initial md:grow-0 group-data-[collapsible=icon]:hidden px-2 mt-2">
-                    <Search className="absolute left-4 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="w-full rounded-lg bg-card pl-8 h-9"
-                    />
-                </div>
-                 <Button variant="ghost" className="w-full justify-start mt-1 hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
-                    <Search className="h-4 w-4" />
-                </Button>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
@@ -242,9 +242,6 @@ export default function CreatorDashboardLayout({
               <Button asChild>
                 <Link href="/account/appearance">Pengaturan Profil</Link>
               </Button>
-               <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Bell className="h-4 w-4" />
-                </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto p-4">{children}</main>
