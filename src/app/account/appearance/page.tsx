@@ -21,7 +21,7 @@ import type { Product, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, AspectRatio, Replace, Video, Upload, Rows, Columns, UserCircle2, Text } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -1171,7 +1171,7 @@ export default function AppearancePage() {
                                             onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '3/2' }))}
                                             type="button"
                                         >
-                                            <AspectRatio className="h-5 w-5" />
+                                            <RectangleHorizontal className="h-5 w-5" />
                                             <span className="text-xs mt-1">3:2</span>
                                         </Button>
                                          <Button
@@ -1180,7 +1180,7 @@ export default function AppearancePage() {
                                             onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '4/3' }))}
                                             type="button"
                                         >
-                                            <AspectRatio className="h-5 w-5" />
+                                            <RectangleHorizontal className="h-5 w-5" />
                                             <span className="text-xs mt-1">4:3</span>
                                         </Button>
                                          <Button
@@ -1189,7 +1189,7 @@ export default function AppearancePage() {
                                             onClick={() => setProductCardSettings(prev => ({ ...prev, imageAspectRatio: '1/1' }))}
                                             type="button"
                                         >
-                                            <AspectRatio className="h-5 w-5" />
+                                            <RectangleHorizontal className="h-5 w-5" />
                                             <span className="text-xs mt-1">1:1</span>
                                         </Button>
                                     </div>
@@ -1288,34 +1288,33 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="lg:sticky lg:top-20">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
-                     <div className="p-2">
-                        <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
-                            <ProfilePreview 
-                                profile={userProfile}
-                                products={products}
-                                bio={bio}
-                                socials={socials}
-                                socialsSettings={socialsSettings}
-                                headerColor={headerColor}
-                                headerImagePreview={headerImagePreview}
-                                headerVideoPreview={headerVideoPreview}
-                                showHeaderGradient={showHeaderGradient}
-                                profileBackgroundColor={profileBackgroundColor}
-                                profileBackgroundImagePreview={profileBackgroundImagePreview}
-                                profileTitleFont={profileTitleFont}
-                                profileTitleFontColor={profileTitleFontColor}
-                                profileBodyFont={profileBodyFont}
-                                profileBodyFontColor={profileBodyFontColor}
-                                productCardSettings={productCardSettings}
-                                categorySettings={categorySettings}
-                            />
-                        </div>
+            <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] lg:sticky lg:top-20">
+                <div className="p-0">
+                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                        <ProfilePreview 
+                            profile={userProfile}
+                            products={products}
+                            bio={bio}
+                            socials={socials}
+                            socialsSettings={socialsSettings}
+                            headerColor={headerColor}
+                            headerImagePreview={headerImagePreview}
+                            headerVideoPreview={headerVideoPreview}
+                            showHeaderGradient={showHeaderGradient}
+                            profileBackgroundColor={profileBackgroundColor}
+                            profileBackgroundImagePreview={profileBackgroundImagePreview}
+                            profileTitleFont={profileTitleFont}
+                            profileTitleFontColor={profileTitleFontColor}
+                            profileBodyFont={profileBodyFont}
+                            profileBodyFontColor={profileBodyFontColor}
+                            productCardSettings={productCardSettings}
+                            categorySettings={categorySettings}
+                        />
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+
 
