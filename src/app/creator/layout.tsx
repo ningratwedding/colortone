@@ -1,10 +1,9 @@
 
-
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Home,
   Package,
@@ -14,6 +13,7 @@ import {
   Loader2,
   Star,
   Bell,
+  LogOut,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,7 +50,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { siteConfig } from '@/lib/config';
-
+import { signOut } from '@/firebase/auth/actions';
 
 const menuItems = [
   { href: '/creator/dashboard', label: 'Ringkasan', icon: Home, exact: true },
@@ -69,6 +69,7 @@ export default function CreatorDashboardLayout({
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isRequestingPro, setIsRequestingPro] = React.useState(false);
 
   const userProfileRef = React.useMemo(() => {
@@ -105,6 +106,13 @@ export default function CreatorDashboardLayout({
         });
         setIsRequestingPro(false);
     }, 1000);
+  };
+  
+  const handleSignOut = async () => {
+    await signOut();
+    toast({ title: 'Berhasil Keluar', description: 'Anda telah keluar dari akun Anda.' });
+    router.push('/');
+    router.refresh();
   };
 
   const loading = userLoading || (user && profileLoading);
@@ -230,7 +238,10 @@ export default function CreatorDashboardLayout({
                             <Link href="/">Lihat Situs</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Keluar</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleSignOut}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Keluar
+                        </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

@@ -1,10 +1,9 @@
 
-
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Settings,
   ShoppingBag,
@@ -14,6 +13,7 @@ import {
   Loader2,
   Search,
   Bell,
+  LogOut,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -37,7 +37,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -50,6 +50,7 @@ import type { UserProfile } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
 import { siteConfig } from '@/lib/config';
+import { signOut } from '@/firebase/auth/actions';
 
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
@@ -75,6 +76,7 @@ export default function AccountLayout({
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isRequestingPro, setIsRequestingPro] = React.useState(false);
 
   const userProfileRef = React.useMemo(() => {
@@ -118,6 +120,13 @@ export default function AccountLayout({
       });
       setIsRequestingPro(false);
     }, 1000);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({ title: 'Berhasil Keluar', description: 'Anda telah keluar dari akun Anda.' });
+    router.push('/');
+    router.refresh();
   };
   
   const getInitials = (name?: string | null) => {
@@ -277,7 +286,10 @@ export default function AccountLayout({
                         <Link href="/">Lihat Situs</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Keluar</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Keluar
+                    </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

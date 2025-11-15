@@ -1,10 +1,9 @@
 
-
 "use client"
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart,
   Home,
@@ -19,6 +18,7 @@ import {
   Laptop,
   Megaphone,
   CreditCard,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +53,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
 import { siteConfig } from "@/lib/config";
 import { Card } from "@/components/ui/card";
+import { signOut } from "@/firebase/auth/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const menuItems = [
   { href: "/admin", label: "Ringkasan", icon: Home, exact: true },
@@ -76,6 +78,8 @@ export default function AdminDashboardLayout({
   const pathname = usePathname();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
@@ -101,6 +105,13 @@ export default function AdminDashboardLayout({
   const getInitials = (name?: string | null) => {
     if (!name) return 'A';
     return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+  
+  const handleSignOut = async () => {
+    await signOut();
+    toast({ title: 'Berhasil Keluar', description: 'Anda telah keluar dari akun Anda.' });
+    router.push('/');
+    router.refresh();
   };
 
   const loading = userLoading || (user && profileLoading);
@@ -201,7 +212,10 @@ export default function AdminDashboardLayout({
                                 <Link href="/">Lihat Situs</Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Keluar</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleSignOut}>
+                              <LogOut className="mr-2 h-4 w-4" />
+                              Keluar
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
