@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -6,13 +7,13 @@ import { SiteHeader } from '@/components/site-header';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
+  const isHomePage = pathname === '/home';
 
   return (
     <>
       {!isHomePage && <SiteHeader />}
       <main className="flex-grow">{children}</main>
-      <SiteFooter />
+      {!isHomePage && <SiteFooter />}
     </>
   );
 }

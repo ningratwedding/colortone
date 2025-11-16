@@ -137,12 +137,11 @@ export default function Home() {
         </div>
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
           <div className="flex flex-col items-center justify-center mb-6">
-            <Logo className="h-12 w-auto mb-4" />
-            <h1 className="text-4xl font-bold font-headline">LinkStore</h1>
+            <Logo className="h-12 w-auto mb-4 text-white" />
+            <h1 className="text-3xl md:text-5xl font-bold font-headline">
+                Ruang Anda untuk Berkarya dan Bertumbuh
+            </h1>
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold font-headline">
-            Ruang Anda untuk Berkarya dan Bertumbuh
-          </h2>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
             Temukan potensi kreatif Anda. LinkStore adalah tempat para kreator
             menemukan, berbagi, dan menjual karya unik mereka.
