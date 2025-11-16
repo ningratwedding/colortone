@@ -40,7 +40,7 @@ export type UserProfile = {
     linkedin?: string;
   };
   socialsSettings?: {
-    style: 'iconOnly' | 'pill';
+    style: 'iconOnly' | 'pill' | 'underline';
     layout?: 'horizontal' | 'vertical';
     backgroundColor?: string;
     backgroundOpacity?: number;

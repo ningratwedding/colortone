@@ -328,7 +328,9 @@ export function ProfileContent({ slug }: { slug: string }) {
 
   const socialLinkClasses = (size: string | undefined, layout: string | undefined) => cn(
     "transition-transform hover:scale-110 flex items-center gap-2",
-    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary' : getPillSizeClasses(size),
+    socialsSettings.style === 'iconOnly' ? 'text-muted-foreground hover:text-primary'
+    : socialsSettings.style === 'pill' ? getPillSizeClasses(size)
+    : 'underline',
     layout === 'vertical' && socialsSettings.style === 'pill' ? 'w-full justify-center' : ''
   );
   
@@ -468,13 +470,13 @@ export function ProfileContent({ slug }: { slug: string }) {
                     className={socialLinkClasses(socialsSettings.pillSize, socialsSettings.layout)}
                     style={{
                       backgroundColor: rgbaBg,
-                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
+                      color: socialsSettings.style !== 'iconOnly' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
                       borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
                       minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                     }}
                   >
-                    {socialIcons[platform as SocialPlatform]}
-                     {socialsSettings.style === 'pill' && <span className="font-medium capitalize">{platform}</span>}
+                    {socialsSettings.style !== 'underline' && socialIcons[platform as SocialPlatform]}
+                    {socialsSettings.style !== 'iconOnly' && <span className="font-medium capitalize">{platform}</span>}
                     <span className="sr-only">{platform}</span>
                   </Link>
                   )
@@ -500,3 +502,5 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
+
+    

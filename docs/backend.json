@@ -115,7 +115,7 @@
             "properties": {
                 "style": {
                     "type": "string",
-                    "enum": ["iconOnly", "pill"]
+                    "enum": ["iconOnly", "pill", "underline"]
                 },
                 "backgroundColor": {
                     "type": "string"
