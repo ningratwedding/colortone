@@ -113,7 +113,7 @@ export default function Home() {
         avatarHint: "indonesian man"
     },
     {
-        quote: "Saya suka bagaimana FilterForge menyatukan semua tautan saya di satu tempat. Profil saya jadi terlihat jauh lebih profesional dan terorganisir.",
+        quote: "Saya suka bagaimana LinkStore menyatukan semua tautan saya di satu tempat. Profil saya jadi terlihat jauh lebih profesional dan terorganisir.",
         name: "Citra Lestari",
         role: "Desainer Grafis & Ilustrator",
         avatar: "https://images.unsplash.com/photo-1609505848937-27497e8493b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRvbmVzaWFuJTIwd29tYW58ZW58MHx8fHwxNzYyODg3NTMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -137,19 +137,19 @@ export default function Home() {
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto" />
-            <span className="text-4xl font-bold mt-2 font-headline">FilterForge</span>
+            <span className="text-4xl font-bold mt-2 font-headline">LinkStore</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-bold font-headline">
             Ruang Anda untuk Berkarya dan Bertumbuh
           </h1>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
-            Temukan potensi kreatif Anda. FilterForge adalah tempat para kreator
+            Temukan potensi kreatif Anda. LinkStore adalah tempat para kreator
             menemukan, berbagi, dan menjual karya unik mereka.
           </p>
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
                 <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">filterforge.id/</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
                 <Input
                     type="text"
                     placeholder={placeholder}

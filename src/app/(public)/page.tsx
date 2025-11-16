@@ -31,7 +31,7 @@ export default function Home() {
       <section className="relative bg-gradient-to-r from-primary to-[hsl(240,60%,55%)] text-primary-foreground overflow-hidden">
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold font-headline">
-            FilterForge
+            LinkStore
           </h1>
           <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-primary-foreground/90">
             Temukan Dunia Baru Visual. Marketplace Terbaik untuk Preset & LUTs.
@@ -54,7 +54,7 @@ export default function Home() {
         {/* Features Section */}
         <div className="text-center">
           <h2 className="text-3xl font-bold font-headline mb-8">
-            Fitur Unggulan FilterForge
+            Fitur Unggulan LinkStore
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => {

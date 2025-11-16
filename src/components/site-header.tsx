@@ -182,7 +182,7 @@ export function SiteHeader() {
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2 text-foreground">
                     <Logo />
-                    <span className="font-bold">FilterForge</span>
+                    <span className="font-bold">LinkStore</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -206,7 +206,7 @@ export function SiteHeader() {
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
             <Logo />
-            <span className="font-bold">FilterForge</span>
+            <span className="font-bold">LinkStore</span>
           </Link>
         </div>
 
