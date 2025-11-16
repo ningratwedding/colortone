@@ -329,7 +329,6 @@ function ProfilePreview({
                     >
                       {socialsSettings?.style !== 'underline' && socialIcons[platform as SocialPlatform]}
                       {socialsSettings?.style !== 'iconOnly' && <span className="font-medium capitalize">{platform}</span>}
-                      <span className="sr-only">{platform}</span>
                     </Link>
                   )
                 })}
@@ -1035,7 +1034,7 @@ export default function AppearancePage() {
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'underline' }))}
                                       type="button"
                                     >
-                                      <Underline className="h-5 w-5" />
+                                      <span className="font-medium underline underline-offset-2">Link</span>
                                       <span className="text-xs mt-1">Garis Bawah</span>
                                     </Button>
                                   </div>
@@ -1299,40 +1298,33 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-             <div className="lg:hidden">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Pratinjau Langsung</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-2">
-                        <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
-                          <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
-                              <ProfilePreview 
-                                  profile={userProfile}
-                                  products={products}
-                                  bio={bio}
-                                  socials={socials}
-                                  socialsSettings={socialsSettings}
-                                  headerColor={headerColor}
-                                  headerImagePreview={headerImagePreview}
-                                  headerVideoPreview={headerVideoPreview}
-                                  showHeaderGradient={showHeaderGradient}
-                                  profileBackgroundColor={profileBackgroundColor}
-                                  profileBackgroundImagePreview={profileBackgroundImagePreview}
-                                  profileTitleFont={profileTitleFont}
-                                  profileTitleFontColor={profileTitleFontColor}
-                                  profileBodyFont={profileBodyFont}
-                                  profileBodyFontColor={profileBodyFontColor}
-                                  productCardSettings={productCardSettings}
-                                  categorySettings={categorySettings}
-                              />
-                          </div>
-                        </div>
-                    </CardContent>
-                </Card>
-             </div>
+            <div className="lg:hidden">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
+                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                        <ProfilePreview 
+                            profile={userProfile}
+                            products={products}
+                            bio={bio}
+                            socials={socials}
+                            socialsSettings={socialsSettings}
+                            headerColor={headerColor}
+                            headerImagePreview={headerImagePreview}
+                            headerVideoPreview={headerVideoPreview}
+                            showHeaderGradient={showHeaderGradient}
+                            profileBackgroundColor={profileBackgroundColor}
+                            profileBackgroundImagePreview={profileBackgroundImagePreview}
+                            profileTitleFont={profileTitleFont}
+                            profileTitleFontColor={profileTitleFontColor}
+                            profileBodyFont={profileBodyFont}
+                            profileBodyFontColor={profileBodyFontColor}
+                            productCardSettings={productCardSettings}
+                            categorySettings={categorySettings}
+                        />
+                    </div>
+                </div>
+            </div>
 
-             <div className="hidden lg:block lg:sticky lg:top-20">
+            <div className="hidden lg:block lg:sticky lg:top-20">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
                     <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
                         <ProfilePreview 
@@ -1361,4 +1353,3 @@ export default function AppearancePage() {
     )
 }
 
-    

@@ -477,7 +477,6 @@ export function ProfileContent({ slug }: { slug: string }) {
                   >
                     {socialsSettings.style !== 'underline' && socialIcons[platform as SocialPlatform]}
                     {socialsSettings.style !== 'iconOnly' && <span className="font-medium capitalize">{platform}</span>}
-                    <span className="sr-only">{platform}</span>
                   </Link>
                   )
                 })}
@@ -503,4 +502,3 @@ export function ProfileContent({ slug }: { slug: string }) {
   );
 }
 
-    
