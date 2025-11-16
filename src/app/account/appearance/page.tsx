@@ -313,6 +313,13 @@ function ProfilePreview({
                   const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings?.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
 
+                  const getDisplayUsername = (platform: string, username: string) => {
+                    if (platform === 'instagram' || platform === 'tiktok') {
+                      return `@${username}`;
+                    }
+                    return username;
+                  }
+
                   return (
                     <Link 
                       key={platform} 
@@ -327,8 +334,8 @@ function ProfilePreview({
                         minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                       }}
                     >
-                      {socialsSettings?.style !== 'underline' && socialIcons[platform as SocialPlatform]}
-                      {socialsSettings?.style !== 'iconOnly' && <span className="font-medium capitalize">{platform}</span>}
+                      {socialIcons[platform as SocialPlatform]}
+                      {socialsSettings?.style !== 'iconOnly' && <span className="font-medium">{getDisplayUsername(platform, username as string)}</span>}
                     </Link>
                   )
                 })}
@@ -1367,5 +1374,3 @@ export default function AppearancePage() {
         </div>
     )
 }
-
-

@@ -452,7 +452,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             </p>
             {profileUser.socials && (
               <div className={cn(
-                "flex justify-center items-center gap-1.5 mt-2 flex-wrap",
+                "flex justify-center items-center gap-2 mt-2 flex-wrap",
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
                 {Object.entries(profileUser.socials).map(([platform, username]) => {
@@ -460,6 +460,13 @@ export function ProfileContent({ slug }: { slug: string }) {
                   const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
+
+                  const getDisplayUsername = (platform: string, username: string) => {
+                    if (platform === 'instagram' || platform === 'tiktok') {
+                      return `@${username}`;
+                    }
+                    return username;
+                  }
 
                   return (
                   <Link 
@@ -475,8 +482,8 @@ export function ProfileContent({ slug }: { slug: string }) {
                       minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                     }}
                   >
-                    {socialsSettings.style !== 'underline' && socialIcons[platform as SocialPlatform]}
-                    {socialsSettings.style !== 'iconOnly' && <span className="font-medium capitalize">{platform}</span>}
+                    {socialIcons[platform as SocialPlatform]}
+                    {socialsSettings.style !== 'iconOnly' && <span className="font-medium">{getDisplayUsername(platform, username as string)}</span>}
                   </Link>
                   )
                 })}
@@ -501,5 +508,3 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
-
-
