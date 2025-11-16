@@ -19,6 +19,7 @@ import {
   Megaphone,
   CreditCard,
   LogOut,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,6 +89,21 @@ export default function AdminDashboardLayout({
 
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
+  React.useEffect(() => {
+    if (!userLoading && !user) {
+      // If user is not logged in, redirect to login
+      router.replace(`/login?redirect=/admin`);
+    } else if (!profileLoading && userProfile && userProfile.role !== 'admin') {
+      // If user is not an admin, redirect to home
+      toast({
+        variant: "destructive",
+        title: "Akses Ditolak",
+        description: "Anda tidak memiliki izin untuk mengakses halaman admin.",
+      });
+      router.replace('/');
+    }
+  }, [user, userLoading, userProfile, profileLoading, router, toast]);
+
   const allMenuItems = [...menuItems, settingsItem];
   
   const getPageTitle = () => {
@@ -115,6 +131,14 @@ export default function AdminDashboardLayout({
   };
 
   const loading = userLoading || (user && profileLoading);
+
+  if (loading || (user && userProfile?.role !== 'admin')) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
