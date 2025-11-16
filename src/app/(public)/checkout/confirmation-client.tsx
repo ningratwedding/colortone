@@ -1,12 +1,13 @@
+
 'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
-import type { Product, Order } from '@/lib/data';
+import type { Product, Order, UserProfile } from '@/lib/data';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, addDoc, collection, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Copy, Clock, Loader2, CheckCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,11 +51,11 @@ export default function ConfirmationClient() {
     const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
     useEffect(() => {
-        if (product && user && !order && !isCreatingOrder) {
+        if (product && user && !order && !isCreatingOrder && firestore) {
             const createOrder = async () => {
                 setIsCreatingOrder(true);
                 try {
-                    const totalAmount = product.price * 1.08; // price + 8% tax
+                    const totalAmount = product.price * (product.type === 'digital' ? 1.08 : 1);
                     
                     const orderData: any = {
                         userId: user.uid,
@@ -66,12 +67,19 @@ export default function ConfirmationClient() {
                         status: 'Menunggu Pembayaran' as const,
                     };
                     
-                    // Prioritize ref from URL, fallback to session storage
                     const refId = affiliateRefId || sessionStorage.getItem('affiliate_ref');
+
                     if (refId && refId !== user.uid) { // Prevent self-referral
-                        orderData.affiliateId = refId;
+                        // Server-side validation: Check if refId is a valid affiliate
+                        const affiliateRef = doc(firestore, 'users', refId);
+                        const affiliateSnap = await getDoc(affiliateRef);
+                        if (affiliateSnap.exists() && affiliateSnap.data().role === 'affiliator') {
+                             orderData.affiliateId = refId;
+                        } else {
+                            console.warn(`Invalid affiliate ID detected and ignored: ${refId}`);
+                        }
                     }
-                    // Clear session storage after using it
+
                     if (sessionStorage.getItem('affiliate_ref')) {
                         sessionStorage.removeItem('affiliate_ref');
                     }
@@ -212,4 +220,6 @@ export default function ConfirmationClient() {
         </div>
     );
 }
+    
+
     
