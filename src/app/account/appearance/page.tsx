@@ -198,7 +198,7 @@ function ProfilePreview({
   return (
     <div className="w-full h-full overflow-hidden" style={pageBackgroundStyle}>
         <div
-        className="relative h-32 md:h-48 overflow-hidden"
+        className="relative h-32 md:h-48"
         style={{ backgroundColor: headerColor || '#FFFFFF' }}
         >
             {headerVideoPreview ? (
@@ -294,7 +294,7 @@ function ProfilePreview({
                 "flex justify-center items-center gap-2 mt-3 flex-wrap",
                 socialsSettings?.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
-                {socials.map((link) => {
+                {(Array.isArray(socials) ? socials : []).map((link) => {
                   const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings?.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
@@ -599,14 +599,15 @@ export default function AppearancePage() {
     
     const getSocialUrl = (platform: SocialPlatform, value: string): string => {
         switch (platform) {
-          case 'website':
-            return value.startsWith('http') ? value : `https://${value}`;
-          case 'whatsapp':
-            return `https://wa.me/${value.replace(/[^0-9]/g, '')}`;
-          default:
-            return `https://www.${platform}.com/${value}`;
+            case 'website':
+            case 'tiktok':
+                return value.startsWith('http') ? value : `https://${value}`;
+            case 'whatsapp':
+                return `https://wa.me/${value.replace(/[^0-9]/g, '')}`;
+            default:
+                return `https://www.${platform}.com/${value}`;
         }
-      };
+    };
 
     const handleAddSocial = () => {
         if (newSocialPlatform && newSocialValue) {
@@ -737,9 +738,9 @@ export default function AppearancePage() {
                                             </>
                                         ) : (
                                             <div className="grid gap-2">
-                                                <Label htmlFor="socialValue">{newSocialPlatform === 'website' ? 'URL Lengkap' : 'Nama Pengguna'}</Label>
-                                                <Input id="socialValue" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : '@username'} value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
-                                                 { newSocialPlatform !== 'website' && <Input id="displayName" placeholder="Teks Tampilan (opsional)" value={newSocialDisplayName} onChange={(e) => setNewSocialDisplayName(e.target.value)} /> }
+                                                <Label htmlFor="socialValue">{(newSocialPlatform === 'website' || newSocialPlatform === 'tiktok') ? 'URL Lengkap' : 'Nama Pengguna'}</Label>
+                                                <Input id="socialValue" placeholder={(newSocialPlatform === 'website' || newSocialPlatform === 'tiktok') ? 'https://...' : '@username'} value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
+                                                 { (newSocialPlatform !== 'website' && newSocialPlatform !== 'tiktok') && <Input id="displayName" placeholder="Teks Tampilan (opsional)" value={newSocialDisplayName} onChange={(e) => setNewSocialDisplayName(e.target.value)} /> }
                                             </div>
                                         )}
                                         </div>
@@ -1319,7 +1320,7 @@ export default function AppearancePage() {
             
             <div className="lg:hidden">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
-                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                    <div className="rounded-[1rem] w-full h-full bg-background overflow-hidden">
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
@@ -1344,7 +1345,7 @@ export default function AppearancePage() {
 
             <div className="hidden lg:block lg:sticky lg:top-20">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
-                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                    <div className="rounded-[1rem] w-full h-full bg-background overflow-hidden">
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
