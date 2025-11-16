@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
-import { updateProfile as updateAuthProfile } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { PartyPopper, Loader2, Star } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function AccountSettingsPage() {
     const { user, loading: userLoading } = useUser();
@@ -46,6 +48,7 @@ export default function AccountSettingsPage() {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [bio, setBio] = useState('');
 
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
@@ -63,6 +66,7 @@ export default function AccountSettingsPage() {
             setFullName(userProfile.fullName || '');
             setPhoneNumber(userProfile.phoneNumber || '');
             setAvatarPreview(userProfile.avatarUrl);
+            setBio(userProfile.bio || '');
 
             // Check name change cooldown
             if (userProfile.nameLastUpdatedAt) {
@@ -97,6 +101,7 @@ export default function AccountSettingsPage() {
                 fullName: fullName,
                 phoneNumber: phoneNumber,
                 avatarUrl: newAvatarUrl,
+                bio: bio,
             };
 
             // Only update name and timestamp if the name has changed and is allowed
@@ -285,6 +290,10 @@ export default function AccountSettingsPage() {
                         <Label htmlFor="fullname">Nama Lengkap</Label>
                         <Input id="fullname" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                          <p className="text-xs text-muted-foreground">Nama ini digunakan untuk keperluan administratif dan tidak akan ditampilkan secara publik.</p>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="bio">Bio Profil Publik</Label>
+                        <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">Alamat Email</Label>

@@ -122,7 +122,6 @@ const fontOptions = [
 function ProfilePreview({
   profile,
   products,
-  bio,
   socials,
   socialsSettings,
   headerColor,
@@ -140,7 +139,6 @@ function ProfilePreview({
 }: {
   profile: UserProfile;
   products?: Product[] | null;
-  bio: string;
   socials: UserProfile['socials'];
   socialsSettings: UserProfile['socialsSettings'];
   headerColor: string;
@@ -300,7 +298,7 @@ function ProfilePreview({
               )} 
               style={{ color: profileBodyFontColor || undefined }}
             >
-              {bio || "Bio Anda akan muncul di sini."}
+              {profile?.bio || "Bio Anda akan muncul di sini."}
             </p>
             {socials && Object.keys(socials).length > 0 && (
               <div className={cn(
@@ -448,7 +446,6 @@ export default function AppearancePage() {
 
     const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
     
-    const [bio, setBio] = useState('');
     const [socials, setSocials] = useState<UserProfile['socials']>({});
     const [headerColor, setHeaderColor] = useState('');
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
@@ -476,7 +473,6 @@ export default function AppearancePage() {
     
     useEffect(() => {
         if (userProfile) {
-            setBio(userProfile.bio || '');
             setSocials(userProfile.socials || {});
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
@@ -582,7 +578,6 @@ export default function AppearancePage() {
             }
 
             const updatedData: Partial<UserProfile> = {
-                bio: bio,
                 socials: socials,
                 headerColor: headerColor,
                 headerImageUrl: newHeaderImageUrl,
@@ -677,12 +672,6 @@ export default function AppearancePage() {
                     <CardDescription>Sesuaikan tampilan halaman profil publik Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
-                    
-                    <div className="grid gap-2">
-                        <Label htmlFor="bio">Bio Profil Publik</Label>
-                        <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Ceritakan sedikit tentang diri Anda" className="min-h-[100px]" />
-                    </div>
-
                     <Accordion type="multiple" className="w-full">
                         <AccordionItem value="socials">
                             <AccordionTrigger className="text-sm font-medium">Tautan Sosial & Situs Web</AccordionTrigger>
@@ -1326,7 +1315,6 @@ export default function AppearancePage() {
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
-                            bio={bio}
                             socials={socials}
                             socialsSettings={socialsSettings}
                             headerColor={headerColor}
@@ -1352,7 +1340,6 @@ export default function AppearancePage() {
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
-                            bio={bio}
                             socials={socials}
                             socialsSettings={socialsSettings}
                             headerColor={headerColor}
