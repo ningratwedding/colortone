@@ -322,7 +322,7 @@ function ProfilePreview({
                       className={socialLinkClasses(socialsSettings?.pillSize, socialsSettings?.layout)}
                       style={{
                         backgroundColor: rgbaBg,
-                        color: socialsSettings?.style !== 'iconOnly' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),
+                        color: socialsSettings?.style === 'pill' ? socialsSettings?.fontColor : socialsSettings?.style === 'underline' ? socialsSettings?.fontColor : (profileBodyFontColor || undefined),
                         borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
                         minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                       }}
@@ -1034,7 +1034,7 @@ export default function AppearancePage() {
                                       onClick={() => setSocialsSettings(prev => ({ ...prev, style: 'underline' }))}
                                       type="button"
                                     >
-                                      <span className="font-medium underline underline-offset-2">Link</span>
+                                      <Underline className="h-5 w-5" />
                                       <span className="text-xs mt-1">Garis Bawah</span>
                                     </Button>
                                   </div>
@@ -1116,6 +1116,21 @@ export default function AppearancePage() {
                                                     </button>
                                                 ))}
                                                 <Label htmlFor="social-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-fg-picker" type="color" value={socialsSettings.fontColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {socialsSettings?.style === 'underline' && (
+                                     <div className="space-y-4 pl-6 border-l ml-2 pt-4">
+                                        <div>
+                                            <Label className="text-xs font-normal text-muted-foreground mb-2 block">Warna Teks Tautan</Label>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {colorOptions.map((color) => (
+                                                    <button key={`social-underline-fg-${color.value}`} type="button" onClick={() => setSocialsSettings(prev => ({...prev, fontColor: color.value}))} className={cn("h-8 w-8 rounded-full border-2 border-border", socialsSettings?.fontColor === color.value ? 'border-primary ring-2 ring-primary ring-offset-2' : '')} style={{backgroundColor: color.value || 'transparent' }}>
+                                                        {socialsSettings?.fontColor === color.value && <Check className="h-4 w-4 text-primary-foreground" style={{color: color.value === '#FFFFFF' ? 'black' : 'white'}} />}
+                                                    </button>
+                                                ))}
+                                                <Label htmlFor="social-underline-fg-picker" className="h-8 w-8 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer" style={{ backgroundColor: socialsSettings?.fontColor && !colorOptions.some(c => c.value === socialsSettings?.fontColor) ? socialsSettings.fontColor : 'transparent' }}><Palette className="h-4 w-4 text-muted-foreground" /><Input id="social-underline-fg-picker" type="color" value={socialsSettings.fontColor || '#000000'} onChange={e => setSocialsSettings(prev => ({...prev, fontColor: e.target.value}))} className="sr-only" /></Label>
                                             </div>
                                         </div>
                                     </div>
@@ -1299,8 +1314,8 @@ export default function AppearancePage() {
             </Card>
             
             <div className="lg:hidden">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
-                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
+                    <div className="rounded-[1rem] w-full h-full bg-background overflow-hidden">
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}
@@ -1325,7 +1340,7 @@ export default function AppearancePage() {
             </div>
 
             <div className="hidden lg:block lg:sticky lg:top-20">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
                     <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
                         <ProfilePreview 
                             profile={userProfile}
@@ -1352,4 +1367,5 @@ export default function AppearancePage() {
         </div>
     )
 }
+
 

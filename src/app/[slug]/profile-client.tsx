@@ -470,7 +470,7 @@ export function ProfileContent({ slug }: { slug: string }) {
                     className={socialLinkClasses(socialsSettings.pillSize, socialsSettings.layout)}
                     style={{
                       backgroundColor: rgbaBg,
-                      color: socialsSettings.style !== 'iconOnly' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
+                      color: socialsSettings.style === 'pill' ? socialsSettings.fontColor : socialsSettings.style === 'underline' ? socialsSettings.fontColor : (profileUser.profileBodyFontColor || undefined),
                       borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
                       minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                     }}
@@ -501,4 +501,5 @@ export function ProfileContent({ slug }: { slug: string }) {
     </div>
   );
 }
+
 
