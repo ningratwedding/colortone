@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -195,7 +196,7 @@ function ProfilePreview({
 
 
   return (
-    <div className="w-full h-full overflow-y-auto" style={pageBackgroundStyle}>
+    <div className="w-full h-full overflow-hidden" style={pageBackgroundStyle}>
         <div
         className="relative h-32 md:h-48 overflow-hidden"
         style={{ backgroundColor: headerColor || '#FFFFFF' }}
@@ -454,7 +455,7 @@ export default function AppearancePage() {
     
     useEffect(() => {
         if (userProfile) {
-            setSocials(userProfile.socials || []);
+            setSocials(Array.isArray(userProfile.socials) ? userProfile.socials : []);
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
             setHeaderVideoPreview(userProfile.headerVideoUrl || null);
@@ -671,7 +672,7 @@ export default function AppearancePage() {
                             <AccordionContent>
                                 <div className="grid gap-4 pt-2">
                                     <div className="space-y-3">
-                                    {socials.map((link) => (
+                                    {(Array.isArray(socials) ? socials : []).map((link) => (
                                         <div key={link.id} className="flex items-center gap-3">
                                         <div className="relative flex-grow">
                                             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -737,7 +738,7 @@ export default function AppearancePage() {
                                         ) : (
                                             <div className="grid gap-2">
                                                 <Label htmlFor="socialValue">{newSocialPlatform === 'website' ? 'URL Lengkap' : 'Nama Pengguna'}</Label>
-                                                <Input id="socialValue" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'username'} value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
+                                                <Input id="socialValue" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : '@username'} value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
                                                  { newSocialPlatform !== 'website' && <Input id="displayName" placeholder="Teks Tampilan (opsional)" value={newSocialDisplayName} onChange={(e) => setNewSocialDisplayName(e.target.value)} /> }
                                             </div>
                                         )}

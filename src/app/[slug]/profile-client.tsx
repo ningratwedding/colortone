@@ -439,7 +439,7 @@ export function ProfileContent({ slug }: { slug: string }) {
             >
               {profileUser.bio}
             </p>
-            {profileUser.socials && (
+            {profileUser.socials && Array.isArray(profileUser.socials) && (
               <div className={cn(
                 "flex justify-center items-center gap-2 mt-2 flex-wrap",
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
@@ -479,7 +479,7 @@ export function ProfileContent({ slug }: { slug: string }) {
         <main>
           {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
           {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
-          {profileUser.role === 'pembeli' && (!profileUser.bio && !profileUser.socials) && (
+          {profileUser.role === 'pembeli' && (!profileUser.bio && (!Array.isArray(profileUser.socials) || profileUser.socials.length === 0)) && (
             <div className="text-center py-12 text-muted-foreground">
               <p>Pengguna ini belum menambahkan bio atau tautan sosial.</p>
             </div>
