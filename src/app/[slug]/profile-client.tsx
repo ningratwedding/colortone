@@ -71,10 +71,11 @@ type SocialPlatform = keyof typeof socialIcons;
 
 function CreatorProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
   const displayName = user.fullName || user.name;
+  const columns = user.productCardSettings?.columns || 2;
   return (
     <>
         {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-48 w-full" />
@@ -84,7 +85,7 @@ function CreatorProfileView({ user, products, loading }: { user: UserProfile; pr
             ))}
           </div>
         ) : products && products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
             {products.map((product) => (
               <ProductCard key={product.id} product={product} hideCreator={true} settings={user.productCardSettings} />
             ))}
@@ -103,10 +104,11 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
   const categories = user.affiliateProductCategories || [];
   const categorySettings = user.categorySettings || { style: 'default', size: 'default', shape: 'default' };
+  const columns = user.productCardSettings?.columns || 2;
 
   if (loading) {
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-48 w-full" />
@@ -164,7 +166,7 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
       </Carousel>
       
       {activeProducts.length > 0 ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
+        <div className={cn("grid gap-2 mt-4", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
           {activeProducts.map((product) => (
             <ProductCard key={product.id} product={product} affiliateId={user.id} settings={user.productCardSettings} />
           ))}

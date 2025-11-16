@@ -54,6 +54,7 @@ export type UserProfile = {
     textAlign?: 'left' | 'center';
     imageAspectRatio?: '3/2' | '4/3' | '1/1';
     buttonStyle?: 'fill' | 'outline';
+    columns?: 1 | 2;
   };
   categorySettings?: {
     style?: 'default' | 'outline';

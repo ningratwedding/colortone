@@ -149,7 +149,8 @@
             "style": { "type": "string", "enum": ["simple", "standard"] },
             "textAlign": { "type": "string", "enum": ["left", "center"] },
             "imageAspectRatio": { "type": "string", "enum": ["3/2", "4/3", "1/1"] },
-            "buttonStyle": { "type": "string", "enum": ["fill", "outline"] }
+            "buttonStyle": { "type": "string", "enum": ["fill", "outline"] },
+            "columns": { "type": "number", "enum": [1, 2] }
           }
         },
         "categorySettings": {

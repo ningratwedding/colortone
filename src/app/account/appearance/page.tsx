@@ -21,7 +21,7 @@ import type { Product, UserProfile, SocialLink } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline, View, Grip } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -326,7 +326,7 @@ function ProfilePreview({
             { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-4" /> }
 
             {profile.role === 'kreator' && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className={cn("grid gap-2", productCardSettings?.columns === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
                     {activeProducts ? activeProducts.map(product => (
                       <ProductCard key={product.id} product={product} settings={productCardSettings} />
                     )) : (
@@ -369,13 +369,13 @@ function ProfilePreview({
                   </CarouselContent>
                 </Carousel>
                 {activeProducts ? (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className={cn("grid gap-2", productCardSettings?.columns === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
                     {activeProducts.map(product => (
                       <ProductCard key={product.id} product={product} affiliateId={profile.id} settings={productCardSettings} />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className={cn("grid gap-2", productCardSettings?.columns === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
                     {Array.from({ length: 2 }).map((_, i) => (
                       <div key={i} className="space-y-2">
                         <Skeleton className="h-24 w-full" />
@@ -442,7 +442,7 @@ export default function AppearancePage() {
     const [profileBodyFont, setProfileBodyFont] = useState<string>('inter');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
-    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill' });
+    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill', columns: 2 });
     const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default', color: '', backgroundColor: '', activeColor: '', activeBackgroundColor: '' });
 
     const [isSaving, setIsSaving] = useState(false);
@@ -480,6 +480,7 @@ export default function AppearancePage() {
                 textAlign: 'left',
                 imageAspectRatio: '3/2',
                 buttonStyle: 'fill',
+                columns: 2,
                 ...userProfile.productCardSettings,
             });
             setCategorySettings({
@@ -1146,6 +1147,25 @@ export default function AppearancePage() {
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-normal text-muted-foreground">Jumlah Kolom</Label>
+                                    <RadioGroup
+                                      value={String(productCardSettings?.columns || 2)}
+                                      onValueChange={(value) => setProductCardSettings(prev => ({...prev, columns: Number(value) as 1 | 2}))}
+                                      className="flex space-x-2"
+                                    >
+                                      <Label htmlFor="cols-1" className={cn("border rounded-md p-3 flex-1 flex flex-col items-center gap-2 cursor-pointer", productCardSettings?.columns === 1 && "bg-primary text-primary-foreground border-primary")}>
+                                        <View className="h-5 w-5"/>
+                                        <span className="text-xs">1 Kolom</span>
+                                      </Label>
+                                      <RadioGroupItem value="1" id="cols-1" className="sr-only"/>
+                                      <Label htmlFor="cols-2" className={cn("border rounded-md p-3 flex-1 flex flex-col items-center gap-2 cursor-pointer", productCardSettings?.columns !== 1 && "bg-primary text-primary-foreground border-primary")}>
+                                        <Grip className="h-5 w-5"/>
+                                        <span className="text-xs">2 Kolom</span>
+                                      </Label>
+                                      <RadioGroupItem value="2" id="cols-2" className="sr-only"/>
+                                    </RadioGroup>
+                                </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs font-normal text-muted-foreground">Gaya Kartu</Label>
                                     <div className="flex items-center gap-2">
