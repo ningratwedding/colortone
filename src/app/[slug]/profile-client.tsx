@@ -334,17 +334,6 @@ export function ProfileContent({ slug }: { slug: string }) {
     layout === 'vertical' && socialsSettings.style === 'pill' ? 'w-full justify-center' : ''
   );
   
-   const getSocialLink = (platform: string, username: string) => {
-    switch (platform) {
-      case 'website':
-        return username;
-      case 'whatsapp':
-        return `https://wa.me/${username}`;
-      default:
-        return `https://www.${platform}.com/${username}`;
-    }
-  };
-
   return (
     <div className="pb-4">
        <div
@@ -455,23 +444,15 @@ export function ProfileContent({ slug }: { slug: string }) {
                 "flex justify-center items-center gap-2 mt-2 flex-wrap",
                 socialsSettings.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
-                {Object.entries(profileUser.socials).map(([platform, username]) => {
-                  if (!username) return null;
+                {profileUser.socials.map((link) => {
                   const rgbaBg = socialsSettings.style === 'pill' && socialsSettings.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
 
-                  const getDisplayUsername = (platform: string, username: string) => {
-                    if (platform === 'instagram' || platform === 'tiktok') {
-                      return `@${username}`;
-                    }
-                    return username;
-                  }
-
                   return (
                   <Link 
-                    key={platform} 
-                    href={getSocialLink(platform, username as string)} 
+                    key={link.id} 
+                    href={link.url} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className={socialLinkClasses(socialsSettings.pillSize, socialsSettings.layout)}
@@ -482,8 +463,8 @@ export function ProfileContent({ slug }: { slug: string }) {
                       minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                     }}
                   >
-                    {socialIcons[platform as SocialPlatform]}
-                    {socialsSettings.style !== 'iconOnly' && <span className="font-medium">{getDisplayUsername(platform, username as string)}</span>}
+                    {socialIcons[link.platform as SocialPlatform]}
+                    {socialsSettings.style !== 'iconOnly' && <span className="font-medium">{link.displayName}</span>}
                   </Link>
                   )
                 })}

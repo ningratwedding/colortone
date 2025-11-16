@@ -98,16 +98,18 @@
             "description": "A solid hex color for the bio/paragraph text on the profile page."
         },
         "socials": {
-          "type": "object",
-          "properties": {
-            "instagram": { "type": "string" },
-            "facebook": { "type": "string" },
-            "tiktok": { "type": "string" },
-            "website": { "type": "string", "format": "uri" },
-            "whatsapp": { "type": "string" },
-            "linkedin": { "type": "string" }
-          },
-          "description": "An object containing the user's social media usernames and website."
+          "type": "array",
+          "description": "An array of social media links.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "platform": { "type": "string", "enum": ["instagram", "facebook", "tiktok", "website", "whatsapp", "linkedin"] },
+              "displayName": { "type": "string" },
+              "url": { "type": "string", "format": "uri" }
+            },
+            "required": ["id", "platform", "displayName", "url"]
+          }
         },
         "socialsSettings": {
             "type": "object",
@@ -514,5 +516,3 @@
     }
   }
 }
-
-    

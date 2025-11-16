@@ -17,12 +17,11 @@ import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc, collection, query, where, documentId, limit } from 'firebase/firestore';
 import { useFirestore, useStorage } from '@/firebase/provider';
-import type { Product, UserProfile } from '@/lib/data';
+import type { Product, UserProfile, SocialLink } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -38,7 +37,7 @@ import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { ProductCard } from '@/components/product-card';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { siteConfig } from '@/lib/config';
+import { v4 as uuidv4 } from 'uuid';
 import { Separator } from '@/components/ui/separator';
 
 
@@ -139,7 +138,7 @@ function ProfilePreview({
 }: {
   profile: UserProfile;
   products?: Product[] | null;
-  socials: UserProfile['socials'];
+  socials?: SocialLink[];
   socialsSettings: UserProfile['socialsSettings'];
   headerColor: string;
   headerImagePreview: string | null;
@@ -184,17 +183,6 @@ function ProfilePreview({
     : 'underline',
     layout === 'vertical' && socialsSettings?.style === 'pill' ? 'w-full justify-center' : ''
   );
-  
-   const getSocialLink = (platform: string, username: string) => {
-    switch (platform) {
-      case 'website':
-        return username;
-      case 'whatsapp':
-        return `https://wa.me/${username}`;
-      default:
-        return `https://www.${platform}.com/${username}`;
-    }
-  };
   
     const categories = profile.affiliateProductCategories || [];
     const allCategory = { id: 'all', name: 'Semua Produk', productIds: profile.featuredProductIds || [] };
@@ -300,28 +288,20 @@ function ProfilePreview({
             >
               {profile?.bio || "Bio Anda akan muncul di sini."}
             </p>
-            {socials && Object.keys(socials).length > 0 && (
+            {socials && socials.length > 0 && (
               <div className={cn(
                 "flex justify-center items-center gap-2 mt-3 flex-wrap",
                 socialsSettings?.layout === 'vertical' ? 'flex-col' : 'flex-row'
               )}>
-                {Object.entries(socials).map(([platform, username]) => {
-                  if (!username) return null;
+                {socials.map((link) => {
                   const rgbaBg = socialsSettings?.style === 'pill' && socialsSettings?.backgroundColor ? hexToRgba(socialsSettings.backgroundColor, socialsSettings.backgroundOpacity) : 'transparent';
                   const borderRadius = socialsSettings?.style === 'pill' ? socialsSettings.borderRadius : undefined;
                   const pillWidth = socialsSettings?.style === 'pill' && socialsSettings.layout === 'horizontal' ? socialsSettings.pillWidth : undefined;
 
-                  const getDisplayUsername = (platform: string, username: string) => {
-                    if (platform === 'instagram' || platform === 'tiktok') {
-                      return `@${username}`;
-                    }
-                    return username;
-                  }
-
                   return (
                     <Link 
-                      key={platform} 
-                      href={getSocialLink(platform, username as string)} 
+                      key={link.id} 
+                      href={link.url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className={socialLinkClasses(socialsSettings?.pillSize, socialsSettings?.layout)}
@@ -332,8 +312,8 @@ function ProfilePreview({
                         minWidth: pillWidth !== undefined ? `${pillWidth}px` : undefined,
                       }}
                     >
-                      {socialIcons[platform as SocialPlatform]}
-                      {socialsSettings?.style !== 'iconOnly' && <span className="font-medium">{getDisplayUsername(platform, username as string)}</span>}
+                      {socialIcons[link.platform as SocialPlatform]}
+                      {socialsSettings?.style !== 'iconOnly' && <span className="font-medium">{link.displayName}</span>}
                     </Link>
                   )
                 })}
@@ -446,7 +426,7 @@ export default function AppearancePage() {
 
     const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
     
-    const [socials, setSocials] = useState<UserProfile['socials']>({});
+    const [socials, setSocials] = useState<SocialLink[]>([]);
     const [headerColor, setHeaderColor] = useState('');
     const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
     const [headerVideoFile, setHeaderVideoFile] = useState<File | null>(null);
@@ -469,11 +449,12 @@ export default function AppearancePage() {
     // Dialog States
     const [isSocialDialogOpen, setIsSocialDialogOpen] = useState(false);
     const [newSocialPlatform, setNewSocialPlatform] = useState<SocialPlatform | ''>('');
-    const [newSocialUsername, setNewSocialUsername] = useState('');
+    const [newSocialDisplayName, setNewSocialDisplayName] = useState('');
+    const [newSocialValue, setNewSocialValue] = useState('');
     
     useEffect(() => {
         if (userProfile) {
-            setSocials(userProfile.socials || {});
+            setSocials(userProfile.socials || []);
             setHeaderColor(userProfile.headerColor || '');
             setHeaderImagePreview(userProfile.headerImageUrl || null);
             setHeaderVideoPreview(userProfile.headerVideoUrl || null);
@@ -615,23 +596,35 @@ export default function AppearancePage() {
         }
     };
     
+    const getSocialUrl = (platform: SocialPlatform, value: string): string => {
+        switch (platform) {
+          case 'website':
+            return value.startsWith('http') ? value : `https://${value}`;
+          case 'whatsapp':
+            return `https://wa.me/${value.replace(/[^0-9]/g, '')}`;
+          default:
+            return `https://www.${platform}.com/${value}`;
+        }
+      };
+
     const handleAddSocial = () => {
-        if (newSocialPlatform && newSocialUsername) {
-        setSocials(prev => ({...prev, [newSocialPlatform]: newSocialUsername}));
-        setIsSocialDialogOpen(false);
-        setNewSocialPlatform('');
-        setNewSocialUsername('');
+        if (newSocialPlatform && newSocialValue) {
+            const newLink: SocialLink = {
+                id: uuidv4(),
+                platform: newSocialPlatform,
+                displayName: newSocialDisplayName || newSocialValue,
+                url: getSocialUrl(newSocialPlatform, newSocialValue),
+            };
+            setSocials(prev => [...prev, newLink]);
+            setIsSocialDialogOpen(false);
+            setNewSocialPlatform('');
+            setNewSocialDisplayName('');
+            setNewSocialValue('');
         }
     };
 
-    const handleRemoveSocial = (platform: SocialPlatform) => {
-        setSocials(prev => {
-            const newSocials = {...prev};
-            if (prev) {
-            delete (newSocials as any)[platform];
-            }
-            return newSocials;
-        });
+    const handleRemoveSocial = (id: string) => {
+        setSocials(prev => prev.filter(link => link.id !== id));
     };
     
     const loading = userLoading || profileLoading || productsLoading;
@@ -678,19 +671,19 @@ export default function AppearancePage() {
                             <AccordionContent>
                                 <div className="grid gap-4 pt-2">
                                     <div className="space-y-3">
-                                    {socials && Object.entries(socials).map(([platform, username]) => (
-                                        <div key={platform} className="flex items-center gap-3">
+                                    {socials.map((link) => (
+                                        <div key={link.id} className="flex items-center gap-3">
                                         <div className="relative flex-grow">
                                             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                            {socialIcons[platform as keyof typeof socialIcons]}
+                                            {socialIcons[link.platform as keyof typeof socialIcons]}
                                             </span>
                                             <Input
-                                            value={username as string}
+                                            value={link.displayName}
                                             className="pl-10"
                                             readOnly
                                             />
                                         </div>
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(platform as SocialPlatform)}>
+                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveSocial(link.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                         </div>
@@ -708,9 +701,9 @@ export default function AppearancePage() {
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                        <DialogTitle>Tambah Tautan Sosial atau Situs Web</DialogTitle>
+                                        <DialogTitle>Tambah Tautan</DialogTitle>
                                         <DialogDescription>
-                                            Pilih platform dan masukkan nama pengguna atau URL.
+                                            Pilih platform dan masukkan detail yang diperlukan.
                                         </DialogDescription>
                                         </DialogHeader>
                                         <div className="grid gap-4 py-4">
@@ -730,10 +723,24 @@ export default function AppearancePage() {
                                             </SelectContent>
                                             </Select>
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="username">Nama Pengguna atau URL</Label>
-                                            <Input id="username" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'misal: kartikasari'} value={newSocialUsername} onChange={(e) => setNewSocialUsername(e.target.value)} />
-                                        </div>
+                                        {newSocialPlatform === 'whatsapp' ? (
+                                            <>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="displayName">Teks Tampilan</Label>
+                                                <Input id="displayName" placeholder="misal: Hubungi Saya" value={newSocialDisplayName} onChange={(e) => setNewSocialDisplayName(e.target.value)} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="socialValue">Nomor WhatsApp</Label>
+                                                <Input id="socialValue" placeholder="628123456789" value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
+                                            </div>
+                                            </>
+                                        ) : (
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="socialValue">{newSocialPlatform === 'website' ? 'URL Lengkap' : 'Nama Pengguna'}</Label>
+                                                <Input id="socialValue" placeholder={newSocialPlatform === 'website' ? 'https://contoh.com' : 'username'} value={newSocialValue} onChange={(e) => setNewSocialValue(e.target.value)} />
+                                                 { newSocialPlatform !== 'website' && <Input id="displayName" placeholder="Teks Tampilan (opsional)" value={newSocialDisplayName} onChange={(e) => setNewSocialDisplayName(e.target.value)} /> }
+                                            </div>
+                                        )}
                                         </div>
                                         <DialogFooter>
                                         <Button onClick={handleAddSocial}>Simpan</Button>
@@ -1311,7 +1318,7 @@ export default function AppearancePage() {
             
             <div className="lg:hidden">
                 <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
-                    <div className="rounded-[1rem] w-full h-full bg-background overflow-hidden">
+                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
                         <ProfilePreview 
                             profile={userProfile}
                             products={products}

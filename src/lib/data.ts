@@ -8,6 +8,13 @@ export type AffiliateProductCategory = {
   productIds: string[];
 };
 
+export type SocialLink = {
+  id: string;
+  platform: 'instagram' | 'facebook' | 'tiktok' | 'website' | 'whatsapp' | 'linkedin';
+  displayName: string;
+  url: string;
+}
+
 export type UserProfile = {
   id: string;
   slug: string;
@@ -31,14 +38,7 @@ export type UserProfile = {
   profileTitleFontColor?: string;
   profileBodyFont?: string;
   profileBodyFontColor?: string;
-  socials?: {
-    instagram?: string;
-    facebook?: string;
-    tiktok?: string;
-    website?: string;
-    whatsapp?: string;
-    linkedin?: string;
-  };
+  socials?: SocialLink[];
   socialsSettings?: {
     style: 'iconOnly' | 'pill' | 'underline';
     layout?: 'horizontal' | 'vertical';
@@ -157,5 +157,3 @@ export type ImagePlaceholder = {
     imageHint: string;
     description: string;
 }
-
-    
