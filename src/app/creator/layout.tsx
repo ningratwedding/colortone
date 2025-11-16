@@ -248,10 +248,10 @@ export default function CreatorDashboardLayout({
         </Sidebar>
 
         <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground px-4 sm:px-6">
-             <SidebarTrigger className="flex text-primary-foreground hover:bg-white/10" />
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] px-4 text-primary-foreground sm:px-6 md:bg-muted md:bg-none md:text-muted-foreground">
+             <SidebarTrigger className="flex text-primary-foreground hover:bg-white/10 md:text-foreground md:hover:bg-accent" />
             <div className="flex-1">
-              <h1 className="text-lg font-semibold hidden md:block">{pageTitle}</h1>
+              <h1 className="hidden text-lg font-semibold md:block">{pageTitle}</h1>
             </div>
             <div className="relative ml-auto flex items-center gap-2">
               <Button asChild>
