@@ -151,7 +151,8 @@
             "imageAspectRatio": { "type": "string", "enum": ["3/2", "4/3", "1/1"] },
             "buttonStyle": { "type": "string", "enum": ["fill", "outline"] },
             "columns": { "type": "number", "enum": [1, 2] },
-            "borderRadius": { "type": "number", "description": "Border radius of the product card in pixels." }
+            "borderRadius": { "type": "number", "description": "Border radius of the product card in pixels." },
+            "buttonBorderRadius": { "type": "number", "description": "Border radius of the product card button in pixels." }
           }
         },
         "categorySettings": {

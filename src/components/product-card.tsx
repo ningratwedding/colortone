@@ -66,6 +66,7 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
                     : 'aspect-[3/2]';
   const buttonStyle = settings?.buttonStyle || 'fill';
   const borderRadius = settings?.borderRadius;
+  const buttonBorderRadius = settings?.buttonBorderRadius;
 
 
   return (
@@ -124,7 +125,15 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
         <div className="font-semibold text-base text-primary truncate">
           {formattedPrice}
         </div>
-        <Button size="sm" asChild className="w-full" variant={buttonStyle === 'outline' ? 'outline' : 'default'}>
+        <Button
+          size="sm"
+          asChild
+          className="w-full"
+          variant={buttonStyle === 'outline' ? 'outline' : 'default'}
+          style={{
+            borderRadius: buttonBorderRadius !== undefined ? `${buttonBorderRadius}px` : undefined,
+          }}
+        >
           <Link href={checkoutUrl}>
             <CreditCard className="mr-1.5 h-4 w-4" />
             Beli

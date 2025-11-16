@@ -442,7 +442,7 @@ export default function AppearancePage() {
     const [profileBodyFont, setProfileBodyFont] = useState<string>('inter');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
-    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill', columns: 2, borderRadius: 12 });
+    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill', columns: 2, borderRadius: 12, buttonBorderRadius: 8 });
     const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default', color: '', backgroundColor: '', activeColor: '', activeBackgroundColor: '' });
 
     const [isSaving, setIsSaving] = useState(false);
@@ -482,6 +482,7 @@ export default function AppearancePage() {
                 buttonStyle: 'fill',
                 columns: 2,
                 borderRadius: 12,
+                buttonBorderRadius: 8,
                 ...userProfile.productCardSettings,
             });
             setCategorySettings({
@@ -1177,6 +1178,18 @@ export default function AppearancePage() {
                                             step={1}
                                         />
                                         <span className="text-xs w-12 text-right">{productCardSettings?.borderRadius ?? 12}px</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tingkat Bulat Tombol</Label>
+                                    <div className="flex items-center gap-4">
+                                        <Slider
+                                            value={[ productCardSettings?.buttonBorderRadius ?? 8 ]}
+                                            onValueChange={(value) => setProductCardSettings(prev => ({...prev, buttonBorderRadius: value[0]}))}
+                                            max={32}
+                                            step={1}
+                                        />
+                                        <span className="text-xs w-12 text-right">{productCardSettings?.buttonBorderRadius ?? 8}px</span>
                                     </div>
                                 </div>
                                 <div className="space-y-2">

@@ -56,6 +56,7 @@ export type UserProfile = {
     buttonStyle?: 'fill' | 'outline';
     columns?: 1 | 2;
     borderRadius?: number;
+    buttonBorderRadius?: number;
   };
   categorySettings?: {
     style?: 'default' | 'outline';
