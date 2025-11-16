@@ -1288,33 +1288,29 @@ export default function AppearancePage() {
                 </CardFooter>
             </Card>
             
-            <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] lg:sticky lg:top-20">
-                <div className="p-0">
-                    <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
-                        <ProfilePreview 
-                            profile={userProfile}
-                            products={products}
-                            bio={bio}
-                            socials={socials}
-                            socialsSettings={socialsSettings}
-                            headerColor={headerColor}
-                            headerImagePreview={headerImagePreview}
-                            headerVideoPreview={headerVideoPreview}
-                            showHeaderGradient={showHeaderGradient}
-                            profileBackgroundColor={profileBackgroundColor}
-                            profileBackgroundImagePreview={profileBackgroundImagePreview}
-                            profileTitleFont={profileTitleFont}
-                            profileTitleFontColor={profileTitleFontColor}
-                            profileBodyFont={profileBodyFont}
-                            profileBodyFontColor={profileBodyFontColor}
-                            productCardSettings={productCardSettings}
-                            categorySettings={categorySettings}
-                        />
-                    </div>
-                </div>
+            <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] lg:sticky lg:top-20 overflow-hidden">
+              <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
+                  <ProfilePreview 
+                      profile={userProfile}
+                      products={products}
+                      bio={bio}
+                      socials={socials}
+                      socialsSettings={socialsSettings}
+                      headerColor={headerColor}
+                      headerImagePreview={headerImagePreview}
+                      headerVideoPreview={headerVideoPreview}
+                      showHeaderGradient={showHeaderGradient}
+                      profileBackgroundColor={profileBackgroundColor}
+                      profileBackgroundImagePreview={profileBackgroundImagePreview}
+                      profileTitleFont={profileTitleFont}
+                      profileTitleFontColor={profileTitleFontColor}
+                      profileBodyFont={profileBodyFont}
+                      profileBodyFontColor={profileBodyFontColor}
+                      productCardSettings={productCardSettings}
+                      categorySettings={categorySettings}
+                  />
+              </div>
             </div>
         </div>
     )
 }
-
-
