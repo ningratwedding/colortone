@@ -1310,7 +1310,7 @@ export default function AppearancePage() {
             </Card>
             
             <div className="lg:hidden">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
                     <div className="rounded-[1rem] w-full h-full bg-background overflow-hidden">
                         <ProfilePreview 
                             profile={userProfile}
@@ -1335,7 +1335,7 @@ export default function AppearancePage() {
             </div>
 
             <div className="hidden lg:block lg:sticky lg:top-20">
-                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px]">
+                <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[8px] rounded-[1.5rem] h-[580px] w-full max-w-[300px] overflow-hidden">
                     <div className="rounded-[1rem] overflow-hidden w-full h-full bg-background">
                         <ProfilePreview 
                             profile={userProfile}
