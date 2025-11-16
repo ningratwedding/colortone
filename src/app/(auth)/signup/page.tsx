@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from "next/link";
@@ -106,7 +104,7 @@ export default function SignupPage() {
     if (result.success && result.user) {
       try {
         const profile = await getOrCreateUserProfile(result.user);
-        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkStore!" });
+        toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di FilterForge!" });
         handleRedirect(profile);
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : "Tidak dapat membuat profil pengguna baru.";
@@ -128,7 +126,7 @@ export default function SignupPage() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const result = await signUpWithEmail(data.email, data.password, data.profileName);
     if (result.success && result.profile) {
-      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkStore! Silakan periksa email Anda untuk verifikasi." });
+      toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di FilterForge! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
     } else {
       toast({
@@ -255,4 +253,3 @@ export default function SignupPage() {
     </div>
   );
 }
-

@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -168,7 +167,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] text-primary-foreground shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-primary to-[hsl(240,60%,55%)] text-primary-foreground shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         {/* Left Section (Logo and Mobile Menu) */}
         <div className="flex items-center">
@@ -183,7 +182,7 @@ export function SiteHeader() {
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2 text-foreground">
                     <Logo />
-                    <span className="font-bold">LinkStore</span>
+                    <span className="font-bold">FilterForge</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -207,7 +206,7 @@ export function SiteHeader() {
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
             <Logo />
-            <span className="font-bold">LinkStore</span>
+            <span className="font-bold">FilterForge</span>
           </Link>
         </div>
 

@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from "next/link";
@@ -166,7 +164,7 @@ export default function LoginPage() {
             <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center text-primary">
                   <Logo className="h-8 w-auto" />
-                  <span className="font-bold text-2xl ml-2">LinkStore</span>
+                  <span className="font-bold text-2xl ml-2">FilterForge</span>
               </div>
             </Link>
           </div>
@@ -270,4 +268,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
