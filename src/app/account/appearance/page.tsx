@@ -21,7 +21,7 @@ import type { Product, UserProfile, SocialLink } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline, View, Grip } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Globe, Check, Image as ImageIcon, Palette, Type, AlignCenter, AlignLeft, RectangleHorizontal, Replace, Video, Upload, Rows, Columns, UserCircle2, Text, Underline, View, Grip, RoundedCorner } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -442,7 +442,7 @@ export default function AppearancePage() {
     const [profileBodyFont, setProfileBodyFont] = useState<string>('inter');
     const [profileBodyFontColor, setProfileBodyFontColor] = useState('');
     const [socialsSettings, setSocialsSettings] = useState<UserProfile['socialsSettings']>({ style: 'iconOnly', backgroundColor: '', fontColor: '', layout: 'vertical', backgroundOpacity: 1, borderRadius: 9999, pillSize: 'md', pillWidth: 140 });
-    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill', columns: 2 });
+    const [productCardSettings, setProductCardSettings] = useState<UserProfile['productCardSettings']>({ style: 'standard', textAlign: 'left', imageAspectRatio: '3/2', buttonStyle: 'fill', columns: 2, borderRadius: 12 });
     const [categorySettings, setCategorySettings] = useState<UserProfile['categorySettings']>({ style: 'default', size: 'default', shape: 'default', color: '', backgroundColor: '', activeColor: '', activeBackgroundColor: '' });
 
     const [isSaving, setIsSaving] = useState(false);
@@ -481,6 +481,7 @@ export default function AppearancePage() {
                 imageAspectRatio: '3/2',
                 buttonStyle: 'fill',
                 columns: 2,
+                borderRadius: 12,
                 ...userProfile.productCardSettings,
             });
             setCategorySettings({
@@ -1165,6 +1166,18 @@ export default function AppearancePage() {
                                       </Label>
                                       <RadioGroupItem value="2" id="cols-2" className="sr-only"/>
                                     </RadioGroup>
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-normal text-muted-foreground mb-2 block">Tingkat Bulat Kartu</Label>
+                                    <div className="flex items-center gap-4">
+                                        <Slider
+                                            value={[ productCardSettings?.borderRadius ?? 12 ]}
+                                            onValueChange={(value) => setProductCardSettings(prev => ({...prev, borderRadius: value[0]}))}
+                                            max={32}
+                                            step={1}
+                                        />
+                                        <span className="text-xs w-12 text-right">{productCardSettings?.borderRadius ?? 12}px</span>
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs font-normal text-muted-foreground">Gaya Kartu</Label>

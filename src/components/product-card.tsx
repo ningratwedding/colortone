@@ -65,15 +65,19 @@ export function ProductCard({ product, className, hideCreator = false, affiliate
                     : settings?.imageAspectRatio === '4/3' ? 'aspect-[4/3]' 
                     : 'aspect-[3/2]';
   const buttonStyle = settings?.buttonStyle || 'fill';
+  const borderRadius = settings?.borderRadius;
 
 
   return (
     <Card
       className={cn(
-        'overflow-hidden group flex flex-col rounded-lg',
+        'overflow-hidden group flex flex-col',
         textAlign === 'center' && 'text-center',
         className
       )}
+      style={{
+        borderRadius: borderRadius !== undefined ? `${borderRadius}px` : undefined,
+      }}
     >
       <CardHeader className="p-0 relative">
          <Link href={productUrl} className={cn("block w-full", aspectRatio)}>

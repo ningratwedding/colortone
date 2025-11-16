@@ -55,6 +55,7 @@ export type UserProfile = {
     imageAspectRatio?: '3/2' | '4/3' | '1/1';
     buttonStyle?: 'fill' | 'outline';
     columns?: 1 | 2;
+    borderRadius?: number;
   };
   categorySettings?: {
     style?: 'default' | 'outline';
