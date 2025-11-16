@@ -1,5 +1,4 @@
 
-
 {
   "entities": {
     "UserProfile": {
@@ -12,9 +11,9 @@
           "description": "The user's public profile display name."
         },
         "nameLastUpdatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The timestamp when the user last changed their profile name."
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user last changed their profile name."
         },
         "fullName": {
           "type": "string",
@@ -52,25 +51,25 @@
           "description": "URL for the user's custom profile header image."
         },
         "headerVideoUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL for the user's custom profile header video."
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the user's custom profile header video."
         },
         "headerImageHint": {
           "type": "string",
           "description": "AI hint for the user's header image."
         },
         "headerColor": {
-            "type": "string",
-            "description": "A solid hex color for the profile header background."
+          "type": "string",
+          "description": "A solid hex color for the profile header background."
         },
         "showHeaderGradient": {
-            "type": "boolean",
-            "description": "Whether to show the gradient overlay on the profile header."
+          "type": "boolean",
+          "description": "Whether to show the gradient overlay on the profile header."
         },
         "profileBackgroundColor": {
-            "type": "string",
-            "description": "A solid hex color for the entire profile page background."
+          "type": "string",
+          "description": "A solid hex color for the entire profile page background."
         },
         "profileBackgroundImageUrl": {
           "type": "string",
@@ -82,20 +81,20 @@
           "description": "AI hint for the user's page background image."
         },
         "profileTitleFont": {
-            "type": "string",
-            "description": "The font family for the name/title text on the profile page."
+          "type": "string",
+          "description": "The font family for the name/title text on the profile page."
         },
         "profileTitleFontColor": {
-            "type": "string",
-            "description": "A solid hex color for the name/title text on the profile page."
+          "type": "string",
+          "description": "A solid hex color for the name/title text on the profile page."
         },
         "profileBodyFont": {
-            "type": "string",
-            "description": "The font family for the bio/paragraph text on the profile page."
+          "type": "string",
+          "description": "The font family for the bio/paragraph text on the profile page."
         },
         "profileBodyFontColor": {
-            "type": "string",
-            "description": "A solid hex color for the bio/paragraph text on the profile page."
+          "type": "string",
+          "description": "A solid hex color for the bio/paragraph text on the profile page."
         },
         "socials": {
           "type": "array",
@@ -112,50 +111,46 @@
           }
         },
         "socialsSettings": {
-            "type": "object",
-            "description": "Settings for social media link appearance.",
-            "properties": {
-                "style": {
-                    "type": "string",
-                    "enum": ["iconOnly", "pill", "underline"]
-                },
-                "backgroundColor": {
-                    "type": "string"
-                },
-                "backgroundOpacity": {
-                    "type": "number",
-                    "description": "Opacity of the pill background, from 0 to 1."
-                },
-                "borderRadius": {
-                    "type": "number",
-                    "description": "Border radius of the pill background in pixels."
-                },
-                "fontColor": {
-                    "type": "string"
-                },
-                "layout": {
-                    "type": "string",
-                    "enum": ["horizontal", "vertical"]
-                },
-                "pillSize": {
-                  "type": "string",
-                  "enum": ["sm", "md", "lg"]
-                },
-                "pillWidth": {
-                  "type": "number",
-                  "description": "Minimum width of the pill in pixels (for horizontal layout)."
-                }
+          "type": "object",
+          "description": "Settings for social media link appearance.",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": ["iconOnly", "pill", "underline"]
+            },
+            "backgroundColor": { "type": "string" },
+            "backgroundOpacity": {
+              "type": "number",
+              "description": "Opacity of the pill background, from 0 to 1."
+            },
+            "borderRadius": {
+              "type": "number",
+              "description": "Border radius of the pill background in pixels."
+            },
+            "fontColor": { "type": "string" },
+            "layout": {
+              "type": "string",
+              "enum": ["horizontal", "vertical"]
+            },
+            "pillSize": {
+              "type": "string",
+              "enum": ["sm", "md", "lg"]
+            },
+            "pillWidth": {
+              "type": "number",
+              "description": "Minimum width of the pill in pixels (for horizontal layout)."
             }
+          }
         },
         "productCardSettings": {
-            "type": "object",
-            "description": "Settings for product card appearance.",
-            "properties": {
-                "style": { "type": "string", "enum": ["simple", "standard"] },
-                "textAlign": { "type": "string", "enum": ["left", "center"] },
-                "imageAspectRatio": { "type": "string", "enum": ["3/2", "4/3", "1/1"] },
-                "buttonStyle": { "type": "string", "enum": ["fill", "outline"] }
-            }
+          "type": "object",
+          "description": "Settings for product card appearance.",
+          "properties": {
+            "style": { "type": "string", "enum": ["simple", "standard"] },
+            "textAlign": { "type": "string", "enum": ["left", "center"] },
+            "imageAspectRatio": { "type": "string", "enum": ["3/2", "4/3", "1/1"] },
+            "buttonStyle": { "type": "string", "enum": ["fill", "outline"] }
+          }
         },
         "categorySettings": {
           "type": "object",
@@ -186,29 +181,29 @@
           "description": "The date when the user's 'pro' plan subscription expires."
         },
         "featuredProductIds": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "An array of product IDs that the affiliate chooses to feature on their public profile."
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "An array of product IDs that the affiliate chooses to feature on their public profile."
         },
         "affiliateProductCategories": {
-            "type": "array",
-            "description": "An array of custom categories created by the affiliate to group their featured products.",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": { "type": "string" },
-                    "name": { "type": "string" },
-                    "productIds": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                    }
-                },
-                "required": ["id", "name", "productIds"]
-            }
+          "type": "array",
+          "description": "An array of custom categories created by the affiliate to group their featured products.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "productIds": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["id", "name", "productIds"]
+          }
         },
         "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "type": "string",
+          "format": "date-time"
         },
         "bankName": {
           "type": "string",
@@ -295,9 +290,9 @@
           "description": "The total number of sales for this product."
         },
         "downloadUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "For digital products, the secure URL to the downloadable file."
+          "type": "string",
+          "format": "uri",
+          "description": "For digital products, the secure URL to the downloadable file."
         },
         "stock": {
           "type": "number",
@@ -333,16 +328,16 @@
           "description": "The ID of the product that was purchased."
         },
         "productName": {
-            "type": "string",
-            "description": "The name of the product at the time of purchase."
+          "type": "string",
+          "description": "The name of the product at the time of purchase."
         },
         "creatorId": {
-            "type": "string",
-            "description": "The ID of the product's creator."
+          "type": "string",
+          "description": "The ID of the product's creator."
         },
         "affiliateId": {
-            "type": "string",
-            "description": "The ID of the affiliate user who referred this purchase. This field is optional and only present if the sale was referred by a valid affiliate."
+          "type": "string",
+          "description": "The ID of the affiliate user who referred this purchase. This field is optional and only present if the sale was referred by a valid affiliate."
         },
         "purchaseDate": {
           "type": "string",
@@ -354,8 +349,8 @@
           "description": "The total amount paid for the order in IDR."
         },
         "status": {
-            "type": "string",
-            "enum": ["Menunggu Pembayaran", "Selesai", "Diproses", "Dibatalkan"]
+          "type": "string",
+          "enum": ["Menunggu Pembayaran", "Selesai", "Diproses", "Dibatalkan"]
         }
       },
       "required": ["userId", "productId", "purchaseDate", "amount", "status"]
@@ -370,17 +365,17 @@
           "description": "The name of the category."
         },
         "slug": {
-            "type": "string",
-            "description": "A URL-friendly version of the category name."
+          "type": "string",
+          "description": "A URL-friendly version of the category name."
         },
         "type": {
-            "type": "string",
-            "enum": ["digital", "fisik", "semua"],
-            "description": "The type of product this category applies to."
+          "type": "string",
+          "enum": ["digital", "fisik", "semua"],
+          "description": "The type of product this category applies to."
         },
         "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": ["name", "slug", "type"]
@@ -395,8 +390,8 @@
           "description": "The name of the software."
         },
         "slug": {
-            "type": "string",
-            "description": "A URL-friendly version of the software name."
+          "type": "string",
+          "description": "A URL-friendly version of the software name."
         },
         "icon": {
           "type": "string",
@@ -404,8 +399,8 @@
           "description": "The URL to the software icon."
         },
         "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": ["name", "slug"]
@@ -426,7 +421,7 @@
           "format": "uri"
         },
         "imageHint": {
-            "type": "string"
+          "type": "string"
         },
         "linkUrl": {
           "type": "string",
@@ -472,47 +467,44 @@
     "providers": ["email", "google.com"]
   },
   "firestore": {
-    "/users/{userId}": {
-      "schema": {
-        "$ref": "#/backend/entities/UserProfile"
+    "collections": {
+      "users": {
+        "path": "users/{userId}",
+        "schema": "UserProfile",
+        "description": "Stores public and private user profile information.",
+        "subcollections": {
+          "orders": {
+            "path": "users/{userId}/orders/{orderId}",
+            "schema": "Order",
+            "description": "Stores the order history for each user."
+          }
+        }
       },
-      "description": "Stores public and private user profile information."
-    },
-    "/products/{productId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Product"
+      "products": {
+        "path": "products/{productId}",
+        "schema": "Product",
+        "description": "Stores all product listings available on the marketplace."
       },
-      "description": "Stores all product listings available on the marketplace."
-    },
-    "/users/{userId}/orders/{orderId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Order"
+      "categories": {
+        "path": "categories/{categoryId}",
+        "schema": "Category",
+        "description": "Stores all product categories."
       },
-      "description": "Stores the order history for each user."
-    },
-    "/categories/{categoryId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Category"
+      "software": {
+        "path": "software/{softwareId}",
+        "schema": "Software",
+        "description": "Stores all compatible software options."
       },
-      "description": "Stores all product categories."
-    },
-     "/software/{softwareId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Software"
+      "campaigns": {
+        "path": "campaigns/{campaignId}",
+        "schema": "Campaign",
+        "description": "Stores promotional campaign data."
       },
-      "description": "Stores all compatible software options."
-    },
-    "/campaigns/{campaignId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Campaign"
-      },
-      "description": "Stores promotional campaign data."
-    },
-    "/platform_settings/{settingsId}": {
-        "schema": {
-            "$ref": "#/backend/entities/PlatformSettings"
-        },
+      "platform_settings": {
+        "path": "platform_settings/{settingsId}",
+        "schema": "PlatformSettings",
         "description": "Stores global settings for the platform, typically a single document."
+      }
     }
   }
 }
