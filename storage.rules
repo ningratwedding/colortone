@@ -3,53 +3,71 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // Helper functions to check user roles
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isRole(role) {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    function isAdmin() {
+      return isRole('admin');
+    }
+
+    function isCreator() {
+      return isRole('kreator');
+    }
+
     // Aturan untuk file avatar:
     // Baca: Izinkan jika pengguna login (opsional, bisa juga 'if true' jika avatar publik).
     // Tulis: Izinkan hanya jika ID pengguna cocok.
     match /avatars/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isOwner(userId);
     }
 
     match /profile_headers/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isOwner(userId);
     }
 
     match /profile_backgrounds/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isOwner(userId);
     }
 
     // Aturan untuk gambar produk:
     // Baca: Izinkan akses publik untuk semua gambar produk.
-    // Tulis: Izinkan hanya jika pengguna sudah login (creator).
+    // Tulis: Izinkan hanya jika pengguna adalah kreator atau admin.
     match /product_images/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isCreator() || isAdmin();
     }
 
     // Aturan untuk file produk yang dapat diunduh:
-    // Baca & Tulis: Hanya izinkan jika pengguna sudah login.
-    // Aturan yang lebih ketat (misalnya, hanya pembeli) akan dikelola oleh logika aplikasi.
+    // Baca & Tulis: Hanya izinkan kreator atau admin.
+    // Aturan yang lebih ketat (misalnya, hanya pembeli) akan dikelola oleh logika aplikasi melalui URL berjangka waktu.
     match /product_files/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if (isCreator() && isOwner(userId)) || isAdmin();
     }
 
     // Aturan untuk ikon perangkat lunak:
-    // Baca: Izinkan akses publik untuk semua ikon perangkat lunak.
-    // Tulis: Izinkan hanya jika pengguna sudah login.
+    // Baca: Izinkan akses publik.
+    // Tulis: Hanya izinkan admin.
     match /software_icons/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
 
     // Aturan untuk gambar kampanye:
-    // Baca: Izinkan akses publik untuk semua gambar kampanye.
-    // Tulis: Izinkan hanya jika pengguna adalah admin.
+    // Baca: Izinkan akses publik.
+    // Tulis: Hanya izinkan admin.
     match /campaign_images/{userId}/{allPaths=**} {
         allow read: if true;
-        allow write: if request.auth != null; // Sebaiknya diperketat menjadi isAdmin() di production
+        allow write: if isAdmin();
     }
 
     // Aturan default yang lebih ketat untuk path lain yang tidak cocok.
