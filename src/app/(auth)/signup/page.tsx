@@ -39,6 +39,10 @@ const formSchema = z.object({
   profileName: z.string().min(3, "Nama profil harus terdiri dari minimal 3 karakter."),
   email: z.string().email("Format email tidak valid."),
   password: z.string().min(6, "Kata sandi minimal 6 karakter."),
+  confirmPassword: z.string().min(6, "Kata sandi minimal 6 karakter."),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Kata sandi tidak cocok.",
+  path: ["confirmPassword"],
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -61,6 +65,7 @@ export default function SignupPage() {
       profileName: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -223,6 +228,23 @@ export default function SignupPage() {
                         )}
                       </Button>
                     </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Konfirmasi Kata Sandi</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        {...field}
+                        disabled={form.formState.isSubmitting}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
