@@ -50,7 +50,6 @@ import { Separator } from './ui/separator';
 import { siteConfig } from '@/lib/config';
 
 const navLinks: { href: string; label: string }[] = [
-    { href: "/products", label: "Jelajahi Produk" },
     { href: "/sellers", label: "Jelajahi Penjual" },
 ];
 
