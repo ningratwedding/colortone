@@ -55,8 +55,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
         <FirebaseClientProvider>
+          <div className="flex flex-col flex-1">
             {children}
-            <FirebaseErrorListener />
+          </div>
+          <FirebaseErrorListener />
         </FirebaseClientProvider>
         <Toaster />
       </body>
