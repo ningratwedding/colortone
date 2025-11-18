@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import Image from "next/image";
-import { notFound, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ShoppingCart,
   Share2,
@@ -10,15 +11,10 @@ import {
 import { useMemo, useEffect, useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { doc, collection, query } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { Product, UserProfile, Software } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,33 +26,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
+interface ProductPageContentProps {
+  product: Product;
+  creator: UserProfile | null;
+  softwareList: Software[];
+}
 
-export function ProductPageContent({ productId }: { productId: string }) {
-  const firestore = useFirestore();
+
+export function ProductPageContent({ product, creator, softwareList }: ProductPageContentProps) {
   const [activeTab, setActiveTab] = useState('gallery');
   const [formattedPrice, setFormattedPrice] = useState<string>("");
-  
-  const productRef = useMemo(() => {
-    if (!firestore || !productId) return null;
-    return doc(firestore, 'products', productId);
-  }, [firestore, productId]);
+  const firestore = useFirestore();
 
-  const { data: product, loading: productLoading } = useDoc<Product>(productRef);
-
-  const creatorRef = useMemo(() => {
-      if (!firestore || !product?.creatorId) return null;
-      return doc(firestore, 'users', product.creatorId);
-  }, [firestore, product?.creatorId]);
-
-  const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
-
-  const softwareQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'software'));
-  }, [firestore]);
-
-  const { data: softwareList, loading: softwareLoading } = useCollection<Software>(softwareQuery);
-  
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
   
@@ -109,14 +90,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   const buttonLoading = userLoading || profileLoading;
 
-
-  const compatibleSoftwareDetails = useMemo(() => {
-    if (!product?.compatibleSoftware || !softwareList) return [];
-    return product.compatibleSoftware
-        .map(name => softwareList.find(s => s.name === name))
-        .filter((s): s is Software => !!s);
-  }, [product, softwareList]);
-
   useEffect(() => {
     if (product) {
       const formatCurrency = (amount: number) => {
@@ -130,44 +103,12 @@ export function ProductPageContent({ productId }: { productId: string }) {
     }
   }, [product]);
 
-
-  if (productLoading || creatorLoading || softwareLoading) {
-    return (
-        <div className="container mx-auto px-4 py-6">
-            <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
-                <div>
-                    <Skeleton className="aspect-[3/2] w-full rounded-lg" />
-                    <div className="flex gap-2 mt-2">
-                        <Skeleton className="h-16 w-24 rounded-md" />
-                        <Skeleton className="h-16 w-24 rounded-md" />
-                    </div>
-                </div>
-                <div className="flex flex-col gap-4">
-                    <Skeleton className="h-8 w-3/4" />
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-5 w-24" />
-                    </div>
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-10 w-48" />
-                    <Skeleton className="h-28 w-full" />
-                </div>
-            </div>
-        </div>
-    );
-  }
-
-  if (!product) {
-    notFound();
-  }
-  
   const hasComparison = product.imageBeforeUrl && product.imageAfterUrl;
   const galleryImage = product.galleryImageUrls?.[0];
   const comparisonImage = product.imageAfterUrl;
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-28 md:pb-6">
+    <div className="container mx-auto px-2 py-6 pb-28 md:pb-6">
        <div className="grid md:grid-cols-2 gap-2 md:gap-4 lg:gap-6">
         <div>
            {activeTab === 'gallery' && (
@@ -260,10 +201,10 @@ export function ProductPageContent({ productId }: { productId: string }) {
                   </Link>
                 </div>
               )}
-              {product.type === 'digital' && compatibleSoftwareDetails && compatibleSoftwareDetails.length > 0 && (
+              {product.type === 'digital' && softwareList && softwareList.length > 0 && (
                 <TooltipProvider>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    {compatibleSoftwareDetails.map(s => (
+                    {softwareList.map(s => (
                         <Tooltip key={s.id}>
                             <TooltipTrigger>
                                 {s.icon ? (
@@ -285,16 +226,16 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
        {/* Sticky bottom bar for mobile */}
        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm">
-        <div className="container flex items-center justify-between h-20 px-4">
+        <div className="container flex items-center justify-between h-16 px-2">
             <div className="flex-grow flex items-center gap-2">
-                <Button size="lg" className="flex-grow" asChild disabled={buttonLoading}>
+                <Button size="default" className="flex-grow" asChild disabled={buttonLoading}>
                     <Link href={getCheckoutUrl()}>
                         <ShoppingCart className="mr-2 h-4 w-4" /> 
                         {buttonLoading ? "Memuat..." : "Beli Sekarang"}
                     </Link>
                 </Button>
                 {userProfile?.role === 'affiliator' && (
-                    <Button size="icon" variant="outline" className="w-12 h-12 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
+                    <Button size="icon" variant="outline" className="w-10 h-10 flex-shrink-0" onClick={copyAffiliateLink} disabled={buttonLoading}>
                         <Share2 className="h-5 w-5" />
                     </Button>
                 )}
@@ -304,4 +245,3 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
-

@@ -1,51 +1,71 @@
 import { SiteFooter } from '@/components/site-footer';
 import * as React from 'react';
 import { ProfileContent } from './profile-client';
-import { doc, getDoc, query, collection, where, getDocs, limit } from 'firebase/firestore';
+import { doc, getDoc, query, collection, where, getDocs, limit, documentId } from 'firebase/firestore';
 import { initializeServerSideFirebase } from '@/firebase/server-init';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
-import type { UserProfile } from '@/lib/data';
+import type { Product, UserProfile } from '@/lib/data';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: { slug: string }
 }
 
-// This function generates metadata on the server.
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+async function getUserAndProducts(slug: string) {
     const { firestore } = initializeServerSideFirebase();
     const usersRef = collection(firestore, 'users');
-    const q = query(usersRef, where('slug', '==', params.slug), limit(1));
+    const q = query(usersRef, where('slug', '==', slug), limit(1));
     
-    try {
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-            const user = querySnapshot.docs[0].data() as UserProfile;
-            const displayName = user.fullName || user.name;
-            const description = user.bio || `Lihat profil dan produk dari ${displayName} di ${siteConfig.name}.`;
+    const querySnapshot = await getDocs(q);
 
-            return {
-                title: displayName,
+    if (querySnapshot.empty) {
+        return { profileUser: null, products: [] };
+    }
+
+    const profileUser = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
+    
+    let products: Product[] = [];
+    if (profileUser.role === 'seller' && profileUser.id) {
+        const productsQuery = query(collection(firestore, "products"), where('creatorId', '==', profileUser.id));
+        const productsSnapshot = await getDocs(productsQuery);
+        products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    } else if (profileUser.role === 'affiliator' && profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0) {
+        const productsQuery = query(collection(firestore, "products"), where(documentId(), 'in', profileUser.featuredProductIds.slice(0, 30)));
+        const productsSnapshot = await getDocs(productsQuery);
+        products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    }
+
+    return { profileUser, products };
+}
+
+// This function generates metadata on the server.
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { profileUser } = await getUserAndProducts(params.slug);
+    
+    if (profileUser) {
+        const displayName = profileUser.fullName || profileUser.name;
+        const description = profileUser.bio || `Lihat profil dan produk dari ${displayName} di ${siteConfig.name}.`;
+
+        return {
+            title: displayName,
+            description: description,
+            openGraph: {
+                title: `${displayName} | ${siteConfig.name}`,
                 description: description,
-                openGraph: {
-                    title: `${displayName} | ${siteConfig.name}`,
-                    description: description,
-                    url: `${siteConfig.url}/${user.slug}`,
-                    images: user.avatarUrl ? [{ url: user.avatarUrl }] : [siteConfig.ogImage],
-                },
-                twitter: {
-                    card: 'summary_large_image',
-                    title: `${displayName} | ${siteConfig.name}`,
-                    description: description,
-                    images: user.avatarUrl ? [user.avatarUrl] : [siteConfig.ogImage],
-                },
-                ...(user.profileBackgroundColor && {
-                    themeColor: user.profileBackgroundColor
-                })
-            };
-        }
-    } catch (error) {
-        console.error("Error fetching user for metadata:", error);
+                url: `${siteConfig.url}/${profileUser.slug}`,
+                images: profileUser.avatarUrl ? [{ url: profileUser.avatarUrl }] : [siteConfig.ogImage],
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: `${displayName} | ${siteConfig.name}`,
+                description: description,
+                images: profileUser.avatarUrl ? [profileUser.avatarUrl] : [siteConfig.ogImage],
+            },
+            ...(profileUser.profileBackgroundColor && {
+                themeColor: profileUser.profileBackgroundColor
+            })
+        };
     }
 
     // Fallback metadata if user not found
@@ -56,12 +76,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 
-export default function ProfileRootPage({ params }: { params: { slug: string } }) {
+export default async function ProfileRootPage({ params }: { params: { slug: string } }) {
+    const { profileUser, products } = await getUserAndProducts(params.slug);
+
+    if (!profileUser) {
+        notFound();
+    }
     
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex-grow">
-                <ProfileContent slug={params.slug} />
+                <ProfileContent profileUser={profileUser} products={products} />
             </main>
             <SiteFooter />
         </div>

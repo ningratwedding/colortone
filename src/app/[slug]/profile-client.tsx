@@ -2,23 +2,18 @@
 
 'use client';
 
-import { notFound } from 'next/navigation';
 import { Globe, Share2 } from 'lucide-react';
-import { useMemo, useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, limit, getDocs, documentId } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -69,22 +64,18 @@ const socialIcons = {
 
 type SocialPlatform = keyof typeof socialIcons;
 
-function SellerProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+interface ProfileContentProps {
+    profileUser: UserProfile;
+    products: Product[];
+}
+
+
+function SellerProfileView({ user, products }: { user: UserProfile; products: Product[] }) {
   const displayName = user.fullName || user.name;
   const columns = user.productCardSettings?.columns || 2;
   return (
     <>
-        {loading ? (
-            <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : products && products.length > 0 ? (
+        {products && products.length > 0 ? (
           <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
             {products.map((product) => (
               <ProductCard key={product.id} product={product} hideCreator={true} settings={user.productCardSettings} />
@@ -99,26 +90,12 @@ function SellerProfileView({ user, products, loading }: { user: UserProfile; pro
   );
 }
 
-function AffiliateProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+function AffiliateProfileView({ user, products }: { user: UserProfile; products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
   const categories = user.affiliateProductCategories || [];
   const categorySettings = user.categorySettings || { style: 'default', size: 'default', shape: 'default' };
   const columns = user.productCardSettings?.columns || 2;
-
-  if (loading) {
-    return (
-        <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="space-y-2">
-            <Skeleton className="h-48 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   if (!hasFeaturedProducts || !products || products.length === 0) {
     return (
@@ -181,108 +158,8 @@ function AffiliateProfileView({ user, products, loading }: { user: UserProfile; 
 }
 
 
-export function ProfileContent({ slug }: { slug: string }) {
-  const firestore = useFirestore();
-  const [profileUser, setProfileUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+export function ProfileContent({ profileUser, products }: ProfileContentProps) {
   const { toast } = useToast();
-
-  const userQuery = useMemo(() => {
-    if (!firestore || !slug) return null;
-    return query(collection(firestore, 'users'), where('slug', '==', slug), limit(1));
-  }, [firestore, slug]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!userQuery) return;
-      setLoading(true);
-      try {
-        const querySnapshot = await getDocs(userQuery);
-        if (querySnapshot.empty) {
-          setProfileUser(null);
-        } else {
-          const user = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
-          setProfileUser(user);
-        }
-      } catch (e) {
-        console.error("Error fetching user profile:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, [userQuery]);
-
-  useEffect(() => {
-    if (profileUser) {
-        if (profileUser.profileBackgroundImageUrl) {
-            document.body.style.backgroundImage = `url(${profileUser.profileBackgroundImageUrl})`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
-            document.body.style.backgroundAttachment = 'fixed';
-            document.body.style.backgroundColor = ''; // clear solid color
-        } else if (profileUser.profileBackgroundColor) {
-            document.body.style.backgroundColor = profileUser.profileBackgroundColor;
-            document.body.style.backgroundImage = ''; // clear image
-        } else {
-            document.body.style.backgroundColor = '#FFFFFF'; // Default to white
-            document.body.style.backgroundImage = '';
-        }
-    }
-    // Cleanup function to reset the background style when the component unmounts
-    return () => {
-      document.body.style.backgroundColor = '';
-      document.body.style.backgroundImage = '';
-      document.body.style.backgroundSize = '';
-      document.body.style.backgroundPosition = '';
-      document.body.style.backgroundAttachment = '';
-    };
-  }, [profileUser]);
-
-
-  const productsQuery = useMemo(() => {
-    if (!firestore || !profileUser) return null;
-    
-    if (profileUser.role === 'seller') {
-        return query(collection(firestore, "products"), where('creatorId', '==', profileUser.id));
-    }
-    
-    if (profileUser.role === 'affiliator' && profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0) {
-        // Firestore 'in' queries are limited to 30 items.
-        return query(collection(firestore, "products"), where(documentId(), 'in', profileUser.featuredProductIds.slice(0, 30)));
-    }
-
-    return null;
-  }, [firestore, profileUser]);
-
-  const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-2 py-6 space-y-6">
-        <div className="flex flex-col items-center gap-4 text-center">
-            <Skeleton className="h-24 w-24 rounded-full" />
-            <div className="space-y-2">
-                <Skeleton className="h-7 w-48" />
-                <Skeleton className="h-5 w-64" />
-            </div>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-48 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!profileUser) {
-    notFound();
-  }
   
   const displayName = profileUser.fullName || profileUser.name;
 
@@ -312,6 +189,10 @@ export function ProfileContent({ slug }: { slug: string }) {
   const headerGradientStyle = profileUser.profileBackgroundColor
     ? { backgroundImage: `linear-gradient(to top, ${profileUser.profileBackgroundColor} 0%, rgba(0,0,0,0) 100%)` }
     : {};
+    
+  const pageBackgroundStyle = profileUser.profileBackgroundImageUrl 
+    ? { backgroundImage: `url(${profileUser.profileBackgroundImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }
+    : { backgroundColor: profileUser.profileBackgroundColor || 'var(--background)' };
 
   const showGradient = profileUser.showHeaderGradient ?? true;
   const socialsSettings = profileUser.socialsSettings || { style: 'iconOnly', layout: 'vertical', pillSize: 'md' };
@@ -337,7 +218,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   );
   
   return (
-    <div className="pb-16">
+    <div style={pageBackgroundStyle} className="pb-16 min-h-screen">
        <div
         className="relative h-24 md:h-48 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor || '#FFFFFF' }}
@@ -479,8 +360,8 @@ export function ProfileContent({ slug }: { slug: string }) {
 
 
         <main>
-          {profileUser.role === 'seller' && <SellerProfileView user={profileUser} products={products} loading={productsLoading} />}
-          {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
+          {profileUser.role === 'seller' && <SellerProfileView user={profileUser} products={products} />}
+          {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} />}
           {profileUser.role === 'pembeli' && (!profileUser.bio && (!Array.isArray(profileUser.socials) || profileUser.socials.length === 0)) && (
             <div className="text-center py-12 text-muted-foreground">
               <p>Pengguna ini belum menambahkan bio atau tautan sosial.</p>
