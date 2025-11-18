@@ -296,8 +296,8 @@ export default function AccountLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] px-2 text-primary-foreground md:bg-muted md:text-muted-foreground sm:px-6">
-          <SidebarTrigger className="flex text-primary-foreground hover:bg-white/10 md:text-foreground md:hover:bg-accent" />
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-muted px-2 text-muted-foreground sm:px-6">
+          <SidebarTrigger className="flex text-foreground hover:bg-accent" />
           <div className="flex-1">
             <h1 className="hidden text-lg font-semibold md:block">{getPageTitle()}</h1>
           </div>
