@@ -146,6 +146,11 @@ export default function DashboardPage() {
 
       } catch (error) {
         console.error("Error fetching seller dashboard data:", error);
+        toast({
+            variant: "destructive",
+            title: "Gagal Memuat Data",
+            description: "Terjadi kesalahan saat mengambil data dasbor.",
+        });
         setLoading(false);
         setOrdersLoading(false);
       }
@@ -154,7 +159,7 @@ export default function DashboardPage() {
     if (user && firestore) {
       fetchData();
     }
-  }, [user, firestore]);
+  }, [user, firestore, toast]);
   
     const topProducts = useMemo(() => {
     if (!sellerProducts) return [];
@@ -463,3 +468,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
