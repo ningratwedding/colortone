@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 
 export function SiteFooter() {
     return (
-        <footer className="border-t bg-background">
-            <div className="container mx-auto flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+        <footer className="bg-background">
+            <div className="container mx-auto flex flex-col items-center justify-center gap-4 py-8 md:py-10 border-t">
                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center text-sm text-muted-foreground">
                     <Link href="/about" className="hover:text-primary">Tentang Kami</Link>
                     <Link href="/sellers" className="hover:text-primary">Jelajahi Penjual</Link>
