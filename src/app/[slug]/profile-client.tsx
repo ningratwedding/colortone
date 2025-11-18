@@ -337,7 +337,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   );
   
   return (
-    <div className="pb-4">
+    <div className="pb-16">
        <div
         className="relative h-24 md:h-48 overflow-hidden"
         style={{ backgroundColor: profileUser.headerColor || '#FFFFFF' }}
