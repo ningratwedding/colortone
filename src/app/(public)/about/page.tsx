@@ -4,9 +4,34 @@ import { Separator } from '@/components/ui/separator';
 import { siteConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
+const pageTitle = 'Tentang Kami';
+const pageDescription = `Pelajari lebih lanjut tentang misi dan visi ${siteConfig.name} untuk memberdayakan UMKM di seluruh Indonesia.`;
+
 export const metadata: Metadata = {
-  title: 'Tentang Kami',
-  description: `Pelajari lebih lanjut tentang misi dan visi ${siteConfig.name} untuk memberdayakan UMKM di seluruh Indonesia.`,
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    url: `${siteConfig.url}/about`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageTitle,
+    description: pageDescription,
+    images: [siteConfig.ogImage],
+  },
 };
 
 

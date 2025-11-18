@@ -6,6 +6,7 @@ import { SlidersHorizontal } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import type { Metadata } from 'next';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,38 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Logo } from "@/components/logo";
+import { siteConfig } from '@/lib/config';
+
+const pageTitle = 'Lupa Kata Sandi';
+const pageDescription = 'Atur ulang kata sandi Anda untuk mendapatkan kembali akses ke akun LinkStore Anda.';
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    url: `${siteConfig.url}/forgot-password`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageTitle,
+    description: pageDescription,
+    images: [siteConfig.ogImage],
+  },
+};
+
 
 const formSchema = z.object({
   email: z.string().email("Format email tidak valid."),

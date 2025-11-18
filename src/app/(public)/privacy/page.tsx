@@ -2,9 +2,34 @@
 import { siteConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
+const pageTitle = 'Kebijakan Privasi';
+const pageDescription = `Pahami bagaimana ${siteConfig.name} mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.`;
+
 export const metadata: Metadata = {
-  title: 'Kebijakan Privasi',
-  description: `Pahami bagaimana ${siteConfig.name} mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.`,
+  title: pageTitle,
+  description: pageDescription,
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    url: `${siteConfig.url}/privacy`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageTitle,
+    description: pageDescription,
+    images: [siteConfig.ogImage],
+  },
 };
 
 export default function PrivacyPolicyPage() {
@@ -13,7 +38,7 @@ export default function PrivacyPolicyPage() {
       <div className="container mx-auto px-4 py-8 md:py-12">
         <header className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold font-headline text-primary">
-            Kebijakan Privasi
+            {pageTitle}
           </h1>
           <p className="mt-2 text-muted-foreground">
             Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
