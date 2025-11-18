@@ -12,7 +12,7 @@ export function SiteFooter() {
             <div className="container mx-auto flex flex-col items-center justify-center gap-4 py-8 md:py-10">
                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center text-sm text-muted-foreground">
                     <Link href="/about" className="hover:text-primary">Tentang Kami</Link>
-                    <Link href="/products" className="hover:text-primary">Jelajahi</Link>
+                    <Link href="/products" className="hover:text-primary">Jelajahi Produk UMKM</Link>
                     <Link href="/privacy" className="hover:text-primary">Kebijakan Privasi</Link>
                     <Link href="/terms" className="hover:text-primary">Ketentuan Layanan</Link>
                 </div>

@@ -19,7 +19,7 @@ export default function Home() {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
   
-  const placeholderTexts = useMemo(() => ['nama-kreator', 'seniman-hebat', 'fotografer-pro'], []);
+  const placeholderTexts = useMemo(() => ['warung-ibu-ani', 'batik-jaya', 'kopi-nusantara'], []);
   const [placeholder, setPlaceholder] = useState(placeholderTexts[0]);
   
   useEffect(() => {
@@ -68,33 +68,33 @@ export default function Home() {
     const features = [
     {
       icon: Package,
-      title: 'Jual Produk Digital & Fisik',
-      description: 'Satu tempat untuk semua karya Anda, mulai dari preset, e-book, hingga merchandise.',
+      title: 'Semua Jenis Produk',
+      description: 'Jual produk fisik, digital, jasa, atau apa pun. Platform kami fleksibel untuk segala jenis UMKM.',
     },
     {
       icon: Link2,
-      title: 'Halaman Profil Profesional',
-      description: 'Gabungkan semua tautan sosial media, portofolio, dan kontak dalam satu profil yang menarik.',
+      title: 'Etalase Digital Anda',
+      description: 'Satu tautan untuk menampilkan semua produk, media sosial, dan portofolio bisnis Anda.',
     },
     {
       icon: Users,
-      title: 'Program Afiliasi',
-      description: 'Perluas jangkauan penjualan Anda dengan memberdayakan audiens untuk menjadi mitra afiliasi.',
+      title: 'Program Reseller (Afiliasi)',
+      description: 'Perluas jangkauan pasar dengan mudah. Beri kesempatan pelanggan untuk ikut mempromosikan produk Anda.',
     },
     {
       icon: Palette,
-      title: 'Kustomisasi Tampilan',
-      description: 'Sesuaikan warna, font, dan tata letak halaman agar benar-benar mencerminkan brand Anda.',
+      title: 'Desain Sesuai Brand',
+      description: 'Sesuaikan warna, font, dan tata letak halaman untuk mencerminkan identitas unik bisnis Anda.',
     },
      {
       icon: BarChart,
-      title: 'Analitik & Insight',
-      description: 'Pahami audiens Anda lebih dalam dengan data kunjungan dan performa produk yang mudah dibaca.',
+      title: 'Laporan Penjualan',
+      description: 'Pahami pelanggan dan performa produk Anda melalui data analitik yang mudah dibaca.',
     },
     {
       icon: Heart,
-      title: 'Terima Dukungan',
-      description: 'Aktifkan fitur donasi atau tip untuk memungkinkan penggemar memberikan dukungan finansial langsung.',
+      title: 'Terima Dukungan Langsung',
+      description: 'Aktifkan fitur donasi atau tip agar pelanggan setia dapat memberikan dukungan finansial untuk usaha Anda.',
     },
   ];
 
@@ -115,30 +115,30 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto mb-4 text-white" />
             <h1 className="text-3xl md:text-5xl font-bold font-headline">
-                Satu Platform, Semua Kebutuhan Kreator
+                Bawa Bisnis UMKM Anda ke Level Berikutnya
             </h1>
           </div>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
-            LinkStore memberikan Anda semua alat yang dibutuhkan untuk membangun audiens, menjual produk, dan mengembangkan brand Anda.
+            TokoKita adalah platform digital lengkap untuk menampilkan, menjual, dan mengembangkan semua jenis produk UMKM.
           </p>
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
                 <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">linkstore.id/</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">tokokita.id/</span>
                 <Input
                     type="text"
                     placeholder={placeholder}
-                    className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[130px] pr-[100px] text-base"
+                    className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[110px] sm:pl-[120px] pr-[100px] text-base"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    aria-label="Klaim nama pengguna Anda"
+                    aria-label="Klaim nama toko Anda"
                 />
                 <Button
                     type="submit"
                     size="lg"
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
                 >
-                    Buat
+                    Buat Toko
                 </Button>
                 </div>
             </form>
@@ -156,7 +156,7 @@ export default function Home() {
         {/* Features Section */}
         <div className="text-center">
           <h2 className="text-3xl font-bold font-headline mb-8">
-            Fitur Unggulan untuk Kreator
+            Semua yang Anda Butuhkan untuk Berkembang
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => {

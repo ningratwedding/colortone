@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
 
           <h2>3. Produk dan Pembayaran</h2>
           <p>
-            Semua penjualan yang dilakukan melalui {siteConfig.name} bersifat final, kecuali dinyatakan lain. Kreator bertanggung jawab atas produk yang mereka jual, dan {siteConfig.name} bertindak sebagai platform untuk memfasilitasi transaksi. Pembayaran diproses melalui gateway pembayaran pihak ketiga yang aman.
+            Semua penjualan yang dilakukan melalui {siteConfig.name} bersifat final, kecuali dinyatakan lain. Penjual (pelaku UMKM) bertanggung jawab atas produk yang mereka jual, dan {siteConfig.name} bertindak sebagai platform untuk memfasilitasi transaksi. Pembayaran diproses melalui gateway pembayaran pihak ketiga yang aman.
           </p>
           
           <h2>4. Perilaku Pengguna</h2>
@@ -41,7 +41,7 @@ export default function TermsOfServicePage() {
 
           <h2>5. Hak Kekayaan Intelektual</h2>
           <p>
-            Kreator mempertahankan semua hak atas konten dan produk yang mereka unggah ke {siteConfig.name}. Namun, dengan mengunggah konten, Anda memberikan {siteConfig.name} lisensi non-eksklusif, bebas royalti, di seluruh dunia untuk menggunakan, menampilkan, dan mendistribusikan konten Anda di platform kami.
+            Penjual mempertahankan semua hak atas konten dan produk yang mereka unggah ke {siteConfig.name}. Namun, dengan mengunggah konten, Anda memberikan {siteConfig.name} lisensi non-eksklusif, bebas royalti, di seluruh dunia untuk menggunakan, menampilkan, dan mendistribusikan konten Anda di platform kami.
           </p>
 
           <h2>6. Batasan Tanggung Jawab</h2>

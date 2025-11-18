@@ -171,13 +171,13 @@ export default function LoginPage() {
             <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center text-primary">
                   <Logo className="h-8 w-auto text-primary" />
-                  <span className="font-bold text-2xl ml-2">LinkStore</span>
+                  <span className="font-bold text-2xl ml-2">TokoKita</span>
               </div>
             </Link>
           </div>
           <CardTitle className="text-2xl">Selamat Datang Kembali</CardTitle>
           <CardDescription>
-            Masukkan email dan kata sandi Anda untuk mengakses akun Anda.
+            Masuk untuk mengelola toko dan produk UMKM Anda.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -276,5 +276,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

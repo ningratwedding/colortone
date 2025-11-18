@@ -46,6 +46,7 @@ import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Logo } from './logo';
 import { Separator } from './ui/separator';
+import { siteConfig } from '@/lib/config';
 
 const navLinks: { href: string; label: string }[] = [];
 
@@ -182,7 +183,7 @@ export function SiteHeader() {
                 <SheetTitle>
                   <Link href="/" className="flex items-center space-x-2 text-foreground">
                     <Logo />
-                    <span className="font-bold">LinkStore</span>
+                    <span className="font-bold">{siteConfig.name}</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -206,7 +207,7 @@ export function SiteHeader() {
 
           <Link href="/" className="mr-6 hidden sm:flex items-center space-x-2">
             <Logo />
-            <span className="font-bold">LinkStore</span>
+            <span className="font-bold">{siteConfig.name}</span>
           </Link>
         </div>
 
@@ -217,7 +218,7 @@ export function SiteHeader() {
            </Button>
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
-              <Link href="/creator/dashboard">Menjadi Kreator</Link>
+              <Link href="/signup">Buka Toko</Link>
             </Button>
           )}
           <UserMenu />

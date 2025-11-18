@@ -58,7 +58,7 @@ const menuItems = [
   { href: '/creator/orders', label: 'Pesanan', icon: ShoppingCart },
 ];
 
-const settingsItem = { href: '/creator/settings', label: 'Pengaturan', icon: Settings };
+const settingsItem = { href: '/creator/settings', label: 'Pengaturan Toko', icon: Settings };
 
 export default function CreatorDashboardLayout({
   children,
@@ -85,7 +85,7 @@ export default function CreatorDashboardLayout({
       toast({
         variant: "destructive",
         title: "Akses Ditolak",
-        description: "Anda harus menjadi kreator untuk mengakses dasbor ini.",
+        description: "Anda harus menjadi penjual untuk mengakses dasbor ini.",
       });
       router.replace('/account');
     }
@@ -100,12 +100,12 @@ export default function CreatorDashboardLayout({
         if (pathname.startsWith(item.href)) return item.label;
       }
     }
-    return "Dasbor Kreator";
+    return "Dasbor Penjual";
   };
   const pageTitle = getPageTitle();
   
   const getInitials = (name?: string | null) => {
-    if (!name) return 'K';
+    if (!name) return 'P';
     return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
   };
   
@@ -243,7 +243,7 @@ export default function CreatorDashboardLayout({
                                 </Avatar>
                                 )}
                                  <div className="ml-2 text-left group-data-[collapsible=icon]:hidden">
-                                    <p className="text-sm font-medium leading-none">{userProfile?.name || 'Kreator'}</p>
+                                    <p className="text-sm font-medium leading-none">{userProfile?.name || 'Penjual'}</p>
                                     <p className="text-xs text-sidebar-foreground/70">{userProfile?.role}</p>
                                  </div>
                             </Button>
@@ -252,7 +252,7 @@ export default function CreatorDashboardLayout({
                         <DropdownMenuLabel>{userProfile?.name || 'Akun Saya'}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href="/creator/settings">Pengaturan</Link>
+                            <Link href="/creator/settings">Pengaturan Toko</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/">Lihat Situs</Link>

@@ -5,26 +5,26 @@ import { siteConfig } from '@/lib/config';
 
 export default function AboutPage() {
     const vision =
-    "Kami ingin membangun sebuah ruang di mana setiap kreator dapat tumbuh tanpa rasa takut akan batasan sebuah ekosistem yang membuka jalan bagi mimpi, memperluas peluang, dan memberi harapan bahwa karya mereka dapat menjadi jembatan menuju masa depan yang lebih cerah.";
+    "Menciptakan ekosistem digital yang setara, di mana setiap UMKM di Indonesia memiliki kesempatan untuk tumbuh, berinovasi, dan menjangkau pasar yang lebih luas tanpa batas.";
 
   const missions = [
-    'Membantu kreator menemukan lebih banyak peluang untuk mengembangkan nilai dan pendapatan dari karya mereka.',
-    'Menyediakan pusat yang menyatukan seluruh identitas digital kreator agar mereka tampil lebih rapi, profesional, dan mudah dikenal.',
-    'Mendukung kreator menjual karya digital maupun fisik, serta berbagi pengetahuan melalui berbagai format.',
-    'Membangun ruang komunitas yang memungkinkan kreator berinteraksi, bertumbuh, dan menginspirasi satu sama lain.',
-    'Memberikan alat yang sederhana namun bertenaga, sehingga kreator dapat fokus berkarya tanpa terbebani teknis.',
-    'Menyediakan insight yang jelas untuk membantu kreator memahami audiens, mengukur dampak, dan merancang langkah pertumbuhan berikutnya.',
+    'Menyediakan platform yang mudah digunakan bagi UMKM untuk membangun etalase digital yang profesional.',
+    'Memberdayakan pelaku UMKM dengan alat penjualan dan pemasaran yang efektif untuk meningkatkan pendapatan.',
+    'Membangun komunitas yang suportif untuk para pelaku UMKM saling berbagi, belajar, dan berkolaborasi.',
+    'Menjembatani UMKM dengan pelanggan setia melalui program reseller dan fitur interaksi.',
+    'Mendorong pertumbuhan ekonomi lokal dengan mempermudah akses pasar bagi produk-produk UMKM.',
+    'Memberikan data dan wawasan untuk membantu UMKM mengambil keputusan bisnis yang lebih baik.',
   ];
 
   const commitment =
-    'Kami berkomitmen hadir sebagai mitra perjalanan kreator menyediakan dukungan, teknologi, dan ruang yang memastikan setiap langkah mereka selalu memiliki arah, makna, dan harapan untuk terus maju.';
+    'Kami berkomitmen untuk menjadi mitra terpercaya bagi setiap UMKM di Indonesia. Kami menyediakan teknologi, dukungan, dan ruang untuk memastikan setiap langkah pertumbuhan bisnis Anda lebih mudah, lebih cepat, dan lebih berdampak.';
 
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8 md:py-12 space-y-12 md:space-y-16">
         <header className="text-center">
             <h1 className="text-3xl md:text-4xl font-bold font-headline">Tentang {siteConfig.name}</h1>
-            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">Membangun ekosistem untuk kreator bertumbuh dan berkarya.</p>
+            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">Memberdayakan UMKM Indonesia untuk bertumbuh dan berjaya.</p>
         </header>
 
         {/* Komitmen Section */}
