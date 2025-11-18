@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -48,7 +49,10 @@ import { Logo } from './logo';
 import { Separator } from './ui/separator';
 import { siteConfig } from '@/lib/config';
 
-const navLinks: { href: string; label: string }[] = [];
+const navLinks: { href: string; label: string }[] = [
+    { href: "/products", label: "Jelajahi Produk" },
+    { href: "/sellers", label: "Jelajahi Penjual" },
+];
 
 export function SiteHeader() {
   const { user, loading: userLoading } = useUser();
@@ -198,9 +202,6 @@ export function SiteHeader() {
                     {label}
                   </Link>
                 ))}
-                 <Button variant="secondary" asChild>
-                    <Link href="/products">Jelajahi Produk</Link>
-                 </Button>
               </nav>
             </SheetContent>
           </Sheet>
@@ -209,13 +210,22 @@ export function SiteHeader() {
             <Logo />
             <span className="font-bold">{siteConfig.name}</span>
           </Link>
+
+           <nav className="hidden md:flex md:items-center md:gap-6 text-sm">
+            {navLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="transition-colors hover:text-primary-foreground/80 text-primary-foreground/90"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
         {/* Right Section (Actions) */}
         <div className="flex items-center justify-end space-x-2">
-           <Button variant="ghost" asChild className="hidden sm:inline-flex hover:bg-primary-foreground/10">
-              <Link href="/products">Jelajahi</Link>
-           </Button>
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
               <Link href="/signup">Buka Toko</Link>
