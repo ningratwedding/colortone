@@ -305,5 +305,3 @@ export function ProductPageContent({ productId }: { productId: string }) {
     </div>
   );
 }
-
-

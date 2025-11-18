@@ -119,7 +119,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
-            TokoKita adalah platform digital lengkap untuk menampilkan, menjual, dan mengembangkan semua jenis produk UMKM.
+            LinkStore adalah platform digital lengkap untuk menampilkan, menjual, dan mengembangkan semua jenis produk UMKM.
           </p>
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">

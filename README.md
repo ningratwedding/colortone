@@ -1,10 +1,10 @@
-# TokoKita: Platform Digital untuk UMKM Indonesia
+# LinkStore: Platform Digital untuk UMKM Indonesia
 
-Selamat datang di TokoKita! Aplikasi ini adalah platform serbaguna yang dirancang untuk Usaha Mikro, Kecil, dan Menengah (UMKM) untuk membangun etalase digital mereka. Anggap ini sebagai gabungan antara halaman "link-in-bio" yang canggih dengan marketplace yang kuat untuk semua jenis produk.
+Selamat datang di LinkStore! Aplikasi ini adalah platform serbaguna yang dirancang untuk Usaha Mikro, Kecil, dan Menengah (UMKM) untuk membangun etalase digital mereka. Anggap ini sebagai gabungan antara halaman "link-in-bio" yang canggih dengan marketplace yang kuat untuk semua jenis produk.
 
 ## 🚀 Ringkasan Proyek
 
-Tujuan utama TokoKita adalah menyediakan satu tempat bagi pelaku UMKM untuk:
+Tujuan utama LinkStore adalah menyediakan satu tempat bagi pelaku UMKM untuk:
 - **Membangun Identitas Digital**: Membuat halaman profil publik yang indah dan dapat disesuaikan, yang menyatukan semua tautan sosial media, portofolio, dan informasi kontak bisnis.
 - **Menjual Semua Jenis Produk**: Menjual produk digital (seperti kursus online, e-book, template) dan produk fisik (makanan, kerajinan, fashion) langsung kepada audiens mereka.
 - **Memberdayakan Pelanggan**: Memanfaatkan program afiliasi (reseller) bawaan yang memungkinkan pelanggan setia mendapatkan komisi dengan mempromosikan produk.
