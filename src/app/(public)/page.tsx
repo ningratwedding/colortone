@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, Heart } from 'lucide-react';
+import { Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -92,9 +92,9 @@ export default function Home() {
       description: 'Pahami pelanggan dan performa produk Anda melalui data analitik yang mudah dibaca.',
     },
     {
-      icon: Heart,
-      title: 'Terima Dukungan Langsung',
-      description: 'Aktifkan fitur donasi atau tip agar pelanggan setia dapat memberikan dukungan finansial untuk usaha Anda.',
+      icon: ShoppingCart,
+      title: 'Manajemen Pesanan',
+      description: 'Lacak dan kelola semua pesanan yang masuk melalui dasbor yang sederhana dan intuitif.',
     },
   ];
 
