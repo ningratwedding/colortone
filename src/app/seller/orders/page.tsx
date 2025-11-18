@@ -46,7 +46,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, where, collectionGroup, documentId } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -103,27 +103,26 @@ export default function OrdersPage() {
       setOrdersLoading(true);
 
       try {
-        const usersSnapshot = await getDocs(collection(firestore, 'users'));
-        const allOrders: Order[] = [];
-        const allCustomers: Record<string, UserProfile> = {};
+        const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+        const ordersSnapshot = await getDocs(ordersQuery);
+        const fetchedOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), path: doc.ref.path } as Order & { path: string }));
+        fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
+        setOrders(fetchedOrders);
+        
+        const customerIds = [...new Set(fetchedOrders.map(o => o.userId))].filter(Boolean);
+        const customersData: Record<string, UserProfile> = {};
 
-        for (const userDoc of usersSnapshot.docs) {
-          const userData = { id: userDoc.id, ...userDoc.data() } as UserProfile;
-          allCustomers[userDoc.id] = userData;
-          
-          const ordersSnapshot = await getDocs(collection(firestore, `users/${userDoc.id}/orders`));
-          ordersSnapshot.forEach(orderDoc => {
-            const orderData = { id: orderDoc.id, ...orderDoc.data() } as Order;
-            if (orderData.creatorId === user.uid) {
-              allOrders.push(orderData);
+        if (customerIds.length > 0) {
+            for (let i = 0; i < customerIds.length; i += 30) {
+              const chunk = customerIds.slice(i, i + 30);
+              const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', chunk));
+              const customersSnapshot = await getDocs(customersQuery);
+              customersSnapshot.forEach(doc => {
+                  customersData[doc.id] = { id: doc.id, ...doc.data() } as UserProfile;
+              });
             }
-          });
         }
-        
-        allOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
-        
-        setOrders(allOrders);
-        setCustomers(allCustomers);
+        setCustomers(customersData);
 
       } catch (error) {
         console.error("Failed to fetch orders:", error);
@@ -139,7 +138,7 @@ export default function OrdersPage() {
     if (!orderToCancel || !firestore) return;
 
     try {
-        const orderRef = doc(firestore, `users/${orderToCancel.userId}/orders`, orderToCancel.id);
+        const orderRef = doc(firestore, (orderToCancel as any).path);
         await updateDoc(orderRef, { status: 'Dibatalkan' });
 
         setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));

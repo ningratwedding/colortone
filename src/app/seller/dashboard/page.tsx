@@ -131,7 +131,7 @@ export default function DashboardPage() {
         setRecentOrders(fetchedRecentOrders);
 
         if (fetchedRecentOrders.length > 0) {
-          const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))];
+          const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))].filter(Boolean);
           if(customerIds.length > 0) {
             const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', customerIds));
             const customersSnapshot = await getDocs(customersQuery);
