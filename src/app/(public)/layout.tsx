@@ -13,7 +13,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     <>
       {!isHomePage && <SiteHeader />}
       <main className="flex-grow">{children}</main>
-      {!isHomePage && <SiteFooter />}
+      <SiteFooter />
     </>
   );
 }
