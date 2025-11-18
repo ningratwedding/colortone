@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -139,13 +140,13 @@ export default function AdminCampaignsPage() {
       if (editingCampaign) {
         const campaignRef = doc(firestore, 'campaigns', editingCampaign.id);
         await updateDoc(campaignRef, dataToSave);
-        toast({ title: 'Kampanye Diperbarui', description: `"${title}" telah berhasil diperbarui.` });
+        toast({ title: 'Kampanye Diperbarui', description: `Kampanye "${title}" telah berhasil diperbarui.` });
       } else {
         await addDoc(collection(firestore, 'campaigns'), {
           ...dataToSave,
           createdAt: serverTimestamp(),
         });
-        toast({ title: 'Kampanye Ditambahkan', description: `Kampanye "${title}" telah berhasil dibuat.` });
+        toast({ title: 'Kampanye Dibuat', description: `Kampanye baru "${title}" telah berhasil ditambahkan.` });
       }
       resetDialog();
     } catch (error) {

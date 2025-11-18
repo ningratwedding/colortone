@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -107,7 +108,7 @@ export default function AdminCategoriesPage() {
         // Update existing category
         const categoryRef = doc(firestore, 'categories', editingCategory.id);
         await updateDoc(categoryRef, dataToSave);
-        toast({ title: 'Kategori Diperbarui', description: `"${categoryName}" telah berhasil diperbarui.` });
+        toast({ title: 'Kategori Diperbarui', description: `Kategori "${categoryName}" telah berhasil diperbarui.` });
       } else {
         // Add new category
         await addDoc(collection(firestore, 'categories'), {
@@ -311,7 +312,7 @@ export default function AdminCategoriesPage() {
                 <DialogHeader>
                     <DialogTitle>Apakah Anda yakin ingin menghapus?</DialogTitle>
                     <DialogDescription>
-                        Tindakan ini tidak dapat dibatalkan. Ini akan menghapus kategori <span className="font-semibold">{categoryToDelete?.name}</span> secara permanen.
+                        Tindakan ini akan menghapus kategori <span className="font-semibold">{categoryToDelete?.name}</span> secara permanen.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

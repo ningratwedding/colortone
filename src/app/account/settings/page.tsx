@@ -144,8 +144,8 @@ export default function AccountSettingsPage() {
             }
 
             toast({
-                title: "Profil Diperbarui",
-                description: "Perubahan Anda telah berhasil disimpan.",
+                title: "Profil Disimpan",
+                description: "Informasi profil publik Anda telah berhasil diperbarui.",
             });
         } catch (error) {
             console.error("Error updating profile:", error);

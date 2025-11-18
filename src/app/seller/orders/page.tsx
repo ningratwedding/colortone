@@ -144,7 +144,7 @@ export default function OrdersPage() {
 
         setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));
 
-        toast({ title: 'Pesanan Dibatalkan', description: `Pesanan dengan ID ${orderToCancel.id} telah dibatalkan.` });
+        toast({ title: 'Pesanan Dibatalkan', description: `Pesanan #${orderToCancel.id} telah berhasil dibatalkan.` });
     } catch (error) {
         console.error('Error cancelling order:', error);
         toast({ variant: 'destructive', title: 'Gagal Membatalkan', description: 'Terjadi kesalahan saat membatalkan pesanan.' });
@@ -302,7 +302,7 @@ export default function OrdersPage() {
             <AlertDialogHeader>
                 <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    Tindakan ini akan membatalkan pesanan <span className="font-semibold">{orderToCancel?.id}</span>. Status akan diubah menjadi "Dibatalkan" dan tidak dapat diubah kembali.
+                    Tindakan ini akan membatalkan pesanan <span className="font-semibold">#{orderToCancel?.id}</span>. Status akan diubah menjadi "Dibatalkan" dan tidak dapat diubah kembali.
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

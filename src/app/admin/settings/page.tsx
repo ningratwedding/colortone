@@ -67,7 +67,7 @@ export default function AdminSettingsPage() {
                 supportEmail,
                 affiliateCommissionRate: rate,
             }, { merge: true });
-            toast({ title: 'Pengaturan Disimpan', description: 'Pengaturan umum telah diperbarui.'});
+            toast({ title: 'Pengaturan Umum Disimpan', description: 'Pengaturan umum aplikasi telah berhasil diperbarui.'});
         } catch (error) {
             console.error("Error saving general settings:", error);
             toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Gagal menyimpan pengaturan umum.'});
@@ -86,7 +86,7 @@ export default function AdminSettingsPage() {
                     newProduct: notifNewProduct
                 }
             }, { merge: true });
-            toast({ title: 'Preferensi Disimpan', description: 'Preferensi notifikasi telah diperbarui.'});
+            toast({ title: 'Preferensi Disimpan', description: 'Preferensi notifikasi Anda telah berhasil diperbarui.'});
         } catch (error) {
             console.error("Error saving preferences:", error);
             toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Gagal menyimpan preferensi notifikasi.'});

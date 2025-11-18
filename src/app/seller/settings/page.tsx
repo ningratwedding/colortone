@@ -99,7 +99,7 @@ export default function SettingsPage() {
               accountNumber: accountNumber
           };
           await updateDoc(userProfileRef, bankData);
-          toast({ title: 'Informasi Bank Disimpan', description: 'Detail rekening bank Anda telah diperbarui.' });
+          toast({ title: 'Informasi Bank Disimpan', description: 'Detail rekening bank Anda telah berhasil diperbarui.' });
       } catch (error) {
           console.error('Error saving bank info:', error);
           toast({ variant: 'destructive', title: 'Gagal Menyimpan', description: 'Terjadi kesalahan saat menyimpan info bank.' });

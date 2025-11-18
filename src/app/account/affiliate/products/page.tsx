@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -106,7 +107,7 @@ export default function FeaturedProductsPage() {
         ...cat,
         productIds: cat.productIds.filter(pid => pid !== productId)
       })));
-       toast({ title: "Produk Dihapus", description: `"${product.name}" dihapus dari produk unggulan Anda.` });
+       toast({ title: "Produk Dihapus", description: `"${product.name}" telah dihapus dari daftar produk unggulan Anda.` });
 
     } else {
       // Featuring product: add to main list and open categorization dialog
@@ -146,7 +147,7 @@ export default function FeaturedProductsPage() {
       });
     });
 
-    toast({ title: 'Kategori Diperbarui', description: `Kategori untuk "${productToCategorize.name}" telah disimpan.` });
+    toast({ title: 'Kategori Diperbarui', description: `Kategori untuk produk "${productToCategorize.name}" telah disimpan.` });
     closeCategorizeDialog();
   };
   
@@ -184,12 +185,12 @@ export default function FeaturedProductsPage() {
         affiliateProductCategories: cleanedCategories
       });
       toast({
-        title: "Pembaruan Disimpan",
-        description: "Produk unggulan dan kategori Anda telah disimpan.",
+        title: "Perubahan Disimpan",
+        description: "Daftar produk unggulan dan kategori Anda telah berhasil diperbarui.",
       });
     } catch (error) {
       console.error("Error saving data:", error);
-      toast({ variant: "destructive", title: "Gagal Menyimpan" });
+      toast({ variant: "destructive", title: "Gagal Menyimpan", description: "Terjadi kesalahan saat menyimpan perubahan." });
     } finally {
       setIsSaving(false);
     }
@@ -213,11 +214,11 @@ export default function FeaturedProductsPage() {
     
     if (editingCategory) {
       setCategories(prev => prev.map(cat => cat.id === editingCategory.id ? { ...cat, name: categoryName } : cat));
-      toast({ title: 'Kategori Diperbarui' });
+      toast({ title: 'Kategori Diperbarui', description: `Nama kategori telah diubah menjadi "${categoryName}".` });
     } else {
       const newCategory: AffiliateProductCategory = { id: uuidv4(), name: categoryName, productIds: [] };
       setCategories(prev => [...prev, newCategory]);
-      toast({ title: 'Kategori Dibuat' });
+      toast({ title: 'Kategori Dibuat', description: `Kategori baru "${categoryName}" telah ditambahkan.` });
     }
     resetCategoryDialog();
   };
@@ -230,7 +231,7 @@ export default function FeaturedProductsPage() {
   const handleDeleteCategory = () => {
     if (!categoryToDelete) return;
     setCategories(prev => prev.filter(c => c.id !== categoryToDelete.id));
-    toast({ title: 'Kategori Dihapus' });
+    toast({ title: 'Kategori Dihapus', description: `Kategori "${categoryToDelete.name}" telah dihapus.` });
     setIsDeleteDialogOpen(false);
     setCategoryToDelete(null);
   };
