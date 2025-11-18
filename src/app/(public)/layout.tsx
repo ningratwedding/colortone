@@ -7,7 +7,7 @@ import { SiteHeader } from '@/components/site-header';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isHomePage = pathname === '/home';
+  const isHomePage = pathname === '/';
 
   return (
     <>
