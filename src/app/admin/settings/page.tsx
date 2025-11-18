@@ -25,6 +25,7 @@ import { ImageIcon, Loader2 } from "lucide-react";
 import { uploadFile } from "@/firebase/storage/actions";
 import { useUser } from "@/firebase/auth/use-user";
 import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AdminSettingsPage() {
     const firestore = useFirestore();
@@ -40,6 +41,7 @@ export default function AdminSettingsPage() {
     const { data: settings, loading } = useDoc<PlatformSettings>(settingsRef);
 
     const [appName, setAppName] = useState('');
+    const [appDescription, setAppDescription] = useState('');
     const [supportEmail, setSupportEmail] = useState('');
     const [commissionRate, setCommissionRate] = useState<number | string>('');
     const [notifNewSeller, setNotifNewSeller] = useState(true);
@@ -56,6 +58,7 @@ export default function AdminSettingsPage() {
     useEffect(() => {
         if (settings) {
             setAppName(settings.appName || '');
+            setAppDescription(settings.appDescription || '');
             setSupportEmail(settings.supportEmail || '');
             setCommissionRate(settings.affiliateCommissionRate ? settings.affiliateCommissionRate * 100 : '');
             setNotifNewSeller(settings.notifications?.newSeller ?? true);
@@ -77,6 +80,7 @@ export default function AdminSettingsPage() {
 
             await setDoc(settingsRef, {
                 appName,
+                appDescription,
                 supportEmail,
                 affiliateCommissionRate: rate,
             }, { merge: true });
@@ -152,10 +156,15 @@ export default function AdminSettingsPage() {
                 <CardTitle>Pengaturan Umum</CardTitle>
                 <CardDescription>Kelola pengaturan umum untuk seluruh aplikasi.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
                 <div className="grid gap-1.5">
                     <Label htmlFor="app-name">Nama Aplikasi</Label>
                     <Input id="app-name" value={appName} onChange={e => setAppName(e.target.value)} />
+                </div>
+                 <div className="grid gap-1.5">
+                    <Label htmlFor="app-description">Deskripsi Aplikasi</Label>
+                    <Textarea id="app-description" value={appDescription} onChange={e => setAppDescription(e.target.value)} placeholder="Deskripsi singkat aplikasi untuk SEO..." />
+                    <p className="text-xs text-muted-foreground">Deskripsi ini akan digunakan untuk metadata Open Graph.</p>
                 </div>
                 <div className="grid gap-1.5">
                     <Label htmlFor="support-email">Email Dukungan</Label>

@@ -146,13 +146,16 @@ export type Campaign = {
 
 
 export type PlatformSettings = {
-    appName: string;
+    appName?: string;
+    appDescription?: string;
     supportEmail: string;
     affiliateCommissionRate?: number;
     notifications: {
         newSeller: boolean;
         newProduct: boolean;
-    }
+    },
+    ogImageUrl?: string;
+    ogImageHint?: string;
 }
 
 export type ImagePlaceholder = {

@@ -448,6 +448,10 @@
         "appName": {
           "type": "string"
         },
+        "appDescription": {
+            "type": "string",
+            "description": "The meta description for the entire application."
+        },
         "supportEmail": {
           "type": "string",
           "format": "email"

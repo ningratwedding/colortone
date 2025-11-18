@@ -25,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const appName = settings?.appName || siteConfig.name;
+  const appDescription = settings?.appDescription || siteConfig.description;
   const ogImage = settings?.ogImageUrl || siteConfig.ogImage;
   
   return {
@@ -32,10 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
       default: appName,
       template: `%s | ${appName}`,
     },
-    description: siteConfig.description,
+    description: appDescription,
     openGraph: {
       title: appName,
-      description: siteConfig.description,
+      description: appDescription,
       url: siteConfig.url,
       siteName: appName,
       images: [
@@ -52,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: appName,
-      description: siteConfig.description,
+      description: appDescription,
       images: [ogImage],
     },
     icons: {
