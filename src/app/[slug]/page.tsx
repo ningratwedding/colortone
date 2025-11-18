@@ -59,9 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default function ProfileRootPage({ params }: { params: { slug: string } }) {
     
     return (
-        <>
-            <ProfileContent slug={params.slug} />
+        <div className="flex flex-col min-h-screen">
+            <main className="flex-grow">
+                <ProfileContent slug={params.slug} />
+            </main>
             <SiteFooter />
-        </>
+        </div>
     )
 }
