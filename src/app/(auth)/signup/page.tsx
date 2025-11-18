@@ -140,11 +140,25 @@ export default function SignupPage() {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkStore! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
     } else {
-      toast({
-        variant: "destructive",
-        title: "Gagal Mendaftar",
-        description: result.error,
-      });
+       if (result.error?.includes('sudah terdaftar')) {
+        form.setError('email', { 
+          type: 'manual', 
+          message: 'Email ini sudah terdaftar.'
+        }, {
+          shouldFocus: true
+        });
+        toast({
+            variant: "destructive",
+            title: "Email Sudah Terdaftar",
+            description: <>Anda sudah memiliki akun. Silakan <Link href="/login" className="underline font-bold">masuk di sini</Link>.</>,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Gagal Mendaftar",
+          description: result.error,
+        });
+      }
     }
   };
 
