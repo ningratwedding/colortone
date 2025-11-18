@@ -8,7 +8,7 @@ import {
   Settings,
   ShoppingBag,
   Star,
-  Palette,
+  Edit,
   LayoutDashboard,
   Loader2,
   Search,
@@ -55,7 +55,7 @@ import { signOut } from '@/firebase/auth/actions';
 const baseMenuItems = [
   { href: '/account/purchases', label: 'Pembelian Saya', icon: ShoppingBag },
   { href: '/account/settings', label: 'Pengaturan Akun', icon: Settings },
-  { href: '/account/appearance', label: 'Tampilan Profil', icon: Palette },
+  { href: '/account/appearance', label: 'Tampilan Profil', icon: Edit },
 ];
 
 const creatorMenuItems = [
