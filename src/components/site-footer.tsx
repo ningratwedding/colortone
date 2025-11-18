@@ -18,7 +18,15 @@ export function SiteFooter() {
                 </div>
                 <div className="text-center text-sm text-muted-foreground mt-2">
                     <p>
-                        &copy; {new Date().getFullYear()} {siteConfig.name}.
+                        &copy; {new Date().getFullYear()} {siteConfig.name}. Dibuat oleh{' '}
+                        <a
+                            href="https://dimas-sujatmiko.vercel.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium underline underline-offset-4 hover:text-primary"
+                        >
+                            Dimas
+                        </a>.
                     </p>
                 </div>
             </div>
