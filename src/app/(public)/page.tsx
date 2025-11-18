@@ -142,9 +142,6 @@ export default function Home() {
                 </Button>
                 </div>
             </form>
-            <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto h-12 rounded-full flex-shrink-0">
-                <Link href="/products">Lihat Produk</Link>
-            </Button>
           </div>
         </div>
         <div className="absolute -bottom-1 left-0 w-full h-16 bg-background" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }} />
