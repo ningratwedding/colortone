@@ -4,6 +4,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { FirebaseProvider } from './provider';
 import { initializeFirebase, type FirebaseServices } from './index';
+import { FirebaseErrorListener } from './FirebaseErrorListener';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -33,5 +34,10 @@ export function FirebaseClientProvider({
   }
 
   // Once initialized, provide the services to the rest of the app
-  return <FirebaseProvider value={services}>{children}</FirebaseProvider>;
+  return (
+    <FirebaseProvider value={services}>
+      {children}
+      <FirebaseErrorListener />
+    </FirebaseProvider>
+  );
 }

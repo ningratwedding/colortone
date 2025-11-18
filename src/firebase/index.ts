@@ -8,13 +8,13 @@ import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
-// Re-export the provider hooks
+// Re-export the provider and hooks
 export * from './provider';
-
-// Re-export the new hooks
+export * from './client-provider';
 export * from './auth/use-user';
 export * from './firestore/use-doc';
 export * from './firestore/use-collection';
+
 
 // Type definition for the initialized Firebase services
 export interface FirebaseServices {
