@@ -1,37 +1,21 @@
 
 
-"use client"
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import {
-  BarChart,
   Home,
   Package,
   Settings,
   ShoppingCart,
-  Users,
-  SlidersHorizontal,
   Search,
-  LayoutGrid,
+  Loader2,
+  Star,
   Bell,
-  Laptop,
-  Megaphone,
-  CreditCard,
   LogOut,
-  Loader2
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -43,8 +27,18 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarFooter,
-  SidebarSeparator,
+  SidebarSeparator
 } from "@/components/ui/sidebar";
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { useUser } from "@/firebase/auth/use-user";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { doc } from "firebase/firestore";
@@ -53,26 +47,21 @@ import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
-import { siteConfig } from "@/lib/config";
-import { Card } from "@/components/ui/card";
-import { signOut } from "@/firebase/auth/actions";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { siteConfig } from '@/lib/config';
+import { signOut } from '@/firebase/auth/actions';
 
 const menuItems = [
-  { href: "/admin", label: "Ringkasan", icon: Home, exact: true },
-  { href: "/admin/campaigns", label: "Kampanye", icon: Megaphone },
-  { href: "/admin/products", label: "Produk", icon: Package },
-  { href: "/admin/categories", label: "Kategori", icon: LayoutGrid },
-  { href: "/admin/software", label: "Software", icon: Laptop },
-  { href: "/admin/users", label: "Pengguna", icon: Users },
-  { href: "/admin/orders", label: "Pesanan", icon: ShoppingCart },
-  { href: "/admin/billing", label: "Penagihan", icon: CreditCard },
-  { href: "/admin/analytics", label: "Analitik", icon: BarChart },
+  { href: '/seller/dashboard', label: 'Ringkasan', icon: Home, exact: true },
+  { href: '/seller/products', label: 'Produk', icon: Package },
+  { href: '/seller/orders', label: 'Pesanan', icon: ShoppingCart },
 ];
 
-const settingsItem = { href: "/admin/settings", label: "Pengaturan Aplikasi", icon: Settings };
+const settingsItem = { href: '/seller/settings', label: 'Pengaturan Toko', icon: Settings };
 
-export default function AdminDashboardLayout({
+export default function SellerDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -80,33 +69,30 @@ export default function AdminDashboardLayout({
   const pathname = usePathname();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
+  const router = useRouter();
+  const [isRequestingPro, setIsRequestingPro] = React.useState(false);
 
   const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
-
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   React.useEffect(() => {
     if (!userLoading && !user) {
-      // If user is not logged in, redirect to login
-      router.replace(`/login?redirect=/admin`);
-    } else if (!profileLoading && userProfile && userProfile.role !== 'admin') {
-      // If user is not an admin, redirect to home
+      router.replace(`/login?redirect=/seller/dashboard`);
+    } else if (!profileLoading && userProfile && userProfile.role !== 'seller') {
       toast({
         variant: "destructive",
         title: "Akses Ditolak",
-        description: "Anda tidak memiliki izin untuk mengakses halaman admin.",
+        description: "Anda harus menjadi penjual untuk mengakses dasbor ini.",
       });
-      router.replace('/');
+      router.replace('/account');
     }
   }, [user, userLoading, userProfile, profileLoading, router, toast]);
 
   const allMenuItems = [...menuItems, settingsItem];
-  
   const getPageTitle = () => {
     for (const item of [...allMenuItems].reverse()) {
       if (item.exact) {
@@ -115,13 +101,25 @@ export default function AdminDashboardLayout({
         if (pathname.startsWith(item.href)) return item.label;
       }
     }
-    return "Dasbor Admin";
+    return "Dasbor Penjual";
   };
   const pageTitle = getPageTitle();
-
+  
   const getInitials = (name?: string | null) => {
-    if (!name) return 'A';
+    if (!name) return 'P';
     return name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+  
+  const handleRequestPro = () => {
+    setIsRequestingPro(true);
+    setTimeout(() => {
+        toast({
+            title: "Permintaan Terkirim!",
+            description: "Tim kami akan segera menghubungi Anda melalui email untuk proses selanjutnya. Terima kasih!",
+            duration: 8000,
+        });
+        setIsRequestingPro(false);
+    }, 1000);
   };
   
   const handleSignOut = async () => {
@@ -133,7 +131,7 @@ export default function AdminDashboardLayout({
 
   const loading = userLoading || (user && profileLoading);
 
-  if (loading || (user && userProfile?.role !== 'admin')) {
+  if (loading || (user && userProfile?.role !== 'seller')) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -145,17 +143,17 @@ export default function AdminDashboardLayout({
     <SidebarProvider>
         <Sidebar collapsible="icon" variant="sidebar" side="left" className="rounded-r-2xl">
           <SidebarHeader>
-             <div className="flex items-center justify-between">
-                <Link href="/" className="flex items-center space-x-2 text-sidebar-foreground">
-                  <Logo />
-                  <span className="font-bold group-data-[collapsible=icon]:hidden">
-                    {siteConfig.name}
-                  </span>
-                </Link>
-             </div>
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2 text-sidebar-foreground">
+                <Logo />
+                <span className="font-bold group-data-[collapsible=icon]:hidden">
+                  {siteConfig.name}
+                </span>
+              </Link>
+            </div>
           </SidebarHeader>
           <SidebarContent className="p-2">
-            <div className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
+             <div className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
                 <div className="flex items-center gap-2">
                     <div className="relative flex-grow">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -188,7 +186,32 @@ export default function AdminDashboardLayout({
               ))}
             </SidebarMenu>
           </SidebarContent>
-           <SidebarFooter>
+          <SidebarFooter>
+              {profileLoading ? null : (
+                  userProfile?.plan === 'free' && (
+                    <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
+                        <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-white/10 text-primary-foreground backdrop-blur-lg border-white/20">
+                        <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                            <div className="mb-2 group-data-[collapsible=icon]:hidden">
+                                <h3 className="text-sm font-semibold">Upgrade ke Pro</h3>
+                                <p className="text-xs text-primary-foreground/80">Akses semua fitur premium.</p>
+                            </div>
+                            <Button
+                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-white/20 group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:hover:bg-white/30"
+                            size="sm"
+                            onClick={handleRequestPro}
+                            disabled={isRequestingPro}
+                            >
+                            <span className="group-data-[collapsible=icon]:hidden">
+                                {isRequestingPro ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Meminta...</> : "Dapatkan Fitur Pro"}
+                            </span>
+                            <Star className="hidden group-data-[collapsible=icon]:block h-4 w-4" />
+                            </Button>
+                        </CardContent>
+                        </Card>
+                    </div>
+                  )
+              )}
               <SidebarSeparator />
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -208,7 +231,7 @@ export default function AdminDashboardLayout({
                 <div className="p-2">
                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                             <Button
+                            <Button
                                 variant="ghost"
                                 className="w-full justify-start group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 hover:bg-white/10"
                             >
@@ -216,30 +239,30 @@ export default function AdminDashboardLayout({
                                 <Skeleton className="h-8 w-8 rounded-full" />
                                 ) : (
                                 <Avatar className="h-8 w-8">
-                                    <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Admin Avatar'} />
+                                    <AvatarImage src={userProfile?.avatarUrl} alt={userProfile?.name || 'Seller Avatar'} />
                                     <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
                                 </Avatar>
                                 )}
                                  <div className="ml-2 text-left group-data-[collapsible=icon]:hidden">
-                                    <p className="text-sm font-medium leading-none">{userProfile?.name || 'Admin'}</p>
+                                    <p className="text-sm font-medium leading-none">{userProfile?.name || 'Penjual'}</p>
                                     <p className="text-xs text-sidebar-foreground/70">{userProfile?.role}</p>
                                  </div>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="mb-2">
-                            <DropdownMenuLabel>{userProfile?.name || 'Admin'}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <Link href="/admin/settings">Pengaturan</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/">Lihat Situs</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleSignOut}>
-                              <LogOut className="mr-2 h-4 w-4" />
-                              Keluar
-                            </DropdownMenuItem>
+                        <DropdownMenuLabel>{userProfile?.name || 'Akun Saya'}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/seller/settings">Pengaturan Toko</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/">Lihat Situs</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleSignOut}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Keluar
+                        </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -247,13 +270,18 @@ export default function AdminDashboardLayout({
         </Sidebar>
 
         <SidebarInset>
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-gradient-to-r from-primary to-[hsl(210,90%,55%)] px-2 text-primary-foreground md:bg-muted md:text-muted-foreground sm:px-6">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-gradient-to-r from-primary to-[hsl(240,60%,55%)] px-4 text-primary-foreground md:bg-muted md:text-muted-foreground sm:px-6">
              <SidebarTrigger className="flex text-primary-foreground hover:bg-white/10 md:text-foreground md:hover:bg-accent" />
             <div className="flex-1">
               <h1 className="hidden text-lg font-semibold md:block">{pageTitle}</h1>
             </div>
+            <div className="relative ml-auto flex items-center gap-2">
+              <Button asChild>
+                <Link href="/account/appearance">Pengaturan Profil</Link>
+              </Button>
+            </div>
           </header>
-          <main className="flex-1 overflow-auto p-2 md:p-4">{children}</main>
+          <main className="flex-1 overflow-auto p-4">{children}</main>
         </SidebarInset>
     </SidebarProvider>
   );

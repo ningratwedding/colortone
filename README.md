@@ -26,7 +26,7 @@ Aplikasi ini dibangun menggunakan tumpukan teknologi modern dan terukur:
 ### 1. Sistem Pengguna dengan Berbagai Peran
 Aplikasi ini mendukung beberapa peran pengguna, masing-masing dengan dasbor dan kemampuannya sendiri:
 - **Pembeli**: Pelanggan yang membeli produk.
-- **Penjual (Kreator)**: Pelaku UMKM yang dapat mengunggah dan menjual produk mereka sendiri.
+- **Penjual (Seller)**: Pelaku UMKM yang dapat mengunggah dan menjual produk mereka sendiri.
 - **Reseller (Affiliator)**: Pengguna yang dapat mempromosikan produk penjual lain dan mendapatkan komisi.
 - **Admin**: Pengguna dengan akses penuh untuk mengelola platform.
 
@@ -68,7 +68,7 @@ Berikut adalah gambaran umum dari direktori dan file penting:
   - **`/(public)`**: Rute yang dapat diakses publik (halaman utama, detail produk, dll.).
   - **`/(auth)`**: Rute untuk otentikasi (login, signup).
   - **`/admin`**: Rute dan tata letak untuk Dasbor Admin.
-  - **`/creator`**: Rute dan tata letak untuk Dasbor Penjual (Kreator).
+  - **`/seller`**: Rute dan tata letak untuk Dasbor Penjual.
   - **`/account`**: Rute dan tata letak untuk dasbor pengguna umum (pengaturan, pembelian).
   - **`/[slug]`**: Halaman profil publik dinamis untuk setiap pengguna.
 

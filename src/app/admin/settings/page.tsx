@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export default function AdminSettingsPage() {
     const [appName, setAppName] = useState('');
     const [supportEmail, setSupportEmail] = useState('');
     const [commissionRate, setCommissionRate] = useState<number | string>('');
-    const [notifNewCreator, setNotifNewCreator] = useState(true);
+    const [notifNewSeller, setNotifNewSeller] = useState(true);
     const [notifNewProduct, setNotifNewProduct] = useState(true);
     const [isSavingGeneral, setIsSavingGeneral] = useState(false);
     const [isSavingPrefs, setIsSavingPrefs] = useState(false);
@@ -45,7 +46,7 @@ export default function AdminSettingsPage() {
             setAppName(settings.appName || '');
             setSupportEmail(settings.supportEmail || '');
             setCommissionRate(settings.affiliateCommissionRate ? settings.affiliateCommissionRate * 100 : '');
-            setNotifNewCreator(settings.notifications?.newCreator ?? true);
+            setNotifNewSeller(settings.notifications?.newSeller ?? true);
             setNotifNewProduct(settings.notifications?.newProduct ?? true);
         }
     }, [settings]);
@@ -81,7 +82,7 @@ export default function AdminSettingsPage() {
         try {
             await setDoc(settingsRef, {
                 notifications: {
-                    newCreator: notifNewCreator,
+                    newSeller: notifNewSeller,
                     newProduct: notifNewProduct
                 }
             }, { merge: true });
@@ -136,10 +137,10 @@ export default function AdminSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
                 <div className="flex items-start space-x-2">
-                    <Checkbox id="email-new-creator" checked={notifNewCreator} onCheckedChange={(checked) => setNotifNewCreator(Boolean(checked))} />
+                    <Checkbox id="email-new-seller" checked={notifNewSeller} onCheckedChange={(checked) => setNotifNewSeller(Boolean(checked))} />
                     <div className="grid gap-1 leading-none">
-                        <label htmlFor="email-new-creator" className="text-sm font-medium">Kreator Baru Bergabung</label>
-                        <p className="text-xs text-muted-foreground">Dapatkan email saat kreator baru mendaftar.</p>
+                        <label htmlFor="email-new-seller" className="text-sm font-medium">Penjual Baru Bergabung</label>
+                        <p className="text-xs text-muted-foreground">Dapatkan email saat penjual baru mendaftar.</p>
                     </div>
                 </div>
                  <div className="flex items-start space-x-2">

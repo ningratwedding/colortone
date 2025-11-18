@@ -170,7 +170,7 @@
         },
         "role": {
           "type": "string",
-          "enum": ["pembeli", "kreator", "admin", "affiliator"],
+          "enum": ["pembeli", "seller", "admin", "affiliator"],
           "description": "Defines the user's role and permissions within the application."
         },
         "plan": {
@@ -459,7 +459,7 @@
         "notifications": {
           "type": "object",
           "properties": {
-            "newCreator": { "type": "boolean" },
+            "newSeller": { "type": "boolean" },
             "newProduct": { "type": "boolean" }
           }
         }

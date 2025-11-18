@@ -17,8 +17,8 @@ service firebase.storage {
       return isRole('admin');
     }
 
-    function isCreator() {
-      return isRole('kreator');
+    function isSeller() {
+      return isRole('seller');
     }
 
     // Aturan untuk file avatar:
@@ -41,17 +41,17 @@ service firebase.storage {
 
     // Aturan untuk gambar produk:
     // Baca: Izinkan akses publik untuk semua gambar produk.
-    // Tulis: Izinkan hanya jika pengguna adalah kreator atau admin.
+    // Tulis: Izinkan hanya jika pengguna adalah penjual atau admin.
     match /product_images/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if isCreator() || isAdmin();
+      allow write: if isSeller() || isAdmin();
     }
 
     // Aturan untuk file produk yang dapat diunduh:
-    // Baca & Tulis: Hanya izinkan kreator atau admin.
+    // Baca & Tulis: Hanya izinkan penjual atau admin.
     // Aturan yang lebih ketat (misalnya, hanya pembeli) akan dikelola oleh logika aplikasi melalui URL berjangka waktu.
     match /product_files/{userId}/{allPaths=**} {
-      allow read, write: if (isCreator() && isOwner(userId)) || isAdmin();
+      allow read, write: if (isSeller() && isOwner(userId)) || isAdmin();
     }
 
     // Aturan untuk ikon perangkat lunak:

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -110,7 +111,7 @@ export default function AdminProductsPage() {
                   <span className="sr-only">Gambar</span>
                 </TableHead>
                 <TableHead>Nama Produk</TableHead>
-                <TableHead>Kreator</TableHead>
+                <TableHead>Penjual</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Harga</TableHead>
                 <TableHead>Total Penjualan</TableHead>

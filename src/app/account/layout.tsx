@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -58,8 +59,8 @@ const baseMenuItems = [
   { href: '/account/appearance', label: 'Tampilan Profil', icon: Edit },
 ];
 
-const creatorMenuItems = [
-  { href: '/creator/dashboard', label: 'Dasbor Kreator', icon: LayoutDashboard },
+const sellerMenuItems = [
+  { href: '/seller/dashboard', label: 'Dasbor Penjual', icon: LayoutDashboard },
 ];
 
 const affiliateMenuItems = [
@@ -87,8 +88,8 @@ export default function AccountLayout({
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   let menuItems = [...baseMenuItems];
-  if (userProfile?.role === 'kreator') {
-    menuItems.push(...creatorMenuItems);
+  if (userProfile?.role === 'seller') {
+    menuItems.push(...sellerMenuItems);
   }
   if (userProfile?.role === 'affiliator') {
     menuItems.push(...affiliateMenuItems);
@@ -180,13 +181,13 @@ export default function AccountLayout({
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {userProfile?.role === 'kreator' && (
+            {userProfile?.role === 'seller' && (
               <>
                 <SidebarSeparator className="my-2" />
                 <h2 className="px-2 py-1 text-xs font-semibold text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
-                  Kreator
+                  Penjual
                 </h2>
-                {creatorMenuItems.map(({ href, label, icon: Icon, exact }) => (
+                {sellerMenuItems.map(({ href, label, icon: Icon, exact }) => (
                   <SidebarMenuItem key={href}>
                     <SidebarMenuButton asChild isActive={isLinkActive(href, exact)} tooltip={label}>
                       <Link href={href}>

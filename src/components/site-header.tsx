@@ -122,11 +122,11 @@ export function SiteHeader() {
                     </Link>
                   </DropdownMenuItem>
                 )}
-                {userProfile.role === 'kreator' && (
+                {userProfile.role === 'seller' && (
                   <DropdownMenuItem asChild>
-                    <Link href="/creator/dashboard">
+                    <Link href="/seller/dashboard">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Dasbor Kreator</span>
+                      <span>Dasbor Penjual</span>
                     </Link>
                   </DropdownMenuItem>
                 )}

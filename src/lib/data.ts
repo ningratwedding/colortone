@@ -67,7 +67,7 @@ export type UserProfile = {
     activeColor?: string;
     activeBackgroundColor?: string;
   };
-  role: 'pembeli' | 'kreator' | 'admin' | 'affiliator';
+  role: 'pembeli' | 'seller' | 'admin' | 'affiliator';
   plan: 'free' | 'pro';
   planExpiryDate?: Timestamp | { seconds: number; nanoseconds: number; };
   featuredProductIds?: string[];
@@ -150,7 +150,7 @@ export type PlatformSettings = {
     supportEmail: string;
     affiliateCommissionRate?: number;
     notifications: {
-        newCreator: boolean;
+        newSeller: boolean;
         newProduct: boolean;
     }
 }

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -36,7 +37,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
 
-type CreatorStat = {
+type SellerStat = {
   id: string;
   name: string;
   avatarUrl?: string;
@@ -57,7 +58,7 @@ export default function AnalyticsPage() {
   });
 
   const [monthlyRevenueData, setMonthlyRevenueData] = useState<{ month: string; revenue: number }[]>([]);
-  const [creatorStats, setCreatorStats] = useState<CreatorStat[]>([]);
+  const [sellerStats, setSellerStats] = useState<SellerStat[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,27 +105,27 @@ export default function AnalyticsPage() {
         });
         setMonthlyRevenueData(revenueByMonth);
 
-        // Creator-specific stats
-        const creators = allUsers.filter(user => user.role === 'kreator');
-        const calculatedCreatorStats = creators.map(creator => {
-          const creatorProducts = allProducts.filter(p => p.creatorId === creator.id);
-          const creatorOrders = allOrders.filter(o => o.creatorId === creator.id);
+        // Seller-specific stats
+        const sellers = allUsers.filter(user => user.role === 'seller');
+        const calculatedSellerStats = sellers.map(seller => {
+          const sellerProducts = allProducts.filter(p => p.creatorId === seller.id);
+          const sellerOrders = allOrders.filter(o => o.creatorId === seller.id);
 
-          const productCount = creatorProducts.length;
-          const sales = creatorOrders.length;
-          const revenue = creatorOrders.reduce((acc, order) => acc + order.amount, 0);
+          const productCount = sellerProducts.length;
+          const sales = sellerOrders.length;
+          const revenue = sellerOrders.reduce((acc, order) => acc + order.amount, 0);
           
           return {
-            id: creator.id,
-            name: creator.name,
-            avatarUrl: creator.avatarUrl,
-            avatarHint: creator.avatarHint,
+            id: seller.id,
+            name: seller.name,
+            avatarUrl: seller.avatarUrl,
+            avatarHint: seller.avatarHint,
             productCount: productCount,
             totalSales: sales,
             totalRevenue: revenue,
           };
         }).sort((a,b) => b.totalRevenue - a.totalRevenue); // Sort by revenue descending
-        setCreatorStats(calculatedCreatorStats);
+        setSellerStats(calculatedSellerStats);
 
       } catch (error) {
         console.error("Error fetching platform analytics:", error);
@@ -229,16 +230,16 @@ export default function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Papan Peringkat Kreator</CardTitle>
+          <CardTitle>Papan Peringkat Penjual</CardTitle>
           <CardDescription>
-            Kinerja penjualan untuk setiap kreator di platform.
+            Kinerja penjualan untuk setiap penjual di platform.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Kreator</TableHead>
+                <TableHead>Penjual</TableHead>
                 <TableHead className="text-center">Jumlah Produk</TableHead>
                 <TableHead className="text-right">Total Penjualan</TableHead>
                 <TableHead className="text-right">Total Pendapatan</TableHead>
@@ -254,27 +255,27 @@ export default function AnalyticsPage() {
                     <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : creatorStats.length > 0 ? (
-                creatorStats.map((creator) => (
-                  <TableRow key={creator.id}>
+              ) : sellerStats.length > 0 ? (
+                sellerStats.map((seller) => (
+                  <TableRow key={seller.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={creator.avatarUrl} data-ai-hint={creator.avatarHint} />
-                          <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                          <AvatarImage src={seller.avatarUrl} data-ai-hint={seller.avatarHint} />
+                          <AvatarFallback>{seller.name.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">{creator.name}</span>
+                        <span className="font-medium">{seller.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">{creator.productCount}</TableCell>
-                    <TableCell className="text-right">{creator.totalSales.toLocaleString('id-ID')}</TableCell>
-                    <TableCell className="text-right font-semibold">{formatCurrency(creator.totalRevenue)}</TableCell>
+                    <TableCell className="text-center">{seller.productCount}</TableCell>
+                    <TableCell className="text-right">{seller.totalSales.toLocaleString('id-ID')}</TableCell>
+                    <TableCell className="text-right font-semibold">{formatCurrency(seller.totalRevenue)}</TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                    Belum ada data kreator untuk ditampilkan.
+                    Belum ada data penjual untuk ditampilkan.
                   </TableCell>
                 </TableRow>
               )}

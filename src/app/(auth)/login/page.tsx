@@ -73,8 +73,8 @@ export default function LoginPage() {
       case 'admin':
         router.push('/admin');
         break;
-      case 'kreator':
-        router.push('/creator/dashboard');
+      case 'seller':
+        router.push('/seller/dashboard');
         break;
       case 'affiliator':
         router.push('/account/affiliate');

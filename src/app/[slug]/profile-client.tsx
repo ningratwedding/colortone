@@ -69,7 +69,7 @@ const socialIcons = {
 
 type SocialPlatform = keyof typeof socialIcons;
 
-function CreatorProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
+function SellerProfileView({ user, products, loading }: { user: UserProfile; products?: Product[] | null; loading: boolean }) {
   const displayName = user.fullName || user.name;
   const columns = user.productCardSettings?.columns || 2;
   return (
@@ -243,7 +243,7 @@ export function ProfileContent({ slug }: { slug: string }) {
   const productsQuery = useMemo(() => {
     if (!firestore || !profileUser) return null;
     
-    if (profileUser.role === 'kreator') {
+    if (profileUser.role === 'seller') {
         return query(collection(firestore, "products"), where('creatorId', '==', profileUser.id));
     }
     
@@ -475,11 +475,11 @@ export function ProfileContent({ slug }: { slug: string }) {
           </div>
         </header>
         
-        { (profileUser.role === 'kreator' || profileUser.role === 'affiliator') && <Separator className="mb-3" /> }
+        { (profileUser.role === 'seller' || profileUser.role === 'affiliator') && <Separator className="mb-3" /> }
 
 
         <main>
-          {profileUser.role === 'kreator' && <CreatorProfileView user={profileUser} products={products} loading={productsLoading} />}
+          {profileUser.role === 'seller' && <SellerProfileView user={profileUser} products={products} loading={productsLoading} />}
           {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} loading={productsLoading} />}
           {profileUser.role === 'pembeli' && (!profileUser.bio && (!Array.isArray(profileUser.socials) || profileUser.socials.length === 0)) && (
             <div className="text-center py-12 text-muted-foreground">

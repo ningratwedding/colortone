@@ -347,7 +347,7 @@ export default function AccountSettingsPage() {
                     <CardDescription>
                         {userProfile.role === 'affiliator' 
                             ? 'Anda sekarang adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
-                            : 'Dapatkan penghasilan dengan membagikan produk dari kreator favorit Anda.'}
+                            : 'Dapatkan penghasilan dengan membagikan produk dari penjual favorit Anda.'}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

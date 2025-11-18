@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -17,8 +18,8 @@ interface SellerCardProps {
 export function SellerCard({ seller, className }: SellerCardProps) {
     const getRoleBadge = (role: UserProfile['role']) => {
         switch (role) {
-            case 'kreator':
-                return <Badge variant="secondary">Kreator</Badge>;
+            case 'seller':
+                return <Badge variant="secondary">Penjual</Badge>;
             case 'affiliator':
                 return <Badge variant="outline">Afiliator</Badge>;
             default:

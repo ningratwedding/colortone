@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
@@ -45,19 +46,19 @@ import { useFirestore } from "@/firebase/provider";
 import type { UserProfile } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function AdminCreatorsPage() {
+export default function AdminSellersPage() {
   const firestore = useFirestore();
-  const creatorsQuery = query(collection(firestore, "users"), where("role", "==", "kreator"));
-  const { data: allCreators, loading } = useCollection<UserProfile>(creatorsQuery);
+  const sellersQuery = query(collection(firestore, "users"), where("role", "==", "seller"));
+  const { data: allSellers, loading } = useCollection<UserProfile>(sellersQuery);
   
-  const [selectedCreator, setSelectedCreator] = useState<UserProfile | null>(null);
+  const [selectedSeller, setSelectedSeller] = useState<UserProfile | null>(null);
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
 
   // Note: Product counts and revenues would require more complex queries or data duplication.
   // For this refactoring, we will show placeholders or 'N/A' for these fields.
 
-  const handleDeactivateClick = (creator: UserProfile) => {
-    setSelectedCreator(creator);
+  const handleDeactivateClick = (seller: UserProfile) => {
+    setSelectedSeller(seller);
     setIsDeactivateDialogOpen(true);
   }
 
@@ -65,9 +66,9 @@ export default function AdminCreatorsPage() {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Manajemen Kreator</CardTitle>
+          <CardTitle>Manajemen Penjual</CardTitle>
           <CardDescription>
-            Lihat dan kelola semua kreator di platform.
+            Lihat dan kelola semua penjual di platform.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,7 +78,7 @@ export default function AdminCreatorsPage() {
                 <TableHead className="hidden w-[80px] sm:table-cell">
                   <span className="sr-only">Avatar</span>
                 </TableHead>
-                <TableHead>Nama Kreator</TableHead>
+                <TableHead>Nama Penjual</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Jumlah Produk</TableHead>
                 <TableHead>Pendapatan</TableHead>
@@ -97,15 +98,15 @@ export default function AdminCreatorsPage() {
                   <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                 </TableRow>
               ))}
-              {!loading && allCreators && allCreators.map((creator) => (
-                <TableRow key={creator.id}>
+              {!loading && allSellers && allSellers.map((seller) => (
+                <TableRow key={seller.id}>
                   <TableCell className="hidden sm:table-cell">
                      <Avatar>
-                        <AvatarImage src={creator.avatarUrl} data-ai-hint={creator.avatarHint} />
-                        <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={seller.avatarUrl} data-ai-hint={seller.avatarHint} />
+                        <AvatarFallback>{seller.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell className="font-medium">{creator.name}</TableCell>
+                  <TableCell className="font-medium">{seller.name}</TableCell>
                    <TableCell>
                     <Badge variant="outline">Aktif</Badge>
                   </TableCell>
@@ -130,9 +131,9 @@ export default function AdminCreatorsPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
                         <DropdownMenuItem asChild>
-                            <Link href={`/${creator.slug}`}>Lihat Profil</Link>
+                            <Link href={`/${seller.slug}`}>Lihat Profil</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => handleDeactivateClick(creator)}>Nonaktifkan Kreator</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleDeactivateClick(seller)}>Nonaktifkan Penjual</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -140,9 +141,9 @@ export default function AdminCreatorsPage() {
               ))}
             </TableBody>
           </Table>
-           {!loading && (!allCreators || allCreators.length === 0) && (
+           {!loading && (!allSellers || allSellers.length === 0) && (
               <div className="text-center p-8 text-muted-foreground">
-                  Tidak ada kreator yang ditemukan.
+                  Tidak ada penjual yang ditemukan.
               </div>
            )}
         </CardContent>
@@ -153,7 +154,7 @@ export default function AdminCreatorsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Apakah Anda benar-benar yakin?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tindakan ini akan menonaktifkan kreator <span className="font-semibold">{selectedCreator?.name}</span>. Mereka tidak akan dapat mengakses dasbor kreator mereka.
+              Tindakan ini akan menonaktifkan penjual <span className="font-semibold">{selectedSeller?.name}</span>. Mereka tidak akan dapat mengakses dasbor penjual mereka.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

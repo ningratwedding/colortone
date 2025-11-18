@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
 
     const { data: userList, loading } = useCollection<UserProfile>(usersQuery);
 
-    const handleRoleChange = async (userId: string, newRole: 'kreator' | 'pembeli' | 'affiliator') => {
+    const handleRoleChange = async (userId: string, newRole: 'seller' | 'pembeli' | 'affiliator') => {
         if (!firestore) return;
         const userDocRef = doc(firestore, 'users', userId);
         try {
@@ -101,14 +101,14 @@ export default function AdminUsersPage() {
 
     const getRoleBadge = (role: UserProfile['role']) => {
         switch (role) {
-        case 'kreator':
-            return <Badge variant="secondary">Kreator</Badge>;
+        case 'seller':
+            return <Badge variant="secondary">Penjual</Badge>;
         case 'pembeli':
             return <Badge variant="outline">Pembeli</Badge>;
         case 'admin':
             return <Badge>Admin</Badge>;
         case 'affiliator':
-            return <Badge variant="destructive">Affiliator</Badge>;
+            return <Badge variant="destructive">Afiliator</Badge>;
         default:
             return <Badge variant="outline">{String(role)}</Badge>;
         }
@@ -250,10 +250,10 @@ export default function AdminUsersPage() {
                                 Jadikan Pembeli
                             </DropdownMenuItem>
                         )}
-                        {user.role !== 'kreator' && (
-                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'kreator')}>
+                        {user.role !== 'seller' && (
+                            <DropdownMenuItem onSelect={() => handleRoleChange(user.id, 'seller')}>
                                 <UserPlus className="mr-2 h-4 w-4" />
-                                Jadikan Kreator
+                                Jadikan Penjual
                             </DropdownMenuItem>
                         )}
                         {user.role !== 'affiliator' && (
@@ -263,9 +263,9 @@ export default function AdminUsersPage() {
                             </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
-                        {user.role === 'kreator' && (
+                        {user.role === 'seller' && (
                             <DropdownMenuItem asChild>
-                                <Link href={`/creator/${user.slug}`}>Lihat Profil Kreator</Link>
+                                <Link href={`/seller/${user.slug}`}>Lihat Profil Penjual</Link>
                             </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
