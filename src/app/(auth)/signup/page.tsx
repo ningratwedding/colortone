@@ -150,7 +150,7 @@ export default function SignupPage() {
         <CardHeader className="text-center">
            <div className="flex justify-center mb-4">
             <Link href="/">
-              <Logo />
+              <Logo className="text-primary" />
             </Link>
           </div>
           <CardTitle className="text-2xl">Mulai Kisah Anda</CardTitle>
@@ -260,5 +260,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
