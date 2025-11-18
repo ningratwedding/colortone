@@ -462,6 +462,15 @@
             "newSeller": { "type": "boolean" },
             "newProduct": { "type": "boolean" }
           }
+        },
+        "ogImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL for the default Open Graph image."
+        },
+        "ogImageHint": {
+            "type": "string",
+            "description": "AI hint for the OG image."
         }
       }
     }

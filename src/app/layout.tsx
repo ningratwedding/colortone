@@ -4,39 +4,63 @@ import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/lib/config";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { FirebaseErrorListener } from "@/firebase/FirebaseErrorListener";
+import { initializeServerSideFirebase } from "@/firebase/server-init";
+import { doc, getDoc } from "firebase/firestore";
+import type { PlatformSettings } from "@/lib/data";
 
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  openGraph: {
-    title: siteConfig.name,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
-      },
-    ],
-    locale: 'id_ID',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
-  },
-  icons: {
-    icon: '/favicon.ico',
+
+// This function generates metadata on the server.
+export async function generateMetadata(): Promise<Metadata> {
+  const { firestore } = initializeServerSideFirebase();
+  const settingsRef = doc(firestore, 'platform_settings', 'main');
+  
+  let settings: PlatformSettings | null = null;
+  try {
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      settings = settingsSnap.data() as PlatformSettings;
+    }
+  } catch (error) {
+    console.error("Could not fetch platform settings for metadata:", error);
   }
-};
+
+  const appName = settings?.appName || siteConfig.name;
+  const ogImage = settings?.ogImageUrl || siteConfig.ogImage;
+  
+  return {
+    title: {
+      default: appName,
+      template: `%s | ${appName}`,
+    },
+    description: siteConfig.description,
+    openGraph: {
+      title: appName,
+      description: siteConfig.description,
+      url: siteConfig.url,
+      siteName: appName,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: appName,
+        },
+      ],
+      locale: 'id_ID',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: appName,
+      description: siteConfig.description,
+      images: [ogImage],
+    },
+    icons: {
+      icon: '/favicon.ico',
+    }
+  };
+}
+
 
 export default function RootLayout({
   children,

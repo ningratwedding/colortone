@@ -69,6 +69,14 @@ service firebase.storage {
         allow read: if true;
         allow write: if isAdmin();
     }
+    
+    // Aturan untuk aset platform (seperti gambar OG):
+    // Baca: Izinkan akses publik.
+    // Tulis: Hanya izinkan admin.
+    match /platform_assets/{userId}/{allPaths=**} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
 
     // Aturan default yang lebih ketat untuk path lain yang tidak cocok.
     // Menolak semua akses baca dan tulis secara default.
