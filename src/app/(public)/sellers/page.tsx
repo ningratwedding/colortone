@@ -11,6 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SellerCard } from '@/components/seller-card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Users } from 'lucide-react';
+import type { Metadata } from 'next';
+
+// This is a client component, so we can't export metadata directly.
+// We'll rely on the default metadata from the layout, which is sufficient for this page.
 
 export default function SellersPage() {
   const firestore = useFirestore();

@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+// Metadata cannot be exported from a client component.
+// We'll rely on the root layout's metadata for this page.
 
 // Inline SVG for Apple Icon
 const AppleIcon = (props: React.SVGProps<SVGSVGElement>) => (

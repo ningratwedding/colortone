@@ -2,6 +2,13 @@ import { Handshake, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { siteConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tentang Kami',
+  description: `Pelajari lebih lanjut tentang misi dan visi ${siteConfig.name} untuk memberdayakan UMKM di seluruh Indonesia.`,
+};
+
 
 export default function AboutPage() {
     const vision =

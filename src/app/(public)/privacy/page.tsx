@@ -1,5 +1,11 @@
 
 import { siteConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Kebijakan Privasi',
+  description: `Pahami bagaimana ${siteConfig.name} mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.`,
+};
 
 export default function PrivacyPolicyPage() {
   return (
