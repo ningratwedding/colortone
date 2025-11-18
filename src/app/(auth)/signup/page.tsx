@@ -171,9 +171,8 @@ export default function SignupPage() {
                 name="profileName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nama Toko / Brand Anda</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nama publik Anda" {...field} disabled={form.formState.isSubmitting} />
+                      <Input placeholder="Nama Toko / Brand Anda" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -184,11 +183,10 @@ export default function SignupPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="Alamat Email"
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -202,11 +200,11 @@ export default function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Kata Sandi</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
                           type={showPassword ? 'text' : 'password'}
+                          placeholder="Kata Sandi"
                           {...field}
                           disabled={form.formState.isSubmitting}
                           className="pr-10"
@@ -237,10 +235,10 @@ export default function SignupPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Konfirmasi Kata Sandi</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
+                        placeholder="Konfirmasi Kata Sandi"
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />

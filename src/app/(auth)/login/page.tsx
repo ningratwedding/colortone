@@ -188,10 +188,9 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="m@example.com"
+                        placeholder="Alamat Email"
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -205,19 +204,11 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center">
-                      <FormLabel>Kata Sandi</FormLabel>
-                       <Link
-                          href="/forgot-password"
-                          className="ml-auto inline-block text-sm underline"
-                        >
-                          Lupa kata sandi Anda?
-                        </Link>
-                    </div>
                     <div className="relative">
                       <FormControl>
                         <Input
                           type={showPassword ? 'text' : 'password'}
+                          placeholder="Kata Sandi"
                           {...field}
                           disabled={form.formState.isSubmitting}
                           className="pr-10"
@@ -243,6 +234,14 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+               <div className="flex items-center">
+                  <Link
+                      href="/forgot-password"
+                      className="ml-auto inline-block text-sm underline"
+                    >
+                      Lupa kata sandi Anda?
+                    </Link>
+                </div>
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                  {form.formState.isSubmitting ? "Memproses..." : "Masuk"}
               </Button>
