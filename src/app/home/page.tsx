@@ -98,30 +98,6 @@ export default function Home() {
     },
   ];
 
-  const testimonials = [
-    {
-        quote: "Platform ini sangat intuitif! Dalam beberapa menit, profil saya sudah aktif dan produk pertama saya siap dijual. Fitur kustomisasinya luar biasa.",
-        name: "Andini Putri",
-        role: "Fotografer & Kreator Preset",
-        avatar: "https://images.unsplash.com/photo-1619946794135-5bc917a27793?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwb3J0cmFpdCUyMGFzaWFuJTIwd29tYW58ZW58MHx8fHwxNzYyODg3MzY3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-        avatarHint: "asian woman"
-    },
-    {
-        quote: "Fitur afiliasi adalah game-changer. Audiens saya kini bisa ikut mempromosikan produk dan kami sama-sama mendapat keuntungan. Ini benar-benar win-win solution.",
-        name: "Bagus Wicaksono",
-        role: "Videografer & Edukator",
-        avatar: "https://images.unsplash.com/photo-1542978712-79c3209507e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxpbmRvbmVzaWFuJTIwbWFufGVufDB8fHx8MTc2Mjg4NzUwMnww&ixlib=rb-4.1.0&q=80&w=1080",
-        avatarHint: "indonesian man"
-    },
-    {
-        quote: "Saya suka bagaimana LinkStore menyatukan semua tautan saya di satu tempat. Profil saya jadi terlihat jauh lebih profesional dan terorganisir.",
-        name: "Citra Lestari",
-        role: "Desainer Grafis & Ilustrator",
-        avatar: "https://images.unsplash.com/photo-1609505848937-27497e8493b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRvbmVzaWFuJTIwd29tYW58ZW58MHx8fHwxNzYyODg3NTMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-        avatarHint: "indonesian woman"
-    },
-  ];
-
   return (
     <div className="bg-background">
       {/* Hero Section */}
@@ -139,12 +115,11 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto mb-4 text-white" />
             <h1 className="text-3xl md:text-5xl font-bold font-headline">
-                Ruang Anda untuk Berkarya dan Bertumbuh
+                Satu Platform, Semua Kebutuhan Kreator
             </h1>
           </div>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
-            Temukan potensi kreatif Anda. LinkStore adalah tempat para kreator
-            menemukan, berbagi, dan menjual karya unik mereka.
+            LinkStore memberikan Anda semua alat yang dibutuhkan untuk membangun audiens, menjual produk, dan mengembangkan brand Anda.
           </p>
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
@@ -200,34 +175,6 @@ export default function Home() {
                 </Card>
               );
             })}
-          </div>
-        </div>
-        
-        {/* Testimonials Section */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold font-headline mb-8">
-            Apa Kata Para Kreator
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <CardContent className="p-6 flex-grow">
-                  <blockquote className="border-l-2 pl-4 italic text-muted-foreground">
-                    "{testimonial.quote}"
-                  </blockquote>
-                </CardContent>
-                 <CardHeader className="p-6 pt-0 flex flex-row items-center gap-4">
-                   <Avatar>
-                        <AvatarImage src={testimonial.avatar} data-ai-hint={testimonial.avatarHint} />
-                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                   <div className="text-left">
-                     <p className="font-semibold text-sm">{testimonial.name}</p>
-                     <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                   </div>
-                 </CardHeader>
-              </Card>
-            ))}
           </div>
         </div>
       </div>
