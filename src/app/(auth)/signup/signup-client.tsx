@@ -26,6 +26,7 @@ import {
   Form,
   FormControl,
   FormField,
+  FormItem,
   FormMessage,
 } from "@/components/ui/form";
 import type { UserProfile } from "@/lib/data";
