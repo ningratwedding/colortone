@@ -376,6 +376,10 @@
           "enum": ["digital", "fisik", "semua"],
           "description": "The type of product this category applies to."
         },
+        "parentId": {
+            "type": ["string", "null"],
+            "description": "The ID of the parent category, if this is a sub-category."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"

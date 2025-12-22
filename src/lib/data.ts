@@ -124,6 +124,7 @@ export type Category = {
   name: string;
   slug: string;
   type: 'digital' | 'fisik' | 'semua';
+  parentId?: string | null;
 };
 
 export type Software = {
