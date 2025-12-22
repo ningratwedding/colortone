@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -62,14 +61,6 @@ export default function DashboardPage() {
   const [allSellerOrders, setAllSellerOrders] = useState<Order[]>([]);
 
 
-  useEffect(() => {
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-    };
-    // Placeholder balance, replace with actual data when available
-    setFormattedBalance(formatCurrency(2500000));
-  }, []);
-
   const handleWithdraw = () => {
     toast({
         title: "Permintaan Penarikan Diterima",
@@ -104,6 +95,7 @@ export default function DashboardPage() {
         const totalSales = fetchedSellerOrders.length;
         const totalProducts = fetchedSellerProducts.length;
         setStats({ totalRevenue, totalSales, totalProducts });
+        setFormattedBalance(formatCurrency(totalRevenue)); // Set balance from actual revenue
 
         // Process monthly revenue for the chart
         const last6Months = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i));
