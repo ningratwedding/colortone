@@ -81,6 +81,9 @@ export default function SignupPageClient() {
   };
   
   const getOrCreateUserProfile = async (user: User): Promise<UserProfile> => {
+    if (!firestore) {
+      throw new Error("Firestore is not initialized");
+    }
     const userRef = doc(firestore, 'users', user.uid);
     const docSnap = await getDoc(userRef);
 
@@ -88,25 +91,39 @@ export default function SignupPageClient() {
       return { id: docSnap.id, ...docSnap.data() } as UserProfile;
     } else {
       const name = user.displayName || 'Pengguna Baru';
-      const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+      let slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
-      // Check if slug already exists
+      // Check if slug already exists and append a random suffix if it does
       const usersRef = collection(firestore, 'users');
-      const q = query(usersRef, where('slug', '==', slug), limit(1));
-      const slugSnapshot = await getDocs(q);
-      if (!slugSnapshot.empty) {
-        throw new Error(`Nama pengguna "${name}" sudah digunakan. Silakan gunakan nama lain.`);
+      let slugExists = true;
+      let attempts = 0;
+      while (slugExists && attempts < 5) {
+        const q = query(usersRef, where('slug', '==', slug), limit(1));
+        const slugSnapshot = await getDocs(q);
+        if (slugSnapshot.empty) {
+          slugExists = false;
+        } else {
+          slug = `${name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')}-${Math.random().toString(36).substring(2, 7)}`;
+          attempts++;
+        }
+      }
+      
+      if (slugExists) {
+        throw new Error(`Gagal membuat nama pengguna unik untuk "${name}".`);
       }
 
       const newUserProfileData = {
         name: name,
+        fullName: user.displayName || '',
         email: user.email!,
         slug: slug,
         role: 'pembeli' as const,
         plan: 'free' as const,
         createdAt: serverTimestamp(),
         avatarUrl: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
-        avatarHint: 'user avatar'
+        avatarHint: 'user avatar',
+        phoneNumber: '',
+        bio: '',
       };
       await setDoc(userRef, newUserProfileData);
       const newDocSnap = await getDoc(userRef);

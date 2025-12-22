@@ -44,7 +44,7 @@ type SignUpData = {
 }
 
 // Helper function to create a user document in Firestore
-async function createUserDocument(user: User, data: SignUpData): Promise<UserProfile> {
+async function createUserDocument(user: User, data: Partial<SignUpData>): Promise<UserProfile> {
     const db = getDb();
     const auth = getAuth(initializeFirebase().app);
 
@@ -53,7 +53,7 @@ async function createUserDocument(user: User, data: SignUpData): Promise<UserPro
         return existingProfile;
     }
 
-    const name = data.profileName;
+    const name = data.profileName || user.displayName || 'Pengguna Baru';
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
     // Check if slug already exists
@@ -70,10 +70,10 @@ async function createUserDocument(user: User, data: SignUpData): Promise<UserPro
 
     const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
-        fullName: data.fullName,
+        fullName: data.fullName || '',
         email: user.email!,
-        phoneNumber: data.phoneNumber,
-        bio: data.bio,
+        phoneNumber: data.phoneNumber || '',
+        bio: data.bio || '',
         slug: slug, 
         role: 'pembeli',
         plan: 'free',
@@ -86,9 +86,7 @@ async function createUserDocument(user: User, data: SignUpData): Promise<UserPro
     if (auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: name, photoURL: newUserProfile.avatarUrl });
     }
-
-    // This is problematic as serverTimestamp() returns a sentinel value, not a Date.
-    // We fetch the doc again to get the actual timestamp if needed, or just cast it for now.
+    
     const createdProfile = await getUserProfile(user.uid);
     if (!createdProfile) {
         throw new Error("Failed to retrieve created user profile.");
