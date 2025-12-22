@@ -26,6 +26,8 @@ import { doc, addDoc, collection, serverTimestamp, getDoc } from 'firebase/fires
 import { useFirestore } from '@/firebase/provider';
 import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 const shippingOptions = [
@@ -89,48 +91,47 @@ export default function CheckoutForm({ product }: { product?: Product }) {
 
     setIsProcessing(true);
     
-    try {
-      const affiliateRefId = searchParams.get('ref') || sessionStorage.getItem('affiliate_ref');
+    const affiliateRefId = searchParams.get('ref') || sessionStorage.getItem('affiliate_ref');
 
-      const totalAmount = product.price + 
-        (product.type === 'digital' ? product.price * 0.08 : 0) +
-        (product.type === 'fisik' ? (shippingOptions.find(s => s.id === selectedShipping)?.price || 0) : 0);
-        
-      const orderData: any = {
-        userId: user.uid,
-        productId: product.id,
-        productName: product.name,
-        creatorId: product.creatorId,
-        purchaseDate: serverTimestamp(),
-        amount: totalAmount,
-        status: 'Menunggu Pembayaran' as const,
-      };
-
-      if (affiliateRefId && affiliateRefId !== user.uid) {
-        const affiliateRef = doc(firestore, 'users', affiliateRefId);
-        const affiliateSnap = await getDoc(affiliateRef);
-        if (affiliateSnap.exists() && affiliateSnap.data().role === 'affiliator') {
-          orderData.affiliateId = affiliateRefId;
-        }
-      }
-
-      const orderRef = await addDoc(collection(firestore, `users/${user.uid}/orders`), orderData);
+    const totalAmount = product.price + 
+      (product.type === 'digital' ? product.price * 0.08 : 0) +
+      (product.type === 'fisik' ? (shippingOptions.find(s => s.id === selectedShipping)?.price || 0) : 0);
       
-      if (sessionStorage.getItem('affiliate_ref')) {
-        sessionStorage.removeItem('affiliate_ref');
-      }
-      
-      router.push(`/checkout/confirmation?orderId=${orderRef.id}`);
+    const orderData: any = {
+      userId: user.uid,
+      productId: product.id,
+      productName: product.name,
+      creatorId: product.creatorId,
+      purchaseDate: serverTimestamp(),
+      amount: totalAmount,
+      status: 'Menunggu Pembayaran' as const,
+    };
 
-    } catch (error) {
-      console.error("Error creating order:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Gagal Membuat Pesanan',
-        description: 'Terjadi kesalahan. Silakan coba lagi.'
-      });
-      setIsProcessing(false);
+    if (affiliateRefId && affiliateRefId !== user.uid) {
+      const affiliateRef = doc(firestore, 'users', affiliateRefId);
+      const affiliateSnap = await getDoc(affiliateRef);
+      if (affiliateSnap.exists() && affiliateSnap.data().role === 'affiliator') {
+        orderData.affiliateId = affiliateRefId;
+      }
     }
+    
+    const collectionRef = collection(firestore, `users/${user.uid}/orders`);
+    addDoc(collectionRef, orderData)
+      .then((orderRef) => {
+        if (sessionStorage.getItem('affiliate_ref')) {
+          sessionStorage.removeItem('affiliate_ref');
+        }
+        router.push(`/checkout/confirmation?orderId=${orderRef.id}`);
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}/orders`,
+            operation: 'create',
+            requestResourceData: orderData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setIsProcessing(false);
+      });
   };
 
 
@@ -302,4 +303,3 @@ export default function CheckoutForm({ product }: { product?: Product }) {
     </div>
   );
 }
-    

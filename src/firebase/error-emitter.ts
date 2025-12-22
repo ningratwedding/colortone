@@ -1,3 +1,4 @@
+
 // A simple event emitter
 // See https://dev.to/raresportan/how-to-build-a-type-safe-event-emitter-in-typescript-192b
 

@@ -1,3 +1,4 @@
+
 // src/components/FirebaseErrorListener.tsx
 'use client';
 
