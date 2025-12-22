@@ -13,24 +13,20 @@ import Image from 'next/image';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
+import { useUser } from '@/firebase/auth/use-user';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function DownloadContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
 
-  // We need to fetch the order, then the product from the order.
   const orderRef = useMemo(() => {
-    if (!firestore || !orderId) return null;
-    // Note: This assumes a top-level `orders` collection or a known user path.
-    // For this example, let's assume we know the user path, but this is not robust.
-    // A better approach would be to pass userId or have a global orders collection.
-    // To simplify, we'll assume the order is publicly findable by ID, which is not secure.
-    // A proper implementation needs to get the current user and look in their subcollection.
-    const path = `users/placeholder-user-id/orders/${orderId}`;
-    return null; // This logic needs to be fixed.
-  }, [firestore, orderId]);
+    // Wait until we have the firestore instance and the user's ID
+    if (!firestore || !user?.uid || !orderId) return null;
+    return doc(firestore, 'users', user.uid, 'orders', orderId);
+  }, [firestore, user?.uid, orderId]);
 
   const { data: order, loading: orderLoading } = useDoc<Order>(orderRef);
   
@@ -49,16 +45,16 @@ function DownloadContent() {
 
 
   const handleDownload = () => {
-    if (!product) return;
+    if (!product || !product.downloadUrl) return;
     const link = document.createElement('a');
-    link.href = '/placeholder.zip'; // Placeholder file
+    link.href = product.downloadUrl;
     link.download = `${product.name.replace(/\s+/g, '-')}.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
 
-  const loading = productLoading || creatorLoading;
+  const loading = userLoading || orderLoading || productLoading || creatorLoading;
 
   if (loading) {
       return (
@@ -79,15 +75,15 @@ function DownloadContent() {
       )
   }
 
-  if (!product) {
+  if (!product || !order) {
     return (
       <Alert>
         <Terminal className="h-4 w-4" />
-        <AlertTitle>Produk tidak ditemukan!</AlertTitle>
+        <AlertTitle>Pesanan tidak ditemukan!</AlertTitle>
         <AlertDescription>
-          Tidak dapat menemukan detail pesanan. Silakan kembali ke beranda.
+          Tidak dapat menemukan detail pesanan. Silakan kembali ke riwayat pembelian Anda.
           <Button asChild variant="link" className="p-0 h-auto ml-1">
-            <Link href="/">Kembali ke Beranda</Link>
+            <Link href="/account/purchases">Riwayat Pembelian</Link>
           </Button>
         </AlertDescription>
       </Alert>
@@ -110,12 +106,12 @@ function DownloadContent() {
           <div className="rounded-md border p-3 text-left">
             <div className="flex items-center gap-4">
                 <Image
-                src={product.imageAfterUrl}
+                src={product.galleryImageUrls[0] || ''}
                 alt={product.name}
                 width={72}
                 height={48}
-                className="rounded-md"
-                data-ai-hint={product.imageAfterHint}
+                className="rounded-md object-cover"
+                data-ai-hint={product.galleryImageHints[0]}
                 />
                 <div className="flex-1">
                 <p className="font-semibold">{product.name}</p>
@@ -124,9 +120,9 @@ function DownloadContent() {
             </div>
           </div>
           
-          <Button className="w-full" onClick={handleDownload}>
+          <Button className="w-full" onClick={handleDownload} disabled={!product.downloadUrl}>
             <Download className="mr-2 h-4 w-4" />
-            Unduh Sekarang
+            {product.downloadUrl ? 'Unduh Sekarang' : 'File tidak tersedia'}
           </Button>
           
           <Button asChild className="w-full" variant="outline">
@@ -146,10 +142,9 @@ function DownloadContent() {
 export default function DownloadPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <Suspense fallback={<div>Memuat...</div>}>
+      <Suspense fallback={<div className="text-center">Memuat...</div>}>
         <DownloadContent />
       </Suspense>
     </div>
   );
 }
-
