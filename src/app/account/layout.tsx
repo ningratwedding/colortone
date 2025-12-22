@@ -15,6 +15,7 @@ import {
   Search,
   Bell,
   LogOut,
+  Store,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -45,7 +46,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
@@ -79,6 +80,7 @@ export default function AccountLayout({
   const { toast } = useToast();
   const router = useRouter();
   const [isRequestingPro, setIsRequestingPro] = React.useState(false);
+  const [isBecomingSeller, setIsBecomingSeller] = React.useState(false);
 
   const userProfileRef = React.useMemo(() => {
     if (!user || !firestore) return null;
@@ -109,6 +111,27 @@ export default function AccountLayout({
     }
     if (pathname === '/account') return 'Akun Saya';
     return 'Pengaturan Akun';
+  };
+
+   const handleBecomeSeller = async () => {
+    if (!userProfileRef) return;
+    setIsBecomingSeller(true);
+    try {
+        await updateDoc(userProfileRef, { role: 'seller' });
+        toast({
+            title: 'Selamat!',
+            description: 'Anda sekarang adalah seorang penjual. Anda akan diarahkan ke dasbor penjual.',
+        });
+        router.push('/seller/dashboard');
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Gagal Mendaftar",
+            description: "Terjadi kesalahan saat mencoba mendaftar sebagai penjual.",
+        });
+    } finally {
+        setIsBecomingSeller(false);
+    }
   };
   
   const handleRequestPro = () => {
@@ -221,7 +244,31 @@ export default function AccountLayout({
         </SidebarContent>
         <SidebarFooter>
            {profileLoading ? null : (
-                  userProfile?.plan === 'free' && (
+                <>
+                {userProfile?.role !== 'seller' && userProfile?.role !== 'admin' && (
+                     <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
+                        <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-white/10 text-primary-foreground backdrop-blur-lg border-white/20">
+                        <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                            <div className="mb-2 group-data-[collapsible=icon]:hidden">
+                                <h3 className="text-sm font-semibold">Mulai Berjualan</h3>
+                                <p className="text-xs text-primary-foreground/80">Buka toko UMKM Anda.</p>
+                            </div>
+                            <Button
+                            className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-white/20 group-data-[collapsible=icon]:text-primary-foreground group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:hover:bg-white/30"
+                            size="sm"
+                            onClick={handleBecomeSeller}
+                            disabled={isBecomingSeller}
+                            >
+                            <span className="group-data-[collapsible=icon]:hidden">
+                                {isBecomingSeller ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Jadi Penjual"}
+                            </span>
+                            <Store className="hidden group-data-[collapsible=icon]:block h-4 w-4" />
+                            </Button>
+                        </CardContent>
+                        </Card>
+                    </div>
+                )}
+                {userProfile?.plan === 'free' && (
                     <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-mx-1">
                         <Card className="group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0 overflow-hidden bg-white/10 text-primary-foreground backdrop-blur-lg border-white/20">
                         <CardContent className="p-3 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
@@ -243,7 +290,8 @@ export default function AccountLayout({
                         </CardContent>
                         </Card>
                     </div>
-                  )
+                  )}
+                </>
               )}
             <SidebarSeparator/>
             <div className="p-2">
