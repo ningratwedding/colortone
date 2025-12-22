@@ -213,7 +213,7 @@ export default function SignupPageClient() {
                     <FormLabel>Url Profile</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="url-toko-anda" 
+                        placeholder="url-anda" 
                         {...field} 
                         disabled={form.formState.isSubmitting} 
                         onChange={(e) => {
