@@ -18,12 +18,15 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState, useMemo } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Banknote, Home, Package, Terminal, Truck, Wallet } from 'lucide-react';
+import { Banknote, Home, Loader2, Package, Terminal, Truck, Wallet } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc } from 'firebase/firestore';
+import { doc, addDoc, collection, serverTimestamp, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { useUser } from '@/firebase/auth/use-user';
+import { useToast } from '@/hooks/use-toast';
+
 
 const shippingOptions = [
   { id: 'reguler', name: 'Reguler', price: 15000, estimation: '2-4 hari' },
@@ -38,8 +41,12 @@ export default function CheckoutForm({ product }: { product?: Product }) {
   const [formattedTotal, setFormattedTotal] = useState('');
   const [formattedPrice, setFormattedPrice] = useState('');
   const [selectedShipping, setSelectedShipping] = useState(shippingOptions[0].id);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const firestore = useFirestore();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
 
   const creatorRef = useMemo(() => {
     if (!firestore || !product?.creatorId) return null;
@@ -73,13 +80,59 @@ export default function CheckoutForm({ product }: { product?: Product }) {
     setFormattedPrice(formatCurrency(product.price));
   }, [product, selectedShipping]);
   
-  const getCheckoutUrl = () => {
-    if (userLoading) return "#";
-    if (user) {
-      return `/checkout/confirmation?productId=${product?.id}`;
+  const handleProceedToPayment = async () => {
+    if (!user) {
+      router.push(`/login?redirect=/checkout?productId=${product?.id}`);
+      return;
     }
-    return `/login?redirect=/checkout?productId=${product?.id}`;
+    if (!product || !firestore) return;
+
+    setIsProcessing(true);
+    
+    try {
+      const affiliateRefId = searchParams.get('ref') || sessionStorage.getItem('affiliate_ref');
+
+      const totalAmount = product.price + 
+        (product.type === 'digital' ? product.price * 0.08 : 0) +
+        (product.type === 'fisik' ? (shippingOptions.find(s => s.id === selectedShipping)?.price || 0) : 0);
+        
+      const orderData: any = {
+        userId: user.uid,
+        productId: product.id,
+        productName: product.name,
+        creatorId: product.creatorId,
+        purchaseDate: serverTimestamp(),
+        amount: totalAmount,
+        status: 'Menunggu Pembayaran' as const,
+      };
+
+      if (affiliateRefId && affiliateRefId !== user.uid) {
+        const affiliateRef = doc(firestore, 'users', affiliateRefId);
+        const affiliateSnap = await getDoc(affiliateRef);
+        if (affiliateSnap.exists() && affiliateSnap.data().role === 'affiliator') {
+          orderData.affiliateId = affiliateRefId;
+        }
+      }
+
+      const orderRef = await addDoc(collection(firestore, `users/${user.uid}/orders`), orderData);
+      
+      if (sessionStorage.getItem('affiliate_ref')) {
+        sessionStorage.removeItem('affiliate_ref');
+      }
+      
+      router.push(`/checkout/confirmation?orderId=${orderRef.id}`);
+
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Membuat Pesanan',
+        description: 'Terjadi kesalahan. Silakan coba lagi.'
+      });
+      setIsProcessing(false);
+    }
   };
+
 
   if (!product) {
     return (
@@ -179,7 +232,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                     </div>
                 </div>
                 <p className="text-xs text-muted-foreground pt-1">
-                  Dengan mengklik "Buat Pesanan", Anda akan diarahkan ke halaman konfirmasi pembayaran.
+                  Dengan mengklik "Lanjutkan ke Pembayaran", Anda akan diarahkan ke halaman detail pembayaran.
                 </p>
             </CardContent>
           </Card>
@@ -238,10 +291,9 @@ export default function CheckoutForm({ product }: { product?: Product }) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" asChild disabled={userLoading}>
-                <Link href={getCheckoutUrl()}>
-                  {userLoading ? 'Memuat...' : 'Lanjutkan ke Pembayaran'}
-                </Link>
+              <Button className="w-full" onClick={handleProceedToPayment} disabled={userLoading || isProcessing}>
+                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                {userLoading ? 'Memuat...' : isProcessing ? 'Memproses...' : 'Lanjutkan ke Pembayaran'}
               </Button>
             </CardFooter>
           </Card>

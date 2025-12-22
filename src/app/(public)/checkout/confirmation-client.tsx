@@ -3,14 +3,13 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
-import type { Product, Order, UserProfile } from '@/lib/data';
+import type { Order, Product } from '@/lib/data';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc, addDoc, collection, serverTimestamp, getDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Copy, Clock, Loader2, CheckCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -35,72 +34,25 @@ export default function ConfirmationClient() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const searchParams = useSearchParams();
-    const productId = searchParams.get('productId');
-    const affiliateRefId = searchParams.get('ref');
+    const orderId = searchParams.get('orderId');
     const { toast } = useToast();
 
-    const [order, setOrder] = useState<Order | null>(null);
-    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
     const [timeLeft, setTimeLeft] = useState('24:00:00');
     
-    const productRef = useMemo(() => {
-        if (!firestore || !productId) return null;
-        return doc(firestore, 'products', productId);
-    }, [firestore, productId]);
+    const orderRef = useMemo(() => {
+        if (!firestore || !user?.uid || !orderId) return null;
+        return doc(firestore, 'users', user.uid, 'orders', orderId);
+    }, [firestore, user?.uid, orderId]);
     
-    const { data: product, loading: productLoading } = useDoc<Product>(productRef);
+    const { data: order, loading: orderLoading } = useDoc<Order>(orderRef);
 
-    useEffect(() => {
-        if (product && user && !order && !isCreatingOrder && firestore) {
-            const createOrder = async () => {
-                setIsCreatingOrder(true);
-                try {
-                    const totalAmount = product.price * (product.type === 'digital' ? 1.08 : 1);
-                    
-                    const orderData: any = {
-                        userId: user.uid,
-                        productId: product.id,
-                        productName: product.name,
-                        creatorId: product.creatorId,
-                        purchaseDate: serverTimestamp(),
-                        amount: totalAmount,
-                        status: 'Menunggu Pembayaran' as const,
-                    };
-                    
-                    const refId = affiliateRefId || sessionStorage.getItem('affiliate_ref');
+    const productRef = useMemo(() => {
+        if (!firestore || !order?.productId) return null;
+        return doc(firestore, 'products', order.productId);
+    }, [firestore, order?.productId]);
 
-                    if (refId && refId !== user.uid) { // Prevent self-referral
-                        // Server-side validation: Check if refId is a valid affiliate
-                        const affiliateRef = doc(firestore, 'users', refId);
-                        const affiliateSnap = await getDoc(affiliateRef);
-                        if (affiliateSnap.exists() && affiliateSnap.data().role === 'affiliator') {
-                             orderData.affiliateId = refId;
-                        } else {
-                            console.warn(`Invalid affiliate ID detected and ignored: ${refId}`);
-                        }
-                    }
+    const { loading: productLoading } = useDoc<Product>(productRef);
 
-                    if (sessionStorage.getItem('affiliate_ref')) {
-                        sessionStorage.removeItem('affiliate_ref');
-                    }
-                    
-                    const orderRef = await addDoc(collection(firestore, `users/${user.uid}/orders`), orderData);
-                    setOrder({ ...orderData, id: orderRef.id, purchaseDate: { seconds: Date.now() / 1000, nanoseconds: 0 } });
-                    
-                } catch (error) {
-                    console.error("Error creating order:", error);
-                    toast({
-                        variant: 'destructive',
-                        title: 'Gagal Membuat Pesanan',
-                        description: 'Terjadi kesalahan saat membuat pesanan Anda. Silakan coba lagi.',
-                    });
-                } finally {
-                    setIsCreatingOrder(false);
-                }
-            };
-            createOrder();
-        }
-    }, [product, user, order, isCreatingOrder, firestore, toast, affiliateRefId]);
 
     useEffect(() => {
         if (!order?.purchaseDate) return;
@@ -132,13 +84,13 @@ export default function ConfirmationClient() {
         toast({ title: 'Disalin!', description: `${text} telah disalin ke clipboard.` });
     };
     
-    if (productLoading || userLoading || isCreatingOrder) {
+    if (userLoading || orderLoading || productLoading) {
         return (
             <div className="flex flex-col items-center">
                 <Card className="w-full max-w-md">
                     <CardHeader className="items-center text-center">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <CardTitle className="mt-4">Membuat Pesanan Anda...</CardTitle>
+                        <CardTitle className="mt-4">Memuat Pesanan Anda...</CardTitle>
                         <CardDescription>Mohon tunggu sebentar.</CardDescription>
                     </CardHeader>
                 </Card>
@@ -146,13 +98,13 @@ export default function ConfirmationClient() {
         )
     }
 
-    if (!product || !order) {
+    if (!order) {
         return (
             <Alert>
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Kesalahan!</AlertTitle>
                 <AlertDescription>
-                    Tidak dapat memuat detail pesanan. Pastikan Anda telah masuk dan produk valid.
+                    Tidak dapat memuat detail pesanan. Pastikan ID pesanan valid.
                 </AlertDescription>
             </Alert>
         );
@@ -207,7 +159,7 @@ export default function ConfirmationClient() {
                      </div>
 
                      <Button className="w-full" asChild>
-                        <Link href={`/checkout/confirmation/download?orderId=${order.id}&productId=${product.id}`}>
+                        <Link href={`/checkout/confirmation/download?orderId=${order.id}`}>
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Saya Sudah Transfer
                         </Link>
