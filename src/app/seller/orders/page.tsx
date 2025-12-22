@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -94,7 +93,7 @@ export default function OrdersPage() {
   const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
   const [ordersLoading, setOrdersLoading] = useState(true);
 
-  const [orderToCancel, setOrderToCancel] = useState<Order & {path: string} | null>(null);
+  const [orderToCancel, setOrderToCancel] = useState<(Order & {path: string}) | null>(null);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   useEffect(() => {

@@ -1145,7 +1145,7 @@ export default function AppearancePage() {
                                 )}
                             </AccordionContent>
                         </AccordionItem>
-                        { (userProfile.role === 'affiliator' || userProfile.role === 'seller') && (
+                        { (userProfile.role === 'seller' || userProfile.role === 'affiliator') && (
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
