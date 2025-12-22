@@ -1,7 +1,8 @@
 
 'use client';
 
-import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+import { getS3Client } from '@/lib/s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -60,24 +61,30 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
 };
 
 /**
- * Uploads a file to Firebase Storage, with automatic image compression.
- * @param storage - The Firebase Storage instance.
+ * Uploads a file to an S3-compatible service, with automatic image compression.
+ * @param s3Client - The S3 client instance.
  * @param file - The file to upload.
  * @param userId - The ID of the user uploading the file.
- * @param path - The base path for the upload (e.g., 'product_images').
- * @returns A promise that resolves with the download URL of the uploaded file.
+ * @param path - The base path (folder) for the upload (e.g., 'product_images').
+ * @returns A promise that resolves with the public URL of the uploaded file.
  */
 export const uploadFile = async (
-  storage: import('firebase/storage').FirebaseStorage,
+  storage: any, // s3Client will be passed here, but we use a dummy 'storage' arg to keep function signature
   file: File,
   userId: string,
   path: string
 ): Promise<string> => {
+  const s3Client = getS3Client();
+
+  if (!s3Client) {
+    throw new Error('S3 client is not configured. Check environment variables.');
+  }
+  
   if (!file || !userId) {
     throw new Error('File and userId are required for upload.');
   }
 
-  let fileToUpload: Blob = file;
+  let fileToUpload: Blob | File = file;
   let fileName = file.name;
   let contentType = file.type;
 
@@ -85,47 +92,60 @@ export const uploadFile = async (
   if (file.type.startsWith('image/')) {
     try {
       fileToUpload = await compressImage(file);
-      fileName = `${uuidv4()}.jpg`;
+      fileName = `${uuidv4()}.jpg`; // Always use .jpg for compressed images
       contentType = 'image/jpeg';
     } catch (compressionError) {
-      console.error(
+      console.warn(
         'Image compression failed, uploading original file:',
         compressionError
       );
-      fileName = `${uuidv4()}.${file.name.split('.').pop() || 'jpg'}`;
+      const fileExtension = file.name.split('.').pop();
+      fileName = `${uuidv4()}.${fileExtension}`;
     }
   } else {
     const fileExtension = file.name.split('.').pop();
     fileName = `${uuidv4()}.${fileExtension}`;
   }
   
-  const storageRef = ref(storage, `${path}/${userId}/${fileName}`);
-  
-  const metadata = {
-    contentType: contentType,
-  };
+  const Key = `${path}/${userId}/${fileName}`;
+  const Bucket = process.env.NEXT_PUBLIC_S3_BUCKET_NAME;
+
+  if (!Bucket) {
+    throw new Error('S3 bucket name is not configured in .env.local.');
+  }
 
   try {
-    const uploadTask = uploadBytesResumable(storageRef, fileToUpload, metadata);
-
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          // Optional: handle progress updates
-        },
-        (error) => {
-          console.error('Error uploading file to Firebase Storage:', error);
-          reject(new Error('File upload failed. Please try again.'));
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        }
-      );
+    const parallelUploads3 = new Upload({
+      client: s3Client,
+      params: {
+        Bucket,
+        Key,
+        Body: fileToUpload,
+        ACL: 'public-read',
+        ContentType: contentType,
+      },
+      queueSize: 4, // optional concurrency configuration
+      partSize: 1024 * 1024 * 5, // optional part size configuration
+      leavePartsOnError: false, // optional manually handle dropped parts
     });
+
+    await parallelUploads3.done();
+
+    // Construct the public URL
+    const endpoint = process.env.NEXT_PUBLIC_S3_ENDPOINT;
+    if (!endpoint) {
+        throw new Error('S3_ENDPOINT is not defined for URL construction.');
+    }
+    
+    // Check if the endpoint already includes the bucket name (subdomain style)
+    if (endpoint.includes(Bucket)) {
+        return `${endpoint}/${Key}`;
+    }
+    
+    return `${endpoint}/${Bucket}/${Key}`;
+
   } catch (error) {
-    console.error('Error initiating upload to Firebase Storage:', error);
+    console.error('Error uploading file to S3:', error);
     throw new Error('File upload failed. Please try again.');
   }
 };
