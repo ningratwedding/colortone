@@ -1,9 +1,7 @@
-
+// src/firebase/storage/actions.ts
 'use client';
 
-import { getS3Client } from '@/lib/s3';
-import { Upload } from '@aws-sdk/lib-storage';
-import { v4 as uuidv4 } from 'uuid';
+import { getSignedURL } from '@/lib/s3-actions';
 
 /**
  * Compresses an image file before upload.
@@ -61,91 +59,70 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
 };
 
 /**
- * Uploads a file to an S3-compatible service, with automatic image compression.
- * @param s3Client - The S3 client instance.
+ * Uploads a file to an S3-compatible service using a secure presigned URL flow.
+ * The Firebase Storage instance is passed for compatibility but not used.
+ * @param storage - Dummy Firebase Storage instance for compatibility.
  * @param file - The file to upload.
  * @param userId - The ID of the user uploading the file.
  * @param path - The base path (folder) for the upload (e.g., 'product_images').
  * @returns A promise that resolves with the public URL of the uploaded file.
  */
 export const uploadFile = async (
-  storage: any, // s3Client will be passed here, but we use a dummy 'storage' arg to keep function signature
+  storage: any, // Dummy parameter for compatibility
   file: File,
   userId: string,
   path: string
 ): Promise<string> => {
-  const s3Client = getS3Client();
-
-  if (!s3Client) {
-    throw new Error('S3 client is not configured. Check environment variables.');
-  }
-  
   if (!file || !userId) {
     throw new Error('File and userId are required for upload.');
   }
 
   let fileToUpload: Blob | File = file;
-  let fileName = file.name;
   let contentType = file.type;
 
   // Check if the file is an image and compress it
   if (file.type.startsWith('image/')) {
     try {
       fileToUpload = await compressImage(file);
-      fileName = `${uuidv4()}.jpg`; // Always use .jpg for compressed images
       contentType = 'image/jpeg';
     } catch (compressionError) {
       console.warn(
         'Image compression failed, uploading original file:',
         compressionError
       );
-      const fileExtension = file.name.split('.').pop();
-      fileName = `${uuidv4()}.${fileExtension}`;
     }
-  } else {
-    const fileExtension = file.name.split('.').pop();
-    fileName = `${uuidv4()}.${fileExtension}`;
-  }
-  
-  const Key = `${path}/${userId}/${fileName}`;
-  const Bucket = process.env.NEXT_PUBLIC_S3_BUCKET_NAME;
-
-  if (!Bucket) {
-    throw new Error('S3 bucket name is not configured in .env.local.');
   }
 
   try {
-    const parallelUploads3 = new Upload({
-      client: s3Client,
-      params: {
-        Bucket,
-        Key,
-        Body: fileToUpload,
-        ACL: 'public-read',
-        ContentType: contentType,
+    // 1. Get a presigned URL from the server
+    const res = await getSignedURL(
+      userId,
+      path,
+      contentType,
+      fileToUpload.size
+    );
+
+    if (res.failure) {
+      throw new Error(`Failed to get signed URL: ${res.failure}`);
+    }
+
+    const { url, key } = res.success;
+    const bucketUrl = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.${process.env.NEXT_PUBLIC_S3_ENDPOINT?.replace('https://', '')}`;
+    const publicUrl = `${bucketUrl}/${key}`;
+
+    // 2. Upload the file to the presigned URL
+    await fetch(url, {
+      method: 'PUT',
+      body: fileToUpload,
+      headers: {
+        'Content-Type': contentType,
       },
-      queueSize: 4, // optional concurrency configuration
-      partSize: 1024 * 1024 * 5, // optional part size configuration
-      leavePartsOnError: false, // optional manually handle dropped parts
     });
 
-    await parallelUploads3.done();
-
-    // Construct the public URL
-    const endpoint = process.env.NEXT_PUBLIC_S3_ENDPOINT;
-    if (!endpoint) {
-        throw new Error('S3_ENDPOINT is not defined for URL construction.');
-    }
-    
-    // Check if the endpoint already includes the bucket name (subdomain style)
-    if (endpoint.includes(Bucket)) {
-        return `${endpoint}/${Key}`;
-    }
-    
-    return `${endpoint}/${Bucket}/${Key}`;
-
+    // 3. Return the public URL of the uploaded file
+    return publicUrl;
   } catch (error) {
-    console.error('Error uploading file to S3:', error);
+    console.error('Error uploading file:', error);
     throw new Error('File upload failed. Please try again.');
   }
 };
