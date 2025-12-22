@@ -90,11 +90,11 @@ export default function OrdersPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<(Order & {path: string})[]>([]);
   const [customers, setCustomers] = useState<Record<string, UserProfile>>({});
   const [ordersLoading, setOrdersLoading] = useState(true);
 
-  const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
+  const [orderToCancel, setOrderToCancel] = useState<Order & {path: string} | null>(null);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function OrdersPage() {
       try {
         const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
         const ordersSnapshot = await getDocs(ordersQuery);
-        const fetchedOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), path: doc.ref.path } as Order & { path: string }));
+        const fetchedOrders = ordersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, path: doc.ref.path } as Order & { path: string }));
         fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
         setOrders(fetchedOrders);
         
@@ -138,7 +138,7 @@ export default function OrdersPage() {
     if (!orderToCancel || !firestore) return;
 
     try {
-        const orderRef = doc(firestore, (orderToCancel as any).path);
+        const orderRef = doc(firestore, orderToCancel.path);
         await updateDoc(orderRef, { status: 'Dibatalkan' });
 
         setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));
@@ -153,7 +153,7 @@ export default function OrdersPage() {
     }
   };
 
-  const openCancelDialog = (order: Order) => {
+  const openCancelDialog = (order: Order & {path: string}) => {
     setOrderToCancel(order);
     setIsCancelDialogOpen(true);
   };

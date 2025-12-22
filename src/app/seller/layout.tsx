@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -15,6 +14,7 @@ import {
   Star,
   Bell,
   LogOut,
+  Palette,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -47,9 +47,8 @@ import type { UserProfile } from "@/lib/data";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/logo";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { siteConfig } from '@/lib/config';
 import { signOut } from '@/firebase/auth/actions';
 
@@ -277,7 +276,10 @@ export default function SellerDashboardLayout({
             </div>
             <div className="relative ml-auto flex items-center gap-2">
               <Button asChild>
-                <Link href="/account/appearance">Pengaturan Profil</Link>
+                <Link href="/account/appearance">
+                    <Palette className="mr-2 h-4 w-4" />
+                    Pengaturan Profil
+                </Link>
               </Button>
             </div>
           </header>

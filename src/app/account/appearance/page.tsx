@@ -323,9 +323,9 @@ function ProfilePreview({
         </div>
         </header>
             
-            { (profile.role === 'kreator' || profile.role === 'affiliator') && <Separator className="my-4" /> }
+            { (profile.role === 'seller' || profile.role === 'affiliator') && <Separator className="my-4" /> }
 
-            {profile.role === 'kreator' && (
+            {profile.role === 'seller' && (
                 <div className={cn("grid gap-2", productCardSettings?.columns === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
                     {activeProducts ? activeProducts.map(product => (
                       <ProductCard key={product.id} product={product} settings={productCardSettings} />
@@ -414,7 +414,7 @@ export default function AppearancePage() {
     const productsQuery = useMemo(() => {
         if (!firestore || !userProfile) return null;
 
-        if (userProfile.role === 'kreator') {
+        if (userProfile.role === 'seller') {
             return query(collection(firestore, "products"), where('creatorId', '==', userProfile.id), limit(4));
         }
 
@@ -1145,7 +1145,7 @@ export default function AppearancePage() {
                                 )}
                             </AccordionContent>
                         </AccordionItem>
-                        { (userProfile.role === 'affiliator' || userProfile.role === 'kreator') && (
+                        { (userProfile.role === 'affiliator' || userProfile.role === 'seller') && (
                         <AccordionItem value="product-card">
                             <AccordionTrigger className="text-sm font-medium">Pengaturan Kartu Produk</AccordionTrigger>
                             <AccordionContent className="pt-4 space-y-4">
