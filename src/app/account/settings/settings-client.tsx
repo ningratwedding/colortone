@@ -23,16 +23,18 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { uploadFile } from '@/firebase/storage/actions';
 import { updateProfile } from 'firebase/auth';
-import { PartyPopper, Loader2, Star } from 'lucide-react';
+import { PartyPopper, Loader2, Star, Store } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { id as fnsIdLocale } from 'date-fns/locale';
 import { Textarea } from '@/components/ui/textarea';
+import { useRouter } from 'next/navigation';
 
 export default function AccountSettingsClient() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const storage = useStorage();
     const { toast } = useToast();
+    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const userProfileRef = useMemo(() => {
@@ -51,6 +53,7 @@ export default function AccountSettingsClient() {
 
     const [isSaving, setIsSaving] = useState(false);
     const [isJoiningAffiliate, setIsJoiningAffiliate] = useState(false);
+    const [isBecomingSeller, setIsBecomingSeller] = useState(false);
     const [isRequestingPro, setIsRequestingPro] = useState(false);
 
     // Name change cooldown logic
@@ -176,6 +179,7 @@ export default function AccountSettingsClient() {
                 title: 'Selamat Bergabung!',
                 description: 'Anda sekarang adalah seorang afiliator. Anda akan diarahkan ke dasbor afiliasi.',
             });
+            router.push('/account/affiliate');
         } catch (error) {
             toast({
                 variant: "destructive",
@@ -184,6 +188,27 @@ export default function AccountSettingsClient() {
             });
         } finally {
             setIsJoiningAffiliate(false);
+        }
+    };
+
+    const handleBecomeSeller = async () => {
+        if (!userProfileRef) return;
+        setIsBecomingSeller(true);
+        try {
+            await updateDoc(userProfileRef, { role: 'seller' });
+            toast({
+                title: 'Selamat!',
+                description: 'Anda sekarang adalah seorang penjual. Anda akan diarahkan ke dasbor penjual.',
+            });
+            router.push('/seller/dashboard');
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Gagal Mendaftar",
+                description: "Terjadi kesalahan saat mencoba mendaftar sebagai penjual.",
+            });
+        } finally {
+            setIsBecomingSeller(false);
         }
     };
     
@@ -340,30 +365,64 @@ export default function AccountSettingsClient() {
                 </CardFooter>
             </Card>
 
-             <Card>
-                <CardHeader>
-                    <CardTitle>Program Afiliasi</CardTitle>
-                    <CardDescription>
-                        {userProfile.role === 'affiliator' 
-                            ? 'Anda sekarang adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
-                            : 'Dapatkan penghasilan dengan membagikan produk dari penjual favorit Anda.'}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {userProfile.role === 'affiliator' ? (
-                        <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-900/20">
-                            <div className="flex items-center gap-3">
-                                <PartyPopper className="h-6 w-6 text-green-600" />
-                                <p className="text-sm font-medium text-green-800 dark:text-green-300">Anda telah terdaftar sebagai mitra afiliasi.</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <Button onClick={handleJoinAffiliate} disabled={isJoiningAffiliate}>
-                            {isJoiningAffiliate ? 'Memproses...' : 'Gabung Program Afiliasi'}
+            {userProfile.role !== 'admin' && userProfile.role !== 'seller' && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Menjadi Penjual</CardTitle>
+                        <CardDescription>
+                            Siap untuk mulai menjual produk Anda sendiri? Buka toko Anda sekarang.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="text-sm text-muted-foreground space-y-2 mb-4">
+                            <li className="flex items-center"><Store className="h-4 w-4 mr-2 text-primary" />Unggah dan jual produk digital & fisik.</li>
+                            <li className="flex items-center"><Store className="h-4 w-4 mr-2 text-primary" />Kelola pesanan dan pelanggan Anda.</li>
+                            <li className="flex items-center"><Store className="h-4 w-4 mr-2 text-primary" />Akses dasbor penjual yang lengkap.</li>
+                        </ul>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={handleBecomeSeller} disabled={isBecomingSeller}>
+                             {isBecomingSeller ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Memproses...</> : "Mulai Berjualan Sekarang"}
                         </Button>
+                    </CardFooter>
+                </Card>
+            )}
+
+            {userProfile.role !== 'admin' && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Program Afiliasi</CardTitle>
+                        <CardDescription>
+                            {userProfile.role === 'affiliator' 
+                                ? 'Anda sekarang adalah mitra afiliasi. Bagikan tautan produk untuk mendapatkan komisi!' 
+                                : 'Dapatkan penghasilan dengan membagikan produk dari penjual favorit Anda.'}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {userProfile.role === 'affiliator' ? (
+                            <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-900/20">
+                                <div className="flex items-center gap-3">
+                                    <PartyPopper className="h-6 w-6 text-green-600" />
+                                    <p className="text-sm font-medium text-green-800 dark:text-green-300">Anda telah terdaftar sebagai mitra afiliasi.</p>
+                                </div>
+                            </div>
+                        ) : (
+                             <ul className="text-sm text-muted-foreground space-y-2 mb-4">
+                                <li className="flex items-center"><PartyPopper className="h-4 w-4 mr-2 text-primary" />Dapatkan komisi dari setiap penjualan.</li>
+                                <li className="flex items-center"><PartyPopper className="h-4 w-4 mr-2 text-primary" />Pilih produk unggulan untuk dipromosikan.</li>
+                                <li className="flex items-center"><PartyPopper className="h-4 w-4 mr-2 text-primary" />Lacak performa melalui dasbor afiliasi.</li>
+                            </ul>
+                        )}
+                    </CardContent>
+                    {userProfile.role !== 'affiliator' && (
+                        <CardFooter>
+                            <Button onClick={handleJoinAffiliate} disabled={isJoiningAffiliate}>
+                                {isJoiningAffiliate ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</> : 'Gabung Program Afiliasi'}
+                            </Button>
+                        </CardFooter>
                     )}
-                </CardContent>
-            </Card>
+                </Card>
+            )}
         </div>
     )
 }
