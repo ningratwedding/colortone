@@ -16,7 +16,7 @@ Admin adalah peran dengan tingkat akses tertinggi yang bertugas mengelola keselu
 
 ---
 
-#### 2. **Penjual (Seller/Kreator)**
+#### 2. **Penjual (Seller)**
 
 Peran ini ditujukan untuk para pelaku UMKM atau individu yang ingin menjual produk mereka sendiri secara langsung kepada konsumen.
 
