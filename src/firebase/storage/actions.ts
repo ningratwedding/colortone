@@ -1,12 +1,7 @@
 
 'use client';
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  type FirebaseStorage,
-} from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -64,7 +59,6 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
   });
 };
 
-
 /**
  * Uploads a file to Firebase Storage, with automatic image compression.
  * @param storage - The Firebase Storage instance.
@@ -74,7 +68,7 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
  * @returns A promise that resolves with the download URL of the uploaded file.
  */
 export const uploadFile = async (
-  storage: FirebaseStorage,
+  storage: import('firebase/storage').FirebaseStorage,
   file: File,
   userId: string,
   path: string
@@ -85,32 +79,53 @@ export const uploadFile = async (
 
   let fileToUpload: Blob = file;
   let fileName = file.name;
+  let contentType = file.type;
 
   // Check if the file is an image and compress it
   if (file.type.startsWith('image/')) {
     try {
       fileToUpload = await compressImage(file);
-      // Use a .jpg extension for all compressed images for consistency
       fileName = `${uuidv4()}.jpg`;
+      contentType = 'image/jpeg';
     } catch (compressionError) {
-        console.error("Image compression failed, uploading original file:", compressionError);
-        // If compression fails, upload the original file.
-        fileName = `${uuidv4()}.${file.name.split('.').pop() || 'jpg'}`;
+      console.error(
+        'Image compression failed, uploading original file:',
+        compressionError
+      );
+      fileName = `${uuidv4()}.${file.name.split('.').pop() || 'jpg'}`;
     }
   } else {
-    // For non-image files, just generate a unique name
     const fileExtension = file.name.split('.').pop();
     fileName = `${uuidv4()}.${fileExtension}`;
   }
   
   const storageRef = ref(storage, `${path}/${userId}/${fileName}`);
+  
+  const metadata = {
+    contentType: contentType,
+  };
 
   try {
-    const snapshot = await uploadBytes(storageRef, fileToUpload);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
+    const uploadTask = uploadBytesResumable(storageRef, fileToUpload, metadata);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Optional: handle progress updates
+        },
+        (error) => {
+          console.error('Error uploading file to Firebase Storage:', error);
+          reject(new Error('File upload failed. Please try again.'));
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
   } catch (error) {
-    console.error('Error uploading file:', error);
+    console.error('Error initiating upload to Firebase Storage:', error);
     throw new Error('File upload failed. Please try again.');
   }
 };
