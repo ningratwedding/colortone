@@ -19,6 +19,8 @@ import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import type { UserProfile } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { errorEmitter } from '../error-emitter';
+import { FirestorePermissionError } from '../errors';
 
 // Helper to get firestore instance
 const getDb = () => getFirestore(initializeFirebase().app);
@@ -53,7 +55,7 @@ async function createUserDocument(user: User, data: Partial<SignUpData>): Promis
         return existingProfile;
     }
 
-    const name = data.profileName || user.displayName || 'Pengguna Baru';
+    const name = data.profileName!;
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
     // Check if slug already exists
@@ -70,10 +72,10 @@ async function createUserDocument(user: User, data: Partial<SignUpData>): Promis
 
     const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
-        fullName: data.fullName || '',
+        fullName: data.fullName!,
         email: user.email!,
-        phoneNumber: data.phoneNumber || '',
-        bio: data.bio || '',
+        phoneNumber: data.phoneNumber!,
+        bio: data.bio!,
         slug: slug, 
         role: 'pembeli',
         plan: 'free',
@@ -81,7 +83,18 @@ async function createUserDocument(user: User, data: Partial<SignUpData>): Promis
         avatarUrl: user.photoURL || randomAvatar.imageUrl,
         avatarHint: user.photoURL ? 'user avatar' : randomAvatar.imageHint,
     };
-    await setDoc(doc(db, 'users', user.uid), newUserProfile);
+    
+    const userDocRef = doc(db, 'users', user.uid);
+    
+    setDoc(userDocRef, newUserProfile)
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'create',
+            requestResourceData: newUserProfile,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
     
     if (auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: name, photoURL: newUserProfile.avatarUrl });
@@ -202,3 +215,5 @@ export async function sendPasswordReset(email: string) {
     return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
   }
 }
+
+    

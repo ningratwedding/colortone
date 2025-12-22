@@ -32,6 +32,8 @@ import {
 import type { UserProfile } from "@/lib/data";
 import { useFirestore } from "@/firebase/provider";
 import { Logo } from "@/components/logo";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 
 const formSchema = z.object({
   email: z.string().email("Format email tidak valid."),
@@ -129,7 +131,17 @@ export default function LoginPageClient() {
         phoneNumber: '',
         bio: '',
       };
-      await setDoc(userRef, newUserProfileData);
+      
+      setDoc(userRef, newUserProfileData)
+        .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'create',
+                requestResourceData: newUserProfileData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+        
       const newDocSnap = await getDoc(userRef);
       return { id: newDocSnap.id, ...newDocSnap.data() } as UserProfile;
     }
@@ -287,3 +299,5 @@ export default function LoginPageClient() {
     </div>
   );
 }
+
+    
