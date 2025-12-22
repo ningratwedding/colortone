@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -35,9 +34,17 @@ async function getUserProfile(uid: string): Promise<UserProfile | null> {
     return null;
 }
 
+type SignUpData = {
+    profileName: string;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    bio: string;
+    password?: string;
+}
 
 // Helper function to create a user document in Firestore
-async function createUserDocument(user: User, profileName?: string): Promise<UserProfile> {
+async function createUserDocument(user: User, data: SignUpData): Promise<UserProfile> {
     const db = getDb();
     const auth = getAuth(initializeFirebase().app);
 
@@ -46,7 +53,7 @@ async function createUserDocument(user: User, profileName?: string): Promise<Use
         return existingProfile;
     }
 
-    const name = profileName || user.displayName || 'Pengguna Baru';
+    const name = data.profileName;
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
     // Check if slug already exists
@@ -63,7 +70,10 @@ async function createUserDocument(user: User, profileName?: string): Promise<Use
 
     const newUserProfile: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         name: name,
+        fullName: data.fullName,
         email: user.email!,
+        phoneNumber: data.phoneNumber,
+        bio: data.bio,
         slug: slug, 
         role: 'pembeli',
         plan: 'free',
@@ -73,10 +83,8 @@ async function createUserDocument(user: User, profileName?: string): Promise<Use
     };
     await setDoc(doc(db, 'users', user.uid), newUserProfile);
     
-    if (profileName && auth.currentUser) {
-        await updateProfile(auth.currentUser, { displayName: profileName, photoURL: newUserProfile.avatarUrl });
-    } else if (auth.currentUser && !auth.currentUser.photoURL) {
-         await updateProfile(auth.currentUser, { photoURL: newUserProfile.avatarUrl });
+    if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: name, photoURL: newUserProfile.avatarUrl });
     }
 
     // This is problematic as serverTimestamp() returns a sentinel value, not a Date.
@@ -109,19 +117,22 @@ export async function signInWithGoogle() {
 }
 
 // Sign up with email and password
-export async function signUpWithEmail(email: string, password: string, profileName: string) {
+export async function signUpWithEmail(data: SignUpData) {
     const auth = getAuth(initializeFirebase().app);
     try {
-        if (!profileName) {
-            return { success: false, error: 'Nama profil harus diisi.'};
+        if (!data.profileName || !data.fullName || !data.phoneNumber || !data.bio) {
+            return { success: false, error: 'Semua kolom harus diisi.'};
         }
-        const result = await createUserWithEmailAndPassword(auth, email, password);
+        if (!data.password) {
+            return { success: false, error: 'Kata sandi harus diisi.'};
+        }
+        const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = result.user;
         
         await sendEmailVerification(user);
 
         // Now, we create the document, which includes the slug uniqueness check
-        const profile = await createUserDocument(user, profileName);
+        const profile = await createUserDocument(user, data);
 
         return { success: true, user, profile };
     } catch (error) {
@@ -193,4 +204,3 @@ export async function sendPasswordReset(email: string) {
     return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
   }
 }
-

@@ -27,15 +27,20 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import type { UserProfile } from "@/lib/data";
 import { useFirestore } from "@/firebase/provider";
 import { Logo } from "@/components/logo";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   profileName: z.string().min(3, "Nama profil harus terdiri dari minimal 3 karakter."),
+  fullName: z.string().min(3, "Nama lengkap harus diisi."),
   email: z.string().email("Format email tidak valid."),
+  phoneNumber: z.string().min(10, "Nomor telepon tidak valid.").max(15, "Nomor telepon tidak valid."),
+  bio: z.string().min(10, "Bio minimal 10 karakter.").max(160, "Bio maksimal 160 karakter."),
   password: z.string().min(6, "Kata sandi minimal 6 karakter."),
   confirmPassword: z.string().min(6, "Kata sandi minimal 6 karakter."),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -61,7 +66,10 @@ export default function SignupPageClient() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       profileName: "",
+      fullName: "",
       email: "",
+      phoneNumber: "",
+      bio: "",
       password: "",
       confirmPassword: "",
     },
@@ -133,7 +141,7 @@ export default function SignupPageClient() {
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const result = await signUpWithEmail(data.email, data.password, data.profileName);
+    const result = await signUpWithEmail(data);
     if (result.success && result.profile) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkStore! Silakan periksa email Anda untuk verifikasi." });
       handleRedirect(result.profile);
@@ -163,7 +171,7 @@ export default function SignupPageClient() {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
            <div className="flex justify-center mb-4">
             <Link href="/">
@@ -183,8 +191,22 @@ export default function SignupPageClient() {
                 name="profileName"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Nama Toko / Brand</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nama Toko / Brand Anda" {...field} disabled={form.formState.isSubmitting} />
+                      <Input placeholder="Toko Kue Ibu" {...field} disabled={form.formState.isSubmitting} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nama Lengkap</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Siti Aminah" {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -195,13 +217,40 @@ export default function SignupPageClient() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Alamat Email"
+                        placeholder="alamat@email.com"
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor Telepon</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="081234567890" {...field} disabled={form.formState.isSubmitting} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio Singkat</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Ceritakan sedikit tentang toko atau diri Anda..." {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -212,11 +261,12 @@ export default function SignupPageClient() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Kata Sandi</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="Kata Sandi"
+                          placeholder="Minimal 6 karakter"
                           {...field}
                           disabled={form.formState.isSubmitting}
                           className="pr-10"
@@ -247,10 +297,11 @@ export default function SignupPageClient() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
+                     <FormLabel>Konfirmasi Kata Sandi</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Konfirmasi Kata Sandi"
+                        placeholder="Ketik ulang kata sandi Anda"
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -259,7 +310,7 @@ export default function SignupPageClient() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              <Button type="submit" className="w-full mt-2" disabled={form.formState.isSubmitting}>
                  {form.formState.isSubmitting ? "Membuat akun..." : "Buat Akun Toko"}
               </Button>
             </form>

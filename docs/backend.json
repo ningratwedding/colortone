@@ -225,7 +225,7 @@
           "description": "The user's bank account number."
         }
       },
-      "required": ["name", "email", "slug", "role", "plan", "createdAt"]
+      "required": ["name", "email", "slug", "role", "plan", "createdAt", "fullName", "phoneNumber", "bio"]
     },
     "Product": {
       "title": "Product",
