@@ -25,6 +25,7 @@ import { signInWithGoogle, signUpWithEmail } from "@/firebase/auth/actions";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,9 +35,10 @@ import type { UserProfile } from "@/lib/data";
 import { useFirestore } from "@/firebase/provider";
 import { Logo } from "@/components/logo";
 import { Textarea } from "@/components/ui/textarea";
+import { siteConfig } from "@/lib/config";
 
 const formSchema = z.object({
-  profileName: z.string().min(3, "Nama profil harus terdiri dari minimal 3 karakter."),
+  profileName: z.string().min(3, "Url Profile harus terdiri dari minimal 3 karakter.").regex(/^[a-z0-9-]+$/, "Url Profile hanya boleh berisi huruf kecil, angka, dan tanda hubung."),
   fullName: z.string().min(3, "Nama lengkap harus diisi."),
   email: z.string().email("Format email tidak valid."),
   phoneNumber: z.string().min(10, "Nomor telepon tidak valid.").max(15, "Nomor telepon tidak valid."),
@@ -208,10 +210,22 @@ export default function SignupPageClient() {
                 name="profileName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nama Toko / Brand</FormLabel>
+                    <FormLabel>Url Profile</FormLabel>
                     <FormControl>
-                      <Input placeholder="Toko Kue Ibu" {...field} disabled={form.formState.isSubmitting} />
+                      <Input 
+                        placeholder="url-toko-anda" 
+                        {...field} 
+                        disabled={form.formState.isSubmitting} 
+                        onChange={(e) => {
+                            // Convert to lowercase and remove invalid characters
+                            const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                            field.onChange(sanitizedValue);
+                        }}
+                      />
                     </FormControl>
+                    <FormDescription>
+                        Ini akan menjadi URL profil publik Anda: {siteConfig.url}/{form.watch('profileName') || '...'}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
