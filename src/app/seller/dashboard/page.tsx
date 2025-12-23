@@ -37,6 +37,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
@@ -75,14 +77,19 @@ export default function DashboardPage() {
       setLoading(true);
       setOrdersLoading(true);
 
+      const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+      const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+
       try {
-        // Query yang aman dan sesuai dengan security rules
-        const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
-        const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
-        
         const [productsSnapshot, allOrdersSnapshot] = await Promise.all([
-          getDocs(productsQuery),
-          getDocs(allOrdersQuery),
+          getDocs(productsQuery).catch(async (error) => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'products', operation: 'list' }));
+            throw error;
+          }),
+          getDocs(allOrdersQuery).catch(async (error) => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'orders', operation: 'list' }));
+            throw error;
+          }),
         ]);
         
         const fetchedSellerProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
@@ -96,7 +103,7 @@ export default function DashboardPage() {
         const totalSales = fetchedSellerOrders.length;
         const totalProducts = fetchedSellerProducts.length;
         setStats({ totalRevenue, totalSales, totalProducts });
-        setFormattedBalance(formatCurrency(totalRevenue)); // Set balance from actual revenue
+        setFormattedBalance(formatCurrency(totalRevenue));
 
         // Process monthly revenue for the chart
         const last6Months = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i));
@@ -118,7 +125,7 @@ export default function DashboardPage() {
         setMonthlyRevenueData(revenueByMonth);
         setLoading(false);
 
-        // Process recent orders (can be derived from all orders)
+        // Process recent orders
         const sortedOrders = [...fetchedSellerOrders].sort((a,b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
         const fetchedRecentOrders = sortedOrders.slice(0, 5);
         setRecentOrders(fetchedRecentOrders);
@@ -126,7 +133,6 @@ export default function DashboardPage() {
         if (fetchedRecentOrders.length > 0) {
           const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))].filter(Boolean);
           if(customerIds.length > 0) {
-            // Firestore 'in' query is limited to 30 items, chunk if needed.
             const chunks = [];
             for (let i = 0; i < customerIds.length; i += 30) {
               chunks.push(customerIds.slice(i, i + 30));
@@ -146,12 +152,7 @@ export default function DashboardPage() {
         setOrdersLoading(false);
 
       } catch (error) {
-        console.error("Error fetching seller dashboard data:", error);
-        toast({
-            variant: "destructive",
-            title: "Gagal Memuat Data",
-            description: "Terjadi kesalahan saat mengambil data dasbor.",
-        });
+        // Errors are now caught and re-thrown by the getDocs calls, so this block is mainly for final state updates
         setLoading(false);
         setOrdersLoading(false);
       }
