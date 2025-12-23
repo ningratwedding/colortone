@@ -78,18 +78,13 @@ export default function DashboardPage() {
       setOrdersLoading(true);
 
       const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
+      // **FIXED QUERY:** Added the mandatory where clause
       const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
 
       try {
         const [productsSnapshot, allOrdersSnapshot] = await Promise.all([
-          getDocs(productsQuery).catch(async (error) => {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'products', operation: 'list' }));
-            throw error;
-          }),
-          getDocs(allOrdersQuery).catch(async (error) => {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'orders', operation: 'list' }));
-            throw error;
-          }),
+          getDocs(productsQuery),
+          getDocs(allOrdersQuery),
         ]);
         
         const fetchedSellerProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
@@ -152,7 +147,12 @@ export default function DashboardPage() {
         setOrdersLoading(false);
 
       } catch (error) {
-        // Errors are now caught and re-thrown by the getDocs calls, so this block is mainly for final state updates
+        console.error("Error fetching seller dashboard data:", error);
+        toast({
+            variant: "destructive",
+            title: "Gagal Memuat Data",
+            description: "Tidak dapat memuat data dasbor. Pastikan Anda memiliki izin yang benar."
+        })
         setLoading(false);
         setOrdersLoading(false);
       }
