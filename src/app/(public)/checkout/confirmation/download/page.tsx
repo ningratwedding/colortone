@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useMemo } from 'react';
@@ -37,11 +36,11 @@ function DownloadContent() {
 
   const { data: product, loading: productLoading } = useDoc<Product>(productRef);
 
-  const creatorRef = useMemo(() => {
+  const sellerRef = useMemo(() => {
     if (!firestore || !product?.creatorId) return null;
     return doc(firestore, 'users', product.creatorId);
   }, [firestore, product?.creatorId]);
-  const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
+  const { data: seller, loading: sellerLoading } = useDoc<UserProfile>(sellerRef);
 
 
   const handleDownload = () => {
@@ -54,7 +53,7 @@ function DownloadContent() {
     document.body.removeChild(link);
   }
 
-  const loading = userLoading || orderLoading || productLoading || creatorLoading;
+  const loading = userLoading || orderLoading || productLoading || sellerLoading;
 
   if (loading) {
       return (
@@ -115,7 +114,7 @@ function DownloadContent() {
                 />
                 <div className="flex-1">
                 <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-muted-foreground">Oleh {creator?.name || '...'}</p>
+                <p className="text-sm text-muted-foreground">Oleh {seller?.name || '...'}</p>
                 </div>
             </div>
           </div>

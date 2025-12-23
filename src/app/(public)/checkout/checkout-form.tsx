@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -50,12 +49,12 @@ export default function CheckoutForm({ product }: { product?: Product }) {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const creatorRef = useMemo(() => {
+  const sellerRef = useMemo(() => {
     if (!firestore || !product?.creatorId) return null;
     return doc(firestore, 'users', product.creatorId);
   }, [firestore, product?.creatorId]);
   
-  const { data: creator } = useDoc<UserProfile>(creatorRef);
+  const { data: seller } = useDoc<UserProfile>(sellerRef);
 
   useEffect(() => {
     if (!product) return;
@@ -262,7 +261,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
                   <div>
                     <p className="font-medium text-sm leading-tight">{product.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      Oleh {creator?.name || '...'}
+                      Oleh {seller?.name || '...'}
                     </p>
                   </div>
                 </div>
