@@ -115,7 +115,7 @@ export default function HomeClient() {
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto mb-4 text-white" />
             <h1 className="text-3xl md:text-5xl font-bold font-headline">
-                Platform Digital untuk Bisnis Kreatif Anda
+                Satu Link untuk Semua Bisnis Anda
             </h1>
           </div>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">

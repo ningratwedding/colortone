@@ -24,12 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const appName = settings?.appName || siteConfig.name;
   const appDescription = settings?.appDescription || `Buat halaman link-in-bio yang bisa langsung jualan. ${siteConfig.description}`;
   const ogImage = settings?.ogImageUrl || siteConfig.ogImage;
+  const pageTitle = `${appName}: Satu Link untuk Semua Bisnis Anda`;
 
   return {
-    title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
+    title: pageTitle,
     description: appDescription,
     openGraph: {
-      title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
+      title: pageTitle,
       description: appDescription,
       url: siteConfig.url,
       siteName: appName,
@@ -46,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
      twitter: {
       card: 'summary_large_image',
-      title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
+      title: pageTitle,
       description: appDescription,
       images: [ogImage],
     },
