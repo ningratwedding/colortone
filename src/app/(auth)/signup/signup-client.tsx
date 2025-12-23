@@ -6,8 +6,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import type { User } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
 
@@ -62,6 +62,8 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function SignupPageClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSlug = searchParams.get('slug') || "";
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const firestore = useFirestore();
@@ -69,7 +71,7 @@ export default function SignupPageClient() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      profileName: "",
+      profileName: initialSlug,
       fullName: "",
       email: "",
       phoneNumber: "",
@@ -216,31 +218,38 @@ export default function SignupPageClient() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="profileName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Url Profile</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="url-anda" 
-                        {...field} 
-                        disabled={form.formState.isSubmitting} 
-                        onChange={(e) => {
-                            // Convert to lowercase and remove invalid characters
-                            const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-                            field.onChange(sanitizedValue);
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                        Ini akan menjadi URL profil publik Anda: {siteConfig.url}/{form.watch('profileName') || '...'}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!initialSlug && (
+                <FormField
+                  control={form.control}
+                  name="profileName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Url Profile</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="url-anda" 
+                          {...field} 
+                          disabled={form.formState.isSubmitting} 
+                          onChange={(e) => {
+                              // Convert to lowercase and remove invalid characters
+                              const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                              field.onChange(sanitizedValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                          Ini akan menjadi URL profil publik Anda: {siteConfig.url}/{form.watch('profileName') || '...'}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+               {initialSlug && (
+                 <div className="text-sm rounded-md bg-muted p-3 text-muted-foreground">
+                    URL Profil Publik Anda akan menjadi: <span className="font-semibold text-foreground">{siteConfig.url}/{initialSlug}</span>
+                 </div>
+               )}
                <FormField
                 control={form.control}
                 name="fullName"
@@ -385,3 +394,5 @@ export default function SignupPageClient() {
     </div>
   );
 }
+
+    
