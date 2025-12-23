@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -76,6 +75,7 @@ export default function DashboardPage() {
       setOrdersLoading(true);
 
       try {
+        // Query yang aman dan sesuai dengan security rules
         const productsQuery = query(collection(firestore, 'products'), where('creatorId', '==', user.uid));
         const allOrdersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
         
@@ -468,5 +468,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
