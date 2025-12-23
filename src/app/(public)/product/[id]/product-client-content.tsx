@@ -1,8 +1,7 @@
-
 'use client';
 
 import Image from "next/image";
-import { notFound, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ShoppingCart,
   Share2,
@@ -10,18 +9,12 @@ import {
 import { useMemo, useEffect, useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 import Link from "next/link";
 import { ImageCompareSlider } from "@/components/image-compare-slider";
-import { useDoc } from "@/firebase/firestore/use-doc";
 import { useCollection } from "@/firebase/firestore/use-collection";
-import { doc, collection, query } from "firebase/firestore";
+import { collection, query } from "firebase/firestore";
 import { useFirestore } from "@/firebase/provider";
 import type { Product, UserProfile, Software } from "@/lib/data";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase/auth/use-user";
 import { useToast } from "@/hooks/use-toast";
@@ -29,27 +22,20 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { doc } from 'firebase/firestore';
 
 
-export function ProductPageContent({ productId }: { productId: string }) {
+interface ProductPageContentProps {
+    product: Product;
+    creator: UserProfile | null;
+}
+
+export function ProductPageContent({ product, creator }: ProductPageContentProps) {
   const firestore = useFirestore();
   const [activeTab, setActiveTab] = useState('gallery');
   const [formattedPrice, setFormattedPrice] = useState<string>("");
   
-  const productRef = useMemo(() => {
-    if (!firestore || !productId) return null;
-    return doc(firestore, 'products', productId);
-  }, [firestore, productId]);
-
-  const { data: product, loading: productLoading } = useDoc<Product>(productRef);
-
-  const creatorRef = useMemo(() => {
-      if (!firestore || !product?.creatorId) return null;
-      return doc(firestore, 'users', product.creatorId);
-  }, [firestore, product?.creatorId]);
-
-  const { data: creator, loading: creatorLoading } = useDoc<UserProfile>(creatorRef);
-
   const softwareQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'software'));
@@ -109,7 +95,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
 
   const buttonLoading = userLoading || profileLoading;
 
-
   const compatibleSoftwareDetails = useMemo(() => {
     if (!product?.compatibleSoftware || !softwareList) return [];
     return product.compatibleSoftware
@@ -130,38 +115,6 @@ export function ProductPageContent({ productId }: { productId: string }) {
     }
   }, [product]);
 
-
-  if (productLoading || creatorLoading || softwareLoading) {
-    return (
-        <div className="container mx-auto px-2 py-6">
-            <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
-                <div>
-                    <Skeleton className="aspect-[3/2] w-full rounded-lg" />
-                    <div className="flex gap-2 mt-2">
-                        <Skeleton className="h-16 w-24 rounded-md" />
-                        <Skeleton className="h-16 w-24 rounded-md" />
-                    </div>
-                </div>
-                <div className="flex flex-col gap-4">
-                    <Skeleton className="h-8 w-3/4" />
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-5 w-24" />
-                    </div>
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-10 w-48" />
-                    <Skeleton className="h-28 w-full" />
-                </div>
-            </div>
-        </div>
-    );
-  }
-
-  if (!product) {
-    notFound();
-  }
-  
   const hasComparison = product.imageBeforeUrl && product.imageAfterUrl;
   const galleryImage = product.galleryImageUrls?.[0];
   const comparisonImage = product.imageAfterUrl;

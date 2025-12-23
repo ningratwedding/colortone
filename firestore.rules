@@ -28,7 +28,7 @@ service cloud.firestore {
     match /products/{productId} {
       allow get: if true;
       allow list: if request.auth != null;
-      allow write: if request.auth != null && (request.resource.data.creatorId == request.auth.uid || isAdmin());
+      allow write: if request.auth != null && (resource.data.creatorId == request.auth.uid || isAdmin());
     }
     
     // Aturan untuk sub-koleksi order milik pengguna.
@@ -40,7 +40,7 @@ service cloud.firestore {
     // Izinkan seller atau admin untuk melakukan query list di semua koleksi 'orders'.
     // Ini penting untuk dasbor seller dan admin.
     match /{path=**}/orders/{orderId} {
-      allow list: if isSeller() || isAdmin();
+      allow list: if (isSeller() && request.query.where.creatorId == request.auth.uid) || isAdmin();
     }
 
     match /categories/{categoryId} {

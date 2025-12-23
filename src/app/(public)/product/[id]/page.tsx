@@ -75,7 +75,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 export default async function ProductPage({ params }: Props) {
-    // Data fetching happens server-side, but rendering is client-side
-    // We pass the ID to the client component to re-fetch and handle interactions.
-    return <ProductPageContent productId={params.id} />;
+    const { product, creator } = await getProductAndCreator(params.id);
+
+    if (!product) {
+        notFound();
+    }
+    
+    // Kirim data yang sudah diambil ke komponen klien
+    return <ProductPageContent product={product} creator={creator} />;
 }
