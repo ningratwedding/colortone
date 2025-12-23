@@ -1,0 +1,66 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isSeller() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'seller';
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Aturan untuk produk:
+    // - Siapa pun bisa membaca detail satu produk (get).
+    // - Semua pengguna yang login dapat melakukan query list pada koleksi.
+    // - Hanya kreator produk atau admin yang bisa menulis.
+    match /products/{productId} {
+      allow get: if true;
+      allow list: if request.auth != null;
+      allow write: if request.auth != null && (request.resource.data.creatorId == request.auth.uid || isAdmin());
+    }
+    
+    // Aturan untuk sub-koleksi order milik pengguna.
+    match /users/{userId}/orders/{orderId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+    
+    // Aturan untuk collection group 'orders'
+    // Izinkan seller atau admin untuk melakukan query list di semua koleksi 'orders'.
+    // Ini penting untuk dasbor seller dan admin.
+    match /{path=**}/orders/{orderId} {
+      allow list: if (isSeller() && request.query.where.creatorId == request.auth.uid) || isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /software/{softwareId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /campaigns/{campaignId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /platform_settings/{settingsId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
