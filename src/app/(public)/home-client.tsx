@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, ShoppingCart } from 'lucide-react';
+import { Handshake, CheckCircle, Package, Link2, Users, Palette, BarChart, ShoppingCart, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,10 +13,16 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useUser } from '@/firebase/auth/use-user';
 import { Skeleton } from '@/components/ui/skeleton';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import { useToast } from '@/hooks/use-toast';
 
 export default function HomeClient() {
   const [slug, setSlug] = useState('');
+  const [isChecking, setIsChecking] = useState(false);
   const router = useRouter();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
   
   const placeholderTexts = useMemo(() => ['brand-anda', 'toko-kreatif', 'karya-terbaikmu'], []);
@@ -58,10 +64,44 @@ export default function HomeClient() {
     return () => clearTimeout(typingTimeout);
   }, [placeholderTexts]);
 
-  const handleClaimUsername = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleClaimUsername = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (slug) {
-      router.push(`/signup?slug=${slug}`);
+    if (!slug || !firestore) return;
+
+    setIsChecking(true);
+    const sanitizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    
+    if (sanitizedSlug !== slug) {
+      setSlug(sanitizedSlug);
+    }
+    
+    try {
+        const usersRef = collection(firestore, 'users');
+        const q = query(usersRef, where('slug', '==', sanitizedSlug), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            toast({
+                variant: 'destructive',
+                title: 'URL Profil Tidak Tersedia',
+                description: `Nama "${sanitizedSlug}" sudah digunakan. Silakan pilih yang lain.`
+            });
+        } else {
+            toast({
+                title: 'URL Tersedia!',
+                description: 'Anda akan diarahkan ke halaman pendaftaran.'
+            });
+            router.push(`/signup?slug=${sanitizedSlug}`);
+        }
+    } catch (error) {
+        console.error("Error checking slug availability:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Terjadi Kesalahan',
+            description: 'Tidak dapat memeriksa ketersediaan URL saat ini. Coba lagi nanti.'
+        });
+    } finally {
+        setIsChecking(false);
     }
   };
 
@@ -130,15 +170,17 @@ export default function HomeClient() {
                     placeholder={placeholder}
                     className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[140px] pr-[100px] text-base"
                     value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
+                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                     aria-label="Klaim nama toko Anda"
+                    disabled={isChecking}
                 />
                 <Button
                     type="submit"
                     size="lg"
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
+                    disabled={isChecking || !slug}
                 >
-                    Buat Halaman
+                    {isChecking ? <Loader2 className="animate-spin" /> : 'Buat Halaman'}
                 </Button>
                 </div>
             </form>
