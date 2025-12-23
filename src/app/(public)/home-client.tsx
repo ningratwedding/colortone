@@ -164,11 +164,11 @@ export default function HomeClient() {
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
                 <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">{new URL(siteConfig.url).hostname}/</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">LinkStore/</span>
                 <Input
                     type="text"
                     placeholder={placeholder}
-                    className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[140px] pr-[100px] text-base"
+                    className="h-12 w-full rounded-full bg-background/90 text-foreground pl-[90px] pr-[100px] text-base"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                     aria-label="Klaim nama toko Anda"
