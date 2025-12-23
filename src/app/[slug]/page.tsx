@@ -1,3 +1,4 @@
+
 import { SiteFooter } from '@/components/site-footer';
 import * as React from 'react';
 import { ProfileContent } from './profile-client';
@@ -5,14 +6,14 @@ import { doc, getDoc, query, collection, where, getDocs, limit, documentId } fro
 import { initializeServerSideFirebase } from '@/firebase/server-init';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
-import type { Product, UserProfile } from '@/lib/data';
+import type { UserProfile } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
 type Props = {
   params: { slug: string }
 }
 
-async function getUserAndProducts(slug: string) {
+async function getUserProfile(slug: string): Promise<UserProfile | null> {
     const { firestore } = initializeServerSideFirebase();
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('slug', '==', slug), limit(1));
@@ -20,28 +21,15 @@ async function getUserAndProducts(slug: string) {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-        return { profileUser: null, products: [] };
+        return null;
     }
 
-    const profileUser = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
-    
-    let products: Product[] = [];
-    if (profileUser.role === 'seller' && profileUser.id) {
-        const productsQuery = query(collection(firestore, "products"), where('creatorId', '==', profileUser.id));
-        const productsSnapshot = await getDocs(productsQuery);
-        products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-    } else if (profileUser.role === 'affiliator' && profileUser.featuredProductIds && profileUser.featuredProductIds.length > 0) {
-        const productsQuery = query(collection(firestore, "products"), where(documentId(), 'in', profileUser.featuredProductIds.slice(0, 30)));
-        const productsSnapshot = await getDocs(productsQuery);
-        products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-    }
-
-    return { profileUser, products };
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
 }
 
 // This function generates metadata on the server.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { profileUser } = await getUserAndProducts(params.slug);
+    const profileUser = await getUserProfile(params.slug);
     
     if (profileUser) {
         const displayName = profileUser.fullName || profileUser.name;
@@ -77,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 export default async function ProfileRootPage({ params }: { params: { slug: string } }) {
-    const { profileUser, products } = await getUserAndProducts(params.slug);
+    const profileUser = await getUserProfile(params.slug);
 
     if (!profileUser) {
         notFound();
@@ -86,7 +74,8 @@ export default async function ProfileRootPage({ params }: { params: { slug: stri
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex-grow">
-                <ProfileContent profileUser={profileUser} products={products} />
+                {/* Products are now fetched client-side in ProfileContent */}
+                <ProfileContent profileUser={profileUser} />
             </main>
             <SiteFooter />
         </div>

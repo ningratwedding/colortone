@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import { Globe, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
@@ -15,6 +14,10 @@ import { hexToRgba } from '@/lib/hex-to-rgba';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore } from '@/firebase/provider';
+import { collection, query, where, documentId } from 'firebase/firestore';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -66,99 +69,138 @@ type SocialPlatform = keyof typeof socialIcons;
 
 interface ProfileContentProps {
     profileUser: UserProfile;
-    products: Product[];
 }
 
+function ProductsView({ user }: { user: UserProfile }) {
+    const firestore = useFirestore();
 
-function SellerProfileView({ user, products }: { user: UserProfile; products: Product[] }) {
-  const displayName = user.fullName || user.name;
-  const columns = user.productCardSettings?.columns || 2;
-  return (
-    <>
-        {products && products.length > 0 ? (
-          <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} hideCreator={true} settings={user.productCardSettings} />
+    const productsQuery = useMemo(() => {
+        if (!firestore) return null;
+
+        if (user.role === 'seller' && user.id) {
+            return query(collection(firestore, "products"), where('creatorId', '==', user.id));
+        }
+        
+        if (user.role === 'affiliator' && user.featuredProductIds && user.featuredProductIds.length > 0) {
+            const productIds = user.featuredProductIds.slice(0, 30); // Firestore 'in' query limit
+            if (productIds.length === 0) return null;
+            return query(collection(firestore, "products"), where(documentId(), 'in', productIds));
+        }
+
+        return null;
+    }, [firestore, user]);
+
+    const { data: products, loading: productsLoading } = useCollection<Product>(productsQuery);
+
+    const [activeCategory, setActiveCategory] = useState('all');
+    const categories = user.affiliateProductCategories || [];
+    const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
+    const categorySettings = user.categorySettings || { style: 'default', size: 'default', shape: 'default' };
+    const columns = user.productCardSettings?.columns || 2;
+    const displayName = user.fullName || user.name;
+
+    if (productsLoading) {
+      return (
+        <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
+            {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-2"><Skeleton className="h-40 w-full" /><Skeleton className="h-4 w-3/4" /></div>
             ))}
-          </div>
-        ) : (
+        </div>
+      )
+    }
+
+    if (!products || products.length === 0) {
+      if (user.role === 'seller') {
+        return (
           <div className="text-center py-12 text-muted-foreground">
             <p>{displayName} belum memiliki produk.</p>
           </div>
-        )}
-    </>
-  );
+        );
+      }
+      if (user.role === 'affiliator') {
+         return (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Afiliator ini belum memilih produk unggulan.</p>
+          </div>
+        );
+      }
+      return null;
+    }
+
+    if (user.role === 'seller') {
+      return (
+        <div className={cn("grid gap-2", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} hideCreator={true} settings={user.productCardSettings} />
+            ))}
+        </div>
+      );
+    }
+    
+    if (user.role === 'affiliator') {
+      if (!hasFeaturedProducts) {
+        return (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Afiliator ini belum memilih produk unggulan.</p>
+          </div>
+        );
+      }
+
+      const allCategory: (typeof categories)[0] = { id: 'all', name: 'Semua Produk', productIds: user.featuredProductIds || [] };
+      const displayCategories = [allCategory, ...categories];
+      const activeProductIds = displayCategories.find(c => c.id === activeCategory)?.productIds || [];
+      const activeProducts = products.filter(p => activeProductIds.includes(p.id));
+
+      return (
+        <div className="w-full space-y-4">
+          <Carousel
+            opts={{ align: "start", dragFree: true }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2">
+              {displayCategories.map((cat) => {
+                const isActive = activeCategory === cat.id;
+                const style = {
+                    color: isActive ? categorySettings.activeColor : categorySettings.color,
+                    backgroundColor: isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor,
+                    borderColor: categorySettings.style === 'outline' && (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) ? (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) : undefined
+                }
+                return (
+                <CarouselItem key={cat.id} className="basis-auto pl-2">
+                  <Button
+                    variant={isActive ? categorySettings.style : "outline"}
+                    size={categorySettings.size}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={cn(categorySettings.shape === 'pill' && 'rounded-full')}
+                    style={style}
+                  >
+                    {cat.name}
+                  </Button>
+                </CarouselItem>
+              )})}
+            </CarouselContent>
+          </Carousel>
+          
+          {activeProducts.length > 0 ? (
+            <div className={cn("grid gap-2 mt-4", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
+              {activeProducts.map((product) => (
+                <ProductCard key={product.id} product={product} affiliateId={user.id} settings={user.productCardSettings} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Tidak ada produk dalam kategori ini.</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
 }
 
-function AffiliateProfileView({ user, products }: { user: UserProfile; products: Product[] }) {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const hasFeaturedProducts = user.featuredProductIds && user.featuredProductIds.length > 0;
-  const categories = user.affiliateProductCategories || [];
-  const categorySettings = user.categorySettings || { style: 'default', size: 'default', shape: 'default' };
-  const columns = user.productCardSettings?.columns || 2;
 
-  if (!hasFeaturedProducts || !products || products.length === 0) {
-    return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p>Afiliator ini belum memilih produk unggulan.</p>
-      </div>
-    );
-  }
-
-  const allCategory: (typeof categories)[0] = { id: 'all', name: 'Semua Produk', productIds: user.featuredProductIds || [] };
-  const displayCategories = [allCategory, ...categories];
-  const activeProducts = products.filter(p => displayCategories.find(c => c.id === activeCategory)?.productIds.includes(p.id));
-
-  return (
-     <div className="w-full space-y-4">
-      <Carousel
-        opts={{
-          align: "start",
-          dragFree: true,
-        }}
-        className="w-full"
-      >
-        <CarouselContent className="-ml-2">
-          {displayCategories.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            const style = {
-                color: isActive ? categorySettings.activeColor : categorySettings.color,
-                backgroundColor: isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor,
-                borderColor: categorySettings.style === 'outline' && (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) ? (isActive ? categorySettings.activeBackgroundColor : categorySettings.backgroundColor) : undefined
-            }
-            return (
-            <CarouselItem key={cat.id} className="basis-auto pl-2">
-              <Button
-                variant={isActive ? categorySettings.style : "outline"}
-                size={categorySettings.size}
-                onClick={() => setActiveCategory(cat.id)}
-                className={cn(categorySettings.shape === 'pill' && 'rounded-full')}
-                style={style}
-              >
-                {cat.name}
-              </Button>
-            </CarouselItem>
-          )})}
-        </CarouselContent>
-      </Carousel>
-      
-      {activeProducts.length > 0 ? (
-        <div className={cn("grid gap-2 mt-4", columns === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4')}>
-          {activeProducts.map((product) => (
-            <ProductCard key={product.id} product={product} affiliateId={user.id} settings={user.productCardSettings} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 text-muted-foreground">
-          <p>Tidak ada produk dalam kategori ini.</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-
-export function ProfileContent({ profileUser, products }: ProfileContentProps) {
+export function ProfileContent({ profileUser }: ProfileContentProps) {
   const { toast } = useToast();
   
   const displayName = profileUser.fullName || profileUser.name;
@@ -173,11 +215,9 @@ export function ProfileContent({ profileUser, products }: ProfileContentProps) {
         try {
             await navigator.share(shareData);
         } catch (err) {
-            // User cancelled the share, so we do nothing.
             console.log("Share was cancelled");
         }
     } else {
-        // Fallback for desktop
         navigator.clipboard.writeText(window.location.href);
         toast({
             title: 'Tautan Profil Disalin',
@@ -360,9 +400,8 @@ export function ProfileContent({ profileUser, products }: ProfileContentProps) {
 
 
         <main>
-          {profileUser.role === 'seller' && <SellerProfileView user={profileUser} products={products} />}
-          {profileUser.role === 'affiliator' && <AffiliateProfileView user={profileUser} products={products} />}
-          {profileUser.role === 'pembeli' && (!profileUser.bio && (!Array.isArray(profileUser.socials) || profileUser.socials.length === 0)) && (
+            <ProductsView user={profileUser} />
+            {profileUser.role === 'pembeli' && (!profileUser.bio && (!Array.isArray(profileUser.socials) || profileUser.socials.length === 0)) && (
             <div className="text-center py-12 text-muted-foreground">
               <p>Pengguna ini belum menambahkan bio atau tautan sosial.</p>
             </div>
