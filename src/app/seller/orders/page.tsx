@@ -45,7 +45,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase/auth/use-user';
-import { collection, query, getDocs, doc, updateDoc, where, collectionGroup, documentId } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, where, collectionGroup, documentId, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -105,7 +105,6 @@ export default function OrdersPage() {
       setOrdersLoading(true);
 
       try {
-        // PERBAIKAN: Menambahkan `where` clause untuk creatorId
         const ordersQuery = query(
           collectionGroup(firestore, 'orders'), 
           where('creatorId', '==', user.uid)
@@ -132,15 +131,18 @@ export default function OrdersPage() {
         setCustomers(customersData);
 
       } catch (error) {
-        console.error("Failed to fetch orders:", error);
+        console.error("Error fetching orders:", error);
         if (error instanceof FirebaseError && error.code === 'failed-precondition') {
-             toast({
+            const indexCreationLink = error.message.match(/https?:\/\/[^\s]+/);
+            console.error(
+                `Firestore index required. Please create the index using this link: ${indexCreationLink ? indexCreationLink[0] : 'Check Firestore error message for the link.'}`
+            );
+            toast({
                 variant: 'destructive',
                 title: 'Indeks Firestore Diperlukan',
                 description: 'Query memerlukan indeks. Silakan periksa konsol browser untuk tautan pembuatan indeks.',
                 duration: 10000,
             });
-            console.error("Firestore index required. Please create the index using the link provided in the Firebase error message in the console.");
         } else {
             toast({ variant: 'destructive', title: 'Gagal Memuat Pesanan', description: 'Terjadi kesalahan saat mengambil data pesanan.' });
         }
@@ -149,11 +151,9 @@ export default function OrdersPage() {
       }
     }
     
-    // Pastikan query hanya berjalan jika user sudah login
     if(user && firestore) {
       fetchOrders();
     } else if (!userLoading) {
-      // Jika loading selesai dan tidak ada user, hentikan loading pesanan
       setOrdersLoading(false);
     }
   }, [user, userLoading, firestore, toast]);
