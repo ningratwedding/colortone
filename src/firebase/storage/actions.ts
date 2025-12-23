@@ -108,7 +108,7 @@ export const uploadFile = async (
     const publicUrl = `${bucketUrl}/${key}`;
 
     // 2. Upload the file to the presigned URL
-    await fetch(url, {
+    const uploadResponse = await fetch(url, {
       method: 'PUT',
       body: fileToUpload,
       headers: {
@@ -116,10 +116,20 @@ export const uploadFile = async (
       },
     });
 
+    if (!uploadResponse.ok) {
+        // This provides more specific feedback if the PUT request fails.
+        const errorText = await uploadResponse.text();
+        console.error('S3 Upload Error:', errorText);
+        throw new Error(`Upload to S3 failed: ${uploadResponse.status} ${uploadResponse.statusText}. This is often a CORS configuration issue on your S3 bucket.`);
+    }
+
     // 3. Return the public URL of the uploaded file
     return publicUrl;
   } catch (error) {
-    console.error('Error uploading file:', error);
+    console.error('Error during file upload process:', error);
+    if (error instanceof Error && error.message.includes('CORS')) {
+      throw new Error('File upload failed. This may be due to a CORS issue. Please check your S3 bucket\'s CORS configuration to allow PUT requests from your domain.');
+    }
     throw new Error('File upload failed. Please try again.');
   }
 };
