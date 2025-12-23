@@ -125,12 +125,20 @@ export default function DashboardPage() {
         if (fetchedRecentOrders.length > 0) {
           const customerIds = [...new Set(fetchedRecentOrders.map(o => o.userId))].filter(Boolean);
           if(customerIds.length > 0) {
-            const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', customerIds));
-            const customersSnapshot = await getDocs(customersQuery);
+            // Firestore 'in' query is limited to 30 items, chunk if needed.
+            const chunks = [];
+            for (let i = 0; i < customerIds.length; i += 30) {
+              chunks.push(customerIds.slice(i, i + 30));
+            }
+
             const customersData: Record<string, UserProfile> = {};
-            customersSnapshot.forEach(doc => {
-              customersData[doc.id] = {id: doc.id, ...doc.data()} as UserProfile;
-            });
+            for (const chunk of chunks) {
+              const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', chunk));
+              const customersSnapshot = await getDocs(customersQuery);
+              customersSnapshot.forEach(doc => {
+                customersData[doc.id] = {id: doc.id, ...doc.data()} as UserProfile;
+              });
+            }
             setCustomers(customersData);
           }
         }
