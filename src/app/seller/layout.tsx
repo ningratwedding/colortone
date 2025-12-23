@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -16,6 +17,7 @@ import {
   LogOut,
   Palette,
   User,
+  Folder,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -57,6 +59,7 @@ const menuItems = [
   { href: '/seller/dashboard', label: 'Ringkasan', icon: Home, exact: true },
   { href: '/seller/products', label: 'Produk', icon: Package },
   { href: '/seller/orders', label: 'Pesanan', icon: ShoppingCart },
+  { href: '/seller/manager-file', label: 'Manajer File', icon: Folder },
 ];
 
 const settingsItem = { href: '/seller/settings', label: 'Pengaturan Toko', icon: Settings };
