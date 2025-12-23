@@ -237,9 +237,10 @@ export default function SignupPageClient() {
                           }}
                         />
                       </FormControl>
-                      <FormDescription>
-                          Ini akan menjadi URL profil publik Anda: {siteConfig.url}/{form.watch('profileName') || '...'}
-                      </FormDescription>
+                       <div className="text-sm rounded-md bg-muted p-2 text-muted-foreground flex items-center gap-2">
+                        <Logo className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{new URL(siteConfig.url).hostname}/{form.watch('profileName') || '...'}</span>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -394,5 +395,3 @@ export default function SignupPageClient() {
     </div>
   );
 }
-
-    
