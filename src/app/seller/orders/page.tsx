@@ -104,13 +104,12 @@ export default function OrdersPage() {
       if (!user || !firestore) return;
       setOrdersLoading(true);
 
-      try {
-        const ordersQuery = query(
-          collectionGroup(firestore, 'orders'), 
-          where('creatorId', '==', user.uid)
-        );
-        
-        const ordersSnapshot = await getDocs(ordersQuery);
+      const ordersQuery = query(
+        collectionGroup(firestore, 'orders'), 
+        where('creatorId', '==', user.uid)
+      );
+      
+      getDocs(ordersQuery).then(async (ordersSnapshot) => {
         const fetchedOrders = ordersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, path: doc.ref.path } as Order & { path: string }));
         fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
         setOrders(fetchedOrders);
@@ -129,26 +128,15 @@ export default function OrdersPage() {
             }
         }
         setCustomers(customersData);
-
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        if (error instanceof FirebaseError && error.code === 'failed-precondition') {
-            const indexCreationLink = error.message.match(/https?:\/\/[^\s]+/);
-            console.error(
-                `Firestore index required. Please create the index using this link: ${indexCreationLink ? indexCreationLink[0] : 'Check Firestore error message for the link.'}`
-            );
-            toast({
-                variant: 'destructive',
-                title: 'Indeks Firestore Diperlukan',
-                description: 'Query memerlukan indeks. Silakan periksa konsol browser untuk tautan pembuatan indeks.',
-                duration: 10000,
-            });
-        } else {
-            toast({ variant: 'destructive', title: 'Gagal Memuat Pesanan', description: 'Terjadi kesalahan saat mengambil data pesanan.' });
-        }
-      } finally {
         setOrdersLoading(false);
-      }
+      }).catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: `orders (collectionGroup)`,
+            operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setOrdersLoading(false);
+      });
     }
     
     if(user && firestore) {
@@ -192,154 +180,154 @@ export default function OrdersPage() {
 
   return (
     <>
-    <Card>
-      <CardHeader className="flex-row items-center justify-between">
-        <div>
-          <CardTitle>Pesanan Terbaru</CardTitle>
-          <CardDescription>
-            Lihat dan kelola pesanan yang masuk untuk produk Anda.
-          </CardDescription>
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={'outline'}
-              className={cn(
-                'w-[260px] justify-start text-left font-normal',
-                !date && 'text-muted-foreground'
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, 'd LLL, y', { locale: id })} -{' '}
-                    {format(date.to, 'd LLL, y', { locale: id })}
-                  </>
+      <Card>
+        <CardHeader className="flex-row items-center justify-between">
+          <div>
+            <CardTitle>Pesanan Terbaru</CardTitle>
+            <CardDescription>
+              Lihat dan kelola pesanan yang masuk untuk produk Anda.
+            </CardDescription>
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={'outline'}
+                className={cn(
+                  'w-[260px] justify-start text-left font-normal',
+                  !date && 'text-muted-foreground'
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, 'd LLL, y', { locale: id })} -{' '}
+                      {format(date.to, 'd LLL, y', { locale: id })}
+                    </>
+                  ) : (
+                    format(date.from, 'd LLL, y', { locale: id })
+                  )
                 ) : (
-                  format(date.from, 'd LLL, y', { locale: id })
-                )
-              ) : (
-                <span>Pilih rentang tanggal</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="end">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
-              numberOfMonths={2}
-              locale={id}
-            />
-          </PopoverContent>
-        </Popover>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID Pesanan</TableHead>
-              <TableHead>Pelanggan</TableHead>
-              <TableHead className="hidden md:table-cell">Produk</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="hidden lg:table-cell">Tanggal</TableHead>
-              <TableHead>
-                <span className="sr-only">Tindakan</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading && Array.from({length: 3}).map((_, i) => (
-                <TableRow key={i}>
-                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-28" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
-                </TableRow>
-            ))}
-            {!loading && orders.map((order) => (
-              <TableRow key={order.id} className={cn(order.status === 'Dibatalkan' && 'bg-muted/50')}>
-                <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>
-                  <div className="font-medium">{customers[order.userId]?.name || 'Memuat...'}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {customers[order.userId]?.email || '...'}
-                  </div>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {order.productName}
-                </TableCell>
-                <TableCell>{formatCurrency(order.amount)}</TableCell>
-                <TableCell>
-                  {getStatusBadge(order.status)}
-                </TableCell>
-                <TableCell className="hidden lg:table-cell">
-                  {formatDate(new Date(order.purchaseDate.seconds * 1000))}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        aria-haspopup="true"
-                        size="icon"
-                        variant="ghost"
-                        disabled={order.status === 'Dibatalkan'}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Alihkan menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
-                       <DropdownMenuItem>Lihat Detail</DropdownMenuItem>
-                       <DropdownMenuItem>Tandai Selesai</DropdownMenuItem>
-                       <DropdownMenuSeparator />
-                       <DropdownMenuItem 
-                         className="text-destructive"
-                         onSelect={() => openCancelDialog(order)}
-                        >
-                         <Trash2 className="mr-2 h-4 w-4" />
-                         Tolak Pesanan
-                       </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                  <span>Pilih rentang tanggal</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+                locale={id}
+              />
+            </PopoverContent>
+          </Popover>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID Pesanan</TableHead>
+                <TableHead>Pelanggan</TableHead>
+                <TableHead className="hidden md:table-cell">Produk</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="hidden lg:table-cell">Tanggal</TableHead>
+                <TableHead>
+                  <span className="sr-only">Tindakan</span>
+                </TableHead>
               </TableRow>
-            ))}
-             {!loading && orders.length === 0 && (
-                <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                        Tidak ada pesanan yang ditemukan.
-                    </TableCell>
+            </TableHeader>
+            <TableBody>
+              {loading && Array.from({length: 3}).map((_, i) => (
+                  <TableRow key={i}>
+                      <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-28" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-32" /></TableCell>
+                      <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                  </TableRow>
+              ))}
+              {!loading && orders.map((order) => (
+                <TableRow key={order.id} className={cn(order.status === 'Dibatalkan' && 'bg-muted/50')}>
+                  <TableCell className="font-medium">{order.id}</TableCell>
+                  <TableCell>
+                    <div className="font-medium">{customers[order.userId]?.name || 'Memuat...'}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {customers[order.userId]?.email || '...'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {order.productName}
+                  </TableCell>
+                  <TableCell>{formatCurrency(order.amount)}</TableCell>
+                  <TableCell>
+                    {getStatusBadge(order.status)}
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {formatDate(new Date(order.purchaseDate.seconds * 1000))}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                          disabled={order.status === 'Dibatalkan'}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Alihkan menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
+                         <DropdownMenuItem>Lihat Detail</DropdownMenuItem>
+                         <DropdownMenuItem>Tandai Selesai</DropdownMenuItem>
+                         <DropdownMenuSeparator />
+                         <DropdownMenuItem 
+                           className="text-destructive"
+                           onSelect={() => openCancelDialog(order)}
+                          >
+                           <Trash2 className="mr-2 h-4 w-4" />
+                           Tolak Pesanan
+                         </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
-              )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+              ))}
+               {!loading && orders.length === 0 && (
+                  <TableRow>
+                      <TableCell colSpan={7} className="h-24 text-center">
+                          Tidak ada pesanan yang ditemukan.
+                      </TableCell>
+                  </TableRow>
+                )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-    <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    Tindakan ini akan membatalkan pesanan <span className="font-semibold">#{orderToCancel?.id}</span>. Status akan diubah menjadi "Dibatalkan" dan tidak dapat diubah kembali.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setOrderToCancel(null)}>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={handleCancelOrder}>Ya, Batalkan Pesanan</AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+      <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      Tindakan ini akan membatalkan pesanan <span className="font-semibold">#{orderToCancel?.id}</span>. Status akan diubah menjadi "Dibatalkan" dan tidak dapat diubah kembali.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setOrderToCancel(null)}>Batal</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCancelOrder}>Ya, Batalkan Pesanan</AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
