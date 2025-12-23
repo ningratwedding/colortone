@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -20,7 +19,7 @@ export default function SellersPage() {
 
   const sellersQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'users'), where('role', '==', 'seller'));
+    return query(collection(firestore, 'users'), where('role', 'in', ['seller', 'affiliator']));
   }, [firestore]);
 
   const { data: sellers, loading } = useCollection<UserProfile>(sellersQuery);
@@ -28,9 +27,9 @@ export default function SellersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline">Jelajahi Penjual Kami</h1>
+        <h1 className="text-3xl md:text-4xl font-bold font-headline">Jelajahi Para Kreator</h1>
         <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Temukan dan dukung para pelaku UMKM dan penjual berbakat di platform kami.
+          Temukan dan dukung para kreator dan penjual berbakat di platform kami.
         </p>
       </header>
 
@@ -59,9 +58,9 @@ export default function SellersPage() {
       ) : (
         <Alert>
             <Users className="h-4 w-4" />
-            <AlertTitle>Belum Ada Penjual</AlertTitle>
+            <AlertTitle>Belum Ada Kreator</AlertTitle>
             <AlertDescription>
-                Saat ini belum ada penjual yang terdaftar. Jadilah yang pertama!
+                Saat ini belum ada penjual atau kreator yang terdaftar. Jadilah yang pertama!
             </AlertDescription>
         </Alert>
       )}

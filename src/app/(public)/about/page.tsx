@@ -1,3 +1,4 @@
+
 import { Handshake, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -5,7 +6,7 @@ import { siteConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
 const pageTitle = 'Tentang Kami';
-const pageDescription = `Pelajari lebih lanjut tentang misi dan visi ${siteConfig.name} untuk memberdayakan UMKM di seluruh Indonesia.`;
+const pageDescription = `Pelajari lebih lanjut tentang misi dan visi ${siteConfig.name} untuk memberdayakan para kreator dan pebisnis di seluruh Indonesia.`;
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -37,26 +38,26 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
     const vision =
-    "Menciptakan ekosistem digital yang setara, di mana setiap UMKM di Indonesia memiliki kesempatan untuk tumbuh, berinovasi, dan menjangkau pasar yang lebih luas tanpa batas.";
+    "Menciptakan ekosistem digital yang setara, di mana setiap kreator dan bisnis di Indonesia memiliki kesempatan untuk tumbuh, berinovasi, dan menjangkau pasar yang lebih luas tanpa batas.";
 
   const missions = [
-    'Menyediakan platform yang mudah digunakan bagi UMKM untuk membangun etalase digital yang profesional.',
-    'Memberdayakan pelaku UMKM dengan alat penjualan dan pemasaran yang efektif untuk meningkatkan pendapatan.',
-    'Membangun komunitas yang suportif untuk para pelaku UMKM saling berbagi, belajar, dan berkolaborasi.',
-    'Menjembatani UMKM dengan pelanggan setia melalui program reseller dan fitur interaksi.',
-    'Mendorong pertumbuhan ekonomi lokal dengan mempermudah akses pasar bagi produk-produk UMKM.',
-    'Memberikan data dan wawasan untuk membantu UMKM mengambil keputusan bisnis yang lebih baik.',
+    'Menyediakan platform yang mudah digunakan untuk membangun etalase digital yang profesional.',
+    'Memberdayakan para kreator dan pebisnis dengan alat penjualan dan pemasaran yang efektif.',
+    'Membangun komunitas yang suportif untuk para pelaku usaha saling berbagi, belajar, dan berkolaborasi.',
+    'Menjembatani kreator dengan audiens setia mereka melalui program reseller dan fitur interaksi.',
+    'Mendorong pertumbuhan ekonomi kreatif dengan mempermudah akses pasar bagi berbagai jenis produk.',
+    'Memberikan data dan wawasan untuk membantu bisnis mengambil keputusan yang lebih baik.',
   ];
 
   const commitment =
-    'Kami berkomitmen untuk menjadi mitra terpercaya bagi setiap UMKM di Indonesia. Kami menyediakan teknologi, dukungan, dan ruang untuk memastikan setiap langkah pertumbuhan bisnis Anda lebih mudah, lebih cepat, dan lebih berdampak.';
+    'Kami berkomitmen untuk menjadi mitra terpercaya bagi setiap kreator dan pebisnis di Indonesia. Kami menyediakan teknologi, dukungan, dan ruang untuk memastikan setiap langkah pertumbuhan bisnis Anda lebih mudah, lebih cepat, dan lebih berdampak.';
 
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8 md:py-12 space-y-12 md:space-y-16">
         <header className="text-center">
             <h1 className="text-3xl md:text-4xl font-bold font-headline">Tentang {siteConfig.name}</h1>
-            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">Memberdayakan UMKM Indonesia untuk bertumbuh dan berjaya.</p>
+            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">Memberdayakan kreator dan pebisnis Indonesia untuk bertumbuh dan berjaya.</p>
         </header>
 
         {/* Komitmen Section */}

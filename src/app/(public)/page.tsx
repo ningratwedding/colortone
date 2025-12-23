@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
 import HomeClient from './home-client';
@@ -25,10 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const ogImage = settings?.ogImageUrl || siteConfig.ogImage;
 
   return {
-    title: `${appName}: Etalase Digital untuk Semua UMKM`,
+    title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
     description: appDescription,
     openGraph: {
-      title: `${appName}: Etalase Digital untuk Semua UMKM`,
+      title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
       description: appDescription,
       url: siteConfig.url,
       siteName: appName,
@@ -45,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
      twitter: {
       card: 'summary_large_image',
-      title: `${appName}: Etalase Digital untuk Semua UMKM`,
+      title: `${appName}: Platform Digital untuk Bisnis Kreatif Anda`,
       description: appDescription,
       images: [ogImage],
     },

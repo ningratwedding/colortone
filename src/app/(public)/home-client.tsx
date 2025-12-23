@@ -19,7 +19,7 @@ export default function HomeClient() {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
   
-  const placeholderTexts = useMemo(() => ['warung-ibu-ani', 'batik-jaya', 'kopi-nusantara'], []);
+  const placeholderTexts = useMemo(() => ['brand-anda', 'toko-kreatif', 'karya-terbaikmu'], []);
   const [placeholder, setPlaceholder] = useState(placeholderTexts[0]);
   
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function HomeClient() {
     {
       icon: Package,
       title: 'Semua Jenis Produk',
-      description: 'Jual produk fisik, digital, jasa, atau apa pun. Platform kami fleksibel untuk segala jenis UMKM.',
+      description: 'Jual produk fisik, digital, jasa, atau apa pun. Platform kami fleksibel untuk segala jenis bisnis dan kreator.',
     },
     {
       icon: Link2,
@@ -115,11 +115,11 @@ export default function HomeClient() {
           <div className="flex flex-col items-center justify-center mb-6">
             <Logo className="h-12 w-auto mb-4 text-white" />
             <h1 className="text-3xl md:text-5xl font-bold font-headline">
-                Bawa Bisnis UMKM Anda ke Level Berikutnya
+                Platform Digital untuk Bisnis Kreatif Anda
             </h1>
           </div>
           <p className="mt-4 text-base md:text-lg max-w-2xl mx-auto text-primary-foreground/90">
-            LinkStore adalah platform digital lengkap untuk menampilkan, menjual, dan mengembangkan semua jenis produk UMKM.
+            LinkStore adalah etalase digital lengkap untuk menampilkan, menjual, dan mengembangkan semua jenis produk Anda.
           </p>
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
@@ -138,7 +138,7 @@ export default function HomeClient() {
                     size="lg"
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
                 >
-                    Buat Toko
+                    Buat Halaman
                 </Button>
                 </div>
             </form>

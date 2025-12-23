@@ -50,7 +50,7 @@ import { Separator } from './ui/separator';
 import { siteConfig } from '@/lib/config';
 
 const navLinks: { href: string; label: string }[] = [
-    { href: "/sellers", label: "Jelajahi Penjual" },
+    { href: "/sellers", label: "Jelajahi Kreator" },
 ];
 
 export function SiteHeader() {
@@ -227,7 +227,7 @@ export function SiteHeader() {
         <div className="flex items-center justify-end space-x-2">
           {!user && !loading && (
             <Button variant="secondary" className="hidden sm:inline-flex" asChild>
-              <Link href="/signup">Buka Toko</Link>
+              <Link href="/signup">Mulai Sekarang</Link>
             </Button>
           )}
           <UserMenu />
