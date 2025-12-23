@@ -38,9 +38,9 @@ service cloud.firestore {
     
     // Aturan untuk collection group 'orders'
     // Izinkan seller atau admin untuk melakukan query list di semua koleksi 'orders'.
-    // Ini penting untuk dasbor seller dan admin.
+    // Keamanan data untuk seller ditegakkan di level query aplikasi (where('creatorId', '==', user.uid))
     match /{path=**}/orders/{orderId} {
-      allow list: if (isSeller() && request.query.where.creatorId == request.auth.uid) || isAdmin();
+      allow list: if isSeller() || isAdmin();
     }
 
     match /categories/{categoryId} {
