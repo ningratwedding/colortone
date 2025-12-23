@@ -87,7 +87,7 @@ async function createUserDocument(user: User, data: Partial<SignUpData>): Promis
     const userDocRef = doc(db, 'users', user.uid);
     
     setDoc(userDocRef, newUserProfile)
-      .catch((serverError) => {
+      .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: userDocRef.path,
             operation: 'create',
@@ -215,5 +215,3 @@ export async function sendPasswordReset(email: string) {
     return { success: false, error: 'Terjadi kesalahan yang tidak diketahui.' };
   }
 }
-
-    

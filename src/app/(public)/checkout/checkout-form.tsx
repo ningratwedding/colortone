@@ -123,7 +123,7 @@ export default function CheckoutForm({ product }: { product?: Product }) {
         }
         router.push(`/checkout/confirmation?orderId=${orderRef.id}`);
       })
-      .catch((serverError) => {
+      .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/orders`,
             operation: 'create',

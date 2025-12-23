@@ -133,7 +133,7 @@ export default function LoginPageClient() {
       };
       
       setDoc(userRef, newUserProfileData)
-        .catch((serverError) => {
+        .catch(async (serverError) => {
             const permissionError = new FirestorePermissionError({
                 path: userRef.path,
                 operation: 'create',
@@ -199,9 +199,9 @@ export default function LoginPageClient() {
               </div>
             </Link>
           </div>
-          <CardTitle className="text-2xl">Selamat Datang Kembali</CardTitle>
+          <CardTitle className="text-2xl">Satu Link untuk Semua Bisnis Anda</CardTitle>
           <CardDescription>
-            Masuk untuk mengelola toko dan produk UMKM Anda.
+            Masuk untuk mengelola etalase digital dan produk Anda.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -299,5 +299,3 @@ export default function LoginPageClient() {
     </div>
   );
 }
-
-    

@@ -50,6 +50,8 @@ import { useFirestore } from '@/firebase/provider';
 import type { Order, UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 function formatCurrency(amount: number) {
     if (typeof amount !== 'number') return '';
@@ -136,20 +138,26 @@ export default function OrdersPage() {
   const handleCancelOrder = async () => {
     if (!orderToCancel || !firestore) return;
 
-    try {
-        const orderRef = doc(firestore, orderToCancel.path);
-        await updateDoc(orderRef, { status: 'Dibatalkan' });
-
-        setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));
-
-        toast({ title: 'Pesanan Dibatalkan', description: `Pesanan #${orderToCancel.id} telah berhasil dibatalkan.` });
-    } catch (error) {
-        console.error('Error cancelling order:', error);
-        toast({ variant: 'destructive', title: 'Gagal Membatalkan', description: 'Terjadi kesalahan saat membatalkan pesanan.' });
-    } finally {
-        setIsCancelDialogOpen(false);
-        setOrderToCancel(null);
-    }
+    const orderRef = doc(firestore, orderToCancel.path);
+    const updatedData = { status: 'Dibatalkan' };
+    
+    updateDoc(orderRef, updatedData)
+        .then(() => {
+            setOrders(prevOrders => prevOrders.map(o => o.id === orderToCancel.id ? { ...o, status: 'Dibatalkan' } : o));
+            toast({ title: 'Pesanan Dibatalkan', description: `Pesanan #${orderToCancel.id} telah berhasil dibatalkan.` });
+        })
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: orderToCancel.path,
+                operation: 'update',
+                requestResourceData: updatedData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsCancelDialogOpen(false);
+            setOrderToCancel(null);
+        });
   };
 
   const openCancelDialog = (order: Order & {path: string}) => {
@@ -312,5 +320,3 @@ export default function OrdersPage() {
     </>
   );
 }
-
-    

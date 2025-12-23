@@ -36,6 +36,8 @@ import { useFirestore } from "@/firebase/provider";
 import { Logo } from "@/components/logo";
 import { Textarea } from "@/components/ui/textarea";
 import { siteConfig } from "@/lib/config";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 
 const formSchema = z.object({
   profileName: z.string().min(3, "Url Profile harus terdiri dari minimal 3 karakter.").regex(/^[a-z0-9-]+$/, "Url Profile hanya boleh berisi huruf kecil, angka, dan tanda hubung."),
@@ -127,7 +129,16 @@ export default function SignupPageClient() {
         phoneNumber: '',
         bio: '',
       };
-      await setDoc(userRef, newUserProfileData);
+      setDoc(userRef, newUserProfileData)
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'create',
+                requestResourceData: newUserProfileData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+
       const newDocSnap = await getDoc(userRef);
       return { id: newDocSnap.id, ...newDocSnap.data() } as UserProfile;
     }
@@ -197,9 +208,9 @@ export default function SignupPageClient() {
               <Logo className="text-primary" />
             </Link>
           </div>
-          <CardTitle className="text-2xl">Mulai Usaha Anda</CardTitle>
+          <CardTitle className="text-2xl">Mulai Bisnis Online Anda</CardTitle>
           <CardDescription>
-            Bergabunglah dengan ribuan UMKM lain dan kembangkan bisnis Anda bersama kami.
+            Bergabunglah dengan ribuan kreator lain dan kembangkan brand Anda bersama kami.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -281,7 +292,7 @@ export default function SignupPageClient() {
                   <FormItem>
                     <FormLabel>Bio Singkat</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Ceritakan sedikit tentang toko atau diri Anda..." {...field} disabled={form.formState.isSubmitting} />
+                      <Textarea placeholder="Ceritakan sedikit tentang brand atau diri Anda..." {...field} disabled={form.formState.isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -342,7 +353,7 @@ export default function SignupPageClient() {
                 )}
               />
               <Button type="submit" className="w-full mt-2" disabled={form.formState.isSubmitting}>
-                 {form.formState.isSubmitting ? "Membuat akun..." : "Buat Akun Toko"}
+                 {form.formState.isSubmitting ? "Membuat akun..." : "Buat Akun"}
               </Button>
             </form>
           </Form>
