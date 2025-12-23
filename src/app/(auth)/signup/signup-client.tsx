@@ -2,12 +2,12 @@
 'use client';
 
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { User } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
 
@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { siteConfig } from "@/lib/config";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   profileName: z.string().min(3, "Url Profile harus terdiri dari minimal 3 karakter.").regex(/^[a-z0-9-]+$/, "Url Profile hanya boleh berisi huruf kecil, angka, dan tanda hubung."),
@@ -67,6 +68,8 @@ export default function SignupPageClient() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const firestore = useFirestore();
+  
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -80,6 +83,40 @@ export default function SignupPageClient() {
       confirmPassword: "",
     },
   });
+
+  const profileNameValue = form.watch('profileName');
+
+  const checkSlugAvailability = useCallback(async (slug: string) => {
+    if (slug.length < 3 || !firestore) {
+      setSlugStatus('idle');
+      return;
+    }
+    setSlugStatus('checking');
+    try {
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where('slug', '==', slug), limit(1));
+      const querySnapshot = await getDocs(q);
+      setSlugStatus(querySnapshot.empty ? 'available' : 'unavailable');
+    } catch (error) {
+      console.error("Error checking slug:", error);
+      setSlugStatus('idle'); // Reset on error
+    }
+  }, [firestore]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+        if (profileNameValue && profileNameValue !== initialSlug) {
+            checkSlugAvailability(profileNameValue);
+        } else {
+            setSlugStatus('idle');
+        }
+    }, 500); // Debounce time in ms
+
+    return () => {
+        clearTimeout(handler);
+    };
+  }, [profileNameValue, initialSlug, checkSlugAvailability]);
+
 
   const handleRedirect = (profile: UserProfile) => {
     // New users are always 'pembeli', so we redirect them to the account page.
@@ -173,6 +210,11 @@ export default function SignupPageClient() {
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+     if (slugStatus === 'unavailable') {
+        form.setError('profileName', { type: 'manual', message: 'URL profil ini sudah digunakan.' });
+        return;
+    }
+
     const result = await signUpWithEmail(data);
     if (result.success && result.profile) {
       toast({ title: "Pendaftaran Berhasil", description: "Selamat datang di LinkStore! Silakan periksa email Anda untuk verifikasi." });
@@ -226,22 +268,33 @@ export default function SignupPageClient() {
                     <FormItem>
                       <FormLabel>Url Profile</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="url-anda" 
-                          {...field} 
-                          disabled={form.formState.isSubmitting} 
-                          onChange={(e) => {
-                              // Convert to lowercase and remove invalid characters
-                              const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-                              field.onChange(sanitizedValue);
-                          }}
-                        />
+                        <div className="relative">
+                            <Input 
+                              placeholder="url-anda" 
+                              {...field} 
+                              disabled={form.formState.isSubmitting} 
+                              className={cn(slugStatus === 'unavailable' && 'border-destructive focus-visible:ring-destructive')}
+                              onChange={(e) => {
+                                  const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                                  field.onChange(sanitizedValue);
+                              }}
+                            />
+                             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                {slugStatus === 'checking' && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                                {slugStatus === 'available' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                                {slugStatus === 'unavailable' && <XCircle className="h-4 w-4 text-destructive" />}
+                            </div>
+                        </div>
                       </FormControl>
-                       <div className="text-sm rounded-md bg-muted p-2 text-muted-foreground flex items-center gap-2">
+                       <div className={cn(
+                        "text-sm rounded-md bg-muted p-2 text-muted-foreground flex items-center gap-2",
+                        slugStatus === 'unavailable' && 'bg-destructive/10 text-destructive border border-destructive'
+                       )}>
                         <Logo className="h-4 w-4 flex-shrink-0" />
                         <span className="truncate">{new URL(siteConfig.url).hostname}/{form.watch('profileName') || '...'}</span>
                       </div>
                       <FormMessage />
+                       {slugStatus === 'unavailable' && <p className="text-xs text-destructive">URL profil ini sudah digunakan. Silakan coba yang lain.</p>}
                     </FormItem>
                   )}
                 />
@@ -362,7 +415,7 @@ export default function SignupPageClient() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full mt-2" disabled={form.formState.isSubmitting}>
+              <Button type="submit" className="w-full mt-2" disabled={form.formState.isSubmitting || slugStatus === 'checking' || slugStatus === 'unavailable'}>
                  {form.formState.isSubmitting ? "Membuat akun..." : "Buat Akun"}
               </Button>
             </form>
