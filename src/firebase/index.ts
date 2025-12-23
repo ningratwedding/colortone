@@ -4,6 +4,7 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
 // Re-export the provider and hooks
@@ -19,6 +20,7 @@ export interface FirebaseServices {
   app: FirebaseApp;
   auth: Auth;
   firestore: Firestore;
+  storage: FirebaseStorage;
 }
 
 // Singleton pattern to ensure Firebase is initialized only once
@@ -36,8 +38,9 @@ export function initializeFirebase(): FirebaseServices {
   const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   const auth = getAuth(app);
   const firestore = getFirestore(app);
+  const storage = getStorage(app);
 
-  firebaseServices = { app, auth, firestore };
+  firebaseServices = { app, auth, firestore, storage };
 
   return firebaseServices;
 }

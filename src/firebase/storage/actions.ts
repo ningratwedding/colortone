@@ -1,7 +1,14 @@
 // src/firebase/storage/actions.ts
 'use client';
 
-import { getSignedURL } from '@/lib/s3-actions';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  type FirebaseStorage,
+} from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Compresses an image file before upload.
@@ -59,29 +66,31 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
 };
 
 /**
- * Uploads a file to an S3-compatible service using a secure presigned URL flow.
+ * Uploads a file to Firebase Storage.
+ * @param storage - The Firebase Storage instance.
  * @param file - The file to upload.
  * @param userId - The ID of the user uploading the file.
  * @param path - The base path (folder) for the upload (e.g., 'product_images').
  * @returns A promise that resolves with the public URL of the uploaded file.
  */
 export const uploadFile = async (
+  storage: FirebaseStorage,
   file: File,
   userId: string,
   path: string
 ): Promise<string> => {
-  if (!file || !userId) {
-    throw new Error('File and userId are required for upload.');
+  if (!file || !userId || !storage) {
+    throw new Error('Storage, file, and userId are required for upload.');
   }
 
   let fileToUpload: Blob | File = file;
-  let contentType = file.type;
+  let fileExtension = file.name.split('.').pop() || 'bin';
 
   // Check if the file is an image and compress it
   if (file.type.startsWith('image/')) {
     try {
       fileToUpload = await compressImage(file);
-      contentType = 'image/jpeg';
+      fileExtension = 'jpg';
     } catch (compressionError) {
       console.warn(
         'Image compression failed, uploading original file:',
@@ -90,46 +99,15 @@ export const uploadFile = async (
     }
   }
 
+  const fileName = `${uuidv4()}.${fileExtension}`;
+  const storageRef = ref(storage, `${path}/${userId}/${fileName}`);
+
   try {
-    // 1. Get a presigned URL from the server
-    const res = await getSignedURL(
-      userId,
-      path,
-      contentType,
-      fileToUpload.size
-    );
-
-    if (res.failure) {
-      throw new Error(`Failed to get signed URL: ${res.failure}`);
-    }
-
-    const { url, key } = res.success;
-    const bucketUrl = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.${process.env.NEXT_PUBLIC_S3_ENDPOINT?.replace('https://', '')}`;
-    const publicUrl = `${bucketUrl}/${key}`;
-
-    // 2. Upload the file to the presigned URL
-    const uploadResponse = await fetch(url, {
-      method: 'PUT',
-      body: fileToUpload,
-      headers: {
-        'Content-Type': contentType,
-      },
-    });
-
-    if (!uploadResponse.ok) {
-        // This provides more specific feedback if the PUT request fails.
-        const errorText = await uploadResponse.text();
-        console.error('S3 Upload Error:', errorText);
-        throw new Error(`Upload to S3 failed: ${uploadResponse.status} ${uploadResponse.statusText}. This is often a CORS configuration issue on your S3 bucket.`);
-    }
-
-    // 3. Return the public URL of the uploaded file
-    return publicUrl;
+    const snapshot = await uploadBytes(storageRef, fileToUpload);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
   } catch (error) {
     console.error('Error during file upload process:', error);
-    if (error instanceof Error && error.message.includes('CORS')) {
-      throw new Error('File upload failed. This may be due to a CORS issue. Please check your S3 bucket\'s CORS configuration to allow PUT requests from your domain.');
-    }
     throw new Error('File upload failed. Please try again.');
   }
 };

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -27,7 +28,7 @@ import {
 import { Upload, FileCheck2, Loader2, Image as ImageIcon, Link as LinkIcon, Star, Box, Package, Weight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase/auth/use-user';
-import { useFirestore } from '@/firebase/provider';
+import { useFirestore, useStorage } from '@/firebase/provider';
 import { uploadFile } from '@/firebase/storage/actions';
 import { collection, addDoc, query, serverTimestamp } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -148,6 +149,7 @@ export default function UploadPage() {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const categoriesQuery = useMemo(() => {
@@ -196,7 +198,7 @@ export default function UploadPage() {
         toast({ title: 'Mengunggah file...', description: 'Mohon tunggu, ini mungkin memerlukan waktu beberapa saat.' });
 
         const galleryImageUploads = Array.from(data.galleryImages as FileList).map(file => 
-            uploadFile(file, user.uid, 'product_images')
+            uploadFile(storage, file, user.uid, 'product_images')
         );
         const galleryImageUrls = await Promise.all(galleryImageUploads);
 
@@ -219,17 +221,17 @@ export default function UploadPage() {
 
         if (data.type === 'digital') {
             if (data.productFile?.[0]) {
-                newProduct.downloadUrl = await uploadFile(data.productFile[0], user.uid, 'product_files');
+                newProduct.downloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
             } else if (data.downloadUrl) {
                 newProduct.downloadUrl = data.downloadUrl;
             }
 
             if (data.imageBefore?.[0]) {
-                newProduct.imageBeforeUrl = await uploadFile(data.imageBefore[0], user.uid, 'product_images');
+                newProduct.imageBeforeUrl = await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images');
                 newProduct.imageBeforeHint = 'product image before';
             }
             if (data.imageAfter?.[0]) {
-                newProduct.imageAfterUrl = await uploadFile(data.imageAfter[0], user.uid, 'product_images');
+                newProduct.imageAfterUrl = await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images');
                 newProduct.imageAfterHint = 'product image after';
             }
         }

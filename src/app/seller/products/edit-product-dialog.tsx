@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -25,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useFirestore } from '@/firebase/provider';
+import { useFirestore, useStorage } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, doc, updateDoc } from 'firebase/firestore';
 import type { Product, Category, Software } from '@/lib/data';
@@ -130,6 +131,7 @@ const FileEditInput = ({ field, label, description, accept, icon: Icon, currentI
 export function EditProductDialog({ isOpen, onOpenChange, product }: EditProductDialogProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const storage = useStorage();
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -179,7 +181,7 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
       let finalDownloadUrl = product.downloadUrl;
       if (data.type === 'digital' && data.productFile?.[0]) {
         toast({ title: 'Mengunggah file produk baru...' });
-        finalDownloadUrl = await uploadFile(data.productFile[0], user.uid, 'product_files');
+        finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
       } else if (data.type === 'digital' && data.downloadUrl) {
         finalDownloadUrl = data.downloadUrl;
       }
@@ -201,19 +203,19 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
       if (data.galleryImages?.length > 0) {
         toast({ title: 'Mengunggah gambar galeri...' });
         const galleryUploads = Array.from(data.galleryImages as FileList).map(file =>
-            uploadFile(file, user.uid, 'product_images')
+            uploadFile(storage, file, user.uid, 'product_images')
         );
         updatedData.galleryImageUrls = await Promise.all(galleryUploads);
         updatedData.galleryImageHints = updatedData.galleryImageUrls.map(() => 'product gallery image');
       }
       if (data.imageBefore?.[0]) {
         toast({ title: 'Mengunggah gambar "sebelum"...' });
-        updatedData.imageBeforeUrl = await uploadFile(data.imageBefore[0], user.uid, 'product_images');
+        updatedData.imageBeforeUrl = await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images');
         updatedData.imageBeforeHint = 'product image before';
       }
       if (data.imageAfter?.[0]) {
         toast({ title: 'Mengunggah gambar "sesudah"...' });
-        updatedData.imageAfterUrl = await uploadFile(data.imageAfter[0], user.uid, 'product_images');
+        updatedData.imageAfterUrl = await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images');
         updatedData.imageAfterHint = 'product image after';
       }
 
