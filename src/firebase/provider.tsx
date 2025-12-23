@@ -5,14 +5,12 @@ import { createContext, useContext, ReactNode } from 'react';
 import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
-import type { FirebaseStorage } from 'firebase/storage';
 
 // Define the shape of the context value
 interface FirebaseContextValue {
   app: FirebaseApp | null;
   auth: Auth | null;
   firestore: Firestore | null;
-  storage: FirebaseStorage | null;
 }
 
 // Create the context with a default value
@@ -72,13 +70,3 @@ export const useFirestore = (): Firestore => {
   }
   return firestore;
 };
-
-export const useStorage = (): FirebaseStorage => {
-    const { storage } = useFirebase();
-    if (!storage) {
-        throw new Error(
-        'Firebase Storage has not been initialized or is not available.'
-        );
-    }
-    return storage;
-}

@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useFirestore, useStorage } from '@/firebase/provider';
+import { useFirestore } from '@/firebase/provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, doc, updateDoc } from 'firebase/firestore';
 import type { Product, Category, Software } from '@/lib/data';
@@ -59,19 +59,9 @@ const formSchema = z.object({
   imageAfter: z.any().optional(),
   
 }).superRefine((data, ctx) => {
-    if (data.type === 'digital') {
-        if (!data.productFile && !data.downloadUrl) {
-             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: 'Unggah file produk atau berikan URL unduhan.',
-                path: ['productFile'],
-            });
-        }
-         if (data.downloadUrl) {
-            try { new URL(data.downloadUrl); } catch {
-                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'URL unduhan tidak valid.', path: ['downloadUrl'] });
-            }
-        }
+    if (data.type === 'digital' && !data.downloadUrl && !data.productFile?.[0]) {
+        // This validation is tricky because the file might already exist.
+        // We will rely on UI to guide the user.
     } else if (data.type === 'fisik') {
         if (data.stock === undefined || data.stock < 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Stok harus 0 atau lebih.', path: ['stock']});
@@ -140,7 +130,6 @@ const FileEditInput = ({ field, label, description, accept, icon: Icon, currentI
 export function EditProductDialog({ isOpen, onOpenChange, product }: EditProductDialogProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const storage = useStorage();
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -182,17 +171,17 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
   const uploadType = watch('uploadType');
 
   const onSubmit = async (data: FormData) => {
-    if (!firestore || !user || !storage) return;
+    if (!firestore || !user) return;
     setIsSubmitting(true);
     try {
       const productRef = doc(firestore, 'products', product.id);
       
       let finalDownloadUrl = product.downloadUrl;
-      if (data.type === 'digital' && data.uploadType === 'file' && data.productFile?.[0]) {
+      if (data.type === 'digital' && data.productFile?.[0]) {
         toast({ title: 'Mengunggah file produk baru...' });
-        finalDownloadUrl = await uploadFile(storage, data.productFile[0], user.uid, 'product_files');
-      } else if (data.type === 'digital' && data.uploadType === 'url') {
-        finalDownloadUrl = data.downloadUrl!;
+        finalDownloadUrl = await uploadFile(data.productFile[0], user.uid, 'product_files');
+      } else if (data.type === 'digital' && data.downloadUrl) {
+        finalDownloadUrl = data.downloadUrl;
       }
 
       const updatedData: Partial<Product> = {
@@ -212,19 +201,19 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
       if (data.galleryImages?.length > 0) {
         toast({ title: 'Mengunggah gambar galeri...' });
         const galleryUploads = Array.from(data.galleryImages as FileList).map(file =>
-            uploadFile(storage, file, user.uid, 'product_images')
+            uploadFile(file, user.uid, 'product_images')
         );
         updatedData.galleryImageUrls = await Promise.all(galleryUploads);
         updatedData.galleryImageHints = updatedData.galleryImageUrls.map(() => 'product gallery image');
       }
       if (data.imageBefore?.[0]) {
         toast({ title: 'Mengunggah gambar "sebelum"...' });
-        updatedData.imageBeforeUrl = await uploadFile(storage, data.imageBefore[0], user.uid, 'product_images');
+        updatedData.imageBeforeUrl = await uploadFile(data.imageBefore[0], user.uid, 'product_images');
         updatedData.imageBeforeHint = 'product image before';
       }
       if (data.imageAfter?.[0]) {
         toast({ title: 'Mengunggah gambar "sesudah"...' });
-        updatedData.imageAfterUrl = await uploadFile(storage, data.imageAfter[0], user.uid, 'product_images');
+        updatedData.imageAfterUrl = await uploadFile(data.imageAfter[0], user.uid, 'product_images');
         updatedData.imageAfterHint = 'product image after';
       }
 
@@ -364,18 +353,19 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
             {productType === 'digital' && (
                 <>
                 <h3 className="font-semibold text-sm mt-4 border-t pt-4">File Produk</h3>
-                <Controller name="uploadType" control={control} render={({ field }) => (
-                    <div className="grid gap-2">
-                    <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="file" id="file-edit" /><Label htmlFor="file-edit">Unggah File Baru</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="url" id="url-edit" /><Label htmlFor="url-edit">Ganti Tautan Eksternal</Label></div>
-                    </RadioGroup>
-                    {errors.uploadType && <p className="text-xs text-destructive">{errors.uploadType.message}</p>}
+                <div className="grid gap-1.5">
+                    <Label htmlFor="downloadUrl">Tautan Unduhan Eksternal</Label>
+                    <div className="relative">
+                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input id="downloadUrl" placeholder="https://contoh.com/produk-keren.zip" {...register('downloadUrl')} className="pl-10"/>
                     </div>
-                )}
-                />
-
-                {uploadType === 'file' ? (
+                    {errors.downloadUrl && <p className="text-xs text-destructive">{errors.downloadUrl.message}</p>}
+                </div>
+                 <div className="relative flex items-center">
+                    <div className="flex-grow border-t border-muted"></div>
+                    <span className="flex-shrink mx-4 text-muted-foreground text-xs">ATAU</span>
+                    <div className="flex-grow border-t border-muted"></div>
+                </div>
                 <Controller name="productFile" control={control} render={({ field: { onChange, value, ...restField }}) => (
                     <div>
                         <div className="flex items-center justify-center w-full">
@@ -388,15 +378,6 @@ export function EditProductDialog({ isOpen, onOpenChange, product }: EditProduct
                     </div>
                     )}
                 />
-                ) : (
-                <div className="grid gap-1.5">
-                    <div className="relative">
-                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="downloadUrl" placeholder="https://contoh.com/produk-keren.zip" {...register('downloadUrl')} className="pl-10"/>
-                    </div>
-                    {errors.downloadUrl && <p className="text-xs text-destructive">{errors.downloadUrl.message}</p>}
-                </div>
-                )}
                 </>
             )}
           </div>

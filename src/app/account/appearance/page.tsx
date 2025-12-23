@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc, collection, query, where, documentId, limit } from 'firebase/firestore';
-import { useFirestore, useStorage } from '@/firebase/provider';
+import { useFirestore } from '@/firebase/provider';
 import type { Product, UserProfile, SocialLink } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -398,7 +398,6 @@ function ProfilePreview({
 export default function AppearancePage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const storage = useStorage();
     const { toast } = useToast();
     const headerImageInputRef = useRef<HTMLInputElement>(null);
     const headerVideoInputRef = useRef<HTMLInputElement>(null);
@@ -536,7 +535,7 @@ export default function AppearancePage() {
 
 
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !user || !storage) return;
+        if (!userProfileRef || !user) return;
         setIsSaving(true);
         try {
             let newHeaderImageUrl = userProfile?.headerImageUrl || null;
@@ -544,11 +543,11 @@ export default function AppearancePage() {
 
             if (headerImageFile) {
                 toast({ title: 'Mengunggah gambar header...' });
-                newHeaderImageUrl = await uploadFile(storage, headerImageFile, user.uid, 'profile_headers');
+                newHeaderImageUrl = await uploadFile(headerImageFile, user.uid, 'profile_headers');
                 newHeaderVideoUrl = null;
             } else if (headerVideoFile) {
                  toast({ title: 'Mengunggah video header...' });
-                 newHeaderVideoUrl = await uploadFile(storage, headerVideoFile, user.uid, 'profile_headers');
+                 newHeaderVideoUrl = await uploadFile(headerVideoFile, user.uid, 'profile_headers');
                  newHeaderImageUrl = null;
             } else if (!headerImagePreview && !headerVideoPreview) {
                 newHeaderImageUrl = null;
@@ -559,7 +558,7 @@ export default function AppearancePage() {
             let newProfileBackgroundImageUrl = userProfile?.profileBackgroundImageUrl || null;
             if (profileBackgroundImageFile) {
                 toast({ title: 'Mengunggah gambar latar...' });
-                newProfileBackgroundImageUrl = await uploadFile(storage, profileBackgroundImageFile, user.uid, 'profile_backgrounds');
+                newProfileBackgroundImageUrl = await uploadFile(profileBackgroundImageFile, user.uid, 'profile_backgrounds');
             }
 
             const updatedData: Partial<UserProfile> = {

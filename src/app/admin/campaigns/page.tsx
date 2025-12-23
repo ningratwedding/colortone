@@ -39,7 +39,7 @@ import { Label } from '@/components/ui/label';
 import { MoreHorizontal, PlusCircle, Trash2, Image as ImageIcon, Loader2, Link as LinkIcon } from 'lucide-react';
 import { useState, useMemo, useRef } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { useFirestore, useStorage } from '@/firebase/provider';
+import { useFirestore } from '@/firebase/provider';
 import {
   collection,
   query,
@@ -62,7 +62,6 @@ import { uploadFile } from '@/firebase/storage/actions';
 
 export default function AdminCampaignsPage() {
   const firestore = useFirestore();
-  const storage = useStorage();
   const { user } = useUser();
   const { toast } = useToast();
   
@@ -112,7 +111,7 @@ export default function AdminCampaignsPage() {
   };
 
   const handleSaveCampaign = async () => {
-    if (!title || !linkUrl || !firestore || !user || !storage) {
+    if (!title || !linkUrl || !firestore || !user) {
         toast({ variant: 'destructive', title: 'Data Tidak Lengkap', description: 'Judul dan URL tautan harus diisi.' });
         return;
     }
@@ -126,7 +125,7 @@ export default function AdminCampaignsPage() {
       let imageUrl = editingCampaign?.imageUrl || '';
       if (imageFile) {
           toast({ title: 'Mengunggah gambar...' });
-          imageUrl = await uploadFile(storage, imageFile, user.uid, 'campaign_images');
+          imageUrl = await uploadFile(imageFile, user.uid, 'campaign_images');
       }
 
       const dataToSave = {
@@ -382,5 +381,3 @@ export default function AdminCampaignsPage() {
     </div>
   );
 }
-
-    

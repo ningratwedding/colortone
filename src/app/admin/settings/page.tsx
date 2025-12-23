@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useFirestore, useStorage } from "@/firebase/provider";
+import { useFirestore } from "@/firebase/provider";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { doc, setDoc } from "firebase/firestore";
 import { useMemo, useState, useEffect, useRef } from "react";
@@ -29,7 +29,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function AdminSettingsPage() {
     const firestore = useFirestore();
-    const storage = useStorage();
     const { user } = useUser();
     const { toast } = useToast();
     
@@ -121,11 +120,11 @@ export default function AdminSettingsPage() {
     };
 
     const handleSaveOgImage = async () => {
-        if (!settingsRef || !ogImageFile || !user || !storage) return;
+        if (!settingsRef || !ogImageFile || !user) return;
         setIsSavingOgImage(true);
         try {
             toast({ title: 'Mengunggah gambar OG...' });
-            const imageUrl = await uploadFile(storage, ogImageFile, user.uid, 'platform_assets');
+            const imageUrl = await uploadFile(ogImageFile, user.uid, 'platform_assets');
             
             await setDoc(settingsRef, {
                 ogImageUrl: imageUrl,

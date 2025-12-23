@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/firebase/auth/use-user';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc, updateDoc, serverTimestamp, type Timestamp, getDocs, query, collection, where, limit } from 'firebase/firestore';
-import { useFirestore, useStorage } from '@/firebase/provider';
+import { useFirestore } from '@/firebase/provider';
 import type { UserProfile } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -32,7 +33,6 @@ import { useRouter } from 'next/navigation';
 export default function AccountSettingsClient() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const storage = useStorage();
     const { toast } = useToast();
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -89,14 +89,14 @@ export default function AccountSettingsClient() {
     }, [userProfile]);
 
     const handleSaveChanges = async () => {
-        if (!userProfileRef || !userProfile || !user || !storage || !firestore) return;
+        if (!userProfileRef || !userProfile || !user || !firestore) return;
         setIsSaving(true);
         try {
             let newAvatarUrl = userProfile.avatarUrl;
 
             if (avatarFile) {
                 toast({ title: 'Mengompres dan mengunggah foto profil...' });
-                newAvatarUrl = await uploadFile(storage, avatarFile, user.uid, 'avatars');
+                newAvatarUrl = await uploadFile(avatarFile, user.uid, 'avatars');
             }
 
             const updatedData: Partial<UserProfile> & { nameLastUpdatedAt?: any } = {

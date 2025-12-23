@@ -60,15 +60,12 @@ const compressImage = (file: File, maxSize = 1920): Promise<Blob> => {
 
 /**
  * Uploads a file to an S3-compatible service using a secure presigned URL flow.
- * The Firebase Storage instance is passed for compatibility but not used.
- * @param storage - Dummy Firebase Storage instance for compatibility.
  * @param file - The file to upload.
  * @param userId - The ID of the user uploading the file.
  * @param path - The base path (folder) for the upload (e.g., 'product_images').
  * @returns A promise that resolves with the public URL of the uploaded file.
  */
 export const uploadFile = async (
-  storage: any, // Dummy parameter for compatibility
   file: File,
   userId: string,
   path: string
