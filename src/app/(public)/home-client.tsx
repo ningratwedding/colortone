@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { useToast } from '@/hooks/use-toast';
+import { siteConfig } from '@/lib/config';
 
 export default function HomeClient() {
   const [slug, setSlug] = useState('');
@@ -82,7 +83,6 @@ export default function HomeClient() {
 
         if (!querySnapshot.empty) {
             toast({
-                variant: 'destructive',
                 title: 'URL Profil Tidak Tersedia',
                 description: `Nama "${sanitizedSlug}" sudah digunakan. Silakan pilih yang lain.`
             });
@@ -164,7 +164,7 @@ export default function HomeClient() {
           <div className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center justify-center gap-2">
             <form onSubmit={handleClaimUsername} className="w-full sm:w-auto sm:flex-grow">
                 <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">LinkStore.my.id/</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">{new URL(siteConfig.url).hostname}/</span>
                 <Input
                     type="text"
                     placeholder={placeholder}
@@ -180,7 +180,14 @@ export default function HomeClient() {
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full h-9"
                     disabled={isChecking || !slug}
                 >
-                    {isChecking ? <Loader2 className="animate-spin" /> : 'Buat Halaman'}
+                    {isChecking ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <>
+                        <span className="sm:hidden">Buat</span>
+                        <span className="hidden sm:inline">Buat Halaman</span>
+                      </>
+                    )}
                 </Button>
                 </div>
             </form>
