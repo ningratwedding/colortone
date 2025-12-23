@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, Link as LinkIcon, ShoppingCart, Users, Copy, Settings } from 'lucide-react';
+import { DollarSign, Link as LinkIcon, ShoppingCart, Users, Copy, Settings, User } from 'lucide-react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
 import { useState, useEffect, useMemo } from 'react';
@@ -111,7 +111,10 @@ export default function AffiliatePage() {
                     <Skeleton className="h-9 w-36" />
                 ) : userProfile?.slug && (
                     <Button asChild variant="outline">
-                        <Link href={`/${userProfile.slug}`}>Lihat Profil Publik</Link>
+                        <Link href={`/${userProfile.slug}`}>
+                            <User className="mr-2 h-4 w-4" />
+                            Lihat Profil Publik
+                        </Link>
                     </Button>
                 )}
                  <Button asChild>

@@ -15,6 +15,7 @@ import {
   Bell,
   LogOut,
   Palette,
+  User,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -275,12 +276,20 @@ export default function SellerDashboardLayout({
               <h1 className="hidden text-lg font-semibold md:block">{pageTitle}</h1>
             </div>
             <div className="relative ml-auto flex items-center gap-2">
-              <Button asChild>
+              <Button asChild variant="outline">
                 <Link href="/account/appearance">
                     <Palette className="mr-2 h-4 w-4" />
                     Pengaturan Profil
                 </Link>
               </Button>
+               {userProfile && (
+                <Button asChild>
+                  <Link href={`/${userProfile.slug}`}>
+                      <User className="mr-2 h-4 w-4" />
+                      Lihat Profil
+                  </Link>
+                </Button>
+              )}
             </div>
           </header>
           <main className="flex-1 overflow-auto p-4">{children}</main>
