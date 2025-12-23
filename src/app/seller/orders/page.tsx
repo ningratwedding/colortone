@@ -52,6 +52,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { FirebaseError } from 'firebase/app';
 
 function formatCurrency(amount: number) {
     if (typeof amount !== 'number') return '';
@@ -127,7 +128,17 @@ export default function OrdersPage() {
 
       } catch (error) {
         console.error("Failed to fetch orders:", error);
-         toast({ variant: 'destructive', title: 'Gagal Memuat Pesanan', description: 'Terjadi kesalahan saat mengambil data pesanan.' });
+        if (error instanceof FirebaseError && error.code === 'failed-precondition') {
+             toast({
+                variant: 'destructive',
+                title: 'Indeks Firestore Diperlukan',
+                description: 'Query memerlukan indeks. Silakan periksa konsol browser untuk tautan pembuatan indeks.',
+                duration: 10000,
+            });
+            console.error("Firestore index required. Please create the index using the link provided in the Firebase error message in the console.");
+        } else {
+            toast({ variant: 'destructive', title: 'Gagal Memuat Pesanan', description: 'Terjadi kesalahan saat mengambil data pesanan.' });
+        }
       } finally {
         setOrdersLoading(false);
       }
