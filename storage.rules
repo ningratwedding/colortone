@@ -48,10 +48,9 @@ service firebase.storage {
     }
 
     // Aturan untuk file produk yang dapat diunduh:
-    // Baca & Tulis: Hanya izinkan penjual atau admin.
-    // Aturan yang lebih ketat (misalnya, hanya pembeli) akan dikelola oleh logika aplikasi melalui URL berjangka waktu.
+    // Baca & Tulis: Hanya izinkan penjual yang merupakan pemilik folder atau admin.
     match /product_files/{userId}/{allPaths=**} {
-      allow read, write: if (isSeller() && isOwner(userId)) || isAdmin();
+      allow read, write: (isSeller() && isOwner(userId)) || isAdmin();
     }
 
     // Aturan untuk ikon perangkat lunak:
