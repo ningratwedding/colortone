@@ -275,7 +275,7 @@ export default function SignupPageClient() {
                               disabled={form.formState.isSubmitting} 
                               className={cn(slugStatus === 'unavailable' && 'border-destructive focus-visible:ring-destructive')}
                               onChange={(e) => {
-                                  const sanitizedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                                  const sanitizedValue = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
                                   field.onChange(sanitizedValue);
                               }}
                             />
