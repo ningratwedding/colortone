@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser } from '@/firebase/auth/use-user';
 import {
   ref,
@@ -151,11 +151,11 @@ export default function FileManagerClient() {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     if (user) {
       listFilesAndFolders(currentPath);
     }
-  });
+  }, [user, currentPath]);
 
   const breadcrumbs = useMemo(() => {
     const parts = currentPath.split('/').filter(Boolean);
