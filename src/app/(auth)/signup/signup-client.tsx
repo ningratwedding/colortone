@@ -212,7 +212,7 @@ export default function SignupPageClient() {
           </div>
           <CardTitle className="text-2xl">Mulai Bisnis Online Anda</CardTitle>
           <CardDescription>
-            Daftar untuk membuat halaman profil publik dan mulai jual produk Anda.
+            Daftar untuk membuat halaman etalase digital
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -394,3 +394,5 @@ export default function SignupPageClient() {
     </div>
   );
 }
+
+    
