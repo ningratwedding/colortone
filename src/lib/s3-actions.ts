@@ -35,13 +35,17 @@ export async function getSignedURL(
   fileType: string,
   fileSize: number
 ) {
+  if (!process.env.NEXT_PUBLIC_S3_REGION || !process.env.NEXT_PUBLIC_S3_ENDPOINT || !process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID || !process.env.S3_SECRET_ACCESS_KEY || !process.env.NEXT_PUBLIC_S3_BUCKET_NAME) {
+    return { failure: 'Konfigurasi S3 tidak lengkap. Harap periksa file .env.local Anda.' };
+  }
+
   if (!userId || !path || !fileType || !fileSize) {
-    return { failure: 'Invalid input for getting signed URL.' };
+    return { failure: 'Input tidak valid untuk mendapatkan signed URL.' };
   }
   
   // Enforce file size limit (e.g., 10MB)
   if (fileSize > 10 * 1024 * 1024) {
-    return { failure: 'File size exceeds 10MB limit.' };
+    return { failure: 'Ukuran file melebihi batas 10MB.' };
   }
 
   const fileExtension = fileType.split('/')[1] || 'bin';
@@ -62,7 +66,7 @@ export async function getSignedURL(
     return { success: { url: signedUrl, key } };
   } catch (error) {
     console.error('Error creating signed URL:', error);
-    return { failure: 'Failed to create signed URL.' };
+    return { failure: 'Gagal membuat signed URL. Pastikan kredensial S3 Anda benar.' };
   }
 }
 
