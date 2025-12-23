@@ -2,7 +2,7 @@
 import { SiteFooter } from '@/components/site-footer';
 import * as React from 'react';
 import { ProfileContent } from './profile-client';
-import { doc, getDoc, query, collection, where, getDocs, limit, documentId } from 'firebase/firestore';
+import { doc, getDoc, query, collection, where, getDocs, limit, documentId, Timestamp } from 'firebase/firestore';
 import { initializeServerSideFirebase } from '@/firebase/server-init';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/config';
@@ -13,7 +13,25 @@ type Props = {
   params: { slug: string }
 }
 
-async function getUserProfile(slug: string): Promise<UserProfile | null> {
+// Custom type for serializable user profile
+type SerializableUserProfile = Omit<UserProfile, 'createdAt' | 'planExpiryDate' | 'nameLastUpdatedAt'> & {
+    createdAt: string;
+    planExpiryDate?: string;
+    nameLastUpdatedAt?: string;
+};
+
+// Helper function to serialize Firestore Timestamps
+function serializeTimestamps(docData: any) {
+  const data = { ...docData };
+  for (const key in data) {
+    if (data[key] instanceof Timestamp) {
+      data[key] = data[key].toDate().toISOString();
+    }
+  }
+  return data;
+}
+
+async function getUserProfile(slug: string): Promise<SerializableUserProfile | null> {
     const { firestore } = initializeServerSideFirebase();
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('slug', '==', slug), limit(1));
@@ -24,14 +42,22 @@ async function getUserProfile(slug: string): Promise<UserProfile | null> {
         return null;
     }
 
-    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserProfile;
+    const doc = querySnapshot.docs[0];
+    const data = serializeTimestamps(doc.data());
+
+    return { id: doc.id, ...data } as SerializableUserProfile;
 }
 
 // This function generates metadata on the server.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const profileUser = await getUserProfile(params.slug);
-    
-    if (profileUser) {
+    // We use a modified fetch for metadata as we don't need the full serialized object here.
+    const { firestore } = initializeServerSideFirebase();
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('slug', '==', params.slug), limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const profileUser = querySnapshot.docs[0].data() as UserProfile;
         const displayName = profileUser.fullName || profileUser.name;
         const description = profileUser.bio || `Lihat profil dan produk dari ${displayName} di ${siteConfig.name}.`;
 

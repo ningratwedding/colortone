@@ -67,8 +67,13 @@ const socialIcons = {
 
 type SocialPlatform = keyof typeof socialIcons;
 
+// Adjust the props to accept the serialized user profile
 interface ProfileContentProps {
-    profileUser: UserProfile;
+    profileUser: Omit<UserProfile, 'createdAt' | 'planExpiryDate' | 'nameLastUpdatedAt'> & {
+        createdAt: string;
+        planExpiryDate?: string;
+        nameLastUpdatedAt?: string;
+    };
 }
 
 function ProductsView({ user }: { user: UserProfile }) {
