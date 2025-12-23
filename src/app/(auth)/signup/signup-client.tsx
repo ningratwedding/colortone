@@ -301,7 +301,7 @@ export default function SignupPageClient() {
               )}
                {initialSlug && (
                  <div className="text-sm rounded-md bg-muted p-3 text-muted-foreground">
-                    URL Profil Publik Anda akan menjadi: <span className="font-semibold text-foreground">{siteConfig.url}/{initialSlug}</span>
+                    URL Profil Publik Anda akan menjadi: <span className="font-semibold text-foreground">{new URL(siteConfig.url).hostname}/{initialSlug}</span>
                  </div>
                )}
                <FormField
@@ -448,3 +448,5 @@ export default function SignupPageClient() {
     </div>
   );
 }
+
+    
