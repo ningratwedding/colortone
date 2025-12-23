@@ -14,6 +14,9 @@ import {
   type StorageReference,
 } from 'firebase/storage';
 import { useFirestore, useStorage } from '@/firebase/provider';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import type { UserProfile } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -95,10 +98,20 @@ const formatBytes = (bytes: number, decimals = 2) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
+const FREE_TIER_LIMIT_MB = 1;
+const FREE_TIER_LIMIT_BYTES = FREE_TIER_LIMIT_MB * 1024 * 1024;
+
 export default function FileManagerClient() {
   const { user } = useUser();
   const storage = useStorage();
+  const firestore = useFirestore();
   const { toast } = useToast();
+
+  const userProfileRef = useMemo(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userProfileRef);
 
   const [currentPath, setCurrentPath] = useState('');
   const [items, setItems] = useState<StorageItem[]>([]);
@@ -187,6 +200,21 @@ export default function FileManagerClient() {
   
   const handleFileUpload = async () => {
     if (!filesToUpload || !user || !storage) return;
+
+    // Check file size limit for free users
+    if (userProfile?.plan === 'free') {
+      for (const file of Array.from(filesToUpload)) {
+        if (file.size > FREE_TIER_LIMIT_BYTES) {
+          toast({
+            variant: 'destructive',
+            title: 'Ukuran File Melebihi Batas',
+            description: `Sebagai pengguna paket free, Anda hanya dapat mengunggah file hingga ${FREE_TIER_LIMIT_MB}MB. File "${file.name}" terlalu besar.`,
+          });
+          return;
+        }
+      }
+    }
+
     setIsUploading(true);
     
     const uploadPromises = Array.from(filesToUpload).map(file => {
@@ -338,6 +366,11 @@ export default function FileManagerClient() {
                 <div className="grid gap-2 py-4">
                     <Label htmlFor="file-upload">Pilih File</Label>
                     <Input id="file-upload" type="file" multiple onChange={(e) => setFilesToUpload(e.target.files)} />
+                    {userProfile?.plan === 'free' && (
+                        <p className="text-xs text-muted-foreground">
+                            Batas ukuran file untuk paket free adalah {FREE_TIER_LIMIT_MB}MB per file.
+                        </p>
+                    )}
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsUploadDialogOpen(false)} disabled={isUploading}>Batal</Button>
