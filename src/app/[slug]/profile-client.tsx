@@ -80,14 +80,14 @@ function ProductsView({ user }: { user: UserProfile }) {
     const firestore = useFirestore();
 
     const productsQuery = useMemo(() => {
-        if (!firestore) return null;
+        if (!firestore || !user?.id) return null;
 
-        if (user.role === 'seller' && user.id) {
+        if (user.role === 'seller') {
             return query(collection(firestore, "products"), where('creatorId', '==', user.id));
         }
         
         if (user.role === 'affiliator' && user.featuredProductIds && user.featuredProductIds.length > 0) {
-            const productIds = user.featuredProductIds.slice(0, 30); // Firestore 'in' query limit
+            const productIds = user.featuredProductIds.slice(0, 30); // Firestore 'in' query limit is 30
             if (productIds.length === 0) return null;
             return query(collection(firestore, "products"), where(documentId(), 'in', productIds));
         }

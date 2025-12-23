@@ -23,11 +23,11 @@ service cloud.firestore {
 
     // Aturan untuk produk:
     // - Siapa pun bisa membaca detail satu produk (get).
-    // - Semua pengguna yang login dapat melakukan query list pada koleksi.
+    // - Siapa pun bisa melakukan query list pada koleksi (list).
     // - Hanya kreator produk atau admin yang bisa menulis.
     match /products/{productId} {
       allow get: if true;
-      allow list: if request.auth != null;
+      allow list: if true;
       allow write: if request.auth != null && (request.resource.data.creatorId == request.auth.uid || isAdmin());
     }
     
