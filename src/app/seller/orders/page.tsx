@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -101,49 +102,66 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!user || !firestore) return;
+      if (!user?.uid || !firestore) {
+        if (!userLoading) setOrdersLoading(false);
+        return;
+      }
       setOrdersLoading(true);
 
       const ordersQuery = query(
-        collectionGroup(firestore, 'orders'), 
-        where('creatorId', '==', user.uid)
+        collectionGroup(firestore, 'orders'),
+        where('creatorId', '==', user.uid),
+        orderBy('purchaseDate', 'desc')
       );
       
-      getDocs(ordersQuery).then(async (ordersSnapshot) => {
+      try {
+        const ordersSnapshot = await getDocs(ordersQuery);
         const fetchedOrders = ordersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, path: doc.ref.path } as Order & { path: string }));
-        fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
         setOrders(fetchedOrders);
         
-        const customerIds = [...new Set(fetchedOrders.map(o => o.userId))].filter(Boolean);
-        const customersData: Record<string, UserProfile> = {};
+        if (fetchedOrders.length > 0) {
+            const customerIds = [...new Set(fetchedOrders.map(o => o.userId))].filter(Boolean);
+            const customersData: Record<string, UserProfile> = {};
 
-        if (customerIds.length > 0) {
-            for (let i = 0; i < customerIds.length; i += 30) {
-              const chunk = customerIds.slice(i, i + 30);
-              const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', chunk));
-              const customersSnapshot = await getDocs(customersQuery);
-              customersSnapshot.forEach(doc => {
-                  customersData[doc.id] = { id: doc.id, ...doc.data() } as UserProfile;
-              });
+            if (customerIds.length > 0) {
+                for (let i = 0; i < customerIds.length; i += 30) {
+                    const chunk = customerIds.slice(i, i + 30);
+                    const customersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', chunk));
+                    const customersSnapshot = await getDocs(customersQuery);
+                    customersSnapshot.forEach(doc => {
+                        customersData[doc.id] = { id: doc.id, ...doc.data() } as UserProfile;
+                    });
+                }
             }
+            setCustomers(customersData);
         }
-        setCustomers(customersData);
+      } catch (error) {
+          const firebaseError = error as FirebaseError;
+          // This specific error code indicates a missing index.
+          if (firebaseError.code === 'failed-precondition') {
+              console.error(
+                  'Firestore index missing. Please create it by visiting the link in the error message below.',
+                  firebaseError.message
+              );
+              toast({
+                  variant: "destructive",
+                  title: "Indeks Firestore Diperlukan",
+                  description: "Query memerlukan indeks komposit. Buka konsol browser (F12) untuk melihat tautan pembuatan indeks otomatis.",
+                  duration: 15000,
+              });
+          }
+          // Emit a more detailed permission error for debugging.
+          const permissionError = new FirestorePermissionError({
+              path: `orders (collectionGroup)`,
+              operation: 'list',
+          });
+          errorEmitter.emit('permission-error', permissionError);
+      } finally {
         setOrdersLoading(false);
-      }).catch(async (serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: `orders (collectionGroup)`,
-            operation: 'list',
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setOrdersLoading(false);
-      });
+      }
     }
     
-    if(user && firestore) {
-      fetchOrders();
-    } else if (!userLoading) {
-      setOrdersLoading(false);
-    }
+    fetchOrders();
   }, [user, userLoading, firestore, toast]);
 
   const handleCancelOrder = async () => {
