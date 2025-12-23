@@ -75,12 +75,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 export default async function ProductPage({ params }: Props) {
-    const { product, creator } = await getProductAndCreator(params.id);
+    // Kita hanya perlu memastikan produk ada di server untuk metadata dan notFound()
+    const { product } = await getProductAndCreator(params.id);
 
     if (!product) {
         notFound();
     }
     
-    // Kirim data yang sudah diambil ke komponen klien
-    return <ProductPageContent product={product} creator={creator} />;
+    // Kirim hanya ID ke komponen klien, biarkan klien mengambil data terbaru.
+    return <ProductPageContent productId={params.id} />;
 }
