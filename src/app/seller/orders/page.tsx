@@ -105,7 +105,12 @@ export default function OrdersPage() {
       setOrdersLoading(true);
 
       try {
-        const ordersQuery = query(collectionGroup(firestore, 'orders'), where('creatorId', '==', user.uid));
+        // PERBAIKAN: Menambahkan `where` clause untuk creatorId
+        const ordersQuery = query(
+          collectionGroup(firestore, 'orders'), 
+          where('creatorId', '==', user.uid)
+        );
+        
         const ordersSnapshot = await getDocs(ordersQuery);
         const fetchedOrders = ordersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, path: doc.ref.path } as Order & { path: string }));
         fetchedOrders.sort((a, b) => b.purchaseDate.seconds - a.purchaseDate.seconds);
@@ -143,8 +148,15 @@ export default function OrdersPage() {
         setOrdersLoading(false);
       }
     }
-    fetchOrders();
-  }, [user, firestore, toast]);
+    
+    // Pastikan query hanya berjalan jika user sudah login
+    if(user && firestore) {
+      fetchOrders();
+    } else if (!userLoading) {
+      // Jika loading selesai dan tidak ada user, hentikan loading pesanan
+      setOrdersLoading(false);
+    }
+  }, [user, userLoading, firestore, toast]);
 
   const handleCancelOrder = async () => {
     if (!orderToCancel || !firestore) return;
